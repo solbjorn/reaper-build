@@ -1,0 +1,226 @@
+local counter = 1
+local max_count = 30 --количество меток максимум
+local max_dist = 60 --макс расстояние до цели
+local screen_max_dist = 100 --макс расстояние в пикселях радара
+local center_x = 876 --отсюда отсчитываем, центр радара
+local center_y = 140 --отсюда отсчитываем, центр радара
+local tex_arr = {}
+local col_arr = {}
+
+function draw_dot(dx,dy,color,tex)
+	local hud = get_hud()
+	
+	local custom_static = hud:GetCustomStatic("target_dot_"..counter)
+	if custom_static == nil then
+		hud:AddCustomStatic("target_dot_"..counter, true)
+		custom_static = hud:GetCustomStatic("target_dot_"..counter)
+	end
+	
+	custom_static:wnd():SetWndPos(center_x+dx,center_y+dy)
+	
+	tex = tex or [[biomap\white_dot]]
+	if not tex_arr[counter] or tex_arr[counter]~=tex then
+		custom_static:wnd():InitTexture(tex)
+		tex_arr[counter]=tex
+	end
+	color = color or GetARGB(255,255,0,0)
+	if not col_arr[counter] or col_arr[counter]~=color then
+		custom_static:wnd():SetColor(color)
+		col_arr[counter]=color
+	end
+	
+end
+
+function transform_coords(tpos)
+	local sdir = device().cam_dir
+	local dir = tpos:sub(db.actor:position())
+	local dx = dir.x / max_dist * screen_max_dist
+	local dy = -dir.z / max_dist * screen_max_dist
+	local vect = vector():set(dx,0,dy)
+	vect = vector_rotate_y(vect,math.atan2(-sdir.x,sdir.z)/math.pi*180)
+	return vect.x,vect.z
+end
+
+function get_color(obj,dog,pseudodog,flesh,boar,tushkano,bloodsucker,burer,zombie,snork,kontroller,poltergeist,gigant,cat,chimera,rat)
+	local so = alife():object(obj:id())
+	local stalker=IsStalker(so)
+        local section=obj:section()
+        if obj:alive() then
+           if obj:id()==db.actor:id() then
+	      return GetARGB(255,0,255,0)
+	   end
+		if stalker then
+		   return GetARGB(255,255,255,0)
+		else
+		   if section=="m_dog_e" or section=="dog_weak" or section=="dog_normal" or section=="dog_strong" then
+                      if dog then
+                         return GetARGB(255,252,158,66)
+                      end
+                      return GetARGB(0,252,158,66)
+                   end
+                   if string.find(section,"bloodsucker") then
+                      if bloodsucker then
+                         return GetARGB(255,255,0,120)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"pseudodog") then
+                      if pseudodog then
+                         return GetARGB(255,171,94,23)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"psy_dog") then
+                      if pseudodog then
+                         return GetARGB(255,132,80,32)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"tushkano") then
+                      if tushkano then
+                         return GetARGB(255,50,50,255)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"flesh") then
+                      if flesh then
+                         return GetARGB(255,64,153,79)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"cat") then
+                      if cat then
+                         return GetARGB(255,252,158,66)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"burer") then
+                      if burer then
+                         return GetARGB(255,45,102,112)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"snork") then
+                      if snork then
+                         return GetARGB(255,145,71,214)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"controller") then
+                      if kontroller then
+                         return GetARGB(255,0,238,255)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"gigant") then
+                      if gigant then
+                         return GetARGB(255,253,121,121)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"zombie") then
+                      if zombie then
+                         return GetARGB(255,200,200,200)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"poltergeist") then
+                      if poltergeist then
+                         return GetARGB(255,255,0,238)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"chimera") then
+                      if chimera then
+                         return GetARGB(255,255,0,0)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"boar") then
+                      if boar then
+                         return GetARGB(255,64,153,79)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                   if string.find(section,"rat") then
+                      if rat then
+                         return GetARGB(255,94,3,80)
+                      end
+                      return GetARGB(0,255,255,0)
+                   end
+                end
+	else
+		return GetARGB(255,127,127,127)
+	end
+end
+
+function update()
+        local bio_belt=inventory.belt["bioradar"]
+        local dog=inventory.belt["mutant_dog_tail"]
+        local pseudodog=inventory.belt["mutant_psevdodog_tail"]
+        local flesh=inventory.belt["mutant_flesh_eye"]
+        local boar=inventory.belt["mutant_boar_leg"]
+        local tushkano=inventory.belt["mutant_face_tushkano"]
+        local bloodsucker=inventory.belt["mutant_krovosos_jaw"]
+        local burer=inventory.belt["mutant_burer_hand"]
+        local zombie=inventory.belt["mutant_zombie_hand"]
+        local snork=inventory.belt["mutant_snork_leg"]
+        local kontroller=inventory.belt["mutant_hand_kontroler"]
+        local poltergeist=inventory.belt["mutant_poltergeist_glas"]
+        local gigant=inventory.belt["mutant_psevdogigant_hand"]
+        local cat=inventory.belt["mutant_tail_cat"]
+        local chimera=inventory.belt["mutant_chimera_kogot"]
+        local rat=inventory.belt["mutant_rat_tail"]
+        if bio_belt==nil then
+           local map = get_hud()
+           if map:GetCustomStatic("biomap")~=nil then
+              local custom_static=map:GetCustomStatic("biomap")
+              custom_static:wnd():SetWndPos(-1000,-1000)
+           end
+		for a=1,25 do
+              if map:GetCustomStatic("target_dot_"..a)~=nil then
+                 local custom_static=map:GetCustomStatic("target_dot_"..a)
+                 custom_static:wnd():SetWndPos(-100,-100)
+              end
+           end
+           return
+        end
+        local hud = get_hud()
+	if hud:GetCustomStatic("biomap") == nil then
+		hud:AddCustomStatic("biomap", true)
+	end
+	local biomap_static=hud:GetCustomStatic("biomap")
+	biomap_static:wnd():SetWndPos(752,16)
+	counter = 1
+	for id,obj in pairs(db.storage) do
+		local o = level.object_by_id(id)
+		local so = alife():object(id)
+                if so and o then
+			local stalker=IsStalker(so)
+			local monster=IsMonster(so)
+			if (stalker or monster) and o:position():distance_to_xz(db.actor:position())<=max_dist then
+				local x,y=transform_coords(o:position())
+                                local tex = nil
+                                draw_dot(x,y,get_color(o,dog,pseudodog,flesh,boar,tushkano,bloodsucker,burer,zombie,snork,kontroller,poltergeist,gigant,cat,chimera,rat),tex)
+				counter = counter+1
+				if counter>max_count then break end
+			end
+		end
+	end
+	
+	if counter<=max_count then
+		for a=counter,max_count do
+			local custom_static = hud:GetCustomStatic("target_dot_"..a)
+			if custom_static ~= nil then
+				custom_static:wnd():SetWndPos(-100,-100)
+			end
+		end
+	end
+end
+
+
+
+
+
+
+

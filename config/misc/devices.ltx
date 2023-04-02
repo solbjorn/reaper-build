@@ -1,0 +1,156 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devices
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[device_atifact_merger]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\artifact merger"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_merger.ogf
+radius				= 1
+
+inv_name			= ArtefactMerger
+inv_name_short		= AfMerger
+inv_weight			= 3	;0.2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 13
+cost				= 5000
+
+
+[inventory_box]
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\inventory box"
+class				= O_INVBOX
+cform				= skeleton
+visual				= physics\box\expl_dinamit.ogf
+script_binding      = bind_physic_object.init
+
+[m_inventory_box]:inventory_box
+visual = equipments\item_rukzak
+;visual = physics\box\konteyner_01 
+;visual = physics\decor\bag_01 
+;visual = physics\equipment_cache\equipment_rucksack_01_case
+;visual = physics\equipment_cache\equipment_rucksack_02_case
+radius = 1
+
+
+[device_teleport]:ammo_base
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn			= "devices\device_teleport"
+class			= AMMO
+cform                   = skeleton
+visual                  = equipments\item_amk_gps.ogf
+description				= device_teleport
+$prefetch 		= 64
+
+cost					 = 100000
+
+box_size		= 1
+
+inv_name		= teleport
+inv_name_short		= teleport
+inv_weight		= 0.05
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 13
+inv_grid_y			= 31
+
+k_dist			= 1
+k_disp			= 3
+k_hit			= 1.4
+k_impulse		= 1.2
+k_pierce		= 1.35
+impair			= 1.15
+buck_shot		= 1
+tracer			= off
+wm_size         = 0.05
+
+
+[science_teleport]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\science_teleport"
+$prefetch 			= 32
+class				= D_SIMDET
+cform				= skeleton
+visual				= equipments\item_datchik1.ogf
+description			= Кордон
+radius				= 10
+buzzer_radius		= 1.5
+;slot				= 3
+ef_detector_type	= 1
+
+inv_name			= Телепорт_на_Кордон
+inv_name_short		= Телепорт_на_Кордон
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 27
+inv_grid_y			= 19
+cost				= 100000
+belt				= false
+default_to_ruck		= true
+
+
+[science_teleport2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\science_teleport2"
+$prefetch 			= 32
+class				= D_SIMDET
+cform				= skeleton
+visual				= equipments\item_datchik1.ogf
+description			= Бар
+radius				= 10
+buzzer_radius		= 1.5
+;slot				= 3
+ef_detector_type	= 1
+
+inv_name			= Телепорт_на_Бар
+inv_name_short		= Телепорт_на_Бар
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 27
+inv_grid_y			= 19
+cost				= 100000
+belt				= false
+default_to_ruck		= true
+
+
+[science_teleport3]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\science_teleport3"
+$prefetch 			= 32
+class				= D_SIMDET
+cform				= skeleton
+visual				= equipments\item_datchik1.ogf
+description			= Янтарь
+radius				= 10
+buzzer_radius		= 1.5
+;slot				= 3
+ef_detector_type	= 1
+
+inv_name			= Телепорт_на_Янтарь
+inv_name_short		= Телепорт_на_Янтарь
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 27
+inv_grid_y			= 19
+cost				= 100000
+belt				= false
+default_to_ruck		= true

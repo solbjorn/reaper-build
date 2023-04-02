@@ -1,0 +1,153 @@
+
+
+function spawn_banderos()
+	--свободный торговец
+	local obj = alife():create("trader_banderos",vector():set(109.98,4.22,-11.57),306355,987)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\ntrade=misc\\trade_banderos.ltx\n[walker]\npath_walk = trader_banderos_walk1\npath_look = trader_banderos_look1\ncombat_ignore_cond=always\n[smart_terrains]\nnone = true"
+	params.sid=481532
+	amk.add_spot_on_map(obj.id,'blue_location','Горын - торговец')
+	amk.write_stalker_params(params,obj)
+
+	--первый телохранитель
+	local obj = alife():create("banderos_bodyguard_one",vector():set(101.13,4.22,-2.72),296439,986)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_bodyguard_walk1\npath_look = val_banderos_bodyguard_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
+	params.sid=481525
+	amk.write_stalker_params(params,obj)
+
+	--второй телохранитель
+	local obj = alife():create("banderos_bodyguard_two",vector():set(106.81,0.70,-12.57),303256,982)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_bodyguard2_walk1\npath_look = val_banderos_bodyguard2_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
+	params.sid=481526
+	amk.write_stalker_params(params,obj)
+end
+
+--не используется
+function spawn_my_inventory_box()
+	local obj = alife():create("my_inventory_box",vector():set(-212.54, -23.18, -123.95),40607,59)
+	alife():create_ammo("wpn_rg-6",
+	obj.position,
+	obj.m_level_vertex_id,
+	obj.m_game_vertex_id,
+	obj.id,
+	1)
+end
+
+
+---квестовые--предметы--
+function spawn_banderos_art()
+	alife():create("banderos_art", vector():set(-3.19,-3.05,-31.46), 160313, 1022)
+	alife():create("banderos_art", vector():set(48.07,-2.49,-26.02), 235691, 1093)
+	alife():create("banderos_art", vector():set(20.19,1.02,-83.55), 198785, 1096)
+end
+
+
+function spawn_sniper_banderos()
+ --1-й Снайпер на вышке
+	local sobj = alife():object("val_watchtower4_restr")
+	alife():release(sobj, true)
+	local obj = alife():create("darkval_sniper_one",vector():set(37.97,11.18,-99.77),221455,820)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_one_walk1\npath_look = banderos_sniper_one_look1"
+	params.sid=481531
+	amk.write_stalker_params(params,obj)
+ --2-й Снайпер на вышке
+	local sobj = alife():object("val_watchtower1_restr")
+	alife():release(sobj, true)
+	local obj = alife():create("darkval_sniper_zwai",vector():set(-49.01,11.20,7.58),116927,819)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_zwai_walk1\npath_look = banderos_sniper_zwai_look1"
+	params.sid=481521
+	amk.write_stalker_params(params,obj)
+ --3-й Снайпер на вышке
+	local sobj = alife():object("val_watchtower2_restr")
+	alife():release(sobj, true)
+	local obj = alife():create("darkval_sniper_dray",vector():set(49.56,11.35,47.82),237451,818)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_dray_walk1\npath_look = banderos_sniper_dray_look1"
+	params.sid=481522
+	amk.write_stalker_params(params,obj)
+ --4-й Снайпер на вышке
+	local sobj = alife():object("val_watchtower3_restr")
+	alife():release(sobj, true)
+	local obj = alife():create("darkval_sniper_fir",vector():set(50.62,11.21,4.30),238146,817)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_fir_walk1\npath_look = banderos_sniper_fir_look1"
+	params.sid=481523
+	amk.write_stalker_params(params,obj)
+end
+
+function two_spawn_sniper_darkval()
+ --1-й Снайпер на вышке
+	local obj = alife():create("darkval_sniper_one",vector():set(37.97,11.18,-99.77),221455,820)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_one_walk1\npath_look = banderos_sniper_one_look1"
+	params.sid=481527
+	amk.write_stalker_params(params,obj)
+ --2-й Снайпер на вышке
+	local obj = alife():create("darkval_sniper_zwai",vector():set(-49.01,11.20,7.58),116927,819)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_zwai_walk1\npath_look = banderos_sniper_zwai_look1"
+	params.sid=481528
+	amk.write_stalker_params(params,obj)
+ --3-й Снайпер на вышке
+	local obj = alife():create("darkval_sniper_dray",vector():set(49.56,11.35,47.82),237451,818)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_dray_walk1\npath_look = banderos_sniper_dray_look1"
+	params.sid=481529
+	amk.write_stalker_params(params,obj)
+ --4-й Снайпер на вышке
+	local obj = alife():create("darkval_sniper_fir",vector():set(50.62,11.21,4.30),238146,817)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_fir_walk1\npath_look = banderos_sniper_fir_look1"
+	params.sid=481530
+	amk.write_stalker_params(params,obj)
+end
+
+function spawn_advokat()
+	--Адвокат
+	local obj = alife():create("banderos_advokat",vector():set(42.52,4.54,-84.59),228078,1100)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_advokat_walk1\npath_look = val_banderos_advokat_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
+	params.sid=481524
+	amk.write_stalker_params(params,obj)
+end
+
+function spawn_tiran()
+	--Тиран
+	local obj = alife():create("banderos_killer_tiran",vector():set(-239.93,4.56,60.80),13909,1389)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = killer_tiran_walk1\npath_look = killer_tiran_look1\ncombat_ignore_cond={=check_fighting(710)} false"
+	params.sid=481533
+	amk.write_stalker_params(params,obj)
+	--снайпер наёмников
+	local obj = alife():create("banderos_sniper_tiran",vector():set(-239.48,4.56,61.22),14248,1389)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_tiran_walk1\npath_look = banderos_sniper_tiran_look1"
+	params.sid=481534
+	amk.write_stalker_params(params,obj)
+end
+
+
+function spawn_ban_trup_npc()
+	local obj = alife():create("trup_voennogo",vector():set(-45.41, 19.18, 5.84), 2340, 1530)
+        local tbl = amk.read_stalker_params(obj)
+	tbl.custom="[known_info]\nbanderos_dokumenty_iz_x10_start"
+        tbl.sid = 481537
+        tbl.health = 0
+	tbl.updhealth = 0
+        amk.write_stalker_params(tbl, obj)
+end
+
+function trup_otprav_sms()
+	if db.actor ~= nil and 
+		has_alife_info("find_corpse_military_x16") and
+		not has_alife_info("find_corpse_military_x16_done")
+	then
+		db.actor:give_info_portion("find_corpse_military_x16_done")
+		amk.send_tip("Получены данные на КПК",nil,nil,20,"military")
+		alife():create("banderos_documents", vector():set(7.07,-7.85,-13.68), 7641, 2693)
+	end
+    end

@@ -1,0 +1,60 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = mob_home
+
+[mob_home]
+path_home = dar_rat1
+home_min_radius = 10
+home_max_radius = 20
+aggressive_home
+on_timer = 480000 | mob_home1
+on_signal = sig_attacked | mob_combat
+
+[mob_combat]
+on_timer = 15000 | mob_home
+
+[mob_home1]
+path_home = dar_rat1_home1
+home_min_radius = 50
+home_max_radius = 60
+aggressive_home
+on_timer = 120000 | mob_home2
+on_signal = sig_attacked | mob_combat1
+
+[mob_combat1]
+on_timer = 15000 | mob_home1
+
+[mob_home2]
+path_home = dar_rat1_home2
+home_min_radius = 50
+home_max_radius = 60
+aggressive_home
+on_timer = 480000 | mob_home3
+on_signal = sig_attacked | mob_combat2
+
+[mob_combat2]
+on_timer = 15000 | mob_home2
+
+[mob_home3]
+path_home = dar_rat1_home3
+home_min_radius = 10
+home_max_radius = 20
+aggressive_home
+on_timer = 480000 | mob_home4
+on_signal = sig_attacked | mob_combat3
+
+[mob_combat3]
+on_timer = 15000 | mob_home3
+
+[mob_home4]
+path_home = dar_rat1_home4
+home_min_radius = 30
+home_max_radius = 40
+aggressive_home
+on_timer = 240000 | mob_home
+on_signal = sig_attacked | mob_combat4
+
+[mob_combat4]
+on_timer = 15000 | mob_home4

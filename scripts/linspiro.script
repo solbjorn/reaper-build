@@ -1,0 +1,653 @@
+--*************************************************************
+--                               “Œ–√Œ¬Àﬂ “¿…Õ» ¿Ã»
+--*************************************************************
+function npc_relacion(npc,actor)
+	local actor_, npc_
+	if db.actor and db.actor:id() ==npc:id() then
+		actor_ = npc
+		npc_ = actor
+	else
+		actor_ = actor
+		npc_ = npc
+	end
+	local npc_community = npc_:character_community()
+	local rel = actor:relation(npc)
+	if rel == game_object.friend and npc_community == "stalker" then
+		return true
+	else
+		return false
+	end
+end
+
+function insert_custom_data(npc,actor)
+	local actor_, npc_
+	if db.actor and db.actor:id() ==npc:id() then
+		actor_ = npc
+		npc_ = actor
+	else
+		actor_ = actor
+		npc_ = npc
+	end
+	
+	local id = npc_:id()
+	local obj = alife():object(id)
+	if (obj) then
+		local t = amk.read_stalker_params(obj)
+		local cd = amk.parse_custom_data(t.custom)
+		if not cd.npc then 
+			cd.npc={} 
+		end
+		if not cd.npc.vv then 
+			cd.npc.vv = 0 
+		end
+		t.custom = amk.gen_custom_data(cd)
+		amk.write_stalker_params(t, obj, true) 
+	end
+end
+
+function precond(npc, actor)
+	local actor_, npc_
+	if db.actor and db.actor:id() ==npc:id() then
+		actor_ = npc
+		npc_ = actor
+	else
+		actor_ = actor
+		npc_ = npc
+	end
+	
+	local zz = true
+	local id = npc_:id()
+	local obj = alife():object(id)
+	if (obj) then
+		local t = amk.read_stalker_params(obj)
+		local cd = amk.parse_custom_data(t.custom)
+		if (cd.npc and cd.npc.vv and tonumber(cd.npc.vv) == 0) then
+			zz = false
+		end
+	end
+	return zz
+end
+
+function amk_options_2()
+	if amk.load_variable("option_treasure", 0) == 2 then 
+	  return true
+	else 
+      return false
+	end
+end
+
+function amk_options_1()
+	if amk.load_variable("option_treasure", 0) ~= 2 then 
+		return true
+	else 
+		return false
+	end
+end
+
+function actor_has_money_1()
+	return db.actor:money()>=10000
+end
+
+function actor_has_money_2()
+	return db.actor:money()>=30000
+end
+
+function give_money_1(t1,t2)
+	local npc=t1
+	if npc:id()==db.actor:id() then
+		npc=t2
+	end
+	dialogs.relocate_money(npc,10000,"out")
+end
+
+function give_money_2(t1,t2)
+	local npc=t1
+	if npc:id()==db.actor:id() then
+		npc=t2
+	end
+	dialogs.relocate_money(npc,30000,"out")
+end
+
+--*************************************************************
+--              œ≈“–≈Õ Œ ”—“–¿»¬¿≈“ ¬¿Ã »—œ€“¿Õ»ﬂ
+--*************************************************************
+function rank_get(npc, actor)
+	local actor_, npc_
+	if db.actor and db.actor:id() ==npc:id() then
+		actor_ = npc
+		npc_ = actor
+	else
+		actor_ = actor
+		npc_ = npc
+	end
+	
+	if db.actor:character_rank() > 300 then
+		return false
+	else
+		return true
+	end
+end
+
+function have_a_item(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local mutant_krovosos_jaw=0
+	local mutant_burer_hand=0
+	local mutant_psevdodog_tail=0
+    
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_krovosos_jaw" then mutant_krovosos_jaw=mutant_krovosos_jaw+1 end end, nil)
+    actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_burer_hand" then mutant_burer_hand=mutant_burer_hand+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_psevdodog_tail" then mutant_psevdodog_tail=mutant_psevdodog_tail+1 end end, nil)
+	if mutant_krovosos_jaw>=3 and mutant_burer_hand>=3 and mutant_psevdodog_tail>=3 then
+        return true
+	else
+        return false
+	end
+end
+
+function out_item(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "mutant_krovosos_jaw", "out", 3)
+	flamethrower.relocate_n_items_section(trader, "mutant_burer_hand", "out", 3)
+	flamethrower.relocate_n_items_section(trader, "mutant_psevdodog_tail", "out", 3)
+end
+--¬ÓÓÌËÌ
+function enter_to_dolg(first_speaker, second_speaker)	
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	dialogs.relocate_item_section(trader, "dolg_black_exoskeleton", "in")
+	dialogs.relocate_item_section(trader, "wpn_groza", "in")
+	flamethrower.relocate_n_items_section(trader, "ammo_9x39_ap", "in", 10)
+end
+function spawn_bar()
+	--—Ì‡ÈÔÂ ‰ÓÎ„Ó‚Âˆ Ì‡ ‚˚¯ÍÂ
+	local obj = alife():create("bar_dolg_respawn_3",vector():set(184.15, 8.37, 96.34),45473,1186)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\npath_walk = bar_linspiro_sniper_camper1_path\npath_look = bar_linspiro_sniper_camper1_look1"
+	params.sid=481519
+	amk.write_stalker_params(params,obj)
+	--”˜ÂÌÌ˚È Û ÔÂÚÂÌÍ‡ ‚ ı‡ÎÛÔÂ
+	local obj = alife():create("ecolog_linspiro",vector():set(208.84, 0.43, 64.94),50694,1203)
+	local params=amk.read_stalker_params(obj)
+	params.custom="[logic]\nactive=walker\ntrade=misc\\trade_professor.ltx\n[walker]\npath_walk = bar_linspiro_nayk_walk1\npath_look = bar_linspiro_nayk_look1\ncombat_ignore_cond=always"
+	params.sid=481520
+	amk.write_stalker_params(params,obj)
+end
+--*************************************************************
+--                             Œ“ÕŒÿ≈Õ»≈   —¬Œ¡Œƒ≈
+--*************************************************************
+function have_mod(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local a1,a2,a3,a4,a5,a6,a7 = 0,0,0,0,0,0,0
+    actor:iterate_inventory(function (dummy, item) if item:section()=="af_spirit_2" then a1=a1+1 end end, nil)
+    actor:iterate_inventory(function (dummy, item) if item:section()=="af_cry_2" then a2=a2+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="af_babka_2" then a3=a3+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="af_pudd_2" then a4=a4+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="af_dik_2" then a5=a5+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="af_kol_2" then a6=a6+1 end end, nil)
+	actor:iterate_inventory(function (dummy, item) if item:section()=="af_armor_2" then a7=a7+1 end end, nil)
+	if a1>=1 or a2>=1 or a3>=1 or a4>=1 or a5>=1 or a6>=1 or a7>=1 then
+        return true
+	else
+        return false
+	end
+end
+function out_mod(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	actor:iterate_inventory(function (dummy, item) 
+	if item:section()=="af_spirit_2" then dialogs.relocate_item_section(trader, "af_spirit_2", "out")
+    elseif item:section()=="af_cry_2" then dialogs.relocate_item_section(trader, "af_cry_2", "out")	
+	elseif item:section()=="af_babka_2" then dialogs.relocate_item_section(trader, "af_babka_2", "out")	
+	elseif item:section()=="af_pudd_2" then dialogs.relocate_item_section(trader, "af_pudd_2", "out")	
+	elseif item:section()=="af_dik_2" then dialogs.relocate_item_section(trader, "af_dik_2", "out")	
+	elseif item:section()=="af_kol_2" then dialogs.relocate_item_section(trader, "af_kol_2", "out")	
+	elseif item:section()=="af_armor_2" then dialogs.relocate_item_section(trader, "af_armor_2", "out") end end, nil)
+	
+	relation_registry.set_community_goodwill ("freedom", actor, 1250)
+end
+--*************************************************************
+--              ◊À≈Õ √–”œœ»–Œ¬ » ƒŒÀ√ œ–» »—œŒÀÕ≈Õ»»
+--*************************************************************
+-- œÂÚÂÌÍÓ
+local nagrad = {
+  level_1 = {
+  "af_spirit_4",
+  "af_pudd_4",
+  "af_dik_4",
+  "af_kol_4",
+  "af_armor_4"
+ },
+  level_2 = {
+  "af_spirit_1",
+  "af_babka_1",
+  "af_pudd_1",
+  "af_dik_1",
+  "af_kol_1",
+  "af_armor_1"
+ },
+  level_3 = {
+  "af_fuzz_kolobok",
+  "af_dummy_spring",
+  "af_dummy_dummy",
+  "af_dummy_battery",
+  "af_dummy_pellicle",
+  "af_dummy_glassbeads"
+ },
+  level_4 = {
+  "ammo_9x39_ap",
+  "ammo_9x39_sp5",
+  "ammo_7.62x54_7h14"
+ }
+}
+-- –Œ¬Œ—Œ—
+function krovosos(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local krovosos = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_krovosos_jaw" then krovosos=krovosos+1 end end, nil)
+    if krovosos>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_krovosos(first_speaker, second_speaker)
+	local item = ""
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	flamethrower.relocate_n_items_section(trader, "mutant_krovosos_jaw", "out", 3)
+    dialogs.relocate_item_section(second_speaker, item , "in")
+end
+--¡ﬁ–≈–
+function burer(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local burer = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_burer_hand" then burer=burer+1 end end, nil)
+    if burer>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_burer(first_speaker, second_speaker)
+	local item = ""
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	flamethrower.relocate_n_items_section(trader, "mutant_burer_hand", "out", 3)
+    dialogs.relocate_item_section(actor, item , "in")
+end
+--œ—≈¬ƒŒ—Œ¡¿ »
+function psevdodog(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local psevdodog  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_psevdodog_tail" then psevdodog=psevdodog+1 end end, nil)
+    if psevdodog>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_psevdodog(first_speaker, second_speaker)
+	local item = ""
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	flamethrower.relocate_n_items_section(trader, "mutant_psevdodog_tail", "out", 3)
+    dialogs.relocate_item_section(actor, item , "in")
+end
+--«ŒÃ¡»
+function zombie(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local zombie  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_zombie_hand" then zombie=zombie+1 end end, nil)
+    if zombie>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_zombie(first_speaker, second_speaker)
+	local item = ""
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	flamethrower.relocate_n_items_section(trader, "mutant_zombie_hand", "out", 3)
+    dialogs.relocate_item_section(actor, item , "in")
+end
+--—ÕŒ– »
+function snork(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local snork  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_snork_leg" then snork=snork+1 end end, nil)
+    if snork>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_snork(first_speaker, second_speaker)
+	local item = ""
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	flamethrower.relocate_n_items_section(trader, "mutant_snork_leg", "out", 3)
+    dialogs.relocate_item_section(actor, item , "in")
+end
+--—Œ¡¿ »
+function dog(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local dog  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_dog_tail" then dog=dog+1 end end, nil)
+    if dog>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_dog(first_speaker, second_speaker)
+	local item = ""
+	local count = math.random(3,10)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	flamethrower.relocate_n_items_section(trader, "mutant_dog_tail", "out", 3)
+    flamethrower.relocate_n_items_section(actor, item , "in", count)
+end
+--œÀŒ“»
+function flesh(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local flesh  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_flesh_eye" then flesh=flesh+1 end end, nil)
+    if flesh>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_flesh(first_speaker, second_speaker)
+	local item = ""
+	local count = math.random(3,10)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	flamethrower.relocate_n_items_section(trader, "mutant_flesh_eye", "out", 3)
+    flamethrower.relocate_n_items_section(actor, item , "in", count)
+end
+-- ¿¡¿Õ€
+function boar(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	
+	local boar  = 0
+	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_boar_leg" then boar=boar+1 end end, nil)
+    if boar>=3 then
+        return true
+	else
+        return false
+	end
+end
+function out_boar(first_speaker, second_speaker)
+	local item = ""
+	local count = math.random(3,10)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	flamethrower.relocate_n_items_section(trader, "mutant_boar_leg", "out", 3)
+    flamethrower.relocate_n_items_section(second_speaker, item , "in", count)
+end
+--[[
+--*************************************************************
+--                         œ”“» Õ≈œ»—≈… ƒÀﬂ ÀŒ√» »
+--*************************************************************
+[bar_linspiro_dolg_kamp]
+points = p0
+p0:name = wp00
+p0:position = 204.37, 0.10, 89.30
+p0:game_vertex_id = 1193
+p0:level_vertex_id = 49244
+
+[bar_linspiro_dolg_kamp_task]
+points = p0
+p0:name = wp00
+p0:position = 201.34, -0.00, 94.81
+p0:game_vertex_id = 1193
+p0:level_vertex_id = 48213
+
+[bar_linspiro_dolg_walk1]
+points = p0, p1, p2, p3, p4
+p0:name = wp00
+p0:flags = 0x1
+p0:position = 189.55, 7.36, 86.79
+p0:game_vertex_id = 1186
+p0:level_vertex_id = 45472
+p0:links = p1(1)
+
+p1:name = wp01
+p1:flags = 0x1
+p1:position = 186.55, 6.91, 91.57, 45472, 1186
+p1:game_vertex_id = 1186
+p1:level_vertex_id = 45472
+p1:links = p2(1)
+
+p2:name = wp02
+p2:flags = 0x1
+p2:position = 197.79, 6.91, 91.80
+p2:game_vertex_id = 1186
+p2:level_vertex_id = 45472
+p2:links = p3(1)
+
+p3:name = wp03
+p3:flags = 0x1
+p3:position = 197.84, 6.90, 72.46
+p3:game_vertex_id = 1186
+p3:level_vertex_id = 45472
+p3:links = p4(1)
+
+p4:name = wp04
+p4:flags = 0x1
+p4:position = 187.16, 7.00, 71.74
+p4:game_vertex_id = 1186
+p4:level_vertex_id = 45472
+p4:links = p1(1)
+
+[bar_linspiro_sniper_camper1_path]
+points = p0
+p0:name = wp00
+p0:flags = 0x1
+p0:position = 184.15, 8.37, 96.34
+p0:game_vertex_id = 1186
+p0:level_vertex_id = 45473
+
+[bar_linspiro_sniper_camper1_look1]
+points = p0, p1
+p0:name = wp00
+p0:flags = 0x1
+p0:position = 154.28, -0.00, 59.94
+p0:game_vertex_id = 1228
+p0:level_vertex_id = 40788
+po:links = p1(1)
+
+p1:name = wp01
+p1:flags = 0x1
+p1:position = 155.49, -0.00, 123.08
+p1:game_vertex_id = 1192
+p1:level_vertex_id = 41108
+p1:links = p0(1)
+
+[bar_linspiro_nayk_walk1]
+points = p0, p1
+p0:name = wp00
+p0:flags = 0x1
+p0:position = 208.98, 0.43, 62.20
+p0:game_vertex_id = 1203
+p0:level_vertex_id = 50947
+po:links = p1(1)
+
+p1:name = wp01
+p1:flags = 0x1
+p1:position = 208.84, 0.43, 64.94
+p1:game_vertex_id = 1203
+p1:level_vertex_id = 50694
+
+[bar_linspiro_nayk_look1]
+points = p0
+p0:name = wp00
+p0:flags = 0x1
+p0:position = 208.98, 0.43, 62.20
+p0:game_vertex_id = 1203
+p0:level_vertex_id = 50947
+]]--
+
+
+
+
+
+
+
+

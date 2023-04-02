@@ -1,0 +1,1405 @@
+function create_level_changer(
+	p_story_id,	-- STORY_ID нового level_changer (понадобится нам позже)
+	p_position,	-- вектор, координаты точки, в которой будет располагаться центр нового level_changer
+	p_lvertex_id,	-- level_vertext_id  - идентифицируют уровень, на котором будет создан level_changer
+	p_gvertex_id,	-- game_vertext_id   	
+ 
+	p_dest_lv,	-- level_vertex_id   - идентифицируют уровень, на который level_changer будет перебрасывать игрока 
+	p_dest_gv,	-- game_vertex_id
+	p_dest_pos,	-- координаты точки, в которой на новом уровне окажется игрок
+	p_dest_dir,	-- направрение взгляда игрока
+	p_dest_level,	-- название уровня, например "L11_Pripyat"
+	p_silent	-- следует задать 1, чтобы подавить вопрос о смене уровня (автоматический переход)
+)
+	local obj = alife():create("level_changer", p_position, p_lvertex_id, p_gvertex_id)
+ 
+	level.map_add_object_spot(obj.id, "level_changer", "")
+ 
+	local packet = net_packet()
+	obj:STATE_Write(packet)
+ 
+	-- свойства cse_alife_object
+	local game_vertex_id 			= packet:r_u16()
+	local cse_alife_object__unk1_f32 	= packet:r_float()
+	local cse_alife_object__unk2_u32 	= packet:r_u32()
+	local level_vertex_id 			= packet:r_u32()
+	local object_flags 			= packet:r_u32()
+	local custom_data 			= packet:r_stringZ()
+	local story_id 				= packet:r_u32()
+	local spawn_story_id			= packet:r_u32()
+ 
+	-- свойства cse_shape
+	local shape_count 			= packet:r_u8()
+	for i=1,shape_count do
+		local shape_type 		= packet:r_u8()
+		if shape_type == 0 then
+			-- sphere
+			local center 		= packet:r_vec3()
+			local radius 		= packet:r_float()
+		else
+			-- box
+			local axis_x_x = packet:r_float()
+			local axis_x_y = packet:r_float()
+			local axis_x_z = packet:r_float()
+			local axis_y_x = packet:r_float()
+			local axis_y_y = packet:r_float()
+			local axis_y_z = packet:r_float()
+			local axis_z_x = packet:r_float()
+			local axis_z_y = packet:r_float()
+			local axis_z_z = packet:r_float()
+			local offset_x = packet:r_float()
+			local offset_y = packet:r_float()
+			local offset_z = packet:r_float()
+		end
+	end
+ 
+	-- свойства cse_alife_space_restrictor
+	local restrictor_type 			= packet:r_u8()
+ 
+	-- свойства cse_level_changer
+	local dest_game_vertex_id		= packet:r_u16()  
+	local dest_level_vertex_id 		= packet:r_u32()  
+	local dest_position 			= packet:r_vec3()
+	local dest_direction 			= packet:r_vec3()
+	local dest_level_name 			= packet:r_stringZ()
+	local dest_graph_point 			= packet:r_stringZ()
+	local silent_mode 			= packet:r_u8()
+ 
+ 
+	packet:w_begin(game_vertex_id)			-- game_vertex_id
+	packet:w_float(cse_alife_object__unk1_f32)
+	packet:w_u32(cse_alife_object__unk2_u32) 
+	packet:w_u32(level_vertex_id)			-- level_vertex_id
+	packet:w_u32( bit_not(193) )			-- object_flags = -193 = 0xFFFFFF3E
+	packet:w_stringZ(custom_data)
+	packet:w_u32(p_story_id)			-- story_id
+	packet:w_u32(spawn_story_id)
+ 
+	packet:w_u8(1)			-- количество фигур
+--		packet:w_u8(0)			-- тип фигуры: сфера
+--		packet:w_vec3(vector():set(0, 0, 0))  -- sphere_center
+--		packet:w_float(3.0)
+	packet:w_u8(1)			-- тип фигуры: box
+	packet:w_float(2)	   -- axis_x_x
+	packet:w_float(0)	   -- axis_x_y
+	packet:w_float(0)	   -- axis_x_z
+	packet:w_float(0)	   -- axis_y_x
+	packet:w_float(4)	   -- axis_y_y
+	packet:w_float(0)	   -- axis_y_z
+	packet:w_float(0)	   -- axis_z_x
+	packet:w_float(0)	   -- axis_z_y
+	packet:w_float(4)	   -- axis_z_z
+	packet:w_float(0)	   -- offset_x
+	packet:w_float(0)	   -- offset_y
+	packet:w_float(0)          -- offset_z
+ 
+	packet:w_u8(3)	 	   -- restrictor_type
+ 
+	packet:w_u16(p_dest_gv)			-- destination game_vertex_id
+	packet:w_s32(p_dest_lv)			-- destination level_vertex_id
+	packet:w_vec3(p_dest_pos)		-- destination position
+	packet:w_vec3(p_dest_dir)		-- destination direction (направление взгляда)
+	packet:w_stringZ(p_dest_level)		-- destination level name
+	packet:w_stringZ("start_actor_02")	-- some string, always const
+	packet:w_u8(p_silent)			-- 1 for silent level changing
+ 
+	packet:r_seek(0)
+	obj:STATE_Read(packet, packet:w_tell())
+ level.add_pp_effector ("teleport.ppe", 2006, false)
+ 
+end
+
+
+function exit_as()	
+    	create_level_changer(9803, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	28719,
+			            1758,
+			            vector():set(-317.23675537109,-26.327833175659,55.278633117676),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l07_military",
+                        1)
+end	
+
+function exit_as2()	
+    	create_level_changer(9814, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	66343,
+			            1786,
+			            vector():set(-274.62121582031,-27.297189712524,239.00979614258),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l07_military",
+                        1)
+end	
+
+function exit_as3()	
+    	create_level_changer(9815, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	273147,
+			            1821,
+			            vector():set(-33.368682861328,-20.897382736206,379.58074951172),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l07_military",
+                        1)
+end	
+
+function exit_as4()	
+    	create_level_changer(9816, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	83694,
+			            1852,
+			            vector():set(-243.89454650879,-0.28634393215179,435.28894042969),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l07_military",
+                        1)
+end	
+
+function exit_bunker()	
+    	create_level_changer(9801, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	7807,
+			            2773,
+			            vector():set(8.3457946777344,-23.525426864624,19.003190994263),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l10u_bunker",
+                        1)
+end	
+
+function exit_svalka()	
+		create_level_changer(9802, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	127101,
+			            351,
+			            vector():set(-77.325019836426,-3.660080909729,195.34251403809),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end	
+
+function exit_svalka2()	
+		create_level_changer(9822, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	1201,
+			            260,
+			            vector():set(-289.04534912109,-6.6783475875854,-178.82406616211),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end	
+
+function exit_svalka3()	
+		create_level_changer(9823, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	344517,
+			            401,
+			            vector():set(200.77691650391,-0.638019323349,-145.20561218262),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end	
+
+function exit_svalka4()	
+		create_level_changer(9861, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	284570,
+			            374,
+			            vector():set(122.61166381836,-4.2376079559326,153.47959899902),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka5()	
+		create_level_changer(9862, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	324917,
+			            384,
+			            vector():set(173.82795715332,-0.30577194690704,51.149074554443),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end	
+
+function exit_svalka6()	
+		create_level_changer(9863, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	311456,
+			            385,
+			            vector():set(97.819366455078,15.575645446777,31.107891082764),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end	
+
+function exit_svalka7()	
+		create_level_changer(9864, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	166216,
+			            332,
+			            vector():set(-49.738338470459,20.034204483032,115.88290405273),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka8()	
+		create_level_changer(9865, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	2848,
+			            314,
+			            vector():set(-277.18438720703,0.42264106869698,26.608871459961),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka9()	
+		create_level_changer(9866, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	27161,
+			            308,
+			            vector():set(-204.31503295898,0.77477610111237,-14.08620929718),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka10()	
+		create_level_changer(9867, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	117566,
+			            299,
+			            vector():set(-43.285057067871,22.38338470459,-109.06379699707),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka11()	
+		create_level_changer(9868, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	123627,
+			            268,
+			            vector():set(-82.571281433105,-2.6017231941223,-208.38046264648),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_svalka12()	
+		create_level_changer(9869, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	272734,
+			            263,
+			            vector():set(108.47253417969,-2.2334003448486,-264.66119384766),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l02_garbage",
+                        1)
+end
+
+function exit_pripyat()	
+		create_level_changer(9804, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	260269,
+			            2219,
+			            vector():set(190.84159851074,2.8052725791931,212.05661010742),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l11_pripyat",
+                        1)
+		db.actor:give_info_portion("exit_pripyat")				
+end	
+
+function exit_pripyat2()	
+		create_level_changer(9820, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	7817,
+			            2216,
+			            vector():set(-112.93630981445,2.8031325340271,97.108512878418),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l11_pripyat",
+                        1)
+		db.actor:give_info_portion("exit_pripyat2")				
+end	
+
+function exit_x18()	
+		create_level_changer(9805, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	4086,
+			            1155,
+			            vector():set(5.0796270370483,-12.429841995239,15.65408706665),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l04u_labx18",
+                        1)
+end	
+
+function exit_td()	
+		create_level_changer(9824, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	212105,
+			            1025,
+			            vector():set(31.025503158569,-2.9186296463013,-18.474792480469),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l04_darkvalley",
+                        1)
+end	
+
+function exit_td2()	
+		create_level_changer(9825, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	377579,
+			            938,
+			            vector():set(177.20614624023,6.6501698493958,-368.2509765625),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l04_darkvalley",
+                        1)
+end
+
+function exit_kordon()	
+		create_level_changer(9826, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	557888,
+			            245,
+			            vector():set(288.75579833984,6.6381821632385,334.9274597168),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon2()	
+		create_level_changer(9827, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	220208,
+			            16,
+			            vector():set(-56.72008895874,-29.649417877197,-352.75286865234),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon3()	
+		create_level_changer(9848, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	314641,
+			            198,
+			            vector():set(33.526428222656,4.8442959785461,406.35510253906),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon4()	
+		create_level_changer(9849, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	326234,
+			            97,
+			            vector():set(43.707790374756,1.604367017746,157.83784484863),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon5()	
+		create_level_changer(9850, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	346954,
+			            97,
+			            vector():set(59.635650634766,19.672622680664,156.50126647949),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon6()	
+		create_level_changer(9851, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	479316,
+			            242,
+			            vector():set(176.90881347656,6.2265067100525,274.12582397461),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon7()	
+		create_level_changer(9852, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	418761,
+			            115,
+			            vector():set(116.21976470947,-7.5939545631409,-16.879535675049),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon8()	
+		create_level_changer(9853, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	71846,
+			            30,
+			            vector():set(-178.17098999023,-29.790063858032,-355.4208984375),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon9()	
+		create_level_changer(9854, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	116591,
+			            19,
+			            vector():set(-138.1682434082,-25.440311431885,-356.09561157227),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon10()	
+		create_level_changer(9855, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	46406,
+			            38,
+			            vector():set(-206.31811523438,-36.486312866211,-275.36505126953),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon11()	
+		create_level_changer(9856, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	34087,
+			            47,
+			            vector():set(-218.33445739746,-19.930738449097,-167.60050964355),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon12()	
+		create_level_changer(9857, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	45951,
+			            58,
+			            vector():set(-207.27334594727,-22.535316467285,-128.54507446289),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon13()	
+		create_level_changer(9858, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	11502,
+			            67,
+			            vector():set(-246.82745361328,-14.313711166382,-17.025833129883),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon14()	
+		create_level_changer(9859, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	143574,
+			            73,
+			            vector():set(-112.90689849854,-8.191520690918,7.4986095428467),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_kordon15()	
+		create_level_changer(9860, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	274973,
+			            108,
+			            vector():set(-1.5780007839203,-17.687986373901,-152.26568603516),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
+end
+
+function exit_radar()	
+		create_level_changer(9806, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	93230,
+			            2081,
+			            vector():set(351.03564453125,-45.688995361328,-201.36804199219),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l10_radar",
+                        1)
+end	
+
+function exit_radar2()	
+		create_level_changer(9811, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	67978,
+			            1930,
+			            vector():set(304.68270874023,-39.390411376953,-25.789834976196),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l10_radar",
+                        1)
+end
+
+function exit_radar3()	
+		create_level_changer(9812, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	14611,
+			            2013,
+			            vector():set(14.053562164307,-1.2424700260162,41.381050109863),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l10_radar",
+                        1)
+end
+
+function exit_radar4()	
+		create_level_changer(9813, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	6439,
+			            1960,
+			            vector():set(-12.000325202942,0.37741497159004,-67.812171936035),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l10_radar",
+                        1)
+		db.actor:give_info_portion("exit_radar4")				
+end
+
+function exit_sarcofag()	
+		create_level_changer(9810, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	4172,
+			            2424,
+			            vector():set(25.027828216553,-4.7533054351807,2.9020295143127),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l12u_sarcofag",
+                        1)
+end	
+
+function exit_bar()	
+		create_level_changer(9821, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	45474,
+			            1188,
+			            vector():set(193.61143493652,0.097166806459427,71.526657104492),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end	
+
+function exit_bar2()	
+		create_level_changer(9842, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	39883,
+			            1204,
+			            vector():set(175.31533813477,-0.0002819299697876,145.91943359375),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end	
+
+function exit_bar3()	
+		create_level_changer(9843, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	47206,
+			            1270,
+			            vector():set(198.24176025391,3.271665096283,-77.252685546875),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end	
+
+function exit_bar4()	
+		create_level_changer(9844, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	59366,
+			            1277,
+			            vector():set(232.64491271973,5.1447978019714,-113.61502838135),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end
+
+function exit_bar5()	
+		create_level_changer(9845, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	68763,
+			            1274,
+			            vector():set(276.64755249023,0.055086404085159,-66.742523193359),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end
+
+function exit_bar6()	
+		create_level_changer(9846, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	35860,
+			            1238,
+			            vector():set(128.80438232422,-4.8249382972717,16.76756477356),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end
+
+function exit_bar7()	
+		create_level_changer(9847, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	33903,
+			            1239,
+			            vector():set(116.09830474854,-5.3052234649658,12.649393081665),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l05_bar",
+                        1)
+end
+
+function exit_agroprom()	
+		create_level_changer(9828, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	428448,
+			            498,
+			            vector():set(253.95002746582,-0.20055566728115,76.619018554688),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l03_agroprom",
+                        1)
+end	
+
+function exit_agroprom2()	
+		create_level_changer(9829, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	117939,
+			            523,
+			            vector():set(-122.60626983643,10.350003242493,164.23361206055),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l03_agroprom",
+                        1)
+end
+
+function exit_agroprom3()	
+		create_level_changer(9830, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	103987,
+			            621,
+			            vector():set(-135.0357208252,4.9933753013611,-196.9232635498),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l03_agroprom",
+                        1)
+end
+
+function exit_yantar1()	
+		create_level_changer(9831, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	6635,
+			            1486,
+			            vector():set(-98.555587768555,-12.03422164917,-263.20428466797),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar2()	
+		create_level_changer(9832, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	22009,
+			            1454,
+			            vector():set(-49.516319274902,-12.687213897705,-263.55654907227),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar3()	
+		create_level_changer(9833, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	85543,
+			            1440,
+			            vector():set(87.165092468262,1.5326626300812,-137.15473937988),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar4()	
+		create_level_changer(9834, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	98895,
+			            1520,
+			            vector():set(110.79859924316,0.51710104942322,67.085777282715),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar5()	
+		create_level_changer(9835, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	93237,
+			            1515,
+			            vector():set(102.05886077881,-0.055661827325821,-38.264953613281),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar6()	
+		create_level_changer(9836, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	50739,
+			            1505,
+			            vector():set(23.551870346069,-3.417268037796,-50.092147827148),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar7()	
+		create_level_changer(9837, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	57034,
+			            1445,
+			            vector():set(35.566432952881,0.036594957113266,19.930288314819),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar8()	
+		create_level_changer(9838, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	87168,
+			            1514,
+			            vector():set(90.726051330566,0.028770864009857,-2.0428421497345),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar9()	
+		create_level_changer(9839, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	38250,
+			            1525,
+			            vector():set(-2.272828578949,0.31553617119789,-12.611492156982),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar10()	
+		create_level_changer(9840, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	39736,
+			            1525,
+			            vector():set(0.41521853208542,20.732145309448,-11.2778673172),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_yantar11()	
+		create_level_changer(9841, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	53157,
+			            1480,
+			            vector():set(28.687835693359,-5.943422794342,-272.9033203125),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l08_yantar",
+                        1)
+end
+
+function exit_dt1()	
+		create_level_changer(9870, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	15216,
+			            1391,
+			            vector():set(-236.99816894531,9.3585262298584,56.257476806641),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt2()	
+		create_level_changer(9871, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	8119,
+			            1382,
+			            vector():set(-254.47462463379,-5.8917918205261,88.748420715332),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt3()	
+		create_level_changer(9872, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	4658,
+			            1379,
+			            vector():set(-268.44509887695,-6.0012273788452,106.45835113525),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt4()	
+		create_level_changer(9873, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	7269,
+			            1338,
+			            vector():set(-282.68493652344,-0.0055593848228455,203.75721740723),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt5()	
+		create_level_changer(9874, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	32043,
+			            1329,
+			            vector():set(-173.43870544434,-0.0011672079563141,192.25354003906),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt6()	
+		create_level_changer(9875, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	38957,
+			            1328,
+			            vector():set(-149.55770874023,0.096051603555679,179.93653869629),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt7()	
+		create_level_changer(9876, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	22437,
+			            1370,
+			            vector():set(-217.82315063477,1.935809969902,88.06103515625),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt8()	
+		create_level_changer(9877, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	32382,
+			            1322,
+			            vector():set(-169.39688110352,-0.0033434927463531,82.040466308594),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt9()	
+		create_level_changer(9878, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	36070,
+			            1321,
+			            vector():set(-159.36485290527,-0.0026704967021942,99.839752197266),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt10()	
+		create_level_changer(9879, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	27318,
+			            1326,
+			            vector():set(-192.9693145752,-0.0026823878288269,119.04988098145),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+function exit_dt11()	
+		create_level_changer(9880, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	46578,
+			            1421,
+			            vector():set(-89.581573486328,3.1074571609497,148.33610534668),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l06_rostok",
+                        1)
+end
+
+
+function checking_droped_item(obj)
+	if obj:section() == "device_teleport" then
+		local rnd = math.random(75)
+		if rnd == 1 then
+			exit_svalka()
+		elseif rnd == 2 then
+			exit_bunker()
+		elseif rnd == 3 then
+			exit_pripyat()
+		elseif rnd == 4 then
+			exit_x18()
+		elseif rnd == 5 then
+			exit_radar()
+		elseif rnd == 6 then
+			exit_radar2()
+		elseif rnd == 7 then
+			exit_radar3()
+		elseif rnd == 8 then
+			exit_radar4()
+		elseif rnd == 9 then
+			exit_as2()
+		elseif rnd == 10 then
+			exit_as3()	
+		elseif rnd == 11 then
+			exit_as4()
+		elseif rnd == 12 then
+			exit_sarcofag()
+		elseif rnd == 13 then
+			exit_pripyat2()
+		elseif rnd == 14 then
+			exit_bar()
+		elseif rnd == 15 then
+			exit_svalka2()
+		elseif rnd == 16 then
+			exit_svalka3()
+		elseif rnd == 17 then
+			exit_td()	
+		elseif rnd == 18 then
+			exit_td2()
+		elseif rnd == 19 then
+			exit_kordon()
+		elseif rnd == 20 then
+			exit_kordon2()
+		elseif rnd == 21 then
+			exit_agroprom()
+		elseif rnd == 22 then
+			exit_agroprom2()
+		elseif rnd == 23 then
+			exit_agroprom3()
+		elseif rnd == 24 then
+			exit_yantar1()
+		elseif rnd == 25 then
+			exit_yantar2()
+		elseif rnd == 26 then
+			exit_yantar3()
+		elseif rnd == 27 then
+			exit_yantar4()
+		elseif rnd == 28 then
+			exit_yantar5()
+		elseif rnd == 29 then
+			exit_yantar6()
+		elseif rnd == 30 then
+			exit_yantar7()
+		elseif rnd == 31 then
+			exit_yantar8()
+		elseif rnd == 32 then
+			exit_yantar9()
+		elseif rnd == 33 then
+			exit_yantar10()
+		elseif rnd == 34 then
+			exit_yantar11()
+		elseif rnd == 35 then
+			exit_bar2()	
+		elseif rnd == 36 then
+			exit_bar3()
+		elseif rnd == 37 then
+			exit_bar4()
+		elseif rnd == 38 then
+			exit_bar5()	
+		elseif rnd == 39 then
+			exit_bar6()	
+		elseif rnd == 40 then
+			exit_bar7()	
+		elseif rnd == 41 then
+			exit_kordon3()
+		elseif rnd == 42 then
+			exit_kordon4()		
+		elseif rnd == 43 then
+			exit_kordon5()
+		elseif rnd == 44 then
+			exit_kordon6()
+		elseif rnd == 45 then
+			exit_kordon7()
+		elseif rnd == 46 then
+			exit_kordon8()
+		elseif rnd == 47 then
+			exit_kordon9()
+		elseif rnd == 48 then
+			exit_kordon10()	
+		elseif rnd == 49 then
+			exit_kordon11()
+		elseif rnd == 50 then
+			exit_kordon12()
+		elseif rnd == 51 then
+			exit_kordon13()	
+		elseif rnd == 52 then
+			exit_kordon13()
+		elseif rnd == 53 then
+			exit_kordon14()	
+		elseif rnd == 54 then
+			exit_kordon15()	
+		elseif rnd == 55 then
+			exit_svalka4()
+		elseif rnd == 56 then
+			exit_svalka5()	
+		elseif rnd == 57 then
+			exit_svalka6()
+		elseif rnd == 58 then
+			exit_svalka7()
+		elseif rnd == 59 then
+			exit_svalka8()
+		elseif rnd == 60 then
+			exit_svalka9()
+		elseif rnd == 61 then
+			exit_svalka10()	
+		elseif rnd == 62 then
+			exit_svalka11()	
+		elseif rnd == 63 then
+			exit_svalka12()
+		elseif rnd == 64 then
+			exit_dt1()
+		elseif rnd == 65 then
+			exit_dt2()
+		elseif rnd == 66 then
+			exit_dt3()
+		elseif rnd == 67 then
+			exit_dt4()
+		elseif rnd == 68 then
+			exit_dt5()
+		elseif rnd == 69 then
+			exit_dt6()
+		elseif rnd == 70 then
+			exit_dt7()
+		elseif rnd == 71 then
+			exit_dt8()
+		elseif rnd == 72 then
+			exit_dt9()
+		elseif rnd == 73 then
+			exit_dt10()	
+		elseif rnd == 74 then
+			exit_dt11()	
+		else
+			exit_as()
+		end
+	end
+end
+
+
+function checking_droped_item2(obj)
+	if obj:section() == "science_teleport3" then
+		local rnd = math.random(11)
+		if rnd == 1 then
+			exit_yantar1()
+		elseif rnd == 2 then
+			exit_yantar2()
+		elseif rnd == 3 then
+			exit_yantar3()
+		elseif rnd == 4 then
+			exit_yantar4()
+		elseif rnd == 5 then
+			exit_yantar5()
+		elseif rnd == 6 then
+			exit_yantar6()
+		elseif rnd == 7 then
+			exit_yantar7()
+		elseif rnd == 8 then
+			exit_yantar8()
+		elseif rnd == 9 then
+			exit_yantar9()
+		elseif rnd == 10 then
+			exit_yantar10()
+		else
+			exit_yantar11()
+		end
+	end
+end
+
+
+function checking_droped_item3(obj)
+	if obj:section() == "science_teleport2" then
+		local rnd = math.random(7)
+		if rnd == 1 then
+			exit_bar()
+		elseif rnd == 2 then
+			exit_bar2()
+		elseif rnd == 3 then
+			exit_bar3()
+		elseif rnd == 4 then
+			exit_bar4()
+		elseif rnd == 5 then
+			exit_bar5()
+		elseif rnd == 6 then
+			exit_bar6()
+		else
+			exit_bar7()
+		end
+	end
+end
+
+
+function checking_droped_item4(obj)
+	if obj:section() == "science_teleport" then
+		local rnd = math.random(15)
+		if rnd == 1 then
+			exit_kordon()		
+		elseif rnd == 2 then
+			exit_kordon2()
+		elseif rnd == 3 then
+			exit_kordon3()
+		elseif rnd == 4 then
+			exit_kordon4()
+		elseif rnd == 5 then
+			exit_kordon5()
+		elseif rnd == 6 then
+			exit_kordon6()
+		elseif rnd == 7 then
+			exit_kordon7()	
+		elseif rnd == 8 then
+			exit_kordon8()
+		elseif rnd == 9 then
+			exit_kordon9()
+		elseif rnd == 10 then
+			exit_kordon10()	
+		elseif rnd == 11 then
+			exit_kordon11()
+		elseif rnd == 12 then
+			exit_kordon12()
+		elseif rnd == 13 then
+			exit_kordon13()
+		elseif rnd == 14 then
+			exit_kordon14()		
+		else
+			exit_kordon15()
+		end
+	end	
+end
+
+
+function remove_old_teleport()
+	local sim = alife()
+	local se_obj = sim:story_object(9801)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9802)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9803)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9804)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9805)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9806)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9810)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9811)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9812)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9813)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9814)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9815)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9816)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9820)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9821)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9822)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9823)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9824)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9825)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9826)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9827)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9828)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9829)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9830)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9831)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9832)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9833)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9834)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9835)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9836)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9837)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9838)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9839)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9840)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9841)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9842)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9843)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9844)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9845)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9846)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9847)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9848)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9849)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9850)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9851)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9852)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9853)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9854)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9855)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9856)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9857)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9858)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9859)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9860)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9861)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9862)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9863)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9864)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9865)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9866)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9867)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9868)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9869)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9870)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9871)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9872)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9873)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9874)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9875)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9876)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9877)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9878)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9879)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+	se_obj = sim:story_object(9880)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+
+	local actor = db.actor
+end

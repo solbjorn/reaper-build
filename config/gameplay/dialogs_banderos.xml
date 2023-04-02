@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+<!--ОТДАЁМ ВОДКУ СВОБОДОВЦУ-->    
+<dialog id="vodka_est">
+        <phrase_list>
+	<phrase id="0">
+                <text>vodka_est_0</text>
+                <next>1</next>
+            	</phrase>
+        <phrase id="1">
+                <text>vodka_est_1</text>
+                <next>21</next>
+		<next>22</next>
+		<next>3</next>
+            	</phrase>
+	<phrase id="21">
+		<precondition>banderos_dialogs.prines_vodku</precondition>
+                <text>vodka_est_21</text>
+                <next>211</next>
+            	</phrase>
+
+	<phrase id="22">
+		<precondition>banderos_dialogs.malo_vodki</precondition>
+                <text>vodka_est_22</text>
+		<next>221</next>
+            	</phrase>
+
+        <phrase id="211">
+		<action>banderos_dialogs.otdal_vodku</action>
+                <text>vodka_est_211</text>
+            	</phrase>
+
+	<phrase id="221">
+		<action>banderos_dialogs.otdal_malo_vodki</action>
+                <text>vodka_est_221</text>
+            	</phrase>
+
+	<phrase id="3">
+                <text>vodka_est_3</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!--КВЕСТ НА ТРИ АРТЕФАКТА-->
+<dialog id="banderos_quvest">
+	<has_info>bar_deactivate_radar_done</has_info>
+	<has_info>banderos_quest_rg_finish</has_info>
+	<dont_has_info>banderos_quest_start</dont_has_info>
+        <dont_has_info>banderos_quest_finish</dont_has_info>
+        <phrase_list>
+	<phrase id="0">
+                <text>prinesti_arty_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>prinesti_arty_1</text>
+                <next>11</next>
+            	</phrase>
+
+	<phrase id="11">
+                <text>prinesti_arty_11</text>
+		<next>111</next>
+            	</phrase>
+
+	<phrase id="111">
+                <text>prinesti_arty_111</text>
+		<next>1111</next>
+            	</phrase>
+
+	<phrase id="1111">
+                <text>prinesti_arty_1111</text>
+		<next>11111</next>
+            	</phrase>
+
+	<phrase id="11111">
+                <text>prinesti_arty_11111</text>
+		<next>2</next>
+		<next>5</next>
+            	</phrase>
+
+	<phrase id="2">
+		<give_info>banderos_quest_start</give_info>
+		<action>trader_banderos.spawn_banderos_art</action>
+		<action>trader_banderos.two_spawn_sniper_darkval</action>
+                <text>prinesti_arty_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prinesti_arty_3</text>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>prinesti_arty_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+
+	<phrase id="5">
+                <text>prinesti_arty_5</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+
+
+<dialog id="banderos_quvest_done">
+	<precondition>banderos_dialogs.est_li_art</precondition>
+	<has_info>bar_deactivate_radar_done</has_info>
+        <has_info>banderos_quest_start</has_info>
+	<dont_has_info>banderos_quest_finish</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>prinesti_arty_done_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>prinesti_arty_done_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>prinesti_arty_done_2</text>
+		<give_info>banderos_quest_finish</give_info>
+		<action>banderos_dialogs.otdat_art</action>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prinesti_arty_done_3</text>
+		<action>banderos_dialogs.prines_art</action>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>prinesti_arty_done_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!--КВЕСТ НА МОДИФИЦИРОВАННЫЙ РГ-6-->
+<dialog id="banderos_quvest_rg">
+	<has_info>yan_labx16_switcher_primary_off</has_info>
+	<dont_has_info>banderos_quest_rg_start</dont_has_info>
+        <dont_has_info>banderos_quest_rg_finish</dont_has_info>
+        <phrase_list>
+	<phrase id="0">
+                <text>prinesti_rg6_0</text>
+                <next>1</next>
+            	</phrase>
+
+	<phrase id="1">
+                <text>prinesti_rg6_1</text>
+		<next>11</next>
+		<next>5</next>
+            	</phrase>
+
+	<phrase id="11">
+		<give_info>banderos_quest_rg_start</give_info>
+		<action>trader_banderos.spawn_advokat</action>
+		<action>trader_banderos.spawn_sniper_banderos</action>
+                <text>prinesti_rg6_11</text>
+		<next>12</next>
+            	</phrase>
+
+        <phrase id="12">
+                <text>prinesti_rg6_12</text>
+                <next>21</next>
+            	</phrase>
+
+	<phrase id="21">
+                <text>prinesti_rg6_21</text>
+                <next>211</next>
+            	</phrase>
+
+	<phrase id="211">
+                <text>prinesti_rg6_211</text>
+                <next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+                <text>prinesti_rg6_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prinesti_rg6_3</text>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>prinesti_rg6_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+
+	<phrase id="5">
+                <text>prinesti_rg6_5</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+
+<dialog id="banderos_quvest_rg_done">
+	<precondition>wawka_dialog.good_rg6_m1_have</precondition>
+	<has_info>yan_labx16_switcher_primary_off</has_info>
+        <has_info>banderos_quest_rg_start</has_info>
+	<dont_has_info>banderos_quest_rg_finish</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>prinesti_rg6_done_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>prinesti_rg6_done_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>prinesti_rg6_done_2</text>
+		<give_info>banderos_quest_rg_finish</give_info>
+		<action>banderos_dialogs.otdat_rg</action>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prinesti_rg6_done_3</text>
+		<action>banderos_dialogs.prines_rg</action>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>prinesti_rg6_done_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!-- НОВОСТИ У СИДОРА -->
+<dialog id="banderos_sidor_news">
+	<has_info>yan_labx16_switcher_primary_off</has_info>
+        <has_info>banderos_quest_rg_finish</has_info>
+	<dont_has_info>svoboda_sidor_news</dont_has_info>
+        <dont_has_info>svoboda_sidor_news_done</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>ban_sidor_news_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>ban_sidor_news_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>ban_sidor_news_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>ban_sidor_news_3</text>
+		<give_info>svoboda_sidor_news_done</give_info>
+		<action>trader_banderos.spawn_banderos</action>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>ban_sidor_news_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!-- ВСТУПЛЕНИЕ В СВОБОДУ -->
+<dialog id="actor_svoboda_in">
+	<has_info>mil_fblockpost_quest_complete</has_info>
+	<has_info>mil_leader_quest2_complete</has_info>
+        <dont_has_info>svoboda_gg_in_done</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>svoboda_in_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>svoboda_in_1</text>
+		<next>2</next>
+		<next>21</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>svoboda_in_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="21">
+		<text>svoboda_in_21</text>
+                <action>dialogs.break_dialog</action>
+            	</phrase>
+
+	<phrase id="3">
+                <text>svoboda_in_3</text>
+		<give_info>svoboda_gg_in_done</give_info>
+		<action>banderos_dialogs.actor_set_freedom</action>
+		<action>banderos_dialogs.novobranets</action>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>svoboda_in_4</text>
+		<next>5</next>
+            	</phrase>
+	<phrase id="5">
+                <text>svoboda_in_5</text>
+		<next>6</next>
+            	</phrase>
+	<phrase id="6">
+                <text>svoboda_in_6</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+
+<!--ОТДАЁМ КПК ДОЛГУ-->    
+<dialog id="prines_pda_svobody">
+	<has_info>bar_dolg_community_leader_done</has_info>
+	<has_info>banderos_kpk_tiran_finish</has_info>
+        <phrase_list>
+	<phrase id="0">
+                <text>prines_pda_svobody_0</text>
+                <next>1</next>
+            	</phrase>
+        <phrase id="1">
+                <text>prines_pda_svobody_1</text>
+                <next>21</next>
+		<next>22</next>
+		<next>3</next>
+            	</phrase>
+	<phrase id="21">
+		<precondition>banderos_dialogs.have_pda_svoboda</precondition>
+                <text>prines_pda_svobody_21</text>
+                <next>211</next>
+            	</phrase>
+
+	<phrase id="22">
+		<precondition>banderos_dialogs.have_a_one_pda_svoboda</precondition>
+                <text>prines_pda_svobody_22</text>
+		<next>221</next>
+            	</phrase>
+
+        <phrase id="211">
+		<action>banderos_dialogs.out_pda_svoboda</action>
+                <text>prines_pda_svobody_211</text>
+            	</phrase>
+
+	<phrase id="221">
+		<action>banderos_dialogs.out_one_pda_svoboda</action>
+                <text>prines_pda_svobody_221</text>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prines_pda_svobody_3</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!--ОТДАЁМ КПК СВОБОДЕ-->    
+<dialog id="prines_pda_dolga">
+	<has_info>svoboda_gg_in_done</has_info>
+        <phrase_list>
+	<phrase id="0">
+                <text>prines_pda_dolga_0</text>
+                <next>1</next>
+            	</phrase>
+        <phrase id="1">
+                <text>prines_pda_dolga_1</text>
+                <next>21</next>
+		<next>22</next>
+		<next>3</next>
+            	</phrase>
+	<phrase id="21">
+		<precondition>banderos_dialogs.have_pda_dolg</precondition>
+                <text>prines_pda_dolga_21</text>
+                <next>211</next>
+            	</phrase>
+
+	<phrase id="22">
+		<precondition>banderos_dialogs.have_a_one_pda_dolg</precondition>
+                <text>prines_pda_dolga_22</text>
+		<next>221</next>
+            	</phrase>
+
+        <phrase id="211">
+		<action>banderos_dialogs.out_pda_dolg</action>
+                <text>prines_pda_dolga_211</text>
+            	</phrase>
+
+	<phrase id="221">
+		<action>banderos_dialogs.out_one_pda_dolg</action>
+                <text>prines_pda_dolga_221</text>
+            	</phrase>
+
+	<phrase id="3">
+                <text>prines_pda_dolga_3</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<!-- ЗАДАНИЕ НА KПK ТИРАНА -->
+<dialog id="destroy_killer_tiran">
+	<has_info>bar_dolg_community_leader_done</has_info>
+	<dont_has_info>banderos_kpk_tiran_start</dont_has_info>
+        <dont_has_info>banderos_kpk_tiran_finish</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>destroy_killer_tiran_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>destroy_killer_tiran_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>destroy_killer_tiran_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>destroy_killer_tiran_3</text>
+		<next>4</next>
+		<next>5</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>destroy_killer_tiran_4</text>
+		<give_info>banderos_kpk_tiran_start</give_info>
+		<action>trader_banderos.spawn_tiran</action>
+		<next>41</next>
+            	</phrase>
+
+	<phrase id="41">
+                <text>destroy_killer_tiran_41</text>
+            	</phrase>
+	
+	<phrase id="5">
+                <text>destroy_killer_tiran_5</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+<dialog id="destroy_killer_tiran_done">
+	<precondition>banderos_dialogs.est_li_kpk_tirana</precondition>
+	<has_info>bar_dolg_community_leader_done</has_info>
+	<has_info>banderos_kpk_tiran_start</has_info>
+        <dont_has_info>banderos_kpk_tiran_finish</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>destroy_killer_tiran_done_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>destroy_killer_tiran_done_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>destroy_killer_tiran_done_2</text>
+		<action>banderos_dialogs.otdat_kpk_tirana</action>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>destroy_killer_tiran_done_3</text>
+		<action>banderos_dialogs.prines_kpk_tirana</action>
+		<give_info>banderos_kpk_tiran_finish</give_info>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>destroy_killer_tiran_done_4</text>
+		<next>5</next>
+            	</phrase>
+
+	<phrase id="5">
+                <text>destroy_killer_tiran_done_5</text>
+		<next>6</next>
+            	</phrase>
+
+	<phrase id="6">
+                <text>destroy_killer_tiran_done_6</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+
+<!-- КВЕСТ сИДОРА НА ДОКУМЕНТЫ ИЗ Х10 -->
+<dialog id="banderos_quvest_doc_iz_x10">
+	<has_info>bar_deactivate_radar_done</has_info>
+	<dont_has_info>banderos_dokumenty_iz_x10_start</dont_has_info>
+        <dont_has_info>banderos_dokumenty_iz_x10_finish</dont_has_info>
+	<dont_has_info>find_corpse_military_x16</dont_has_info>
+        <phrase_list>
+	<phrase id="0">
+                <text>quvest_doc_iz_x10_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>quvest_doc_iz_x10_1</text>
+                <next>11</next>
+            	</phrase>
+
+	<phrase id="11">
+                <text>quvest_doc_iz_x10_11</text>
+		<next>111</next>
+            	</phrase>
+
+	<phrase id="111">
+                <text>quvest_doc_iz_x10_111</text>
+		<next>1111</next>
+            	</phrase>
+
+	<phrase id="1111">
+                <text>quvest_doc_iz_x10_1111</text>
+		<next>11111</next>
+            	</phrase>
+
+	<phrase id="11111">
+                <text>quvest_doc_iz_x10_11111</text>
+		<next>2</next>
+		<next>5</next>
+            	</phrase>
+
+	<phrase id="2">
+		<give_info>find_corpse_military_x16</give_info>
+		<action>trader_banderos.spawn_ban_trup_npc</action>
+                <text>quvest_doc_iz_x10_2</text>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>quvest_doc_iz_x10_3</text>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>quvest_doc_iz_x10_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+
+	<phrase id="5">
+                <text>quvest_doc_iz_x10_5</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+
+
+<dialog id="banderos_quvest_doc_iz_x10_done">
+	<precondition>banderos_dialogs.est_li_documenty</precondition>
+	<has_info>bar_deactivate_radar_done</has_info>
+        <has_info>banderos_dokumenty_iz_x10_start</has_info>
+	<dont_has_info>banderos_dokumenty_iz_x10_finish</dont_has_info>
+        <phrase_list>
+
+	<phrase id="0">
+                <text>quvest_doc_iz_x10_done_0</text>
+                <next>1</next>
+            	</phrase>
+
+        <phrase id="1">
+                <text>quvest_doc_iz_x10_done_1</text>
+		<next>2</next>
+            	</phrase>
+
+	<phrase id="2">
+		<text>quvest_doc_iz_x10_done_2</text>
+		<give_info>banderos_dokumenty_iz_x10_finish</give_info>
+		<action>banderos_dialogs.otdat_documenty</action>
+                <next>3</next>
+            	</phrase>
+
+	<phrase id="3">
+                <text>quvest_doc_iz_x10_done_3</text>
+		<action>banderos_dialogs.prines_documenty</action>
+		<next>4</next>
+            	</phrase>
+
+	<phrase id="4">
+                <text>quvest_doc_iz_x10_done_4</text>
+		<action>dialogs.break_dialog</action>
+            	</phrase>
+        </phrase_list>
+    </dialog>
+
+</game_dialogs>

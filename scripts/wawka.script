@@ -1,0 +1,125 @@
+function add_krysyk_pomer_treasure()
+	treasure_manager.get_treasure_manager():give_treasure("esc_secret_village_rucksack")
+end
+
+function check_bes_dead()
+    if db.actor and db.actor:has_info("gar_hellcar_umer") and 
+        db.actor:has_info("val_pula_ammo_start") and 
+        not db.actor:has_info("val_pula_ammo_done") then  
+            if not db.actor:has_info("val_pula_ammo_newsinfo1") then
+        for i=0, db.actor:object_count()-1 do
+            local obj = db.actor:object(i)
+            if obj and obj:section() == "inventory_sakbox_01" then
+                amk.start_timer("sms",math.random(20,30),1)
+                db.actor:give_info_portion("val_pula_ammo_newsinfo1")
+            end
+            if not db.actor:has_info("val_pula_ammo_newsinfo2") then 
+        for i=0, db.actor:object_count()-1 do
+            local obj = db.actor:object(i)
+            if obj and obj:section() == "inventory_sakbox_01" then
+                amk.start_timer("sms",math.random(50,60),2)
+                db.actor:give_info_portion("val_pula_ammo_newsinfo2")
+            end
+            if not db.actor:has_info("val_pula_ammo_newsinfo3") then
+         for i=0, db.actor:object_count()-1 do
+            local obj = db.actor:object(i)
+            if obj and obj:section() == "inventory_sakbox_01" then
+               amk.start_timer("sms",math.random(70,80),3)
+                db.actor:give_info_portion("val_pula_ammo_newsinfo3")
+            end
+            end
+            end
+            end
+            end
+            end
+     end
+    end
+end
+function smski_besu(st)
+    if st==1 then
+                db.actor:give_info_portion("sms_pulya")
+                amk.send_tip(game.translate_string("sms_pulya_text"),nil,nil,30)
+   elseif st==2 then
+                db.actor:give_info_portion("sms_lukash")
+                amk.send_tip(game.translate_string("sms_lukash_text"),nil,nil,30)
+   elseif st==3 then
+                db.actor:give_info_portion("sms_serega")
+                amk.send_tip(game.translate_string("sms_serega_text"),nil,nil,30)
+   end
+end
+
+function check_krysyk_dead()
+    if db.actor and db.actor:has_info("bandit_krisyk_umer") and 
+        db.actor:has_info("bandit_krisyk_start") and 
+        not db.actor:has_info("bandit_krisyk_done") and 
+        not db.actor:has_info("bandit_krisyk_newsinfo") then
+                amk.start_timer("smska_borova",math.random(30,60))
+      db.actor:give_info_portion("bandit_krisyk_newsinfo")
+    end
+end
+function smska_borova()
+      db.actor:give_info_portion("sms_borov")
+                amk.send_tip(game.translate_string("sms_borov_text"),nil,nil,30)
+end
+
+function check_tolik_dead()
+    if db.actor and db.actor:has_info("esc_vagon_wounded_umer") and 
+        db.actor:has_info("mil_volk_resiver_start") and 
+        not db.actor:has_info("mil_volk_resiver_done") and 
+        not db.actor:has_info("mil_volk_resiver_newsinfo") then
+                amk.start_timer("smska_volka",math.random(30,60))
+      db.actor:give_info_portion("mil_volk_resiver_newsinfo")
+    end
+end
+function smska_volka()
+      db.actor:give_info_portion("sms_volk")
+                amk.send_tip(game.translate_string("sms_volk_text"),nil,nil,30)
+end
+function check_maks_dead()
+    if db.actor and db.actor:has_info("mil_freedom_member0018_umer") and 
+        db.actor:has_info("mil_max_teleport_08_start") and 
+        not db.actor:has_info("mil_max_teleport_08_done") and 
+        not db.actor:has_info("mil_max_teleport_08_newsinfo") then
+                amk.start_timer("smska_shurupa",math.random(30,60))
+      db.actor:give_info_portion("mil_max_teleport_08_newsinfo")
+    end
+end
+function smska_shurupa()
+      db.actor:give_info_portion("sms_shurup")
+                amk.send_tip(game.translate_string("sms_shurup_text"),nil,nil,30)
+end
+function check_yurik_dead()
+    if db.actor and db.actor:has_info("gar_dm_novice_umer") and 
+        db.actor:has_info("gar_dram_novice_mp5_m1_start") and 
+        not db.actor:has_info("gar_dram_novice_mp5_m1_done") and 
+        not db.actor:has_info("gar_dram_novice_mp5_m1_newsinfo") then
+                amk.start_timer("smska_dana",math.random(30,60))
+      db.actor:give_info_portion("gar_dram_novice_mp5_m1_newsinfo")
+    end
+end
+function smska_dana()
+      db.actor:give_info_portion("sms_dan")
+                amk.send_tip(game.translate_string("sms_dan_text"),nil,nil,30)
+end
+function check_sms_bioradar()
+    if db.actor and db.actor:has_info("bar_rescue_research_reward") and 
+        not db.actor:has_info("bioradar_newsinfo") then
+                amk.start_timer("smska_saharova",math.random(10,30))
+      db.actor:give_info_portion("bioradar_newsinfo")
+    end
+end
+function smska_saharova()
+      db.actor:give_info_portion("sms_saharov")
+                amk.send_tip(game.translate_string("sms_saharov_text"),nil,nil,30)
+end
+function check_sms_awm()
+    if db.actor and db.actor:has_info("yan_kill_brain_done") and 
+        not db.actor:has_info("barman_newsinfo") then
+                amk.start_timer("smska_barmana",math.random(90,100))
+      db.actor:give_info_portion("barman_newsinfo")
+    end
+end
+function smska_barmana()
+      db.actor:give_info_portion("sms_barman")
+                amk.send_tip(game.translate_string("sms_barman_text"),nil,nil,30)
+end

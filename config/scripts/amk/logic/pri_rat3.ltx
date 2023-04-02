@@ -1,0 +1,38 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = mob_home
+
+[mob_home]
+path_home = pri_rat3
+home_min_radius = 50
+home_max_radius = 60
+aggressive_home
+on_timer = 480000 | mob_home1
+on_signal = sig_attacked | mob_combat
+
+[mob_combat]
+on_timer = 15000 | mob_home
+
+[mob_home1]
+path_home = pri_rat3_home1
+home_min_radius = 10
+home_max_radius = 20
+aggressive_home
+on_timer = 240000 | mob_home2
+on_signal = sig_attacked | mob_combat1
+
+[mob_combat1]
+on_timer = 15000 | mob_home1
+
+[mob_home2]
+path_home = pri_rat3_home2
+home_min_radius = 10
+home_max_radius = 20
+aggressive_home
+on_timer = 240000 | mob_home
+on_signal = sig_attacked | mob_combat2
+
+[mob_combat2]
+on_timer = 15000 | mob_home2

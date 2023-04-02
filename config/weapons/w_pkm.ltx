@@ -1,0 +1,220 @@
+[wpn_pkm]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\pkm"	; name and section in level editor
+$npc					= on				
+$prefetch 				= 8
+scheduled				= off               ;[] option for ALife Simulator
+cform               	= skeleton
+class               	= WP_LR300			; class of the weapon that corresponding to CPP class
+min_radius          	= 0				; [] for AI
+max_radius          	= 250				; [] for AI
+description				= enc_weapons1_wpn-pkm
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во скьJБEБEраБEувеличиваетс€ eye_range 
+holder_fov_modifier		= 0.7              ; во скьJБEБEраБEувеличиваетс€ eye_fov
+;-----------------------------------------------------------------------------------
+
+
+cost						= 10000				; the price of the item
+weapon_class			= assault_rifle		; the type of the box that will be used in buy-menu in multiplayer mode	
+	
+ammo_limit				= 100				; obsolete
+ammo_elapsed			= 100				; obsolete
+	
+ammo_mag_size			= 100				; clip (magazine) size
+fire_modes				= -1
+
+ammo_class				= ammo_7.62x54r   ; name of the ltx-section of used ammo 
+
+hand_dependence			= 1									; how many hands (1 or 2) we used to hold weapon in
+single_handed			= 0
+	
+slot 					= 2									; number of slot in inventory we put weapon in (1 - knife slot, 2 - pistol, 3 - rifle, 4 - grenade, 5 - apparatus)
+animation_slot			= 2									; type of the animation that will be used
+
+
+inv_name	        	= wpn-pkm	
+inv_name_short			= wpn-pkm
+inv_weight			= 8.21
+
+inv_grid_width			= 6	 ; position and size of the icon that will be used to display weapon in the inventory menu
+inv_grid_height			= 2	 ; all icons are on the texture ui_icon_equipment.dds,   
+inv_grid_x			= 12	 ; position and size are in terms of 64x64 squares
+inv_grid_y			= 35
+
+kill_msg_x			= 0
+kill_msg_y			= 123
+kill_msg_width		= 69
+kill_msg_height		= 30
+
+;-----------------------------------------------------------------------------------
+; base dispersion
+;
+; === Setting of the weapon shooting dispersal parameter ===
+;Dispersal consists from to basic constituents - dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal. 
+;Dispersal of the weapon depends only from basic dispersal, basket case factor ant time of the ammo.
+;Dispersal of the way the host shooting (standing, running and etc.)
+;Two types of shooting modes can be defined: - usual mode and zoomed mode.  
+;Usual mode: - depends from the position of the player while shooting (standing, sitting, walking and running)
+;Zoomed mode - depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector). 
+;Weapon recoil in the game also created by recoil effector. 
+;
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+fire_dispersion_base = 0.24 ;угол (в градусах) базовой дисперсии оружи€ (оружи€ зажатого в тисках)
+control_inertion_factor = 1.95f
+
+;отдача
+cam_relax_speed          = 20.5 ;скорость возврата в исходное положение
+cam_dispersion           = 1.0 ;увеличени€ угла (в градусах) с каждым выстрелом
+cam_dispersion_inc = 0.05 ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac = 0.45 ;ствол будет подыматьс€ на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle = 10.0 ;максимальный угол отдачи
+cam_max_angle_horz = 9.5 ;(degree) maximum shot horizontal degree 
+cam_step_angle_horz = 2.2 ;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 2.5     ;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability = 0.0125 ;веро€тность осечки при максимальном износе 
+misfire_condition_k = 0.02 
+condition_shot_dec 			= 0.0001	;увеличение изыMса БEБEБEждьK выстреБE
+;-----------------------------------------------------------------------------------
+
+fire_point             		=  0.0, 0.27109, 0.87317		; position (3rd person view) for particles of fire 
+;fire_point2            		=  0.0, 0.262, 0.547		; position (3rd person view) for particles of fire (when shooting with secondary fire)
+
+flame_particles				= weapons\generic_weapon03	; particles for shooting effects
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0.00, 0.262, 0.189			; position (3rd person view) for shell to throw out
+shell_particles	 			= weapons\generic_shells	; name of the particles for shells
+
+PDM_disp_base = 9.0
+PDM_disp_vel_factor = 2.3
+PDM_disp_accel_factor = 1.3
+PDM_crouch = 2.5
+PDM_crouch_no_acc = 1.8
+
+; ttc
+hit_power                 = 1.0, 1.15, 1.30, 1.55		;size of damage by bullet
+hit_impulse		 		= 2		;size of physic impulse by bullet	
+hit_type 				= fire_wound 	;[] type of the wound
+
+fire_distance             = 200 ; maximum fire distance that bullet can fly
+bullet_speed = 430 ; starting bullet speed
+rpm                       = 550 ; max round per minute
+
+use_aim_bullet				= true		;ѕьCдерживаетс€ БE БEрвБE суБEер БEБE
+time_to_aim				= 1.0	
+
+silencer_hit_power       		= 0.90, 1.10, 1.20, 1.30
+silencer_hit_impulse	 		= 2
+silencer_fire_distance   		= 250
+silencer_bullet_speed	 		= 600
+
+hud                      	= wpn_pkm_hud				; name of the section of the hud
+
+position         	        = -0.026, -0.215, -0.03			; position (offset) and orientation of the weapon in the hands of 
+character
+orientation      	        = 0,0,0						; (3rd person view)
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+strap_position         		= -0.18,-0.45,0.2			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -10,-5,10					; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual         		        = weapons\pkm\pkm.ogf	; name of the model for 3rd person view
+
+light_color					= 0.6,0.5,0.3				; params for light during the fire
+light_range					= 5							; radius
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+
+ph_mass						= 5							; physic mass (kg)
+
+
+;addons
+scope_status				= 0							; 0 - no addon
+silencer_status				= 0							; 1 - permanent
+grenade_launcher_status		= 0							; 2 - attachable
+
+zoom_enabled				= true						; (on,off)zoom mode (right mouse button)
+scope_zoom_factor	    	= 50						; fov for zoom mode
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
+snd_draw					= weapons\pkm\pkm_draw
+snd_holster					= weapons\pkm\pkm_holster
+snd_shoot					= weapons\pkm\pkm_shoot
+snd_shoot1					= weapons\pkm\pkm_shoot1
+snd_shoot2					= weapons\pkm\pkm_shoot2
+snd_shoot3					= weapons\pkm\pkm_shoot3
+snd_empty					= weapons\pkm\pkm_empty, 0.5
+snd_reload					= weapons\pkm\pkm_reload
+
+snd_switch					= weapons\groza_switch, 1.0, 0.5
+;------------------------------------------------------------------------------------------
+
+weapon_min_queue_size_far = 15
+weapon_max_queue_size_far = 15
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 30
+weapon_max_queue_size_medium = 30
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 100
+weapon_max_queue_size_close = 100
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
+
+;-----------------------------------------------------------------------------
+;-- HUD DESCRIPTION
+;-----------------------------------------------------------------------------
+ 
+[wpn_pkm_hud]
+
+
+;similar to corresponding params in weapon section but for 1st person view
+
+shell_point          		= 0.15, -0.03, -0.05
+shell_dir		 	= 0.0, 1.0, 0.0
+
+fire_point       	        = 0.25,-0.085,-0.0
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0		
+position                	= 0, 0, 0
+visual                  	= weapons\pkm\pkm_hud.ogf
+
+;grenade_bone            	= wpn_grenade	; name of the bone in the model for grenade launcher
+
+; animation names
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+			
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;HUD offset in zoom mode (to all)
+;(use CONSOLE: hud_adjust_mode 0,1,2, then keys WSADQE and P to show current value in console)
+
+zoom_offset             = -0.15490,0.0470,-0.1
+zoom_rotate_x		= 0.040
+zoom_rotate_y		= 0.035
+
+
+zoom_hide_crosshair	= true					;to hide crosshair in zoom 

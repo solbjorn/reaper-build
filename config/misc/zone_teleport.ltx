@@ -1,0 +1,688 @@
+[zone_teleport]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\teleport_horiz"
+$prefetch 		= 16
+class			= Z_MBALD
+
+ef_anomaly_type			= 1
+ef_weapon_type			= 13
+
+sound			= zone_mosquito_bald
+postprocess		= postprocess_electra
+
+artefacts			=
+BirthProbability	= 0.0
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.00
+max_start_power		= 0.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+
+idle_particles		= anomaly2\teleport_idle
+blowout_particles	= anomaly2\teleport 
+tearing_particles	= anomaly2\teleport_tear
+torn_particles      = anomaly2\teleport_tear
+
+hit_small_particles			= hit_fx\hit_metal_02
+hit_big_particles			= anomaly2\teleport_damage
+idle_small_particles		= anomaly2\teleport_damage_smoke_00
+idle_big_particles			= anomaly2\teleport_damage_smoke_00
+entrance_small_particles	= anomaly2\teleport_damage
+entrance_big_particles		= anomaly2\teleport_damage
+
+tele_particles_small		= anomaly2\gravity_damage_01_smoke	;anomaly2\gravity_damage_01_smoke
+tele_particles_big			= anomaly2\gravity_damage_02_smoke	
+
+
+idle_sound			= anomaly\teleport_idle;  gravi_idle01							;постоянный звук
+blowout_sound		= anomaly\teleport_work_2; anomaly_gravy_blast01	;во время выброса(удара) в центре аномалии	
+hit_sound			= anomaly\anomaly_gravy_hit1						;на персонаже, когда тот получает хит
+body_tearing_sound	= anomaly\gravity_entrance					;звук разрывания трупа
+entrance_sound		= anomaly\gravi_idle01							;при попадании объекта в аномалию
+
+hit_type		    = strike
+hit_impulse_scale	= 0.0;0.5;0.1			;соотношение физического импульса и силы хита
+effective_radius	= 1 ;размер радиуса в процентах от оригинального, где действует зона
+
+disable_time		= 5000	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 500		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= 100;-1	;время отключения idle партиклов
+
+ignore_nonalive		= false
+ignore_small		= false
+ignore_artefacts	= true
+
+blowout_light		= on
+light_color		    = 1.4,1.6,1.8
+light_range		    = 30.0
+light_time 		    = 0.8;0.35
+light_height		= 1.5			;подъем источника света на высоту
+
+idle_light			= on
+idle_light_range			= 15.0
+idle_light_range_delta 		= 0.25
+idle_light_anim				= teleport_stancia_in_01
+idle_light_height			= 1.50			;подъем источника света на высоту
+
+awaking_time		= 0;1000
+blowout_time		= 1000	
+accamulate_time		= 500
+
+
+blowout_light_time		= 800
+blowout_explosion_time	= 800
+
+;параметры телекинеза для зоны
+throw_in_impulse			= 4000	;сила втягивания для единичной массы на расстоянии один метр
+throw_out_impulse				= 1500			;сила выбрасывания взрывом
+throw_in_impulse_alive			= 600	;сила импульса втягивания для живых
+throw_in_atten					= 2.2	;3;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+throw_in_atten				= 		8;8			;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+blowout_radius_percent		= 		0.8		;радиус (в процентах от всего радиуса) непосредственно выброса
+actor_blowout_radius_percent=		0.5
+
+tele_height				= 0.05;	3.5	;высота подъема телекинеза 
+time_to_tele			= 5000		;время деражания объекта в воздухе
+tele_pause				= 5000		;пауза перед тем как снова поднять упавший объект
+
+visible_by_detector = on
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ветер
+blowout_wind		= on
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 800
+blowout_wind_time_end		= 1001; 2499
+blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts = off   ;on
+
+
+
+[zone_teleport_out]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\teleport_out"
+$prefetch 		= 16
+class			= Z_MBALD
+hit_impulse_scale	= 0.0;0.5 ;0.1
+effective_radius	= 0.85 ;размер радиуса в процентах от оригинального, где действует зона
+actor_blowout_radius_percent	= 0.75
+
+ef_anomaly_type			= 1
+ef_weapon_type			= 13
+
+sound			= monsters\biting\def_0
+
+postprocess		= postprocess_electra
+
+
+BirthProbability	= 0.0
+hit_type			= strike
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.00
+max_start_power		= 0.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+idle_particles		= anomaly2\teleport_damage
+blowout_particles	= anomaly2\teleport_out
+
+hit_small_particles			= hit_fx\hit_metal_02
+hit_big_particles			= anomaly2\teleport_damage
+idle_small_particles		= anomaly2\teleport_damage_smoke_00
+idle_big_particles			= anomaly2\teleport_damage_smoke_00
+entrance_small_particles	= anomaly2\teleport_damage
+entrance_big_particles		= anomaly2\teleport_damage
+
+idle_sound			= monsters\biting\def_0		;постоянный звук
+blowout_sound		= anomaly\teleport_work_2; anomaly_gravy_blast01	;во время выброса(удара) в центре аномалии	
+hit_sound			= monsters\biting\def_0								;на персонаже, когда тот получает хит
+entrance_sound		= monsters\biting\def_0								;при попадании объекта в аномалию
+
+
+awaking_time		= 0;100
+blowout_time		= 500	
+accamulate_time		= 10000 ;10;200
+
+blowout_light_time		= 200
+blowout_explosion_time	= 200
+blowout_particles_time	= 50
+blowout_sound_time  	= 100
+
+disable_time		= 5000		;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 5000		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= 100		;время отключения idle партиклов
+
+ignore_nonalive		= true
+ignore_small		= true
+ignore_artefacts	= true
+
+blowout_light		= on
+light_color		    = 0.5,0.6,0.8
+light_range		    = 30.0
+light_time 		    = 0.5;0.35
+light_height		= 1.5			;подъем источника света на высоту
+
+
+idle_light			= off
+
+visible_by_detector = on
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов 
+
+artefacts		= 
+
+;;во время срабатывания в online
+spawn_blowout_artefacts = off
+
+artefact_spawn_probability = 0.09				;вероятность, что во время срабатывания аномалии будет рожден артефакт
+artefact_spawn_particles = anomaly2\pux_blast	;партиклы, которые отыграются на месте рождения артефакта (опционально)
+artefact_born_sound =  anomaly\pux_blast		;звук, который отыграются на месте рождения артефакта (опционально)
+
+throw_out_power = 50			;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
+artefact_spawn_height = 3		;(м) высота на центром зоны где будет рожден артефакт
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ветер
+blowout_wind		= on
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 300
+blowout_wind_time_end		= 501; 899
+blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+
+
+[zone_teleport_monolith]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\teleport_monolith"
+$prefetch 		= 16
+class			= Z_ZONE
+hit_impulse_scale	= 0.0;0.5 ;0.1
+effective_radius	= 0.85 ;размер радиуса в процентах от оригинального, где действует зона
+actor_blowout_radius_percent	= 0.75
+
+ef_anomaly_type			= 1
+ef_weapon_type			= 13
+
+sound			= monsters\biting\def_0
+
+postprocess		= postprocess_electra
+
+
+BirthProbability	= 0.0
+hit_type			= strike
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.00
+max_start_power		= 0.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+idle_particles		= ;anomaly2\teleport_damage
+blowout_particles	= anomaly2\teleport_out_00
+
+hit_small_particles			= hit_fx\hit_metal_02
+hit_big_particles			= anomaly2\emi_damage_big_smoke
+idle_small_particles		= anomaly2\electra_damage_01_smoke
+idle_big_particles			= anomaly2\emi_damage_big_smoke
+entrance_small_particles	= anomaly2\electra_entrance_small
+entrance_big_particles		= anomaly2\emi_entrance_big_00
+
+idle_sound			= monsters\biting\def_0		;постоянный звук
+blowout_sound		= anomaly\teleport_work_2; anomaly_gravy_blast01	;во время выброса(удара) в центре аномалии	
+hit_sound			= monsters\biting\def_0								;на персонаже, когда тот получает хит
+entrance_sound		= monsters\biting\def_0								;при попадании объекта в аномалию
+
+
+awaking_time		= 0;100
+blowout_time		= 18000	
+accamulate_time		= 1000000 ;10;200
+
+blowout_light_time		= 200
+blowout_explosion_time	= 200
+blowout_particles_time	= 50
+blowout_sound_time  	= 100
+
+disable_time		= 5000		;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 5000		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= 100		;время отключения idle партиклов
+
+ignore_nonalive		= true
+ignore_small		= true
+ignore_artefacts	= true
+
+blowout_light		= on
+light_color		    = 1.5,1.6,1.8
+light_range		    = 40.0
+light_time 		    = 16;0.35
+light_height		= 1.5			;подъем источника света на высоту
+
+
+idle_light			= off
+
+visible_by_detector = on
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов 
+
+artefacts		= 
+
+;;во время срабатывания в online
+spawn_blowout_artefacts = off
+
+artefact_spawn_probability = 0.09				;вероятность, что во время срабатывания аномалии будет рожден артефакт
+artefact_spawn_particles = anomaly2\pux_blast	;партиклы, которые отыграются на месте рождения артефакта (опционально)
+artefact_born_sound =  anomaly\pux_blast		;звук, который отыграются на месте рождения артефакта (опционально)
+
+throw_out_power = 50			;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
+artefact_spawn_height = 3		;(м) высота на центром зоны где будет рожден артефакт
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ветер
+blowout_wind		= off
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 300
+blowout_wind_time_end		= 501; 899
+blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+[m_teleport]:zone_teleport
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -222.32
+poz_y				= -12.27
+poz_z				= -165.67
+
+; Угол зрения при появлении. Если параметра нет то не менять
+rotate = 2
+
+[m_teleport_1]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -253.98846435547
+poz_y				= -6.6990642547607
+poz_z				= -163.65390014648
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_2]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -5.2418537139893
+poz_y				= -17.138227462769
+poz_z				= -150.68202209473
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_3]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -253.61477661133
+poz_y				= -14.096055984497
+poz_z				= -22.930028915405
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_4]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -132.27835083008
+poz_y				= 13.479322433472
+poz_z				= 171.75326538086
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_5]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -44.090831756592
+poz_y				= -11.463594436646
+poz_z				= -37.045139312744
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_6]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -83.094696044922
+poz_y				= -14.114813804626
+poz_z				= -70.705665588379
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_7]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -176.07054138184
+poz_y				= -0.00041711330413818
+poz_z				= -190.01304626465
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_8]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 130.03305053711
+poz_y				= -4.5665783882141
+poz_z				= -235.49621582031
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_9]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 132.85217285156
+poz_y				= 4.3743858337402
+poz_z				= -180.54132080078
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_10]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 3
+;Высота захвата телепорта
+z_radius			= 3
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 124.56644439697
+poz_y				= 7.4917569160461
+poz_z				= 140.44309997559
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_11]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 3
+;Высота захвата телепорта
+z_radius			= 3
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 126.39921569824
+poz_y				= 14.141585350037
+poz_z				= 67.944648742676
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_12]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -167.61285400391
+poz_y				= -0.0021382868289948
+poz_z				= 98.135452270508
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_13]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -189.57202148438
+poz_y				= -0.0056307017803192
+poz_z				= 133.45692443848
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_14]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -215.88537597656
+poz_y				= 1.887785077095
+poz_z				= 86.532096862793
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_15]:zone_teleport
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 3
+;Высота захвата телепорта
+z_radius			= 3
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -243.01333618164
+poz_y				= -6.0041923522949
+poz_z				= 91.186836242676
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_16]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -56.402938842773
+poz_y				= -12.19490814209
+poz_z				= -255.72668457031
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_17]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 0.81471002101898
+poz_y				= 20.731266021729
+poz_z				= -9.5234422683716
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_18]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= 3.9589490890503
+poz_y				= -21.779613494873
+poz_z				= 55.777442932129
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_19]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 2
+;Высота захвата телепорта
+z_radius			= 2
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -7.6168823242188
+poz_y				= -18.195541381836
+poz_z				= 18.271100997925
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_20]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -280.92373657227
+poz_y				= -6.0000648498535
+poz_z				= 111.2054901123
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_21]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -200.47537231445
+poz_y				= 0.99320864677429
+poz_z				= 105.35250854492
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_22]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -201.04289245605
+poz_y				= 0.81523501873016
+poz_z				= 105.01114654541
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
+
+[m_teleport_23]:zone_teleport_out
+teleport			= standart
+script_binding          	= bind_mteleport.bind
+;Параметры нашего телепорта
+radius				= 1
+;Высота захвата телепорта
+z_radius			= 1
+
+;Куда телепортируемся (телепортация всегда идет в пределах карты)
+poz_x				= -208.63790893555
+poz_y				= 1.8941575288773
+poz_z				= 116.7557220459
+
+; Угол зрения при появлении. Если параметра нет то не меняется
+rotate = 1.5
