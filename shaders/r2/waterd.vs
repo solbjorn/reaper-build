@@ -1,4 +1,5 @@
 #include "common.h"
+#include "ogse_config.h"
 #include "shared\waterconfig.h"
 #include "shared\watermove.h"
 
@@ -13,10 +14,13 @@ struct	v_vert
 };
 struct vf
 {
-	float4 hpos	: POSITION	;
+	float4 hpos	: POSITION;
 	float2 tbase	: TEXCOORD0	;
 	float2 tdist0	: TEXCOORD1	;
 	float2 tdist1	: TEXCOORD2	;
+#ifdef	USE_SOFT_WATER
+	float4      tctexgen    :         TEXCOORD3        ;
+#endif	//	USE_SOFT_WATER
 };
 
 vf main (v_vert v)
@@ -30,7 +34,14 @@ vf main (v_vert v)
 	o.tbase		= unpack_tc_base	(v.uv,v.T.w,v.B.w);		// copy tc
 	o.tdist0	= watermove_tc 		(o.tbase*W_DISTORT_BASE_TILE_0, P.xz, W_DISTORT_AMP_0);
 	o.tdist1	= watermove_tc 		(o.tbase*W_DISTORT_BASE_TILE_1, P.xz, W_DISTORT_AMP_1);
-	o.hpos 		= mul			(m_VP, P);			// xform, input in world coords
+
+	o.hpos = mul                        (m_VP, P);
+//	Igor: for additional depth dest
+#ifdef	USE_SOFT_WATER
+	o.tctexgen = convert_to_screen_space(mul		(m_VP,  P));
+	float3	Pe	= mul		(m_V,  P);
+	o.tctexgen.z = Pe.z;
+#endif	//	USE_SOFT_WATER
 
 	return o;
 }

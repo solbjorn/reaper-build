@@ -3,6 +3,7 @@
 
 // #define USE_SUPER_SPECULAR
 
+#include "SkyGRAPHICS_options.cfg"
 #include "shared\common.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 // *** options
@@ -62,8 +63,8 @@ float3         calc_reflection     (float3 pos_w, float3 norm_w)
 }
 
 float3        calc_sun_r1                (float3 norm_w)    { return L_sun_color*saturate(dot((norm_w),-L_sun_dir_w));                 }
-float3        calc_model_hemi_r1         (float3 norm_w)    { return max(0,norm_w.y)*L_hemi_color;                                         }
-float3        calc_model_lq_lighting     (float3 norm_w)    { return L_material.x*calc_model_hemi_r1(norm_w) + L_ambient + L_material.y*calc_sun_r1(norm_w);         }
+float3        calc_model_hemi_r1         (float3 norm_w)    { return max(0,norm_w.y)*L_hemi_color.xyz;                                         }
+float3        calc_model_lq_lighting     (float3 norm_w)    { return L_material.x*calc_model_hemi_r1(norm_w) + L_ambient.xyz + L_material.y*calc_sun_r1(norm_w);         }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct         v_static                {
@@ -192,6 +193,17 @@ struct  				p_screen                {
         float2          tc0                		: TEXCOORD0;        // Texture coordinates         (for sampling maps)
 };
 //////////////////////////////////////////////////////////////////////////////////////////
+
+struct combine {
+	float4 tc0:TEXCOORD0;
+	float4 tc1:TEXCOORD1;
+	float4 tc2:TEXCOORD2;
+	float4 tc3:TEXCOORD3;
+	float4 tc4:TEXCOORD4;
+	float4 tc5:TEXCOORD5;
+	float4 tc6:TEXCOORD6;
+};
+//////////////////////////////////////////////////////////////////////////////////////////
 // Geometry phase / deferring               	//
 uniform sampler2D       s_base;             	//
 uniform sampler2D       s_bump;             	//
@@ -256,22 +268,42 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
 //		high	= 	half4	(rgb, dot(rgb,0.333f)-def_hdr_clip)		;
 }
 float4		combine_bloom        (float3  low, float4 high)	{
-        return        float4(low + high*high.a, 1.f);
+        return        float4(low + high.xyz*high.a, 1.f);
 }
 
-float3	v_hemi        	(float3 n)                        	{        return L_hemi_color*(.5f + .5f*n.y);                   }
-float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color*(w + (1-w)*n.y);                   }
+float3	v_hemi        	(float3 n)                        	{        return L_hemi_color.xyz*(.5f + .5f*n.y);                   }
+float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color.xyz*(w + (1-w)*n.y);                   }
 float3	v_sun           (float3 n)                        	{        return L_sun_color*dot(n,-L_sun_dir_w);                }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
 half3   p_hemi          (float2 tc)                         {
-        half3        	t_lmh         = tex2D             	(s_hemi, tc);
+        half3        	t_lmh         = tex2D             	(s_hemi, tc).xyz;
         return  dot     (t_lmh,1.h/3.h);
 }
+//	contrast function
+half Contrast(half Input, half ContrastPower)
+{
+     //piecewise contrast function
+     bool IsAboveHalf = Input > 0.5 ;
+     half ToRaise = saturate(2*(IsAboveHalf ? 1-Input : Input));
+     half Output = 0.5*pow(ToRaise, ContrastPower);
+     Output = IsAboveHalf ? 1-Output : Output;
+     return Output;
+}
+float4 convert_to_screen_space(float4 proj)
+{
+	float4 screen;
+	screen.x = (proj.x + proj.w)*0.5;
+	screen.y = (proj.w - proj.y)*0.5;
+	screen.z = proj.z;
+	screen.w = proj.w;
+	return screen;
+}
+
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
 //--- © The below code is copyright of Sky4CE ---//
 //----------- mailto: Sky4CE@inbox.ru -----------//
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
-#include "SkyGRAPHICS_options.cfg"
+
 float2 lod(float3 eye,float2 tc,sampler2D s_base)
 {
 	half height	= tex2D(s_base, tc).w * 0.016 - 0.009;    
@@ -298,17 +330,25 @@ float2 AdvancedParallax(float3 eye,float2 tc,sampler2D s_base)
    	for(;fCurrHeight < fCurrentBound;fCurrentBound -= fStepSize)
    	{
    		vTexCurrentOffset.xy += vTexOffsetPerStep;
+   		#ifndef USE_TEXTURE_PACK
     	fCurrHeight = tex2Dlod( s_base, float4(vTexCurrentOffset.xy,0,0) ).a+Brightness;
     	if (fCurrHeight > Q2) fCurrHeight  = 1.0f;
     	else if (fCurrHeight < Q1) fCurrHeight = 0.0f;
     	else fCurrHeight = (fCurrHeight - Q1)/(Q2-Q1);
+    	#else
+    	fCurrHeight = tex2Dlod( s_base, float4(vTexCurrentOffset.xy,0,0) ).a;
+    	#endif
     }
     float4 offsetBest = float4(vTexCurrentOffset,0,0);
     vTexCurrentOffset.xy -= vTexOffsetPerStep;
+    #ifndef USE_TEXTURE_PACK
    	float fPrevHeight = tex2Dlod( s_base, float4(vTexCurrentOffset.xy,0,0) ).a+Brightness;
    	if (fPrevHeight > Q2) fPrevHeight = 1.0f;
   	else if (fPrevHeight < Q1) fPrevHeight = 0.0f;
   	else fPrevHeight = (fPrevHeight - Q1)/(Q2-Q1);
+  	#else
+  	float fPrevHeight = tex2Dlod( s_base, float4(vTexCurrentOffset.xy,0,0) ).a;
+  	#endif
     float error = 1.0;
     float t1 = fCurrentBound ;
     float t0 = t1 + fStepSize;
@@ -320,10 +360,14 @@ float2 AdvancedParallax(float3 eye,float2 tc,sampler2D s_base)
       float denom = (delta1 - delta0);
       float t = (t0 * delta1 - t1 * delta0) / denom;
       offsetBest.xy = -t * intersect.xy + intersect.zw;
+      #ifndef USE_TEXTURE_PACK
       float NB = tex2Dlod(s_base, offsetBest).a+Brightness;
       if (NB > Q2) NB = 1.0f;
   	  else if (NB < Q1) NB = 0.0f;
   	  else NB = (NB - Q1)/(Q2-Q1);
+  	  #else
+  	  float NB = tex2Dlod(s_base, offsetBest).a;
+  	  #endif
       error = t - NB;
       if (error < 0)
       {
@@ -338,50 +382,6 @@ float2 AdvancedParallax(float3 eye,float2 tc,sampler2D s_base)
     }
     return offsetBest.xy;
 }
-
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f),
-	half2(-0.840144f , -0.073580f),
-	half2(-0.695914f ,  0.457137f),
-	half2(-0.203345f ,  0.620716f),
-	half2( 0.962340f , -0.194983f),
-	half2( 0.473434f , -0.480026f),
-	half2( 0.519456f ,  0.767022f),
-	half2( 0.185461f , -0.893124f),
-	half2( 0.507431f ,  0.064425f),
-	half2( 0.896420f ,  0.412458f),
-	half2(-0.321940f , -0.932615f),
-	half2(-0.791559f , -0.597710f)
-};
-
-half	calc_ssao( half3 P, half3 N, half2 tc)
-{
-	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*150/max(P.z,1.3);
-	half occ = 0;
-	half num_dir = 0;
-	float c = 1;
-	if(P.z<FADE_DIST) c = FADE_COEF + ((1-FADE_COEF)*P.z)/FADE_DIST;
-for (int a=1; a<SSAO_QUALITY; ++a)
-{
-	half2	scale_tmp = scale*a;
-	for (int i=0; i<12; i++)
-	{
-		float2 	tap 	= tc + poisson_disc12[i]*scale_tmp;
-		half3	tap_pos	= tex2D	(s_position,tap);
-		half3 	dir 	= tap_pos-P.xyz;
-		half	dist	= length(dir);
-		dir 	= normalize(dir);
-		half 	infl 	= clamp(dot( dir, N.xyz),0,c);
-		half 	occ_factor = saturate(dist);
-		occ += (infl+0.01)*lerp( 1, occ_factor, infl)/(occ_factor+0.1);
-		num_dir += (infl+0.01)/(occ_factor+0.1);
-	}
-}
-	occ /= num_dir;
-
-	return occ;
-} 
 
 #define FXPS technique _render{pass _code{PixelShader=compile ps_3_0 main();}}
 #define FXVS technique _render{pass _code{VertexShader=compile vs_3_0 main();}}
