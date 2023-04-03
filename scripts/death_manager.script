@@ -400,11 +400,13 @@ end
 
 --' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
 function keep_item(npc, item)
+	
+	if npc == nil then return end
+	
 	local npc_community = npc:character_community()
 
     if item==nil or alife():object(item:id())==nil then return end
 
-        if npc == nil then return end
     local section = item:section()
 
     if section == "bolt" then

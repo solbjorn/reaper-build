@@ -1267,8 +1267,10 @@ end
 function add_spot_of_docent(a)
 local old_spot=amk.load_variable("spot_of_nps", 0)
 	if old_spot~=0 then
-	local obj_old = alife():story_object(old_spot)
-	amk.remove_spot_from_map(obj_old.id,'blue_location')
+		local obj_old = alife():story_object(old_spot)
+		if obj_old then
+			amk.remove_spot_from_map(obj_old.id,'blue_location')
+		end
 	end
 local obj = alife():story_object(a)
 	if obj and IsStalker(obj) then

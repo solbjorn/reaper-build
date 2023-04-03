@@ -739,7 +739,7 @@ function military_dolg_dead (actor, npc)
     -- проапдейтим количество мертвых долговцев
     local mil_dolg_killed = xr_logic.pstor_retrieve(actor, "mil_dolg_killed", 0) + 1
     xr_logic.pstor_store(actor, "mil_dolg_killed", mil_dolg_killed)
-    if mil_dolg_killed == 8 then
+    if mil_dolg_killed == 8 or xr_gulag.getGulagPopulation("mil_dolg") <= 1 then
        actor:give_info_portion ("mil_dolg_dead")
     end   
     
