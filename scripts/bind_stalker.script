@@ -27,6 +27,7 @@ function actor_binder:__init (obj) super(obj)
   self.bCheckStart = false
   self.weather_manager = level_weathers.WeatherManager()
   self.actor_detector = xr_detector.actor_detector()
+  self.freeplay_stats = xr_statistic_freeplay.get_freeplay_statistic()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
@@ -203,6 +204,8 @@ function actor_binder:article_callback(npc, group, name)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take (obj)
+    self.freeplay_stats:check_found_item(obj)
+
     level_tasks.proceed(self.object)
     --game_stats.update_take_item (obj, self.object)
   local item = obj
@@ -413,6 +416,12 @@ end
       hud:RemoveCustomStatic("cs_radiation_danger")
     end
   end
+
+  if self.freeplay_stats ~= nil then
+        self.freeplay_stats:check_actor_money()
+        self.freeplay_stats:check_actor_rank()
+  end
+
 	if not self.object:is_talking() then 
 	dunin_ammo.on_update()
 	end 
@@ -512,7 +521,7 @@ function actor_binder:save_old(packet)
 
 	--' Сохраняем уровень сложности
 	if save_treasure_manager == true then
-		packet:w_u8(level.get_game_difficulty() + 128)
+		packet:w_u8(level.get_game_difficulty() + 160)
 	else
 		packet:w_u8(level.get_game_difficulty())
 	end
@@ -537,6 +546,8 @@ function actor_binder:save_old(packet)
 
 	task_manager.save(packet)
 	self.actor_detector:save(packet)	
+
+    self.freeplay_stats:save(packet)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
@@ -546,13 +557,25 @@ function actor_binder:load(reader)
 
 	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
-	
-	local load_treasure_manager = false      
-	if game_difficulty >= 128 then           
-		game_difficulty = game_difficulty - 128
-		load_treasure_manager = true           
-	end                                      
+        local game_diff = game_difficulty
 
+	local load_treasure_manager = false      
+
+        if game_difficulty >= 160 then           
+		game_difficulty = game_difficulty - 160
+		load_treasure_manager = true           
+
+        else
+	   	if game_difficulty >= 150 then           
+			game_difficulty = game_difficulty - 150
+			load_treasure_manager = true           
+		else                                      
+		  	if game_difficulty >= 128 then           
+				game_difficulty = game_difficulty - 128
+				load_treasure_manager = true           
+			end
+		end                                      
+	end
 	
 	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 
@@ -577,6 +600,8 @@ function actor_binder:load(reader)
 	
 	task_manager.load(reader)
 	self.actor_detector:load(reader)
+
+        self.freeplay_stats:load(reader, game_diff)
   
   if xr_logic.pstor_retrieve(self.object,"emerg",false) then -- нельзя использовать amk.load_varible(), так как db.actor ещё не определён
     self.warning=true

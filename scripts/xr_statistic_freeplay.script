@@ -1,0 +1,469 @@
+local freeplay_version = 1
+local artefact_clsid = {    [clsid.art_bast_artefact] = true,
+                            [clsid.art_black_drops] = true,
+                            [clsid.art_dummy] = true,
+                            [clsid.art_electric_ball] = true,
+                            [clsid.art_faded_ball] = true,
+                            [clsid.art_galantine] = true,
+                            [clsid.art_gravi] = true,
+                            [clsid.art_gravi_black] = true,
+                            [clsid.art_mercury_ball] = true,
+                            [clsid.art_needles] = true,
+                            [clsid.art_rusty_hair] = true,
+                            [clsid.art_thorn] = true,
+                            [clsid.art_zuda] = true,
+                            [clsid.artefact] = true,
+                            [clsid.artefact_s] = true                      
+                    }
+local found_artefact_sections = {}
+
+class "freeplay_statistic"
+
+function freeplay_statistic:__init()
+    if self.loaded ~= true then
+        self.stalker_killed = 0
+        self.secrets_found = 0
+        self.pda_found = 0
+        self.monster_killed = 0
+        self.artefact_found = 0
+    end
+end	
+
+function freeplay_statistic:check_actor_money()
+	local actor_money = db.actor:money()
+    local trader_ranks = {
+                            [1] = "1000",
+                            [2] = "10000",
+                            [3] = "100000",
+                            [4] = "250000",
+                            [5] = "500000",
+                            [6] = "1000000"    
+                            }    
+    for k,v in pairs(trader_ranks) do
+        if actor_money >= tonumber(v) and not has_alife_info("trader_freeplay_reward_task_"..k.."_start") then
+            news_manager.send_tip( db.actor, "trader_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            db.actor:give_info_portion("trader_freeplay_reward_task_"..k.."_start")
+        end
+    end
+end
+    
+function freeplay_statistic:check_stalker_killed_count()
+	self.stalker_killed = self.stalker_killed + 1
+    printf("STALKER killed count = [%s]",tostring(self.stalker_killed))
+    local military_ranks = {
+                            [1] = "50",
+                            [2] = "150",
+                            [3] = "300",
+                            [4] = "600",
+                            [5] = "1000",
+                            [6] = "5000",
+                            [7] = "10000"       
+                            }    
+    for k,v in pairs(military_ranks) do
+        if self.stalker_killed == tonumber(v) and not has_alife_info("military_freeplay_reward_task_"..k.."_start") then
+            news_manager.send_tip( db.actor, "military_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            db.actor:give_info_portion("military_freeplay_reward_task_"..k.."_start")
+        end
+    end
+end
+
+function freeplay_statistic:get_found_secrets_ranks()
+-- returns found secret rank in %
+    local found_secrets_ranks = {
+                            [1] = 15,
+                            [2] = 30,
+                            [3] = 45,
+                            [4] = 60,
+                            [5] = 75,
+                            [6] = 90,
+                            [7] = 100       
+                            }    
+	local res = 0						
+    for k,v in pairs(found_secrets_ranks) do
+        if has_alife_info("barman_freeplay_reward_task_"..k.."_start") then
+		  res = v
+        end
+    end
+	return res
+end
+
+function freeplay_statistic:check_found_secrets_count()
+	self.secrets_found = self.secrets_found + 1
+
+    local isRare = amk.load_variable("option_treasure", 0) == 2
+
+    printf("FREEPLAY STATS: found new secret. --- count === [%s]", tostring(self.secrets_found))
+	local barman_ranks
+	if isRare then
+		local barman_ranks_rare = {
+								[1] = "3",
+								[2] = "5",
+								[3] = "7",
+								[4] = "10",
+								[5] = "15",
+								[6] = "20",
+								[7] = "25"       
+								}    
+		barman_ranks = barman_ranks_rare
+	else							
+		local barman_ranks_norm = {
+								[1] = "5",
+								[2] = "10",
+								[3] = "20",
+								[4] = "40",
+								[5] = "60",
+								[6] = "80",
+								[7] = "100"       
+								}
+		barman_ranks = barman_ranks_norm
+	end							
+
+    for k,v in pairs(barman_ranks) do
+        if self.secrets_found == tonumber(v) and not has_alife_info("barman_freeplay_reward_task_"..k.."_start") then
+            news_manager.send_tip( db.actor, "barman_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            db.actor:give_info_portion("barman_freeplay_reward_task_"..k.."_start")            
+        end
+    end
+end
+
+function freeplay_statistic:get_found_pda_discount()
+-- returns found pda discount
+    local found_pdas_ranks = {
+                            [1] = 0.90,
+                            [2] = 0.80,
+                            [3] = 0.70,
+                            [4] = 0.60,
+                            [5] = 0.50,
+                            [6] = 0.40,
+                            [7] = 0.30       
+                            }    
+	local res = 1.0						
+    for k,v in pairs(found_pdas_ranks) do
+        if has_alife_info("svoboda_freeplay_reward_task_"..k.."_start") then
+		  res = v
+        end
+    end
+	return res
+end
+
+--' Функция проверки достижения актёром ранга у свободы(вызывается из bind_stalker.script из actor_binder:on_item_take)
+function freeplay_statistic:check_found_pda_count()
+
+     self.pda_found = self.pda_found + 1
+     printf("FREEPLAY STATS: found new pda. --- count === [%s]", tostring(self.pda_found))
+     local svoboda_ranks = {
+                             [1] = "30",
+                             [2] = "80",
+                             [3] = "150",
+                             [4] = "320",
+                             [5] = "500",
+                             [6] = "700",
+                             [7] = "1000"       
+                             }    
+     for k,v in pairs(svoboda_ranks) do
+         if self.pda_found == tonumber(v) and not has_alife_info("svoboda_freeplay_reward_task_"..k.."_start") then
+             news_manager.send_tip( db.actor, "svoboda_freeplay_reward_tips_"..k, nil, "stalker", nil )
+             db.actor:give_info_portion("svoboda_freeplay_reward_task_"..k.."_start")            
+         end
+     end
+end
+
+
+function freeplay_statistic:check_monster_killed_count(npc)
+    local cls_id = get_clsid(npc)
+    local dog = (cls_id == clsid.dog_s) or (cls_id == clsid.pseudodog_s)	
+    local boar = cls_id == clsid.boar_s
+    local snork = cls_id == clsid.snork_s
+    local poltergeist = cls_id == clsid.poltergeist_s
+    local gigant = cls_id == clsid.gigant_s
+    local bloodsucker = cls_id == clsid.bloodsucker_s
+    local controller = cls_id == clsid.controller_s
+    local dolg_ranks = {
+                            [1] = "35",
+                            [2] = "20",
+                            [3] = "20",
+                            [4] = "10",
+                            [5] = "7",
+                            [6] = "15",
+                            [7] = "7"       
+                            }    
+    
+    if dog and has_alife_info("dolg_freeplay_reward_task_1_start") and not has_alife_info("dolg_freeplay_reward_task_1_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+        printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[1]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_1", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_1_objective_1_done")
+            self.monster_killed = 0
+        end
+    elseif boar and has_alife_info("dolg_freeplay_reward_task_2_start") and not has_alife_info("dolg_freeplay_reward_task_2_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[2]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_2", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_2_objective_1_done")
+            self.monster_killed = 0
+        end
+    elseif snork and has_alife_info("dolg_freeplay_reward_task_3_start") and not has_alife_info("dolg_freeplay_reward_task_3_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[3]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_3", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_3_objective_1_done")
+            self.monster_killed = 0
+        end
+    elseif poltergeist and has_alife_info("dolg_freeplay_reward_task_4_start") and not has_alife_info("dolg_freeplay_reward_task_4_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[4]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_4", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_4_objective_1_done")
+             self.monster_killed = 0
+        end
+    elseif gigant and has_alife_info("dolg_freeplay_reward_task_5_start") and not has_alife_info("dolg_freeplay_reward_task_5_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[5]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_5", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_5_objective_1_done")
+            self.monster_killed = 0
+        end
+    elseif bloodsucker and has_alife_info("dolg_freeplay_reward_task_6_start") and not has_alife_info("dolg_freeplay_reward_task_6_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[6]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_6", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_6_objective_1_done")
+            self.monster_killed = 0
+        end
+    elseif controller and has_alife_info("dolg_freeplay_reward_task_7_start") and not has_alife_info("dolg_freeplay_reward_task_7_objective_1_done") then
+        self.monster_killed = self.monster_killed + 1
+         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
+        if self.monster_killed ==  tonumber(dolg_ranks[7]) then
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_7", nil, "stalker", nil )
+             db.actor:give_info_portion("dolg_freeplay_reward_task_7_objective_1_done")
+             self.monster_killed = 0
+        end
+    end   
+end
+
+--' Функция проверки достижения актёром ранга у эколога(вызывается из bind_stalker.script из actor_binder:on_item_take)
+
+function freeplay_statistic:get_found_artefacts_ranks()
+-- returns found secret rank in %
+    local found_artefacts_ranks = {
+                            [1] = 15,
+                            [2] = 30,
+                            [3] = 45,
+                            [4] = 60,
+                            [5] = 75,
+                            [6] = 90,
+                            [7] = 100       
+                            }    
+	local res = 0						
+    for k,v in pairs(found_artefacts_ranks) do
+        if has_alife_info("ecolog_freeplay_reward_task_"..k.."_start") then
+		  res = v
+        end
+    end
+	return res
+end
+
+function freeplay_statistic:check_found_artefact_count(cost)
+	self.artefact_found = self.artefact_found + cost
+    printf("FREEPLAY STATS: found new artefact. --- count === [%s]", tostring(self.artefact_found))
+	local ecolog_ranks
+	if sak then
+      local ecolog_ranks_nlc = {
+                              [1] = "5000",
+                              [2] = "20000",
+                              [3] = "70000",
+                              [4] = "110000",
+                              [5] = "170000",
+                              [6] = "280000",
+                              [7] = "400000"       
+                              }    
+	  ecolog_ranks = ecolog_ranks_nlc
+	else
+      local ecolog_ranks_amk = {
+                              [1] = "5000",
+                              [2] = "20000",
+                              [3] = "80000",
+                              [4] = "120000",
+                              [5] = "180000",
+                              [6] = "260000",
+                              [7] = "340000"       
+                              }
+	  ecolog_ranks = ecolog_ranks_amk
+	end	
+    for k,v in pairs(ecolog_ranks) do
+        if self.artefact_found >= tonumber(v) and not has_alife_info("ecolog_freeplay_reward_task_"..k.."_start") then
+            news_manager.send_tip( db.actor, "ecolog_freeplay_reward_tips_"..k, nil, "ecolog", nil )
+            db.actor:give_info_portion("ecolog_freeplay_reward_task_"..k.."_start")            
+        end
+    end
+end
+
+function freeplay_statistic:get_actor_trust_ranks()
+    local actor_trust_ranks = {
+                            [1] = 0.10,
+                            [2] = 0.20,
+                            [3] = 0.30,
+                            [4] = 0.45,
+                            [5] = 0.60,
+                            [6] = 0.75,
+                            [7] = 0.90       
+                            }    
+	local res = 0.0						
+    for k,v in pairs(actor_trust_ranks) do
+        if has_alife_info("neutral_freeplay_reward_task_"..k.."_start") then
+		  res = v
+        end
+    end
+	return res
+end
+
+--' Функция проверки достижения актёром ранга(вызывается из bind_stalker.script из actor_binder:update)
+function freeplay_statistic:check_actor_rank()
+    local actor_rank = db.actor:character_rank()
+    local trader_ranks = {
+                            [1] = "10",
+                            [2] = "50",
+                            [3] = "100",
+                            [4] = "300",
+                            [5] = "500",
+                            [6] = "700",    
+                            [7] = "1000"
+                            }    
+    for k,v in pairs(trader_ranks) do
+        if actor_rank >= tonumber(v) and not has_alife_info("neutral_freeplay_reward_task_"..k.."_start") then
+            news_manager.send_tip( db.actor, "neutral_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            db.actor:give_info_portion("neutral_freeplay_reward_task_"..k.."_start")
+        end
+    end
+end
+
+function freeplay_statistic:check_found_item(obj)
+  if obj:section() == "device_pda_rank" then
+    self:check_found_pda_count()
+    local pda = alife():object(obj:id())
+    alife():release(pda, true)
+
+    if not (device().precache_frame > 1) then
+        actor_stats.add_points("artefacts", "st_pda_pda", 1, 1)
+    end
+	return
+  end
+
+  if artefact_clsid[obj:clsid()] ~= nil and found_artefact_sections[obj:section()] ~= true then
+      self:check_found_artefact_count(obj:cost())
+      actor_stats.add_points("artefacts", "st_pda_artefacts", 1, 1)
+      found_artefact_sections[obj:section()] = true
+  end
+end
+
+--' Сохранение статистики.
+function freeplay_statistic:save(packet)
+    packet:w_u16(freeplay_version)
+
+    packet:w_u32(self.stalker_killed)
+    packet:w_u32(self.secrets_found)
+    packet:w_u32(self.pda_found)
+    packet:w_u32(self.monster_killed)
+    packet:w_u32(self.artefact_found)
+
+    local n = 0
+    for k,v in pairs(found_artefact_sections) do
+        n=n+1
+    end	
+    packet:w_u16(n)
+    for k,v in pairs(found_artefact_sections) do
+        packet:w_stringZ(k)
+    end	
+end
+
+--' Загрузка статистики.
+
+function freeplay_statistic:load(reader, game_difficulty)
+    self.loaded = true
+
+    load_freeplay_stat_old = game_difficulty >= 150 
+    load_freeplay_stat_new = game_difficulty >= 160 
+
+    if load_freeplay_stat_new then	
+      local version = reader:r_u16()
+
+      self.stalker_killed = reader:r_u32()
+      self.secrets_found = reader:r_u32()
+      self.pda_found = reader:r_u32()
+      self.monster_killed = reader:r_u32()
+      self.artefact_found = reader:r_u32()
+
+      local n = reader:r_u16()	
+      for i=1,n do
+        found_artefact_sections[reader:r_stringZ()] = true
+      end
+    else
+      if load_freeplay_stat_old then	
+        self.stalker_killed = reader:r_u32()
+        self.secrets_found  = reader:r_u32()
+        self.pda_found      = reader:r_u32()
+        self.monster_killed = reader:r_u32()
+        self.artefact_found = reader:r_u32()
+
+        local n = reader:r_u32()	
+        for i=1,n do
+          local tmp = reader:r_u32()
+        end
+      end
+    end
+end
+
+function freeplay_statistic:give_crap_item()
+  local crap_section = {
+    "bread",
+	"kolbasa",
+	"ammo_9x18_fmj",
+	"conserva",
+	"vodka",
+	"ammo_9x18_pmm"
+  }
+  
+   local tabla = {}
+   local spawn = {}
+   spawn.section = "ammo_9x18_fmj"
+   spawn.prob = 1
+   
+   local prob = math.random(100)
+   local probstart = 0
+   for k,v in pairs(crap_section) do
+     if prob >= probstart and prob < (probstart+16) then
+	   spawn.section = v
+	   break
+	 end
+	 probstart = probstart + 16
+   end
+   
+   table.insert(tabla, spawn)
+   return tabla
+end
+
+function freeplay_statistic:give_item_on_death(victim, who)
+  local rnd = math.random(100)
+  if victim ~= nil and IsStalker(victim) and victim:character_community() ~= "zombied" and rnd <= 75 then
+    alife():create("device_pda_rank",victim:position(),victim:level_vertex_id(),victim:game_vertex_id(),victim:id())
+  end
+end
+
+function freeplay_statistic:get_stalker_killed_count()
+	
+	return self.stalker_killed
+end
+
+function get_freeplay_statistic()
+    if stat == nil then 
+         printf("STATISTIC =====> loaded")
+        stat = freeplay_statistic() 
+    end
+   	return stat
+end

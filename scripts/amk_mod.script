@@ -553,89 +553,89 @@ function check_af_transform(af,anom_id,anom_sect)
 	sak.artmodscheck(anom_id,af,anom_sect) 
 	--lv=db.actor:level_vertex_id()
 	if string.find(anom_sect,"_zharka")~=nil then
-		if af_sect=="af_soul" and actor:has_info("info_amk_recipt_souls") then
+		if af_sect=="af_soul" and actor:has_info("info_amk_recipt_souls") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_spirit_1"), pos ,0,0,10,"Капля души")
+			af_start_transform_timer(af_start_transform(70,25,af_sect,"af_spirit_1"), pos ,0,4,0,"Капля души")
 		end
-		if af_sect=="af_spirit_1" and actor:has_info("info_amk_recipt_souls") then
+		if af_sect=="af_spirit_1" and actor:has_info("info_amk_recipt_souls") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_spirit_2"), pos ,0,0,10,"Огненная душа")
+			af_start_transform_timer(af_start_transform(60,20,af_sect,"af_spirit_2"), pos ,0,6,0,"Огненная душа")
 		end
-		if af_sect=="af_spirit_2" and actor:has_info("info_amk_recipt_souls") then
+		if af_sect=="af_spirit_2" and actor:has_info("info_amk_recipt_souls") and check_af_transform_rank(5) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_spirit_3"), pos ,0,0,10,"Кристальная душа")
+			af_start_transform_timer(af_start_transform(50,35,af_sect,"af_spirit_3"), pos ,0,10,0,"Кристальная душа")
 		end
-		if af_sect=="af_cry_1" and actor:has_info("info_amk_recipt_tears_fire") then
+		if af_sect=="af_cry_1" and actor:has_info("info_amk_recipt_tears_fire") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_cry_2"), pos ,0,0,10,"Слёзы огня")
+			af_start_transform_timer(af_start_transform(65,20,af_sect,"af_cry_2"), pos ,0,5,0,"Слёзы огня")
 		end
-		if af_sect=="af_rusty_sea-urchin" and actor:has_info("info_amk_recipt_dikoobraz") then
+		if af_sect=="af_rusty_sea-urchin" and actor:has_info("info_amk_recipt_dikoobraz") and check_af_transform_rank(2) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_dik_1"), pos ,0,0,10,"Дикобраз")
+			af_start_transform_timer(af_start_transform(65,20,af_sect,"af_dik_1"), pos ,0,3,0,"Дикобраз")
 		end
-		if af_sect=="af_kol_3" and actor:has_info("info_amk_recipt_giant_small_brother") then
+		if af_sect=="af_kol_3" and actor:has_info("info_amk_recipt_giant_small_brother") and check_af_transform_rank(5) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_kol_4"), pos ,0,0,10,"Младший брат Гиганта")
+			af_start_transform_timer(af_start_transform(49,30,af_sect,"af_kol_4"), pos ,0,3,0,"Младший брат Гиганта")
 		end
-		if af_sect=="af_armor_3" and actor:has_info("info_amk_recipt_controller_skalp") then
+		if af_sect=="af_armor_3" and actor:has_info("info_amk_recipt_controller_skalp") and check_af_transform_rank(5) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_armor_4"), pos ,0,0,10,"Скальп контролёра")
+			af_start_transform_timer(af_start_transform(40,25,af_sect,"af_armor_4"), pos ,0,6,0,"Скальп контролёра")
 		end   
 	end
 	if string.find(anom_sect,"_galant")~=nil then
-		if af_sect=="af_spirit_3" and actor:has_info("info_amk_recipt_souls") then 
+		if af_sect=="af_spirit_3" and actor:has_info("info_amk_recipt_souls") and check_af_transform_rank(5) then 
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_spirit_4"), pos ,0,0,10,"Кристальная душа Бенгала")
+			af_start_transform_timer(af_start_transform(50,30,af_sect,"af_spirit_4"), pos ,0,1,0,"Кристальная душа Бенгала")
 		end
-		if af_sect=="af_drops" and actor:has_info("info_amk_recipt_tears_electra") then
+		if af_sect=="af_drops" and actor:has_info("info_amk_recipt_tears_electra") and check_af_transform_rank(2) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_cry_1"), pos ,0,0,10,"Слёзы Электры")
+			af_start_transform_timer(af_start_transform(75,10,af_sect,"af_cry_1"), pos ,0,5,0,"Слёзы Электры")
 		end
-		if af_sect=="af_dummy_glassbeads" and actor:has_info("info_amk_recipt_grandmother_glassbeards") then
+		if af_sect=="af_dummy_glassbeads" and actor:has_info("info_amk_recipt_grandmother_glassbeards") and check_af_transform_rank(2) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_babka_1"), pos ,0,0,10,"Бабкины бусы")
+			af_start_transform_timer(af_start_transform(85,10,af_sect,"af_babka_1"), pos ,0,5,0,"Бабкины бусы")
 		end
-		if af_sect=="af_dummy_dummy" and actor:has_info("info_amk_recipt_dummy") then
+		if af_sect=="af_dummy_dummy" and actor:has_info("info_amk_recipt_dummy") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_pudd_1"), pos ,0,0,10,"Огненная пустышка")
+			af_start_transform_timer(af_start_transform(70,25,af_sect,"af_pudd_1"), pos ,0,3,0,"Огненная пустышка")
 		end
-		if af_sect=="af_pudd_1" and actor:has_info("info_amk_recipt_dummy") then
+		if af_sect=="af_pudd_1" and actor:has_info("info_amk_recipt_dummy") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_pudd_2"), pos ,0,0,10,"Яркая пустышка")
+			af_start_transform_timer(af_start_transform(59,20,af_sect,"af_pudd_2"), pos ,0,6,0,"Яркая пустышка")
 		end
-		if af_sect=="af_pudd_2" and actor:has_info("info_amk_recipt_dummy") then
+		if af_sect=="af_pudd_2" and actor:has_info("info_amk_recipt_dummy") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_pudd_3"), pos ,0,0,10,"Лунная пустышка")
+			af_start_transform_timer(af_start_transform(50,35,af_sect,"af_pudd_3"), pos ,0,8,0,"Лунная пустышка")
 		end
-		if af_sect=="af_dik_1" and actor:has_info("info_amk_recipt_electra_dikoobraz") then
+		if af_sect=="af_dik_1" and actor:has_info("info_amk_recipt_electra_dikoobraz") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_dik_2"), pos ,0,0,10,"Электрический дикобраз")
+			af_start_transform_timer(af_start_transform(72,25,af_sect,"af_dik_2"), pos ,0,5,0,"Электрический дикобраз")
 		end
 	end
 	if string.find(anom_sect,"_buzz")~=nil then
-		if af_sect=="af_cry_2" and actor:has_info("info_amk_recipt_tears_chimaera") then
+		if af_sect=="af_cry_2" and actor:has_info("info_amk_recipt_tears_chimaera") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_cry_3"), pos ,0,0,10,"Слёзы химеры")
+			af_start_transform_timer(af_start_transform(55,25,af_sect,"af_cry_3"), pos ,0,2,0,"Слёзы химеры")
 		end
-		if af_sect=="af_babka_1" and actor:has_info("info_amk_recipt_pra_grandmother_glassbeards") then
+		if af_sect=="af_babka_1" and actor:has_info("info_amk_recipt_pra_grandmother_glassbeards") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_babka_2"), pos ,0,0,10,"Бусы прабабки")
+			af_start_transform_timer(af_start_transform(72,12,af_sect,"af_babka_2"), pos ,0,3,0,"Бусы прабабки")
 		end
-		if af_sect=="af_pudd_3" and actor:has_info("info_amk_recipt_dummy") then
+		if af_sect=="af_pudd_3" and actor:has_info("info_amk_recipt_dummy") and check_af_transform_rank(5) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_pudd_4"), pos ,0,0,10,"Пудинг")
+			af_start_transform_timer(af_start_transform(80,10,af_sect,"af_pudd_4"), pos ,0,12,0,"Пудинг")
 		end
-		if af_sect=="af_dik_2" and actor:has_info("info_amk_recipt_sopl_dikoobraz") then
+		if af_sect=="af_dik_2" and actor:has_info("info_amk_recipt_sopl_dikoobraz") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_dik_3"), pos ,0,0,10,"Сопливый дикобраз")
+			af_start_transform_timer(af_start_transform(74,10,af_sect,"af_dik_3"), pos ,0,2,0,"Сопливый дикобраз")
 		end
-		if af_sect=="af_kol_2" and actor:has_info("info_amk_recipt_almaz_kolobok") then
+		if af_sect=="af_kol_2" and actor:has_info("info_amk_recipt_almaz_kolobok") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_kol_3"), pos ,0,0,10,"Алмазный колобок")
+			af_start_transform_timer(af_start_transform(78,17,af_sect,"af_kol_3"), pos ,0,8,0,"Алмазный колобок")
 		end
-		if af_sect=="af_armor_2" and actor:has_info("info_amk_recipt_pancir") then
+		if af_sect=="af_armor_2" and actor:has_info("info_amk_recipt_pancir") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_armor_3"), pos ,0,0,10,"Панцирь")
+			af_start_transform_timer(af_start_transform(65,25,af_sect,"af_armor_3"), pos ,0,2,0,"Панцирь")
 		end
 		if af_sect=="af_medusa" or af_sect=="af_drops" or af_sect=="af_blood" or af_sect=="af_rusty_thorn" and actor:has_info("info_amk_recipt_simbion") then
 			local s={}
@@ -664,45 +664,45 @@ function check_af_transform(af,anom_id,anom_sect)
       if af_sect=="af_blood" and s.blood==-1 then
         s.blood=af:id()
       end
-			if s.medusa~=-1 and s.drop~=-1 and s.koluchka~=-1 and s.blood~=-1 then
+			if s.medusa~=-1 and s.drop~=-1 and s.koluchka~=-1 and s.blood~=-1 and check_af_transform_rank(2) then
 				level.add_pp_effector("teleport.ppe", 1524, false)
 				alife():release(alife():object(s.medusa), true)
 				alife():release(alife():object(s.drop), true)
 				alife():release(alife():object(s.koluchka), true)
 				alife():release(alife():object(s.blood), true)
 				amk.del_variable("af_simbion_activation")
-				af_start_transform_timer(af_start_transform(100,0,"af_buliz","af_simbion") , pos ,0,0,10,"Симбион")
+				af_start_transform_timer(af_start_transform(75,25,"af_buliz","af_simbion") , pos ,0,5,0,"Симбион")
 				return
 			end
 			amk.save_variable("af_simbion_activation",amk.pack_array_to_string(s))
 			end
 		end
 	if string.find(anom_sect,"_mincer")~=nil then
-		if af_sect=="af_babka_2" and actor:has_info("info_amk_recipt_burer_grandmother_glassbeards") then
+		if af_sect=="af_babka_2" and actor:has_info("info_amk_recipt_burer_grandmother_glassbeards") and check_af_transform_rank(4) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_babka_3"), pos ,0,0,10,"Бусы бабки бюрера")
+			af_start_transform_timer(af_start_transform(85,10,af_sect,"af_babka_3"), pos ,0,0,10,"Бусы бабки бюрера")
 		end
-		if af_sect=="af_kol_1" and actor:has_info("info_amk_recipt_titan_kolobok") then
+		if af_sect=="af_kol_1" and actor:has_info("info_amk_recipt_titan_kolobok") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_kol_2"), pos ,0,0,10,"Титановый колобок")
+			af_start_transform_timer(af_start_transform(55,35,af_sect,"af_kol_2"), pos ,0,5,0,"Титановый колобок")
 		end
-		if af_sect=="af_armor_1" and actor:has_info("info_amk_recipt_cheshya") then
+		if af_sect=="af_armor_1" and actor:has_info("info_amk_recipt_cheshya") and check_af_transform_rank(3) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_armor_2"), pos ,0,0,10,"Чешуя")
+			af_start_transform_timer(af_start_transform(80,10,af_sect,"af_armor_2"), pos ,0,5,0,"Чешуя")
 		end
 	end
 	if string.find(anom_sect,"_mosquito_bald")~=nil then
-		if af_sect=="af_dik_3" and actor:has_info("info_amk_recipt_stone_dikoobraz") then
+		if af_sect=="af_dik_3" and actor:has_info("info_amk_recipt_stone_dikoobraz") and check_af_transform_rank(5) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_dik_4"), pos ,0,0,10,"Каменный дикобраз")
+			af_start_transform_timer(af_start_transform(50,28,af_sect,"af_dik_4"), pos ,0,9,0,"Каменный дикобраз")
 		end
-		if af_sect=="af_fuzz_kolobok" and actor:has_info("info_amk_recipt_steel_kolobok") then
+		if af_sect=="af_fuzz_kolobok" and actor:has_info("info_amk_recipt_steel_kolobok") and check_af_transform_rank(2) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_kol_1"), pos ,0,0,10,"Стальной колобок")
+			af_start_transform_timer(af_start_transform(70,25,af_sect,"af_kol_1"), pos ,0,2,0,"Стальной колобок")
 		end
-		if af_sect=="af_dummy_pellicle" and actor:has_info("info_amk_recipt_shkura") then
+		if af_sect=="af_dummy_pellicle" and actor:has_info("info_amk_recipt_shkura") and check_af_transform_rank(2) then
 			af_flash(af)
-			af_start_transform_timer(af_start_transform(100,0,af_sect,"af_armor_1"), pos ,0,0,10,"Шкура")
+			af_start_transform_timer(af_start_transform(70,25,af_sect,"af_armor_1"), pos ,0,5,0,"Шкура")
 		end
 	end
 end
@@ -712,10 +712,26 @@ function af_flash(af)
 	amk.remove_item(af)
 end
 
+function check_af_transform_rank(reqrank)
+  if reqrank == 0 then
+    return true
+  end
+  local res = has_alife_info("ecolog_freeplay_reward_task_"..reqrank.."_start")
+  if not res then
+    amk.send_tip(game.translate_string("ecolog_freeplay_transformation_"..reqrank))
+  end
+  return res
+end
+
 function af_start_transform(v1,v2,af_from,af_target)
+-- adjust transformation probability according to the ecolog rank
+    local artrank = xr_statistic_freeplay.get_freeplay_statistic():get_found_artefacts_ranks()
+	local vv1=(1.0-(1.0-v1/100)*(1.0-artrank/100))*100
+	local vv2=v2 * (100 - artrank) * (100 - artrank) * (100 - artrank) / 1000000
+	
 	local rnd=math.random(0,100)
-	if rnd>v1 then
-		if rnd>v2+v1 then
+	if rnd>vv1 then
+		if rnd>vv2+vv1 then
 			return af_from
 		else
 			return "af_buliz"

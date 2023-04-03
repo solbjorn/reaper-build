@@ -89,7 +89,8 @@ function info_received()
 end
 
 function actor_has_money_30000()
-  return db.actor:money()>=30000
+  local money = math.floor(30000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 
 function give_money_30000(t1,t2)
@@ -97,5 +98,6 @@ function give_money_30000(t1,t2)
   if npc:id()==db.actor:id() then
     npc=t2
   end
-  dialogs.relocate_money(npc,30000,"out")
+  local money = math.floor(30000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  dialogs.relocate_money(npc,money,"out")
 end

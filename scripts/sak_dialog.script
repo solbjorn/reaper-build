@@ -1228,28 +1228,34 @@ function repair_costs(first_speaker, second_speaker)
 end
 
 function actor_has_money_30000()
-  return db.actor:money()>=30000
+  local money = math.floor(30000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 
 function actor_has_money_40000()
-  return db.actor:money()>=50000
+  local money = math.floor(50000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 
 function actor_has_money_100000()
-  return db.actor:money()>=100000
+  local money = math.floor(100000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 function actor_has_money_150000()
-  return db.actor:money()>=150000
+  local money = math.floor(150000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 function actor_has_money_400000()
-  return db.actor:money()>=400000
+  local money = math.floor(400000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  return db.actor:money()>=money
 end
 function give_money_100000(t1,t2) 
   local npc=t1
   if npc:id()==db.actor:id() then
     npc=t2
   end
-  relocate_money(npc,100000,1)
+  local money = math.floor(100000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  relocate_money(npc,money,1)
 end
 
 function give_money_150000(t1,t2) 
@@ -1257,7 +1263,8 @@ function give_money_150000(t1,t2)
   if npc:id()==db.actor:id() then
     npc=t2
   end
-  relocate_money(npc,150000,1)
+  local money = math.floor(150000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  relocate_money(npc,money,1)
 end
 
 function give_money_400000(t1,t2) 
@@ -1265,7 +1272,8 @@ function give_money_400000(t1,t2)
   if npc:id()==db.actor:id() then
     npc=t2
   end
-  relocate_money(npc,400000,1)
+  local money = math.floor(400000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  relocate_money(npc,money,1)
 end
 
 function give_money_30000(t1,t2)
@@ -1273,7 +1281,8 @@ function give_money_30000(t1,t2)
   if npc:id()==db.actor:id() then
     npc=t2
   end
-  relocate_money(npc,30000,1)
+  local money = math.floor(30000 * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+  relocate_money(npc,money,1)
 end
 
 function give_money_40000(t1,t2)

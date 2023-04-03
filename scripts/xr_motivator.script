@@ -153,7 +153,7 @@ function motivator_binder:net_spawn(sobject)
                         end
                 end
         end
-
+  self.freeplay_stats = xr_statistic_freeplay.get_freeplay_statistic()
   return true
 end
 
@@ -264,6 +264,7 @@ function motivator_binder:death_callback(victim, who)
 
   if who:id() == db.actor:id() then
     xr_statistic.addKillCount(self.object)
+    self.freeplay_stats:check_stalker_killed_count()
   end
 
   if self.st.death then
@@ -283,7 +284,7 @@ function motivator_binder:death_callback(victim, who)
   -- end of addition
 
   death_manager.drop_manager(self.object):create_release_item()
-
+  self.freeplay_stats:give_item_on_death(victim, who)
   self:clear_callbacks()
 
   --' Наносим небольшой импульс вперед.
