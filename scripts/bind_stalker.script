@@ -191,11 +191,35 @@ function actor_binder:article_callback(npc, group, name)
   if device().precache_frame >1 then return end
   
   if group == "Diary" then
-    news_manager.send_encyclopedy("diary", group)
+    news_manager.send_encyclopedy(group, "diary")
   else
-    news_manager.send_encyclopedy("encyclopedy", group)
+    news_manager.send_encyclopedy(group, "encyclopedy")
   end
-  
+
+	if group == "Diary" then
+		amk.send_tip(game.translate_string(name), "Заметка в журнале:", nil, 7)
+	elseif group == "Mutants" then
+		amk.send_tip(game.translate_string(name), "Заметка о мутантах:", nil, 7)
+	elseif group == "Social" then
+		amk.send_tip(game.translate_string(name), "Информация о группировке:", nil, 7)
+	elseif group == "Artifacts" then
+		amk.send_tip(game.translate_string(name), "Заметка об артефактах:", nil, 7)
+	elseif group == "Anomalies" then
+		amk.send_tip(game.translate_string(name), "Заметка об аномалиях:", nil, 7)
+	elseif group == "Locations" then
+		amk.send_tip(game.translate_string(name), "Информация о локации:", nil, 7)
+	elseif group == "Zone-story" then
+		amk.send_tip(game.translate_string(name), "История Зоны:", nil, 7)
+	elseif group == "Stories" then
+		amk.send_tip(game.translate_string(name), "Местный фольклор:", nil, 7)
+	elseif group == "memuars" then
+		amk.send_tip(game.translate_string(name), "Личная заметка:", nil, 7)
+	elseif group == "Found_PDA" then
+		amk.send_tip(game.translate_string(name), "Скачаны данные:", nil, 7)
+	elseif group == "st_operation_agroprom" or group == "LabX18_information" or group == "aes_military_task" then
+		amk.send_tip(game.translate_string(name), "Заметка в журнале:", nil, 7)
+	end
+
   --AMK UTILS--
   amk.on_info(npc,info_id)
   amk_utils.actor_article(npc, group, name)
