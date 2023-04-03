@@ -113,7 +113,21 @@ function bgwith(str,ptr)
 	return ps~=nil and ps==1
 end
 
-function isValuable(obj)
+function npc_has_same_wo(npc, obj)
+	--defines if npc already has the same weapon or outfit as given in obj
+	local objsection = obj:section()
+	if string.find(objsection, "^wpn_") or string.find(objsection, "outfit") then
+		for iter=0, npc:object_count()-1 do
+			local item = npc:object(iter)
+			if item and item:section() == objsection then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function isValuable(npc, obj)
 	local sec=obj:section()
   if sec=="amk_metka" then
     return false,false
@@ -147,6 +161,7 @@ function claimGObject(npc,st,obj)
 end
 
 function freeGObject(st)
+
 	if st.grabitemid then
 		obj_owner[st.grabitemid]=nil
 		st.grabitemid=nil
@@ -209,7 +224,6 @@ function ev_see_stuff:evaluate()
       bad_danger(npc) or (actsch and db.storage[npc:id()][actsch].no_loot) then
 		if res then
 			freeGObject(self.st)
-			amk.mylog(npc:name() .. " distracted. sect "..act_sec,"grb")
       end
 		return false
 	end
@@ -224,7 +238,6 @@ function ev_see_stuff:evaluate()
 	end
 	timed(self.st,"tm1",5000+math.random()*10000,
 		function ()
---			amk.mylog(npc:name() .. " is going to search stuff","grb")
 			local min_dist=100000
 			local function check_item(o)
 				local obj=o:object()
@@ -234,26 +247,29 @@ function ev_see_stuff:evaluate()
 				if (not self.st.disabled_objects[obj:id()]) and (obj:parent()==nil or not IsStalker(obj:parent())) and 
            (obj_owner[obj:id()]==nil or obj_owner[obj:id()]==npc:id()) and npc:accessible(obj:level_vertex_id()) and
            (db.actor==nil or db.actor:alive()==false or db.actor:position():distance_to_sqr(obj:position())>6) then
-					local valuable,corpse=isValuable(obj)
+					local valuable,corpse=isValuable(npc, obj)
 					if valuable then 
 						local value=3000
 						if not corpse then
-							value=objValue(obj)
+							value= objValue(obj)
 						end
 						if value<=0 then value=0 end
-						local max_dist=5+math.sqrt(value)
-						if busy then
-							max_dist=max_dist/5
-						end
-						local dist=level.vertex_position(obj:level_vertex_id()):distance_to(npc:position())
-            local corrected_dist=dist
-            if dist>5 then
-              corrected_dist=5+(dist-5)/math.sqrt(value)
-            end
-						if dist<max_dist and corrected_dist<min_dist and dist<dist_limit then
-              min_dist=corrected_dist
-							claimGObject(npc,self.st,obj)
-							res=true
+						
+						if corpse or not npc_has_same_wo(npc, obj) then
+							local max_dist=5+math.sqrt(value)
+							if busy then
+								max_dist=max_dist/5
+							end
+							local dist=level.vertex_position(obj:level_vertex_id()):distance_to(npc:position())
+							local corrected_dist=dist
+							if dist>5 then
+								corrected_dist=5+(dist-5)/math.sqrt(value)
+							end
+							if dist<max_dist and corrected_dist<min_dist and dist<dist_limit then
+								min_dist=corrected_dist
+								claimGObject(npc,self.st,obj)
+								res=true
+							end
 						end
 					end
 				end
@@ -263,12 +279,6 @@ function ev_see_stuff:evaluate()
 			end
 			for o in npc:memory_sound_objects() do
 				check_item(o)
-			end
---			for o in npc:not_yet_visible_objects() do
---				check_item(o)
---			end
-			if res then 
-				amk.mylog(npc:name() .. " claimed "..getGObject(self.st):name().." cact "..tostring(npc:motivation_action_manager():current_action_id()),"grb")
 			end
 		end
 	)
@@ -337,7 +347,6 @@ function act_grab_item:initialize()
 	local gi=getGObject(self.st)
 --	if gi then npc:set_sight(gi,true,true) end
 	npc:set_sight(look.danger,nil,0)
-	amk.mylog(self.object:name().." is going to grab item","stmt")
 	self.st.block_search=true
 	if gi then
     if(IsStalker(gi) or IsMonster(gi)) then
@@ -363,7 +372,6 @@ function act_grab_item:execute()
 		if gi and gi:parent()==nil then
 			gi:transfer_item(gi,npc)
 			npc:enable_memory_object(gi,false)
-			amk.mylog(npc:name() .. " has taken "..gi:name(),"grb")
 		end
 		-- Тут нельзя освобождать объект. transfer_item выполняется асинхронно. Поэтому делаем clearGObject
 		clearGObject(self.st)
@@ -390,7 +398,6 @@ function act_grab_body:initialize()
 	action_base.initialize(self)
 	local npc=self.object
 	local gi=getGObject(self.st)
-	amk.mylog(self.object:name().." is going to grab body","stmt")
 	self.st.block_search=true
 	if gi then
  		self.tt=time_global()+6000
@@ -412,7 +419,9 @@ function act_grab_body:execute()
 		if gi and gi:parent()==nil then
       gi:iterate_inventory(function (d,item)
           if item:section()~="bolt" then 
-            gi:transfer_item(item,npc)
+			if not npc_has_same_wo(npc, item) then
+				gi:transfer_item(item,npc)
+			end
           end
         end, nil)
 		local num=gi:money() 
@@ -432,12 +441,12 @@ function act_grab_body:execute()
 		gi:give_money(-num) 
 		game_stats.money_quest_update(-num) 
 		end
-      corpse_checked[gi:id()]=false
-			amk.mylog(npc:name() .. " has taken "..gi:name(),"grb")
+		corpse_checked[gi:id()]=false
+		amk_offline_alife.set_body_trap(npc:id(), gi:id())
 		end
 		-- Тут нельзя освобождать объект. transfer_item выполняется асинхронно. Поэтому делаем clearGObject
 		clearGObject(self.st)
-		--freeGObject(self.st) 
+--		freeGObject(self.st) 
 	end
 end
 
@@ -505,7 +514,6 @@ function act_reach_item:initialize()
 	self.ct=time_global()
 	self.clvid=npc:level_vertex_id()
   self.st.position_corrected=false
-	amk.mylog(self.object:name().." is going to reach item","stmt")	
 end
 
 function act_reach_item:execute()
@@ -538,7 +546,6 @@ function act_reach_item:execute()
 end
 
 function add_to_binder(object, char_ini, scheme, section, st)
---	amk.mylog("addtb "..object:name(),"pln")
 	local npc=object
 	st.disabled_objects={}
   local manager = object:motivation_action_manager()
@@ -611,20 +618,10 @@ function add_to_binder(object, char_ini, scheme, section, st)
 	  action:add_precondition(world_property(evid_see_stuff,false))
     action = manager:action(stalker_ids.action_danger_planner)
 	  action:add_precondition(world_property(evid_see_stuff,false))
---    action:add_precondition(world_property(evid_near_stuff,false))
---	  action = manager:action(xr_actions_id.stohe_kamp_base + 1) 
---	  action:add_precondition(world_property(evid_see_stuff,false))
---	  action = manager:action(xr_actions_id.stohe_kamp_base + 3) 
---	  action:add_precondition(world_property(evid_see_stuff,false))
-		
---	  action = manager:action(xr_actions_id.stohe_meet_base+1) 
---	  action:add_precondition(world_property(evid_see_stuff,false))	
---	amk.mylog("addtb end "..object:name(),"pln")
 	end
 end
 
 function set_scheme(npc, ini, scheme, section)
---	amk.mylog("set scheme "..npc:name().." story_id "..npc:story_id(),"pln")
   local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
   st.ini=ini
 end

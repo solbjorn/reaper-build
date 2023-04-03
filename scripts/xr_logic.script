@@ -219,6 +219,7 @@ end
 function disable_generic_schemes(npc, stype)
   if stype == modules.stype_stalker then
     xr_combat.disable_scheme(npc, "combat")
+	xr_punch_tm.disable_scheme(npc, "punch_tm")
     if xrs_ai then xrs_ai.disable_schemes(npc, stype) end
     xr_use.disable_scheme(npc, "use")
     xr_hit.disable_scheme(npc, "hit")
@@ -291,7 +292,8 @@ function enable_generic_schemes(ini, npc, stype, section)
                 if watcher_act then
                         watcher_act.set_scheme(npc,ini,"watcher_act","watcher_act")
                 end
-
+				
+  xr_punch_tm.set_scheme(npc, nil, "punch_tm")
   if xrs_ai then xrs_ai.enable_schemes(ini, npc, stype, section) end
   elseif stype == modules.stype_mobile then
     local combat_section = utils.cfg_get_string(ini, section, "on_combat", npc, false, "")

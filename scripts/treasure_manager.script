@@ -289,6 +289,24 @@ function CTreasure:__init()
 		self.treasure_by_target[v.target] = k	
 	end
 end
+
+function CTreasure:offline_give_treasure(npc)
+	local res, boxlist = amk_offline_alife.give_treasure(npc)
+	if res then 
+		if boxlist and table.getn(boxlist) > 0 then
+			for iter, box_story_id in pairs(boxlist) do
+				local k = self.treasure_by_target[box_story_id]
+				if k ~= nil then 
+					self.treasure_info[k].active = true
+					self.treasure_info[k].done = true
+				end
+			end
+		end
+		return true
+	end
+	return false
+end
+
 --' Юзание инициатора (возможность выдать тайник)
 function CTreasure:use(npc)
 	printf("TREASURE USE")
@@ -297,6 +315,7 @@ function CTreasure:use(npc)
 		lootmoney.lootmoney(npc)
 	end
 	--lootmoney end
+	if self:offline_give_treasure(npc) then return end
 	local rarets 
 	
 	if npc ~= nil then
@@ -439,6 +458,7 @@ function CTreasure:treasure_empty(box, box_story_id)
 	if self.treasure_info[k].active ~= false then
 		xr_statistic_freeplay.get_freeplay_statistic():check_found_secrets_count()
 		actor_stats.add_points("artefacts", "st_pda_secrets", 1, 1)
+		amk_offline_alife.empty_treasure(box:id())
 	end
 
 	self.treasure_info[k].active = false
@@ -452,6 +472,10 @@ function CTreasure:treasure_empty(box, box_story_id)
 end
 --' Сохранение
 function CTreasure:save(p)
+	local tmp = 65535
+	p:w_u16(tmp)
+	amk_offline_alife.save(p)
+
 	--' Сохраняем размер таблицы
 	local size = 0
 	for k,v in pairs(self.treasure_info) do
@@ -467,6 +491,11 @@ end
 --' Загрузка
 function CTreasure:load(p)
 	local t = p:r_u16()
+	if t == 65535 then
+		amk_offline_alife.load(p)
+		t = p:r_u16()
+	end
+
 	for i = 1,t do
 		local k = self.treasure_by_target[p:r_u16()]
 		self.treasure_info[k].active = p:r_bool()

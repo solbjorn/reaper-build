@@ -1,4 +1,11 @@
--- Idler: файл из мода 'Народная солянка 2.0'. Адаптирован для мода 'Метки с хабаром 2.1.2' 30.09.2008 0:08:54
+-- Idler: файл из мода 'Заминированные тайники'. Адаптирован для мода 'Метки с хабаром 2.1.3' 13.10.2008 14:39:57
+--[[
+Изменения:
+- добавлен флаг  is_look_rukzak, для возможности отключения обыскивания переносных рюкзаков. (Idler)
+
+Дата последнего редактирования: 13.10.08
+]]--
+
 -- Нужны списки тайников, которые НПС не будут обыскивать.
 off_npcs={}
 items={}
@@ -9,6 +16,7 @@ local item_dependence = {}
 local always_keep_item = {}
 
 local wpn_fp = {}
+local item_cost = {}
 -- Пора апдейт делать
 local bFlag = false
 -- Номер последнего отработанного обьекта
@@ -20,6 +28,8 @@ local iFreq = 60 * 3
 local initialized = false
 
 local monster_params = {}
+
+local is_look_rukzak = true --грабить рюкзаки?
 
 local maps={
 	"l01_escape",
@@ -105,12 +115,17 @@ local dist_coeff = 8
 local sell_limit = 3000
 -- Рейтинг за убийство. При убийстве более слабого - 0.5 * rate_kill_base, более сильного - 2 * rate_kill_base
 local rate_kill_base = 100
-local rate_art_found = 100
+local rate_art_found = 50
 local to_actor = 150
 local look_radius_box = 100
+local look_radius_ruksak = 200
+local look_radius_hide1 = 30
+local look_radius_hide2 = 60
+local body_blow_id = nil
 
 function init()
 	if (initialized == false) then
+		load_scheme("xr_punch_tm",      "punch_tm",      stype_stalker)
 		if amk.load_variable("freeplay",0) == 2 then -- Фриплей - везде гуляем.
 			maps={ "l01_escape", "l02_garbage", "l03_agroprom",	"l04_darkvalley", "l05_bar", "l06_rostok", "l07_military",
 				"l08_yantar", "l10_radar", "l11_pripyat", "l12_stancia", "l12_stancia_2" }
@@ -139,9 +154,12 @@ function update()
 			amk.mylog("Updating offline-ALife finished")
 		else
 			local obj
-			obj = alife():object(iCounter)
-			add_fresh_meat(obj)
-			iCounter = iCounter + 1
+			for i=1,8 do
+			  obj = alife():object(iCounter)
+			  add_fresh_meat(obj)
+			  iCounter = iCounter + 1
+			  if iCounter >= 65535 then break end
+			end  
 		end
 	end
 end
@@ -153,12 +171,13 @@ function add_fresh_meat(obj)
 		if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 			local map=alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
 			if not off_npcs[map] then off_npcs[map]={monsters={},stalkers={},weapons={},artefacts={},inv_boxes={}} end
+			get_item_cost(obj)
 			if IsMonster(obj) and obj.alive and obj:alive() and obj.health and obj:health()>0 and obj.m_story_id~=nil and obj.m_story_id==4294967296 then
 				local flags = get_flags(obj.id)
 				if flags == 0 or flags == 2 then --Уберем тех, у кого on_hit есть.
 					table.insert(off_npcs[map].monsters, {id = obj.id, name = obj:name()})
 				end
-			elseif IsStalker(obj) and obj.alive and obj:alive() and obj.health and obj:health()>0 and obj.m_story_id~=nil and obj.m_story_id==4294967296 then
+			elseif IsStalker(obj) and obj.alive and obj:alive() and obj.health and obj:health()>0 and obj.m_story_id~=nil and obj.m_story_id==4294967296 and not IsTrader(obj.id) then
 				local flags = get_flags(obj.id)
 				if flags == 0 or flags == 2 then --Уберем тех, у кого on_hit есть.
 					if obj:community()~="zombied" then
@@ -168,13 +187,14 @@ function add_fresh_meat(obj)
 					end
 				end
 			elseif isWeapon(obj) then
+				load_weapon_params(obj)
 				if obj.m_story_id~=nil and obj.m_story_id==4294967296 then
 					if (obj.parent_id ~= nil) then
 						local p_obj = alife():object(obj.parent_id)
 						if (p_obj) then
 							if p_obj.m_game_vertex_id and game_graph():valid_vertex_id(p_obj.m_game_vertex_id) then
 								--if p_obj:section_name()=="inventory_box" and box_is_protected(p_obj)==true then
-								if p_obj:section_name()=="inventory_box" then
+								if p_obj:section_name()=="inventory_box" or p_obj:section_name()=="m_inventory_box" then
 									-- НПС "не видят" этого
 									map = ""
 								else
@@ -195,7 +215,7 @@ function add_fresh_meat(obj)
 					if (p_obj) then
 						if p_obj.m_game_vertex_id and game_graph():valid_vertex_id(p_obj.m_game_vertex_id) then
 							--if p_obj:section_name()=="inventory_box" and box_is_protected(p_obj)==true then
-							if p_obj:section_name()=="inventory_box" then
+							if p_obj:section_name()=="inventory_box" or p_obj:section_name()=="m_inventory_box" then
 								-- НПС "не видят" этого
 								map = ""
 							else
@@ -209,7 +229,7 @@ function add_fresh_meat(obj)
 					end
 				end
 				if map ~= "" then table.insert(off_npcs[map].artefacts, {id = obj.id, name = obj:name()}) end
-			elseif (obj:section_name()=="inventory_box" and box_is_protected(obj)==false) then
+			elseif ((obj:section_name()=="inventory_box" or (obj:section_name()=="m_inventory_box" and is_look_rukzak)) and box_is_protected(obj)==false) then
 				table.insert(off_npcs[map].inv_boxes, {id = obj.id, name = obj:name()})
 			end
 			
@@ -219,11 +239,11 @@ function add_fresh_meat(obj)
 					if IsStalker(zz) and zz.m_story_id~=nil and zz.m_story_id==4294967296 then
 						if not items[obj.parent_id] then items[obj.parent_id] = {} end
 						table.insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
-gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
+if gps_habar then gps_habar.insert_item(obj.parent_id, obj) end -- Idler++-- корректируем хабар в помеченных тайниках
 					else
 						if not items[obj.parent_id] then items[obj.parent_id] = {} end
 						table.insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
-gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
+if gps_habar then gps_habar.insert_item(obj.parent_id, obj) end -- Idler++-- корректируем хабар в помеченных тайниках
 					end
 				end
 			end
@@ -314,6 +334,7 @@ function build_tables()
 end
 
 function update_npc_tables()
+	item_cleaner.clean_items()
 	off_npcs={}	
 	local obj
 	for a=1,65534 do
@@ -325,6 +346,10 @@ function update_npc_tables()
 	bFlag = false
 	iTime = game_minutes()
 	iCounter = 1
+	checked_marked_npc()
+	check_be_enemies()
+	check_item_owners()
+	check_trapped_bodies()
 end
 
 function update_trade()
@@ -360,9 +385,13 @@ function trim (s)
 end
 
 --генерируем оффлайн события
-function offline_alife()
-	
-	local lname = maps[math.random(table.getn(maps))]
+function offline_alife(level_name)
+	local lname
+	if level_name then
+		lname = level_name
+	else
+		lname = maps[math.random(table.getn(maps))]
+	end	
 --	update_tables(lname)
 	amk.mylog("Offline_alife - "..lname)
 	local st = 0
@@ -378,7 +407,7 @@ function offline_alife()
 	amk.oau_reason="cn offline_alife chp5"
 				local victim = alife():object(off_npcs[lname].stalkers[rnd].id)
 	amk.oau_reason="cn offline_alife chp6"
-				if victim and not victim.online and victim.health and victim.can_switch_online and victim:health()>0 and victim:can_switch_online() and victim:name() == off_npcs[lname].stalkers[rnd].name then
+				if victim and not victim.online and victim.health and victim.can_switch_online and victim:health()>health_wound_set and victim:can_switch_online() and victim:name() == off_npcs[lname].stalkers[rnd].name then
 	amk.oau_reason="cn offline_alife chp7 "..tostring(victim and victim:name())
 					local vdata = collect_info(victim,lname)
 	amk.oau_reason="cn offline_alife chp8 "..tostring(victim and victim:name())
@@ -422,7 +451,7 @@ function offline_alife()
 	amk.oau_reason="cn offline_alife chp15 "..tostring(victim and victim:name())
 						amk.mylog("Offline: lets trade")
 	amk.oau_reason="cn offline_alife chp17 "..tostring(victim and victim:name())
-						process_trade(victim)
+						process_trade(victim, vdata)
 						amk.mylog("Offline: trade done")
 						break
 					else
@@ -542,18 +571,51 @@ function collect_info(victim,map)
 	
 	--составляем список контейнеров в зоне "видимости"
 	vdata.inv_boxes={}
+	vdata.hide_boxes={}
+	local allemptyboxes = {}
 	if off_npcs[map].inv_boxes then
 		if table.getn(off_npcs[map].inv_boxes)>0 then
 			for a=1,table.getn(off_npcs[map].inv_boxes) do
 				if off_npcs[map].inv_boxes[a] then
 					local inv_box = alife():object(off_npcs[map].inv_boxes[a].id)
-					if (inv_box and inv_box.can_switch_online and inv_box:can_switch_online() and inv_box:name() == off_npcs[map].inv_boxes[a].name and victim.position:distance_to(inv_box.position)<=look_radius_box and sobj_is_far(inv_box, to_actor)) then
-						local zdist = victim.position:distance_to(inv_box.position)/100
-						if math.random() > zdist then
-							if inv_box.parent_id==nil or inv_box.parent_id==65535 then
+					--skip trapped box
+					if (inv_box and inv_box.can_switch_online and inv_box:can_switch_online() and inv_box:name() == off_npcs[map].inv_boxes[a].name and 
+					   (inv_box.parent_id==nil or inv_box.parent_id==65535)) and sobj_is_far(inv_box, to_actor) then
+					   
+						local dist = victim.position:distance_to(inv_box.position)
+						local owner_id = get_box_owner(inv_box.id)
+						
+						--look is higher for ruksaks
+						local lookr = look_radius_box
+						local is_ruksak = inv_box:section_name() == "m_inventory_box"
+						if is_ruksak then lookr = look_radius_ruksak end
+						
+						if dist<=lookr and owner_id==65535 then	
+							local zdist = victim.position:distance_to(inv_box.position)/lookr * 0.75
+							if my_random() > zdist then
 								table.insert(vdata.inv_boxes, {id = inv_box.id, name = inv_box:name()})
 							end
 						end
+						
+						--making the list of empty boxes to hide habar except ruksaks
+						if not is_ruksak and (not items[inv_box.id] or table.getn(items[inv_box.id]) == 0 or owner_id~=65535) then
+							table.insert(allemptyboxes, inv_box)	
+							if dist<=look_radius_hide1 then
+								table.insert(vdata.hide_boxes, {id = inv_box.id, name = inv_box:name()})
+							end
+						end
+						
+					end
+				end
+			end
+
+			if table.getn(vdata.hide_boxes) == 0 then
+				--making the list of empty boxes to hide habar except ruksaks with larger look radius
+				for a=1,table.getn(allemptyboxes) do
+					local inv_box = allemptyboxes[a]
+					--making the list of empty boxes to hide habar except ruksaks
+					if victim.position:distance_to(inv_box.position)<=look_radius_hide2 then
+						table.insert(vdata.hide_boxes, {id = inv_box.id, name = inv_box:name()})
 					end
 				end
 			end
@@ -716,7 +778,7 @@ function on_enemies_found(victim, vdata)
 										end
 									end
 								end
-								process_trade(attacker.player)
+								process_trade(attacker.player, vdata)
 							end
 						end
 						--amk.mylog(attacker.player:name().." [team_A] попал в "..defender.player:name().." [team_B] ("..defender.health..")")
@@ -784,7 +846,7 @@ function on_enemies_found(victim, vdata)
 											end
 										end
 									end
-									process_trade(attacker.player)
+									process_trade(attacker.player, vdata)
 								end
 							end
 							--amk.mylog(attacker.player:name().." [team_B] попал в "..defender.player:name().." [team_A] ("..defender.health..")")
@@ -991,7 +1053,7 @@ function on_monsters_found(victim, vdata)
 										end
 									end
 								end
-								process_trade(attacker.player)
+								process_trade(attacker.player, vdata)
 							end
 						end
 						--amk.mylog(attacker.player:name().." [team_A] попал в "..defender.player:name().." [team_B] ("..defender.health..")")
@@ -1099,19 +1161,26 @@ function on_npc_corpses_found(victim, vdata)
 			news_main.on_offline_corpse_found(victim, corpse)
 			id = corpse.id
 			if (id and items[id]) then
+				local anypick = false
 				for a=1, table.getn(items[id]) do
 					local v_itA = items[id][a]
 					if (v_itA) then
 						local itA = alife():object(v_itA.id)
 						if (itA and itA:name() == v_itA.name and itA.parent_id == id) then
 							local l_objA = pick_item(victim, itA)
+							if l_objA then
+								anypick = true
+							end
 						end			
 					end
+				end
+				if anypick then
+					set_body_trap(victim.id, id)
 				end
 			end
 		end
 	end
-	process_trade(victim)
+	process_trade(victim, vdata)
 end
 
 -- О, трупик монстра. Будем шмонать?
@@ -1147,7 +1216,7 @@ function on_monster_corpses_found(victim, vdata)
 			end
 		end
 	end
-	process_trade(victim)
+	process_trade(victim, vdata)
 end
 
 -- Хорошая пушка - не помешает.
@@ -1170,7 +1239,7 @@ function on_weapons_found(victim, vdata)
 			end
 		end
 	end
-	process_trade(victim)
+	process_trade(victim, vdata)
 end
 
 -- Моя прелесссть
@@ -1201,10 +1270,42 @@ function on_artifacts_found(victim, vdata)
 			end
 		end
 	end
-	process_trade(victim)
+	process_trade(victim, vdata)
 end
 
 -- О, нычка - это гуд.
+-- Idler ++
+-- проверим, а сможет ли непись долезть до  тайника.
+-- если есть аномалии в радиусе 20м, меньше шансов или если тайник высоко, тоже не факт что долезет.
+function inv_box_is_avail(victim, box)
+	if (victim == nil or box == nil or box.id == 0) then return false end
+	
+--    math.randomseed(math.floor(device():time_global() / box.id))
+	local n_rnd
+	if victim.position and box.position then 
+		n_rnd = math.random(3, 10)
+		--get_console():execute("load ~~~ Непись пробует добраться до тайника " .. tostring(box.id) .. ". npc.y = " .. tostring(victim.position.y) .. " box.y = " .. tostring(box.position.y) .. " rnd = " .. tostring(n_rnd))
+		if math.abs(box.position.y - victim.position.y) > n_rnd then
+			--get_console():execute("load ~~~ Не добрался. Высоко")
+			return false
+		end 
+	end
+
+	local anom_list=amk_anoms.get_anomaly_list_for_pos(box.position,20) 
+	local n_anoms = table.getn(anom_list)
+	n_rnd = math.random(1, 100)
+	--get_console():execute("load ~~~ Непись пробует добраться до тайника " .. tostring(box.id) .. ". Рядом " .. tostring(n_anoms) .. " аномалий. " .. tostring(n_rnd))
+	if n_rnd < n_anoms * 20 then -- смотрим вероятность. Чем больше аномалий, тем меньше шансов. При 5 - точно до ящика не доберется
+		--get_console():execute("load ~~~ Не решился лезть в аномалии.")
+		return false
+	end
+	
+	
+	--get_console():execute("load ~~~ Долез настырный")
+	return true
+end
+-- Idler --
+
 function on_inv_boxes_found(victim, vdata)
 	if (victim == nil or vdata == nil) then return end
 	local obj, v_obj
@@ -1219,62 +1320,630 @@ function on_inv_boxes_found(victim, vdata)
 		end
 	end
 	for i=1, table.getn(vdata.inv_boxes) do
+	    local anyfound = false
 		v_obj = vdata.inv_boxes[i]
 		if (v_obj) then
 			object = alife():object(v_obj.id)
 			if (object and object:name() == v_obj.name) then
 				if items[v_obj.id] and table.getn(items[v_obj.id])>0 then
-					for a=1,table.getn(items[v_obj.id]) do
+					local a = 1
+					local checktrap = true
+					while a <= table.getn(items[v_obj.id]) do
 						local v_itA = items[v_obj.id][a]
 						if (v_itA) then
 							local itA = alife():object(v_itA.id)
 							if (itA and itA:name()==v_itA.name and itA.parent_id == v_obj.id) then
-								--news_main.trace("on_inv_boxes_found - found "..itA:section_name().." in "..object:name())
 								-- Решим, подбираем или нет?
 								local bTake = is_valuable(itA)
 								if bTake then
-									local l_objA = pick_item(victim, itA)
+									if checktrap then
+										if check_box_trapped(victim, v_obj) then 
+											npc_hide_habar_boxs(victim, vdata.hide_boxes)
+											return
+										end
+										checktrap = false
+									end
+									local oldsize = table.getn(items[v_obj.id])
+									if pick_item(victim, itA) then
+										anyfound = true
+										if oldsize > table.getn(items[v_obj.id]) then
+											a=a-1
+										end
+									end
 								end
-							else
-								if(itA) then
-									local mm = itA.parent_id
-									if mm == nil then mm = "nil" end
-									amk.mylog("В контейнере "..object:name().." странная вещичка - "..itA:name().." parent_id="..mm)
-								end											
 							end			
 						end
+						a=a+1
 					end					
+					if anyfound then
+						set_box_trapped(v_obj.id, 0)
+					end
 				end
 			end
 		end
-		if (b_stalker == true) then
+		
+		if (b_stalker == true) and anyfound then
 			victim:set_rank(victim:rank() + rate_art_found)
 		end
 	end
-	process_trade(victim)
+	--hiding found habar in an empty box
+	npc_hide_habar_boxs(victim, vdata.hide_boxes)
+	do_process_trade(victim)
+end
+
+--the list of items a npc does not hide
+local nhideitems = {
+"device_torch",
+"device_pda",
+"hand_radio",
+"guitar_a",
+"harmonica_a",
+"binocular_a",
+"wpn_knife",
+"wpn_binoc",
+"bolt",
+"medkit",
+"medkit_army",
+"medkit_scientic",
+"yad",
+"bandage",
+"bread",
+"kolbasa",
+"energy_drink",
+"antirad"
+}
+
+function my_log(mtext, oname)
+  if oname then
+	get_console():execute("load ~~~~"..tostring(mtext).."  "..tostring(oname))
+  else
+    get_console():execute("load ~~~~"..tostring(mtext))
+  end	
+end
+
+function check_hide_item(obj)
+  if not obj then return false end
+  --not hiding weapons, ammo and outfits
+  local section = obj:section_name()
+  if isWeapon(obj) or is_ammo(obj) or string.find(section, "outfit") then return false end
+  --not hiding npc pda, binocular, etc.
+  for iter=1, table.getn(nhideitems) do
+    if section == nhideitems[iter] then return false end
+  end
+  return true
+end
+
+function is_ammo(obj)
+	if obj and obj:clsid() == clsid.wpn_ammo then
+		return true
+	else
+		return false
+	end
+end
+
+function isammofor(wpn, ammos)
+	for aiter, ammo in pairs(ammos) do
+		local section_ammo = get_weapon_ammo(wpn)
+		if string.find(section_ammo, ammo:section_name()) then
+			return true
+		end
+	end
+	return false
+end
+
+local max_ammo_boxes=1
+
+function npc_hide_habar_boxs(victim, boxs)
+    if not boxs or not victim or not items[victim.id] then return end
+	
+	local nbox = table.getn(boxs)
+	if nbox == 0 then return end
+	
+	--find a box the npc owns
+	local box = nil
+	local nbvoxs = {}
+	for iter=1, nbox do
+		local onwer_id = get_box_owner(boxs[iter].id)
+		if onwer_id == victim.id then
+			box = boxs[iter]
+			break
+		elseif onwer_id == 65535 then
+			table.insert(nbvoxs, boxs[iter])
+		end
+	end
+	
+	-- randomly pick a box
+	if not box then
+		-- first try to find nobody's box
+		local nb = table.getn(nbvoxs)
+		if nb > 0 then
+			box = nbvoxs[my_random(nb)]
+		else
+			--finding a box with minimum items
+			local mbox = nil
+			local cnt = 65535
+			for iter=1, nbox do
+				mbox = boxs[iter]
+				if items[mbox.id] then
+					if table.getn(items[mbox.id]) < cnt then
+						cnt = table.getn(items[mbox.id])
+						box = mbox
+					end
+				else
+					box = mbox
+					break
+				end
+			end
+		end
+	end
+	if not box then return end
+	
+	--collecting items to hide
+	local hitems  = {}
+	local medkits = {}
+	local weapons = {}
+	local weapons1 = {} --slot 1 weapons
+	local weapons2 = {} --slot 2 weapons
+	local outfits = {}
+	local ammos = {}
+	local sim = alife()
+	
+	for iter=1, table.getn(items[victim.id]) do
+      local v_itA = items[victim.id][iter]
+      if v_itA then
+        local obj = sim:object(v_itA.id)
+        if obj and obj:name()==v_itA.name and obj.parent_id == victim.id then
+		  local objsect = obj:section_name()
+		  if check_hide_item(obj) then
+		    table.insert(hitems, obj)
+		  elseif is_ammo(obj) then
+		    table.insert(ammos, obj)
+		  elseif string.find(objsect, "medkit") then
+		    table.insert(medkits, obj)
+		  elseif string.find(objsect, "outfit") then
+		    table.insert(outfits, obj)
+		  elseif isWeapon(obj) and string.find(objsect, "^wpn_") then
+			--all weapons excluding grenades, knife etc.
+			local slot = get_weapon_slot(obj)
+			if slot==1 or slot==2 then
+				table.insert(weapons, obj)
+				if slot==1 then
+					table.insert(weapons1, obj)
+				else
+					table.insert(weapons2, obj)
+				end
+			end
+		  end	
+	    end
+	  end
+	end
+	  
+	--hiding collected items
+    local boxobj = sim:object(box.id)
+    if not boxobj then return end
+	
+	local habarcost = hide_items_box(boxobj, hitems, 0, victim.id)
+	
+	--defining weapon priorities
+	local weaponparams = {}
+	for witer, wpn in pairs(weapons) do
+		local fp = get_weapon_firepower(wpn)
+		--a weapon with ammo has much higher pripority
+		if isammofor(wpn, ammos) then fp = fp * 1000 end
+		weaponparams[wpn.id] = fp
+	end
+	
+	--a npc keeps a best outfit, a best weapon for each slot and one medkit
+	table.sort(outfits, function(a,b) return get_item_cost(a) < get_item_cost(b) end)
+	table.sort(weapons1, function(a,b) return weaponparams[a.id] < weaponparams[b.id] end)
+	table.sort(weapons2, function(a,b) return weaponparams[a.id] < weaponparams[b.id] end)
+
+	--check if we have a weapon for collected ammo and keep maximum 2 boxes of ammo for each weapon
+	local coll_ammo={}
+	local aiter=1
+	while aiter <= table.getn(ammos) do
+		local ammo = ammos[aiter]
+		local ammo_sec = ammo:section_name()
+		if not coll_ammo[ammo_sec] then coll_ammo[ammo_sec] = 0 end
+		
+		local keep = false
+		if coll_ammo[ammo_sec] < max_ammo_boxes then
+			if table.getn(weapons1) > 0 then
+				local wpn = weapons1[table.getn(weapons1)]
+				local section_ammo = get_weapon_ammo(wpn)
+				if section_ammo=="" or string.find(section_ammo, ammo:section_name()) then
+					coll_ammo[ammo_sec] = coll_ammo[ammo_sec]+1
+					keep = true
+				end
+			end
+			if not keep and table.getn(weapons2) > 0 then
+				local wpn = weapons2[table.getn(weapons2)]
+				local section_ammo = get_weapon_ammo(wpn)
+				if section_ammo=="" or string.find(section_ammo, ammo:section_name()) then
+					coll_ammo[ammo_sec] = coll_ammo[ammo_sec]+1
+					keep = true
+				end
+			end
+		end
+		
+		if keep then
+			table.remove(ammos, aiter)
+		else
+			aiter=aiter+1
+		end
+	end
+	
+	habarcost = hide_items_box(boxobj, weapons1, 1, victim.id) + habarcost
+	habarcost = hide_items_box(boxobj, weapons2, 1, victim.id) + habarcost
+	habarcost = hide_items_box(boxobj, ammos, 0, victim.id)    + habarcost
+	habarcost = hide_items_box(boxobj, medkits, 1, victim.id)  + habarcost
+	habarcost = hide_items_box(boxobj, outfits, 1, victim.id)  + habarcost
+	
+	if habarcost > 0 then
+		npc_put_trap_box(victim, box, habarcost)
+		send_metka_hide_box(boxobj, victim)
+		
+		local owner_id = get_box_owner(box.id)
+		if owner_id ~= 65535 then
+			--a npc occupies a box only if his rank is higher than an owner rank or the owner is gone
+			local owner = sim:object(owner_id)
+			if owner and IsStalker(owner) and owner.health and owner:health() > 0 then
+				if owner:rank() > victim:rank() then return end
+			end
+		end
+		set_box_owner(box.id, victim.id)
+	end
+end
+
+function IsTrader(npc_id)
+	local npc = alife():object(npc_id)
+	if not npc then return false end
+	if npc:community() == "trader" then return true end
+
+	if npc.smart_terrain_id and npc:smart_terrain_id() and npc:smart_terrain_id()~=65535 then
+		local sm = alife():object(npc:smart_terrain_id())
+		if sm and sm.gulag and sm.gulag.ltx and sm.gulag.ObjectJob and sm.gulag.Job then
+			local jobid = sm.gulag.ObjectJob[npc_id]
+			if jobid then
+				local job = sm.gulag.Job[jobid]
+				if job and job.section and sm.gulag.ltx:section_exist(job.section) and sm.gulag.ltx:line_exist(job.section, "trade") then
+					return true
+				end
+			end
+		end
+	end
+	
+	local char_ini = xr_logic.get_customdata_or_ini_file(npc, "<customdata>")
+	if char_ini and char_ini:section_exist("logic") and char_ini:line_exist("logic", "trade") then
+		return true
+	end
+	
+	return false
+end
+
+function find_metka_near_box(boxobj)
+--looking for a GPS close to the box (2 meters radius)
+  if not boxobj or not game_graph():valid_vertex_id(boxobj.m_game_vertex_id) then return nil end
+  local blid = game_graph():vertex(boxobj.m_game_vertex_id):level_id()
+  local metka = nil
+  local sim = alife()
+  for iter=1, 65534 do
+    local obj = sim:object(iter)
+	if obj and obj.parent_id and obj.parent_id == boxobj.id and obj.section_name and obj:section_name() == "amk_metka" then
+		metka = obj
+		break
+	end
+	
+	if obj and (obj.parent_id == nil or obj.parent_id == 65535) and obj.section_name and obj:section_name() == "amk_metka" then
+	  if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
+		local mlid = game_graph():vertex(obj.m_game_vertex_id):level_id()
+		if blid == mlid and boxobj.position:distance_to(obj.position) <= 2 then
+			metka = obj
+			break
+		end
+	  end
+	end
+  end
+  return metka
+end
+
+function send_metka_hide_box(boxobj, victim)
+--send a message that a npc has hidden something in the box if a gps metka is close
+  local metka = find_metka_near_box(boxobj)
+  if metka == nil then return end
+
+  local npc = alife():object(victim.id)
+  if not npc then return end
+  local sname = get_npc_name(npc)
+  amk.remove_spot_from_map(boxobj.id, "treasure")
+  amk.add_spot_on_map(boxobj.id, "treasure", sname.." cпрятал хабар в надежном месте")
+  
+  if boxobj.m_story_id then
+    local trman = treasure_manager.get_treasure_manager()
+	if trman then
+		local k = trman.treasure_by_target[boxobj.m_story_id]
+		if k then 
+			trman.treasure_info[k].active = true
+			trman.treasure_info[k].done = true
+		end
+	end
+  end
+  
+  local pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
+  pda_news:play(db.actor, 0, sound_object.s2d)
+  local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
+  local lname = news_main.get_level_name(news_main.get_object_levelname(boxobj))
+  db.actor:give_game_news(lname..". "..sname.." спрятал хабар в надежном месте", task_texture, task_rect, 0, 5000)
+end
+
+function npc_put_trap_box(victim, box, habarcost)
+  if habarcost < 1000 then return end
+  local prob = 100
+  if habarcost < 5000 then
+    prob = 20
+  elseif habarcost < 10000 then
+    prob = 40
+  elseif habarcost < 20000 then
+    prob = 60
+  elseif habarcost < 30000 then
+    prob = 80
+  elseif habarcost < 50000 then
+    prob = 90
+  end
+  
+  if prob >= my_random(100) then
+    --put a trap in the box
+	local tr = get_box_trap_rank(box.id)
+	if tr < victim:rank() then
+		set_box_trapped(box.id, victim:rank())
+	end
+  end
+end
+
+function hide_items_box(boxobj, itemlist, cntkeep, npc_id)
+	local res  = 0
+	if table.getn(itemlist) > cntkeep then
+		for iter=1, table.getn(itemlist)-cntkeep do
+			local obj = itemlist[iter]
+			local section = obj:section_name()
+			local new = create_newitem(obj, boxobj.position, boxobj.m_level_vertex_id, boxobj.m_game_vertex_id, boxobj.id)
+			
+			if new then
+				res  = res + get_item_cost(obj)
+				if new.parent_id then
+					if not items[new.parent_id] then items[new.parent_id] = {} end
+					table.insert(items[new.parent_id], {id = new.id, name = new:name()})
+if gps_habar then gps_habar.insert_item(new.parent_id, new) end -- Idler++-- корректируем хабар в помеченных тайниках
+				end
+				set_item_owner(npc_id, new.id)
+				do_drop_object(obj)
+			end	
+		end
+	end
+	return res
+end
+
+function check_box_trapped(victim, box)
+  if victim == nil or box == nil then return false end
+  local result = check_box_trap_trigger(victim, box)
+  
+  local boxobj = alife():object(box.id)
+  if not boxobj then return result end
+  
+  local metka = find_metka_near_box(boxobj)
+  if metka == nil then return result end
+
+  --if a GPS found send a news about victim
+  local vname = get_npc_name(victim)
+  local mtext = vname..". "..news_main.get_level_name(news_main.get_object_levelname(victim)).."."
+  local spot_type = "red_location"
+  amk.remove_spot_from_map(victim.id, spot_type)
+  if result then
+	amk.send_tip(mtext, "При попытке проникнуть в схрон пострадал сталкер:",0,10,"gen_info")
+	amk.add_spot_on_map(victim.id, spot_type, "Мародер-неудачник "..vname)
+  else
+	amk.send_tip(mtext,"Cхрон обчистил сталкер:",0,10,"gen_info")
+	amk.add_spot_on_map(victim.id, spot_type, "Мародер "..vname)
+  end
+  set_metka_victim(metka.id, victim.id)
+  return result
+end
+
+function blow_habar_out(box_id)
+  if table.getn(items[box_id]) == 0 then return end
+  local sim=alife()
+  local boxobj = sim:object(box_id)
+  if not boxobj then return end
+  
+--collection habar to blow out (maximum 10 items)  
+  local habar = {}
+  local rnd = 1000/table.getn(items[box_id])
+  for iter=1, table.getn(items[box_id]) do
+    if rnd >= my_random(100) then
+      local v_itA = items[box_id][iter]
+      if v_itA then
+        local itA = sim:object(v_itA.id)
+        if itA and itA:name()==v_itA.name and itA.parent_id == box_id and not string.find(itA:section_name(), "^grenade_") then 
+		  table.insert(habar, itA)
+		  if table.getn(habar) == 10 then break end
+	    end
+	  end
+	end
+  end
+  
+  --throwing habar around the box
+  local base_dir = vector():set(boxobj.position.x, boxobj.position.y, boxobj.position.z)
+  base_dir.y = base_dir.y + 0.5
+  for iter=1, table.getn(habar) do
+    local obj = habar[iter]
+	local ang = my_random() * 2.0 * math.pi
+	local radius = my_random() * 5.0
+	local dir = vector():set(math.cos(ang), 0.0001, math.sin(ang))
+	local lv = level.vertex_in_direction(boxobj.m_level_vertex_id, dir, radius)
+	
+	if not lv or lv == 65535 then
+		lv = boxobj.m_level_vertex_id
+	end
+	local pos = vector():set(base_dir.x + radius * dir.x, base_dir.y, base_dir.z + radius * dir.z)
+	
+	local new = create_newitem(obj, pos, lv, boxobj.m_game_vertex_id, 65535)
+	if new then
+	  add_fresh_meat(new)
+	end
+	do_drop_object(obj)
+  end  
+end
+
+function my_random(lower)
+	local cnt = math.random(5)
+	local res
+	if lower then
+		for iter=0,cnt do res = math.random(lower) end
+	else
+		for iter=0,cnt do res = math.random() end
+	end
+	return res
+end
+
+function check_box_trap_trigger(victim, box)
+--collecting grenades in the box
+  local grenades = {}
+  local sim=alife()
+  for iter=1, table.getn(items[box.id]) do
+    local v_itA = items[box.id][iter]
+    if v_itA then
+      local itA = sim:object(v_itA.id)
+      if itA and itA:name()==v_itA.name and itA.parent_id == box.id and
+	     (itA:section_name() == "grenade_rgd5" or itA:section_name() == "grenade_f1") then 
+		  table.insert(grenades, itA)
+		  --maximum 5 grenades in a trap
+		  if table.getn(grenades) == 5 then break end
+	  end
+	end
+  end
+  if table.getn(grenades) <= 0 then return false end
+
+  -- calculating a npc disarming trap ability factor depending on npc rank in %
+  local rank = victim:rank()
+  local f1f = 85
+  local rgd5f = 93
+  if rank < 300 then --novichek
+    f1f = 20
+	rgd5f = 27
+  elseif rank < 600 then --stalker
+    f1f = 35
+	rgd5f = 42
+  elseif rank < 900 then --veteran
+    f1f = 55
+	rgd5f = 63
+  elseif rank < 2000 then --master
+    f1f = 75
+	rgd5f = 85
+  end 
+  
+  local failed = false
+  for iter=1, table.getn(grenades) do
+    local grenade = grenades[iter]
+	local grf
+	if grenade:section_name() == "grenade_rgd5" then
+	  grf = rgd5f
+	else
+	  grf = f1f
+	end
+	local rnd = my_random(100)
+	if grf >= rnd then
+	  --npc is taking disarmed grenade
+	  pick_item(victim, grenade)
+	else
+	  --npc has been exploded and one grenade is gone
+	  do_drop_object(grenade)
+	  failed = true
+	  break
+	end
+  end	
+
+  if failed then
+	--setting the npc as a wounded one
+	set_npc_health(victim, health_wound_set)
+	blow_habar_out(box.id)
+  end	
+  return failed
+end
+
+function do_drop_item(obj)
+	if (obj and db.actor and obj.id ~= db.actor:id()) then
+		if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
+			for z=1, table.getn(items[obj.parent_id]) do
+				if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
+					table.remove(items[obj.parent_id], z)
+if gps_habar then gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) end -- Idler++-- корректируем хабар в помеченных тайниках
+					break
+				end
+			end
+		end
+	end
+end
+
+function do_drop_object(obj)
+	if (obj and db.actor and obj.id ~= db.actor:id()) then
+		clear_item_owner(obj.id)
+		do_drop_item(obj)
+		alife():release(alife():object(obj.id), true)
+	end
+end
+
+function get_ammo_size(obj)
+	local packet = net_packet()
+	cse_alife_item_ammo.STATE_Write(obj, packet)
+	packet:r_seek(packet:w_tell() - 2)
+	return packet:r_u16()
+end
+
+function create_newitem(obj, pos, lvi, gvi, pid)
+	if not obj then return nil end
+	if is_ammo(obj) then
+		local cnt = get_ammo_size(obj)
+		if cnt > 0 then
+			return alife():create_ammo(obj:section_name(), pos, lvi, gvi, pid, cnt)
+		end
+	else
+		return alife():create(obj:section_name(), pos, lvi, gvi, pid)
+	end
+	return nil
+end
+
+function npc_has_same_wo(npc, obj)
+	--defines if npc already has the same weapon or outfit as given in obj
+	if items[npc.id] then
+		local objsection = obj:section_name()
+		if string.find(objsection, "^wpn_") or string.find(objsection, "outfit") then
+			for i, v_itA in pairs(items[npc.id]) do
+				if v_itA then
+					local itA = alife():object(v_itA.id)
+					if itA and itA:name()==v_itA.name and itA.parent_id == npc.id and itA:section_name() == objsection then
+						return true
+					end
+				end
+			end
+		end
+	end
+	return false
 end
 
 function pick_item(npc, obj)
 	local new = nil
-	if (npc and obj and db.actor and obj.id ~= db.actor:id()) then
-		local section = obj:section_name()
-		new = alife():create(section, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
-		if (new) then
-			if (new.parent_id) then
+	if npc and obj and db.actor and obj.id ~= db.actor:id() then
+		--npc does not take a weapon or an outfit if he already has the same
+		if npc_has_same_wo(npc, obj) then return new end
+		
+		new = create_newitem(obj, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
+		if new then
+			if new.parent_id then
 				if not items[new.parent_id] then items[new.parent_id] = {} end
 				table.insert(items[new.parent_id], {id = new.id, name = new:name()})
-gps_habar.insert_item(new.parent_id, new) -- Idler++-- корректируем хабар в помеченных тайниках
+if gps_habar then gps_habar.insert_item(new.parent_id, new) end -- Idler++-- корректируем хабар в помеченных тайниках
 			end
-			if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
-				for z=1, table.getn(items[obj.parent_id]) do
-					if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
-						table.remove(items[obj.parent_id], z)
-gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) -- Idler++-- корректируем хабар в помеченных тайниках
-						break
-					end
-				end
-			end
-			alife():release(alife():object(obj.id), true)
+			do_drop_object(obj)
 		end
 	end
 	return new
@@ -1296,74 +1965,90 @@ function get_npc_weapon(npc)
 		end
 	end
 	return obj
---[[
-		local map = news_main.get_object_levelname(npc)
-		if (map and off_npcs[map]) then
-			local wp = table.getn(off_npcs[map].weapons)
-			if wp>0 then
-				for w=1,wp do
-					if off_npcs[map].weapons[w] then
-						local www = alife():object(off_npcs[map].weapons[w].id)
-						if www and www.parent_id == npc.id and isWeapon(www) then
-							local cur_fp = get_weapon_firepower(www)
-							if cur_fp > fp then
-								fp = cur_fp
-								obj = www
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	return obj
-]]	
 end
 
-function get_weapon_firepower(wpn)
-	local result = 0
-	if (wpn and isWeapon(wpn)) then
-		local sect = wpn:section_name()
-		if not (sect == "grenade_f1" or sect =="grenade_gd-05" or sect == "grenade_rgd5") then
-			--local fd = utils.cfg_get_number(system_ini(), wpn:section_name(), "fire_distance", wpn, false, 1)
-			--local bs = utils.cfg_get_number(system_ini(), wpn:section_name(), "bullet_speed", wpn, false, 1)
-			--local rpm = utils.cfg_get_number(system_ini(), wpn:section_name(), "rpm", wpn, false, 1)
-			local priority = utils.cfg_get_number(system_ini(), wpn:section_name(), "ef_weapon_type", wpn, false, 1)
-			local priority2 = utils.cfg_get_number(system_ini(), wpn:section_name(), "ef_main_weapon_type", wpn, false, 0)
-			local GetRPM = ui_wpn_params.GetRPM(wpn:section_name())
-			local GetDamage = ui_wpn_params.GetDamage(wpn:section_name())
-			local GetHandling = ui_wpn_params.GetHandling(wpn:section_name())
-			local GetAccuracy = ui_wpn_params.GetAccuracy(wpn:section_name())
-			local fp = 1
+function load_weapon_params(wpn)
+	if not wpn then return end
+	local wpnsect = wpn:section_name()
+	if wpn_fp[wpnsect] then return end
+	if isWeapon(wpn) then
+		if not string.find(wpnsect, "grenade") then
+			local sl = utils.cfg_get_number(system_ini(), wpnsect, "slot", wpn, false, 0)
+			if sl <= 0 then return end
+			local priority = utils.cfg_get_number(system_ini(), wpnsect, "ef_weapon_type", wpn, false, 1)
+			local priority2 = utils.cfg_get_number(system_ini(), wpnsect, "ef_main_weapon_type", wpn, false, 0)
+			local GetRPM = ui_wpn_params.GetRPM(wpnsect)
+			local GetDamage = ui_wpn_params.GetDamage(wpnsect)
+			local GetHandling = ui_wpn_params.GetHandling(wpnsect)
+			local GetAccuracy = ui_wpn_params.GetAccuracy(wpnsect)
 			if priority>1 and priority2>0 then
 				priority = priority + priority2
 			end
-			--fp = priority*1000 + math.sqrt(fd*bs*rpm)		
-			fp = math.ceil(priority * 1000 + GetAccuracy * 100 + GetRPM * 3 + GetDamage * 8) - 5000
-			if GetHandling >= 99 then
-				fp = fp + 1500
-			end
-			result = fp
-			if wpn_fp[wpn:section_name()] == nil then
-				wpn_fp[wpn:section_name()] = {frp = fp, p = priority, rpm = GetRPM, dam = GetDamage, acc = GetAccuracy, han = GetHandling}
-			end
+			local fp = math.ceil(priority * 1000 + GetAccuracy * 100 + GetRPM * 3 + GetDamage * 8) - 5000
+			if GetHandling >= 99 then fp = fp + 1500 end
+			local ac = utils.cfg_get_string(system_ini(), wpnsect, "ammo_class", wpn, false, "")
+			wpn_fp[wpnsect] = {frp = fp, ammo = ac, slot = sl, p = priority, rpm = GetRPM, dam = GetDamage, acc = GetAccuracy, han = GetHandling}
 		end
 	end
-	return result
+end
+
+function get_weapon_slot(wpn)
+	if wpn then
+		local wpnsect = wpn:section_name()
+		if not wpn_fp[wpnsect] then
+			load_weapon_params(wpn)
+		end
+		if wpn_fp[wpnsect] then
+			return wpn_fp[wpnsect].slot
+		end
+	end
+	return 0
+end
+
+function get_weapon_ammo(wpn)
+	if wpn then
+		local wpnsect = wpn:section_name()
+		if not wpn_fp[wpnsect] then
+			load_weapon_params(wpn)
+		end
+		if wpn_fp[wpnsect] then
+			return wpn_fp[wpnsect].ammo
+		end
+	end
+	return ""
+end
+
+function get_weapon_firepower(wpn)
+	if wpn then
+		local wpnsect = wpn:section_name()
+		if not wpn_fp[wpnsect] then
+			load_weapon_params(wpn)
+		end
+		if wpn_fp[wpnsect] then
+			return wpn_fp[wpnsect].frp
+		end
+	end
+	return 0
 end
 
 function get_weapon_cost(weapon)
 	local result = 0
-	if (weapon and isWeapon(weapon)) then
-		result = utils.cfg_get_number(system_ini(), weapon:section_name(), "cost", weapon, false, 0)
+	if weapon and isWeapon(weapon) then
+		result = get_item_cost(weapon)
 	end
 	return result
 end
 
 function get_item_cost(item)
 	local result = 0
-	if (item and item.section_name) then
-		result = utils.cfg_get_number(system_ini(), item:section_name(), "cost", item, false, 0)
+	if item and item.section_name then
+		local sect = item:section_name()
+		if item_cost[sect] then
+			result = item_cost[sect]
+		else
+			result = utils.cfg_get_number(system_ini(), sect, "cost", item, false, 0)
+			item_cost[sect] = result
+		end
 	end
 	return result
 end
@@ -1432,7 +2117,30 @@ end
 	Броники наверное продаем...
 	Части монстров? Тоже продаем наверное, максимум 1-2 оставим.
 ]]
-function process_trade(npc)	
+function process_trade(npc, vdata)	
+	if vdata then
+		--hide or sell
+		local rank = npc:rank()
+		local thresh = 10
+		if rank < 300 then --novichek
+			thresh = 70
+		elseif rank < 600 then --stalker
+			thresh = 55
+		elseif rank < 900 then --veteran
+			thresh = 40
+		elseif rank < 2000 then --master
+			thresh = 25
+		end 
+		
+		local rnd = my_random(100)
+		if rnd >= thresh then
+			npc_hide_habar_boxs(npc, vdata.hide_boxes)
+		end
+	end	
+	do_process_trade(npc)
+end
+
+function do_process_trade(npc)	
 	local item_list = {}
 	local sell_list = {}
 	-- Имеет смысл проверять на наличие trade в секции [logic]...
@@ -1499,7 +2207,7 @@ function process_trade(npc)
 						bOk = true
 					end
 					if bOk == true then
-						local ac = utils.cfg_get_string(system_ini(), sect, "ammo_class", v, false, "")
+						local ac = get_weapon_ammo(v)
 						if ac and ac ~= "" then
 							local vvv = amk.str_explode(",", ac, true)
 							local ammo_classes = {}
@@ -1533,7 +2241,7 @@ function process_trade(npc)
 					if cnt_torch > 1 then
 						table.insert(sell_list, v)
 					end
-				elseif sect == "device_pda" then
+				elseif sect == "device_pda" or sect == "device_pda_npc" then
 					cnt_pda = cnt_pda + 1
 					if cnt_pda > 1 then
 						table.insert(sell_list, v)
@@ -1683,7 +2391,7 @@ function process_trade(npc)
 						for z=1, table.getn(items[npc.id]) do
 							if (items[npc.id][z] and items[npc.id][z].id == vv.id) then
 								table.remove(items[npc.id], z)
-gps_habar.remove_item(npc.id, items[npc.id][z]) -- Idler++-- корректируем хабар в помеченных тайниках
+if gps_habar then gps_habar.remove_item(npc.id, items[npc.id][z]) end -- Idler++-- корректируем хабар в помеченных тайниках
 								break
 							end
 						end
@@ -1792,7 +2500,7 @@ end
 function have_ammo(npc, weapon)
 	local result = false
 	if npc and weapon and IsStalker(npc) and isWeapon(weapon) then
-		local ammo_str = utils.cfg_get_number(system_ini(), weapon:section_name(), "ammo_class", weapon, false, "")
+		local ammo_str = get_weapon_ammo(weapon)
 		if ammo_str=="" then -- Болт или граната
 			return false
 		end
@@ -1807,7 +2515,7 @@ function have_ammo(npc, weapon)
 end
 
 function box_is_protected(v)
-	if v then
+	--[[if v then
 		for k, o in pairs(protected) do
 			if type(o)=="number" and v.m_story_id then
 				if o == v.m_story_id then return true end
@@ -1815,6 +2523,9 @@ function box_is_protected(v)
 				if o == v:name() then return true end
 			end
 		end
+	end]]
+	if level.map_has_object_spot(v.id, "treasure") ~= 0 then
+		return true
 	end
 	return false
 end
@@ -1864,19 +2575,873 @@ function get_flags(npc_id)
 	return flags
 end
 
+function is_valuable_for_player(item)
+--npc is taking items which valuable for  the player
+  local valitems = {
+    "vodka",
+	"bandage",
+	"medkit",
+	"antirad",
+	"grenade",
+	"mutant",
+	"_pda"
+  }
+  if is_ammo(item) then return true end
+  if item and item.section_name then
+    for iter=1, table.getn(valitems) do
+      if string.find(item:section_name(), valitems[iter]) then return true end
+    end
+  end
+  return false
+end
+
 function is_valuable(item)
 	local result = false
 	if item and not (IsMonster(item) or IsStalker(item)) then
 		-- Уники не подбираем (пока?)
-		if item:section_name() == "amk_metka" or always_keep_item[item:section_name()] or sell_table[item:section_name()] == nil then
+		
+		if item:section_name() == "amk_metka" or always_keep_item[item:section_name()] then
 			return false
 		end
 		local cost = get_item_cost(item)
 		if isWeapon(item) and cost >= 1000 then
 			result = true
-		elseif cost >= 800 then
+		elseif cost >= 800 or is_valuable_for_player(item) then
 			result = true
 		end
 	end
 	return result
+end
+
+-----------------------------------------------------------------------------------------------------------------
+local status_boxs={}
+local status_metka={}
+local be_enemies={}
+local item_owners={}
+local trapped_bodies={}
+
+local val_item_cost = 2500
+local be_enemy_time = 60000
+enemy_level_hit = 1
+enemy_level_kill = 2
+enemy_level_angry = 3
+
+function set_body_trap(npc_id, body_id)
+	local npc = alife():object(npc_id)
+	local body = alife():object(body_id)
+	if npc and body and IsStalker(body) and body.rank then
+		local rank = body:rank()
+		local tp = 85
+		if rank < 300 then --novichek
+			tp = 20
+		elseif rank < 600 then --stalker
+			tp = 35
+		elseif rank < 900 then --veteran
+			tp = 55
+		elseif rank < 2000 then --master
+			tp = 75
+		end 
+		if my_random(100) > tp then return end
+		rank = npc:rank()
+		if get_body_trap(body_id) > rank then return end
+		trapped_bodies[body_id] = rank
+	end
+end
+
+function clear_body_trap(body_id)
+	trapped_bodies[body_id] = nil
+end
+
+function get_body_trap(body_id)
+	if trapped_bodies[body_id] then
+		return trapped_bodies[body_id]
+	else
+		return 0
+	end
+end
+
+function check_item_owners()
+	local sim=alife()
+	for owner_id, items in pairs(item_owners) do
+		local obj = sim:object(owner_id)
+		if not(obj and IsStalker(obj) and obj.health and obj:health() > 0) then
+			item_owners[owner_id] = nil
+		end
+	end
+end
+
+function set_item_owner(owner_id, item_id)
+	clear_item_owner(item_id)
+	if owner_id and item_id then
+		if item_owners[owner_id] then
+			--check item_id already exists
+			for iter=1, table.getn(item_owners[owner_id]) do
+				if item_owners[owner_id][iter] == item_id then return end
+			end
+		else
+			item_owners[owner_id] = {}
+		end
+		table.insert(item_owners[owner_id], item_id)
+	end
+end
+
+function clear_item_owner(item_id)
+	if item_id then
+		for owner_id, items in pairs(item_owners) do
+			for iter=1, table.getn(items) do
+				if items[iter] == item_id then 
+					table.remove(items, iter)
+					if table.getn(items) == 0 then
+						item_owners[owner_id] = nil
+					end
+					return owner_id
+				end
+			end
+		end
+	end
+	return 0
+end
+
+function set_box_trapped(box_id, trap_rank)
+	if not status_boxs[box_id] then
+		if not trap_rank or trap_rank == 0 then return end
+		status_boxs[box_id] = {trap_rank = 0, owner_id = 65535}
+	end
+	if trap_rank then
+		status_boxs[box_id].trap_rank = trap_rank
+	end
+	
+	check_box_remove(box_id)
+end
+
+function check_box_remove(box_id)
+	if status_boxs[box_id] and status_boxs[box_id].trap_rank == 0 and status_boxs[box_id].owner_id == 65535 then
+		status_boxs[box_id] = nil
+	end
+end
+
+function set_box_owner(box_id, owner_id)
+	if not status_boxs[box_id] then
+		if not owner_id or owner_id == 65535 then return end
+		status_boxs[box_id] = {trap_rank = 0, owner_id = 65535}
+	end
+	if owner_id then
+		status_boxs[box_id].owner_id = owner_id
+	end
+	
+	check_box_remove(box_id)
+end
+
+function get_box_trap_rank(box_id)
+	if status_boxs[box_id] then
+		return status_boxs[box_id].trap_rank
+	else
+		return 0
+	end
+end
+
+function get_box_owner(box_id)
+	if status_boxs[box_id] then
+		return status_boxs[box_id].owner_id
+	else
+		return 65535
+	end
+end
+
+function actor_check_body(npc)
+	if npc then
+		body_blow_id = npc:id()
+	end
+end
+
+function give_treasure(npc)
+	if not npc then return false end
+	local npc_id = npc:id()
+	
+	local res = false
+	local boxlist = {}
+	local sim=alife()
+	for iter, box in pairs(status_boxs) do
+		if box.owner_id == npc_id then
+			local box = sim:object(iter)
+			local lname = news_main.get_level_name(news_main.get_object_levelname(box))
+			local sname = get_npc_name(npc)
+			amk.remove_spot_from_map(iter, "treasure")
+			amk.add_spot_on_map(iter, "treasure", sname.." cпрятал хабар в надежном месте")
+			local pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
+			pda_news:play(db.actor, 0, sound_object.s2d)
+			local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
+			db.actor:give_game_news(lname..". Хабар спрятан в надежном месте", task_texture, task_rect, 0, 5000)
+			if box.m_story_id then
+				table.insert(boxlist, box.m_story_id)
+			end
+			res = true
+			set_box_owner(iter, 65535)
+		end
+	end
+	return res, boxlist
+end
+
+function item_change(obj)
+    local sobj=alife():object(obj:id())
+    if sobj then
+		do_drop_item(sobj)
+		add_fresh_meat(sobj)
+    end
+end
+
+function set_metka_victim(metka_id, victim_id)
+	if not victim_id or victim_id == 65535 then return end
+	if not status_metka[metka_id] then
+		status_metka[metka_id] = {}
+	end
+	table.insert(status_metka[metka_id], victim_id)
+end
+
+function check_metka_take(obj)
+    local sobj=alife():object(obj:id())
+    if sobj and sobj:section_name() == "amk_metka" then
+		if status_metka[sobj.id] then
+			for iter=1, table.getn(status_metka[sobj.id]) do
+				amk.remove_spot_from_map(status_metka[sobj.id][iter], "red_location")
+			end
+			status_metka[sobj.id] = nil
+		end
+    end
+end
+
+function on_item_take(obj)
+	if not obj then return end
+	item_change(obj)
+	check_metka_take(obj)
+end
+
+function on_item_drop(obj)
+	if not obj then return end
+	item_change(obj)
+    local sobj=alife():object(obj:id())
+    if sobj and sobj.parent_id then
+	  set_be_enemy(get_box_owner(sobj.parent_id), enemy_level_hit)
+	  set_box_owner(sobj.parent_id, 65535)
+    end
+end
+
+function take_item_from_box(box, item)
+	local box_id = box:id()
+
+	set_be_enemy(get_box_owner(box_id), enemy_level_hit)
+	set_box_owner(box_id, 65535)
+	
+	local trman = treasure_manager.get_treasure_manager()
+	local needempty = true
+	if trman then
+		local bstid = box:story_id()
+		if bstid then
+			local k = trman.treasure_by_target[bstid]
+			if k and trman.treasure_info[k] then 
+				needempty = false
+			end
+		end
+	end
+	
+	if needempty and level.map_has_object_spot(box_id, "treasure") ~= 0 then
+		level.map_remove_object_spot(box_id, "treasure")
+		empty_treasure(box_id)
+	end
+
+	if item then
+		local itemid = item:id()
+		if items[box_id] and table.getn(items[box_id])>0 then
+			for z=1, table.getn(items[box_id]) do
+				if items[box_id][z] and items[box_id][z].id == itemid then
+					table.remove(items[box_id], z)
+if gps_habar then gps_habar.remove_item(box_id, items[box_id][z]) end -- Idler++-- корректируем хабар в помеченных тайниках
+					break
+				end
+			end
+		end
+		
+		local owner_id = clear_item_owner(itemid)
+		if owner_id and owner_id > 0 then
+			if get_item_cost(alife():object(itemid)) >= val_item_cost then
+				set_be_enemy(owner_id, enemy_level_kill)
+			else
+				set_be_enemy(owner_id, enemy_level_hit)
+			end
+		end
+	end
+end
+
+local trap_timer = nil
+local need_hit = false
+local trap_rank
+
+function actor_update(delta)
+--check if actor is close to trapped box
+	if body_blow_id then
+		check_body_trap(body_blow_id)
+		body_blow_id = nil
+	end
+	
+	if need_hit and not sleep_manager.is_sleep_active() then
+		need_hit = false
+		trap_hit_actor()
+		return
+	end
+	
+	if trap_timer then
+		if time_global() >= trap_timer then
+			trap_timer = nil
+			need_hit = true
+			sleep_manager.main(2)
+		end
+		return
+	end
+	
+	check_be_enemy()
+	local sim=alife()
+	local mi=level.main_input_receiver()
+	if mi then
+		for iter, box in pairs(status_boxs) do
+			if box.trap_rank > 0 then
+				local inv_box = sim:object(iter)
+				if inv_box and inv_box:section_name() == "inventory_box" and not sobj_is_far(inv_box, 2.0) then
+					trap_rank = box.trap_rank
+					set_box_trapped(iter, 0)
+					trap_explosion(inv_box)
+					if not db.actor:item_in_slot(6) then
+						trap_hit_actor(true)
+						return
+					end
+					level.add_cam_effector("camera_effects\\dis_consciousness.anm", 25, false, "")
+					trap_timer = time_global() + 4500
+					break
+				end
+			end
+		end
+	end
+end
+
+function check_body_trap(body_id)
+	trap_rank = get_body_trap(body_id)
+	if trap_rank <=0 then return end
+	
+	local body = alife():object(body_id)
+	if not(body and IsStalker(body) and body.alive and not body:alive()) then return end
+	trap_explosion(body)
+	
+	if not db.actor:item_in_slot(6) then
+		trap_hit_actor(true)
+	else
+		trap_hit_actor()
+	end
+	clear_body_trap(body_id)
+end
+
+function trap_hit_stalkers(pos)
+	local level_name = level.name()
+	if off_npcs[level_name] then 
+		for iter, stalker in pairs(off_npcs[level_name].stalkers) do
+			local obj = alife():object(stalker.id)
+			if obj and obj:name()==stalker.name and obj.online and obj.alive and obj:alive() and obj.health and obj:health() > health_wound_set then
+				if obj.position:distance_to(pos) <= 7 then
+					set_npc_health(obj, health_wound_set)
+				end
+			end
+		end
+	end
+end
+
+function trap_hit_armor()
+	if not trap_rank then return end
+	local armor_damage = 0.25
+	if trap_rank < 300 then --novichek
+		armor_damage = 0.05
+	elseif trap_rank < 600 then --stalker
+		armor_damage = 0.1
+	elseif trap_rank < 900 then --veteran
+		armor_damage = 0.15
+	elseif trap_rank < 2000 then --master
+		armor_damage = 0.2
+	end 
+
+	local armor = db.actor:item_in_slot(6)
+	if armor then
+		local protection = utils.cfg_get_number(system_ini(), armor:section(), "explosion_protection", nil, false, 0.4)
+		if protection <= 0 then protection = 0.05 end
+		local factor = math.pow(protection, 0.33) * (1-armor_damage)
+		armor:set_condition(armor:condition()*factor)
+	end
+end
+
+function trap_hit_actor(strong)
+	if not trap_rank or trap_rank <= 0 then return end
+	local h = hit()
+
+	local hit_power
+	if strong then
+		hit_power = 100
+	else
+		hit_power = 2.0
+		if trap_rank < 300 then --novichek
+			hit_power = 0.5
+		elseif trap_rank < 600 then --stalker
+			hit_power = 0.8
+		elseif trap_rank < 900 then --veteran
+			hit_power = 1.2
+		elseif trap_rank < 2000 then --master
+			hit_power = 1.6
+		end 
+	end
+
+    h.power = hit_power
+    h.impulse = 1
+	h.draftsman = db.actor
+	h.direction = vector():set(0,0,0)
+	h:bone("bip01_spine")
+    h.type = hit.fire_wound
+	db.actor:hit(h)
+	
+	level.add_pp_effector("amk_shoot.ppe", 2011, false)
+end
+
+function trap_explosion(box)
+	local mi=level.main_input_receiver()
+	if mi then
+		mi:GetHolder():start_stop_menu(mi, true)
+	end
+
+	local h = hit()
+    h.power = 0.01
+    h.impulse = 500
+	h.draftsman = db.actor
+	
+	local bpos = box.position
+	amk_particle.amk_particle({particle=[[explosions\explosion_dynamite]], pos=bpos, sound=[[weapons\rpg7_explode]]})
+	local apos = db.actor:position()
+	local dist = box.position:distance_to(apos)
+	if dist > 0 then
+		h.direction = vector():set((apos.x - bpos.x)/dist, (apos.y - bpos.y)/dist, (apos.z - bpos.z)/dist)
+		h.type = hit.explosion
+		db.actor:hit(h)
+	end
+	trap_hit_armor()
+	trap_hit_stalkers(bpos)
+	local active_item = db.actor:active_item()
+	if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
+		db.actor:drop_item(active_item)
+	end
+end
+
+function save_nested_data(p, data)
+	if data then
+		local size = 0
+		for iter, d in pairs(data) do
+			size = size+1
+		end
+		p:w_u16(size)
+		for iter, d in pairs(data) do
+			p:w_u16(iter)
+			local msize = table.getn(d)
+			p:w_u16(msize)
+			for iter=1, msize do
+				p:w_u16(d[iter])
+			end
+		end
+	end
+end
+
+function save(p)
+	local ver = 4
+	p:w_u16(ver)
+
+	--save box status info
+	local size = 0
+	for boxid, box in pairs(status_boxs) do
+		size = size+1
+	end
+	p:w_u16(size)
+	for boxid, box in pairs(status_boxs) do
+		p:w_u16(boxid)
+		p:w_u32(box.trap_rank)
+		p:w_u16(box.owner_id)
+	end
+	
+	--save gps metka info
+	save_nested_data(p, status_metka)
+	
+	--save items in boxes and their owners
+	save_nested_data(p, item_owners)
+	
+	--save be enemies
+	size = 0
+	for npc_id, lvl in pairs(be_enemies) do
+		size = size+1
+	end
+	p:w_u16(size)
+	for npc_id, lvl in pairs(be_enemies) do
+		p:w_u16(npc_id)
+		p:w_u8(lvl)
+	end
+	
+	--save trapped bodies
+	size = 0
+	for body_id, tr in pairs(trapped_bodies) do
+		size = size+1
+	end
+	p:w_u16(size)
+	for body_id, tr in pairs(trapped_bodies) do
+		p:w_u16(body_id)
+		p:w_u32(tr)
+	end
+end
+
+local loaded = false
+
+function load_nested_data(p, data)
+	if data then
+		local size = p:r_u16()
+		for iter=1, size do
+			local id = p:r_u16()
+			data[id] = {}
+			local msize = p:r_u16()
+			for jter=1, msize do
+				table.insert(data[id], p:r_u16())
+			end
+		end
+	end
+end
+
+function load(p)
+	local ver = p:r_u16()
+	
+	status_boxs = {}
+	--load box status info
+	local size = p:r_u16()
+	for iter=1, size do
+		local boxid = p:r_u16()
+		status_boxs[boxid] = {trap_rank = 0, owner_id = 65535}
+		status_boxs[boxid].trap_rank = p:r_u32()
+		status_boxs[boxid].owner_id = p:r_u16()
+	end
+	
+	--load gps metka info
+	status_metka = {}
+	load_nested_data(p, status_metka)
+	
+	be_enemies = {}
+	item_owners = {}
+	trapped_bodies = {}
+	if ver > 1 then
+		--load items and their owners
+		load_nested_data(p, item_owners)
+		
+		--load be enemies
+		size = p:r_u16()
+		for iter=1, size do
+			if ver > 2 then
+				local npc_id = p:r_u16()
+				be_enemies[npc_id] = p:r_u8()
+			else
+				be_enemies[p:r_u16()] = enemy_level_kill
+			end
+		end
+		
+		if ver > 3 then
+			--load trapped bodies
+			local size = p:r_u16()
+			for iter=1, size do
+				local bodyid = p:r_u16()
+				trapped_bodies[bodyid] = p:r_u32()
+			end
+		end
+	end
+
+	loaded = true
+end
+
+function get_item_box_cost(box_id)
+	--returns a cost of items in given box
+	local res = 0
+	if not items[box_id] then return res end
+	
+	local sim=alife()
+	local whomid=db.actor:id()
+	for iter=1, table.getn(items[box_id]) do
+		local v_itA = items[box_id][iter]
+		if v_itA then
+			local itA = sim:object(v_itA.id)
+			--if an item is registered in box list and has parent_id = actor id the actor just took it from the box
+			if itA and itA:name() == v_itA.name and (itA.parent_id == box_id or itA.parent_id == whomid) then
+				res = res + get_item_cost(itA)
+			end
+		end
+	end
+	return res
+end
+
+local spawn_maps={
+	["l01_escape"]				= {
+		creatures = {"esc_bandit_respawn_1", "esc_bandit_respawn_2", "esc_soldier_respawn_1"},
+		sounds = {[[bandit\fight\attack\attack_1]], [[bandit\fight\attack\attack_2]], [[military\fight\attack\attack_1]]}},
+	["l02_garbage"]				= {
+		creatures = {"gar_bandit_respawn_1", "gar_bandit_respawn_2"},
+		sounds = {[[bandit\fight\attack\attack_3]], [[bandit\fight\attack\attack_4]]}},
+	["l03_agroprom"]  			= {
+		creatures = {"agr_soldier_regular", "agr_soldier_veteran", "agr_bandit_respawn_1", "agr_bandit_respawn_2"},
+		sounds = {[[military\fight\attack\attack_1]], [[military\fight\attack\attack_2]], [[bandit\fight\attack\attack_5]], [[bandit\fight\attack\attack_6]]}},
+	["l03u_agr_underground"]	= {
+		creatures = {"agr_soldier_regular", "agr_soldier_veteran", "agr_bandit_respawn_1", "agr_bandit_respawn_2"},
+		sounds = {[[military\fight\attack\attack_one_1]], [[military\fight\attack\attack_one_2]], [[bandit\fight\attack\attack_7]], [[bandit\fight\attack\attack_8]]}},
+	["l04_darkvalley"]	 		= {
+		creatures = {"val_bandit_respawn_1", "val_bandit_respawn_2", "val_bandit_respawn_3", "val_soldier_respawn_1"},
+		sounds = {[[bandit\fight\attack\attack_9]], [[bandit\fight\attack\attack_8]], [[bandit\fight\attack\attack_1]], [[military\fight\attack\attack_one_3]]}},
+	["l06_rostok"]				= {
+		creatures = {"ros_killer_respawn_1", "ros_killer_respawn_2", "ros_killer_respawn_3", "ros_bandit_respawn_3"},
+		sounds = {[[killer\fight\attack\attack_3]], [[killer\fight\attack\attack_4]], [[killer\fight\attack\attack_5]], [[bandit\fight\attack\attack_2]]}},
+	["l07_military"]			= {
+		creatures = {"mil_killer_respawn_1", "mil_killer_respawn_2", "mil_killer_respawn_3"},
+		sounds = {[[killer\fight\attack\attack_5]], [[killer\fight\attack\attack_6]], [[killer\fight\attack\attack_7]]}},
+	["l08_yantar"]				= {
+		creatures = {"yan_zombied_respawn_1", "yan_zombied_respawn_2", "yan_zombied_respawn_3"},
+		sounds = {[[zombied\fight\attack\attack_4]], [[zombied\fight\attack\attack_5]], [[zombied\fight\attack\attack_6]]}},
+	["l10_radar"]				= {
+		creatures = {"rad_monolith_respawn_1", "rad_monolith_respawn_2", "rad_monolith_respawn_3", "rad_specnaz_respawn_specnaz", "rad_soldier_master", 
+					 "rad_zombied_respawn_1", "rad_zombied_respawn_2", "rad_zombied_respawn_3"},
+		sounds = {[[monolith\fight\attack\attack_one_1]], [[monolith\fight\attack\attack_one_2]], [[monolith\fight\attack\attack_one_3]], [[military\fight\attack\attack_one_4]], [[military\fight\attack\attack_one_5]],
+				  [[zombied\fight\attack\attack_8]], [[zombied\fight\attack\attack_4]], [[zombied\fight\attack\attack_6]]}},
+	["l11_pripyat"]				= {
+		creatures = {"pri_monolith_respawn_1", "pri_monolith_respawn_2", "pri_monolith_respawn_3"},
+		sounds = {[[monolith\fight\attack\attack_one_4]], [[monolith\fight\attack\attack_one_5]], [[monolith\fight\attack\attack_one_1]]}}
+}
+
+function empty_treasure(box_id)
+	--check if there is no any stalker too close
+	local habarcost = get_item_box_cost(box_id)
+	if habarcost < 1000 then return end
+	local prob = 100
+	if habarcost < 3000 then
+		prob = 20
+	elseif habarcost < 5000 then
+		prob = 40
+	elseif habarcost < 10000 then
+		prob = 60
+	elseif habarcost < 20000 then
+		prob = 80
+	elseif habarcost < 35000 then
+		prob = 90
+	end
+	if my_random(100) > prob then return end 
+	
+	local sim = alife()
+	for iter=1, 65534 do
+		local obj = sim:object(iter)
+		if obj and IsStalker(obj) and obj.health and obj:health() > 0 and not sobj_is_far(obj, 80) and
+					obj:community()~="monolith" and obj:community()~="military" and obj:community()~="killer" and
+					obj:community()~="bandit" and obj:community()~="zombied" then return end
+	end
+	
+	local lname = level.name()
+	if not spawn_maps[lname] then return end
+	
+	local st = my_random(table.getn(spawn_maps[lname].creatures))
+	if st <= 0 then return end
+
+	local pos
+	local angles = {150, 210}
+	for iter, angl in pairs(angles) do
+		--spawn a creature behind the actor
+		local radius = 3
+		local dir = vector_rotate_y(db.actor:direction(), angl)
+		local lv = level.vertex_in_direction(db.actor:level_vertex_id(), dir, radius)
+		if not lv or lv == 65535 then
+			lv = db.actor:level_vertex_id()
+			pos = db.actor:position():add(vector():set(dir.x * radius, 0, dir.z * radius))
+		else
+			pos = level.vertex_position(lv)
+		end
+		sim:create(spawn_maps[lname].creatures[st], pos, lv, db.actor:game_vertex_id())
+	end
+	
+	local sname = spawn_maps[lname].sounds[st]
+	if pos and sname and sanem~="" then
+		local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_01\]]..sname)
+		snd_obj:play_at_pos(db.actor, pos)
+		
+		local active_item = db.actor:active_item()
+		if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
+			db.actor:drop_item(active_item)
+		end
+	end
+end
+
+function checked_marked_npc()
+	if loaded then return end
+	local metkas = {}
+	local stalkers = {}
+	local sim = alife()
+	for iobj=1,65534 do
+		local obj = sim:object(iobj)
+		if obj then 
+			if IsStalker(obj) and level.map_has_object_spot(obj.id, "red_location")~= 0 then
+				table.insert(stalkers, obj)
+			elseif obj:section_name() == "amk_metka" and (not obj.parent_id or obj.parent_id == 65535) then
+				table.insert(metkas, obj)
+			end			
+		end
+	end
+	
+	for inpc=1, table.getn(stalkers) do
+		local npc = stalkers[inpc]
+		--find closest gps metka
+		dist = 1000000.0
+		if game_graph():valid_vertex_id(npc.m_game_vertex_id) then
+			local nlid = game_graph():vertex(npc.m_game_vertex_id):level_id()
+			local nmetka = nil
+			for imtk=1, table.getn(metkas) do
+				local metka = metkas[imtk]
+				if game_graph():valid_vertex_id(metka.m_game_vertex_id) then
+					local mlid = game_graph():vertex(metka.m_game_vertex_id):level_id()
+					if nlid == mlid and npc.position:distance_to(metka.position) < dist then
+						dist = npc.position:distance_to(metka.position)
+						nmetka = metka
+					end
+				end
+			end
+			if nmetka then
+				set_metka_victim(nmetka.id, npc.id)
+			end
+		end
+	end
+end
+
+function get_be_enemy(npc_id)
+	if be_enemies[npc_id] then
+		return be_enemies[npc_id]
+	else
+		return 0
+	end
+end
+
+function set_be_enemy_f(npc_id, lvl)
+	if not npc_id or npc_id == 65535 then return end
+	
+	local obj = alife():object(npc_id) 
+	if obj and IsStalker(obj) and obj.health and obj:health() > 0 then
+		be_enemies[npc_id] = lvl
+	end
+end
+
+function set_be_enemy(npc_id, lvl)
+	if not npc_id or npc_id == 65535 or (be_enemies[npc_id] and be_enemies[npc_id] >= lvl) then return end
+	
+	local obj = alife():object(npc_id) 
+	if obj and IsStalker(obj) and obj.health and obj:health() > 0 then
+		if obj.m_story_id~=nil and obj.m_story_id < 4294967296 and lvl > enemy_level_hit then
+			be_enemies[npc_id] = enemy_level_hit
+		else
+			be_enemies[npc_id] = lvl
+		end
+		if be_enemies[npc_id] > enemy_level_hit then
+			local sname = get_npc_name(obj)
+			amk.send_tip("Теперь лучше чтобы ваши дорожки не пересекались...", "Эту ценную вещицу спрятал "..sname..".",0,10,"gen_info")
+		end
+	end
+end
+
+function clear_be_enemy(npc_id)
+	if be_enemies[npc_id] then
+		be_enemies[npc_id] = nil
+	end
+end
+
+function do_add_abuse(npc_id)
+	if db.storage[npc_id] then
+		local t = db.storage[npc_id].abuse
+		if t and t.abuse_manager then
+			t.abuse_manager.abuse_value = t.abuse_manager.abuse_value + t.abuse_manager.abuse_rate * 100
+		end
+	end
+end
+
+local angry_npc_timer = {}
+
+function check_be_enemy()
+	local sim = alife()
+	for iter, lvl in pairs(be_enemies) do
+		local obj = sim:object(iter)
+		if obj and obj.online and IsStalker(obj) and obj.health and obj:health() > 0 then
+			local npc = level.object_by_id(obj.id)
+			
+			if npc then
+				if lvl == enemy_level_angry then
+					if angry_npc_timer[iter] then
+						if time_global() >= angry_npc_timer[iter] then
+							angry_npc_timer[iter] = nil
+							npc:set_relation(game_object.neutral, db.actor)
+							local rel = npc:relation(db.actor)
+							if rel and rel~=game_object.enemy then
+								set_be_enemy_f(iter, enemy_level_hit)
+							end
+						end
+					else
+						angry_npc_timer[iter] = time_global() + be_enemy_time
+					end
+				else
+					local rel = npc:relation(db.actor)
+					if rel and rel == game_object.enemy then
+						-- an enemy NPC cannot punch Mecheniy
+						clear_be_enemy(iter)
+					end
+				end
+			end
+		end
+	end
+end
+
+function check_be_enemies()
+	local sim = alife()
+	for npc_id, lvl in pairs(be_enemies) do
+		local obj = sim:object(npc_id)
+		if not(obj and IsStalker(obj) and obj.alive and obj:alive() and obj.health and obj:health() > 0) then
+			clear_be_enemy(npc_id)
+		end
+	end
+end
+
+function check_trapped_bodies()
+	local sim = alife()
+	for npc_id, tr in pairs(trapped_bodies) do
+		local obj = sim:object(npc_id)
+		if not(obj and IsStalker(obj) and obj.alive and not obj:alive() and obj.health and obj:health() <= 0) then
+			clear_body_trap(npc_id)
+		end
+	end
+end
+
+function get_npc_name(obj)
+	local m_s_name = ""
+	if obj then
+		if news_main.isGameObject(obj) then
+			if obj.character_name then
+				m_s_name = obj:character_name()
+			end
+		else
+			local ob = news_main.get_obj(obj.id)
+			if ob and ob.character_name then
+				m_s_name = ob:character_name()
+			else
+				if amk and amk.read_stalker_params then
+					local tbl = amk.read_stalker_params(obj)
+					if tbl and tbl.charname then
+						m_s_name = tbl.charname
+					end
+				end
+			end
+		end
+	end
+	if m_s_name == nil then
+		m_s_name = ""
+	end
+	return m_s_name
 end

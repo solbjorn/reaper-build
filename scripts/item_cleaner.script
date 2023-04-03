@@ -1,0 +1,83 @@
+local max_total_items = 40000
+local max_items = 5000
+
+local always_offs_items = {
+"hand_radio",
+"guitar_a",
+"harmonica_a",
+"bolt",
+"ammo_9x19_fmj",
+"ammo_9x18_fmj",
+"ammo_9x18_pmm",
+"ammo_11.43x23_fmj",
+"ammo_12x70_buck",
+"ammo_12x76_zhekan",
+"bandage",
+"medkit",
+"medkit_army",
+"antirad",
+"bread",
+"kolbasa",
+"conserva",
+"vodka",
+"energy_drink",
+"ammo_5.45x39_fmj",
+"ammo_5.56x45_ss190"
+}
+
+local all_items = nil
+local total_count = 0
+
+function item_can_be_deleted(obj)
+	if obj and obj.parent_id and obj.parent_id > 0 and (obj.m_story_id==nil or obj.m_story_id==4294967296) and obj.section_name then
+		for a=1,table.getn(always_offs_items),1 do
+			if always_offs_items[a]==obj:section_name() then
+				if all_items then
+					if not all_items[obj.parent_id] then all_items[obj.parent_id] = {} end
+					table.insert(all_items[obj.parent_id], obj.id)
+				end
+				return true
+			end
+		end
+	end	
+	return false
+end
+
+function get_item_count()
+--returns total number of items in the game which can be deleted
+	total_count = 0
+	local cnt=0
+	for a=1,65534 do
+		local obj = alife():object(a)
+		if obj then
+			total_count = total_count + 1
+			if item_can_be_deleted(obj) then
+				cnt=cnt+1
+			end
+		end
+	end
+	return cnt
+end
+
+function clean_items()
+	all_items = {}
+	local cnt = get_item_count()
+	
+	if total_count > max_total_items then
+		while cnt > max_items do
+			for pid, item in pairs(all_items) do
+				if table.getn(item) > 0 then
+					local obj_id = item[1]
+					if amk_offline_alife and amk_offline_alife.clear_item_owner then
+						amk_offline_alife.clear_item_owner(obj_id)
+					end
+					alife():release(alife():object(obj_id), true)
+					table.remove(item, 1)
+					cnt = cnt - 1
+					if cnt <= max_items then break end
+				end
+			end
+		end
+	end
+	all_items = nil
+end

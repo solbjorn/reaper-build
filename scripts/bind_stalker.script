@@ -20,6 +20,7 @@ lasthealth  = 0
 lasttime  = 0
 post_process = 0
 local weapon_hide = false
+
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
@@ -132,6 +133,8 @@ function actor_binder:reinit()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
+  amk_offline_alife.take_item_from_box(box, item)
+  
   local story_id = box:story_id()
   if story_id == nil then
     return
@@ -228,6 +231,7 @@ function actor_binder:article_callback(npc, group, name)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take (obj)
+	amk_offline_alife.on_item_take(obj)
     self.freeplay_stats:check_found_item(obj)
 
     level_tasks.proceed(self.object)
@@ -269,6 +273,7 @@ spawn_teleport.checking_taken_item20(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop (obj)
+	amk_offline_alife.on_item_drop(obj)
     level_tasks.proceed(self.object)
     --game_stats.update_drop_item (obj, self.object)
     -- if level.vertex_position(db.actor:level_vertex_id()):distance_to(db.actor:position())>1 then
@@ -482,6 +487,7 @@ end
   --AMK UTILS--
   amk.on_actor_upade(delta)
   amk_utils.actor_update(delta)
+  amk_offline_alife.actor_update(delta)
   --AMK UTILS--
   sak.out_teleport() 
   sak.nepis_umer()
