@@ -1,3 +1,4 @@
+-- Idler: файл из мода 'Народная солянка 2.0'. Адаптирован для мода 'Метки с хабаром 2.1.2' 30.09.2008 0:08:54
 -- Нужны списки тайников, которые НПС не будут обыскивать.
 off_npcs={}
 items={}
@@ -218,9 +219,11 @@ function add_fresh_meat(obj)
 					if IsStalker(zz) and zz.m_story_id~=nil and zz.m_story_id==4294967296 then
 						if not items[obj.parent_id] then items[obj.parent_id] = {} end
 						table.insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
+gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
 					else
 						if not items[obj.parent_id] then items[obj.parent_id] = {} end
 						table.insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
+gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
 					end
 				end
 			end
@@ -1260,11 +1263,13 @@ function pick_item(npc, obj)
 			if (new.parent_id) then
 				if not items[new.parent_id] then items[new.parent_id] = {} end
 				table.insert(items[new.parent_id], {id = new.id, name = new:name()})
+gps_habar.insert_item(new.parent_id, new) -- Idler++-- корректируем хабар в помеченных тайниках
 			end
 			if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
 				for z=1, table.getn(items[obj.parent_id]) do
 					if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
 						table.remove(items[obj.parent_id], z)
+gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) -- Idler++-- корректируем хабар в помеченных тайниках
 						break
 					end
 				end
@@ -1678,6 +1683,7 @@ function process_trade(npc)
 						for z=1, table.getn(items[npc.id]) do
 							if (items[npc.id][z] and items[npc.id][z].id == vv.id) then
 								table.remove(items[npc.id], z)
+gps_habar.remove_item(npc.id, items[npc.id][z]) -- Idler++-- корректируем хабар в помеченных тайниках
 								break
 							end
 						end
@@ -1862,7 +1868,7 @@ function is_valuable(item)
 	local result = false
 	if item and not (IsMonster(item) or IsStalker(item)) then
 		-- Уники не подбираем (пока?)
-		if always_keep_item[item:section_name()] or sell_table[item:section_name()] == nil then
+		if item:section_name() == "amk_metka" or always_keep_item[item:section_name()] or sell_table[item:section_name()] == nil then
 			return false
 		end
 		local cost = get_item_cost(item)

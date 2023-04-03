@@ -1,3 +1,5 @@
+-- Idler: файл из мода 'Народная солянка 2.0'. Адаптирован для мода 'Метки с хабаром 2.1.2' 30.09.2008 0:08:52
+
 ----------------
 local npc_spawner={}  --служебный массив, работает автоматически - не трогать шаловливыми русками
 
@@ -911,6 +913,7 @@ end
 
 --колбэк на взятие предмета в инвентарь ГГ
 function on_item_take(obj)
+gps_habar.on_item_take(obj) -- Idler ++--
    new_spawn.have_a_document()
    escape_dialog.have_a_art()
 flamethrower.have_a_fire_kolobok()
@@ -925,14 +928,15 @@ skunk.nano_bronik_on_take(obj)
 end
 
 --колбэк на взятие предмета в инвентарь ГГ из ящика
-function on_item_take_from_box(obj)
+function on_item_take_from_box(obj, item)
 remove_spot_from_map(obj:id(),"crlc_big")
 skunk.nano_bronik_on_take(obj)
-
+gps_habar.on_item_take_from_box(obj, item) --idler++--
 end
 
 --колбэк на потерю предмета из инвентаря ГГ
 function on_item_drop(obj)
+gps_habar.on_item_drop(obj) --idler++--
   mod_call("check_for_af_drop",obj)
   mod_call("check_sleep_item",obj)
   mod_call("check_beacon_drop",obj)
@@ -1099,8 +1103,7 @@ wawka.check_maks_dead()
 wawka.check_yurik_dead()
 wawka.check_sms_bioradar()
 wawka.check_sms_awm()
------------
---	amk.mylog("on_actor_upade end")
+gps_habar.on_actor_upade(delta) --idler++--
 end
 
 --колбэк на создание непися (точнее на его переход в онлайн), использует следующую за ним функцию для выбора действия
@@ -1243,6 +1246,8 @@ function on_game_load()
     db.actor:give_info_portion("val_borov_dead")
   end
 -----------
+	gps_habar.on_game_load() --idler++--
+
 	amk.mylog("on_game_load end")
 end
 
