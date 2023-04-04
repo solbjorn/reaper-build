@@ -11,57 +11,79 @@ local count_by_level = {}
 --' Предметы, которые нельзя удалять (квестовые например)
 local always_keep_item = {}
 local always_offs_items = {
-"device_torch",
-"device_pda",
-"hand_radio",
-"guitar_a",
-"harmonica_a",
-"binocular_a",
-"wpn_knife",
-"wpn_binoc",
-"bolt",
-"grenade_f1",
-"grenade_rgd5",
-"ammo_9x18_fmj",
-"ammo_9x18_pmm",
-"ammo_9x19_fmj",
-"ammo_9x19_pbp",
-"ammo_9x39_pab9",
-"ammo_9x39_ap",
-"ammo_11.43x23_fmj",
-"ammo_5.45x39_fmj",
-"ammo_5.45x39_ap",
-"ammo_5.56x45_ss190",
-"ammo_5.56x45_ap",
-"ammo_12x70_buck",
-"ammo_12x76_zhekan",
-"ammo_12x76_dart",
-"ammo_7.62x39_fmj",
-"ammo_7.62x39_ap",
-"ammo_16cal_fost",
-"ammo_16cal_skart",
-"ammo_16cal_buck",
-"ammo_44mag_jsp",
-"ammo_50ae_jhp",
-"ammo_7.62x25_p",
-"ammo_357sw_jhp",
-"ammo_7.62x51",
-"ammo_arbolt",
-"ammo_samopal",
-"ammo_super_gauss",
-"ammo_og-7b",
-"ammo_m209",
-"ammo_vog-25p",
-"bandage",
-"medkit",
-"medkit_army",
-"medkit_scientic",
-"antirad",
-"bread",
-"kolbasa",
-"conserva",
-"vodka",
-"energy_drink"}
+["device_torch"]=true,
+["device_pda"]=true,
+["hand_radio"]=true,
+["guitar_a"]=true,
+["harmonica_a"]=true,
+["binocular_a"]=true,
+["wpn_knife"]=true,
+["wpn_binoc"]=true,
+["bolt"]=true,
+["grenade_f1"]=true,
+["grenade_rgd5"]=true,
+["ammo_9x18_fmj"]=true,
+["ammo_9x18_pmm"]=true,
+["ammo_9x19_fmj"]=true,
+["ammo_9x19_pbp"]=true,
+["ammo_9x39_pab9"]=true,
+["ammo_9x39_ap"]=true,
+["ammo_11.43x23_fmj"]=true,
+["ammo_5.45x39_fmj"]=true,
+["ammo_5.45x39_ap"]=true,
+["ammo_5.56x45_ss190"]=true,
+["ammo_5.56x45_ap"]=true,
+["ammo_12x70_buck"]=true,
+["ammo_12x76_zhekan"]=true,
+["ammo_12x76_dart"]=true,
+["ammo_7.62x39_fmj"]=true,
+["ammo_7.62x39_ap"]=true,
+["ammo_16cal_fost"]=true,
+["ammo_16cal_skart"]=true,
+["ammo_16cal_buck"]=true,
+["ammo_44mag_jsp"]=true,
+["ammo_50ae_jhp"]=true,
+["ammo_7.62x25_p"]=true,
+["ammo_357sw_jhp"]=true,
+["ammo_7.62x51"]=true,
+["ammo_arbolt"]=true,
+["ammo_samopal"]=true,
+["ammo_super_gauss"]=true,
+["ammo_og-7b"]=true,
+["ammo_m209"]=true,
+["ammo_vog-25p"]=true,
+["bandage"]=true,
+["medkit"]=true,
+["medkit_army"]=true,
+["medkit_scientic"]=true,
+["antirad"]=true,
+["bread"]=true,
+["kolbasa"]=true,
+["conserva"]=true,
+["vodka"]=true,
+["energy_drink"]=true
+}
+
+local dead_portion_names = {
+["snip_esc1"] = true,
+["snip_esc2"] = true,
+["snip_esc3"] = true,
+["snip_esc4"] = true,
+["snip_esc5"] = true,
+["snip_esc6"] = true,
+["snip_esc7"] = true,
+["snip_esc8"] = true,
+["snip_esc9"] = true,
+["snip_esc10"] = true,
+["snip_esc11"] = true,
+["snip_esc12"] = true,
+["naem_zahar1"] = true,
+["naem_zahar2"] = true,
+["naem_zahar3"] = true,
+["naem_zahar4"] = true,
+["naem_zahar5"] = true,
+["naem_zahar6"] = true
+}
 
 --' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
 local ammo_sections = {}
@@ -199,12 +221,11 @@ function drop_manager:create_release_item()
       end
     end
 
-	
+	local npc_name = self.npc:name()
 	if not string.find(self.npc:section(),"arena") and 
 		self.npc:character_community()~="arena_enemy" and 
-		self.npc:name()~="yan_specnaz_dead" and
-		self.npc:name()~="x16_stalker_ghost" then 
-
+		npc_name~="yan_specnaz_dead" and
+		npc_name~="x16_stalker_ghost" then
 		local otf_1
 		local otf_2
 		local otf_3
@@ -270,7 +291,7 @@ function drop_manager:create_release_item()
 			if vis == "stalker_4_gas" then sect = "neytral_gaz_outfit_v3" end  
 
 			if string.find(vis,"neytral") ~= nil then
-				if self.npc:name()=="esc_wolf" or self.npc:name()=="esc_stalker_fanat" or self.npc:name()=="esc_fox" or self.npc:name()=="esc_provodnik" or self.npc:name()=="gar_hellcar" or self.npc:name()=="gar_seryi" or self.npc:name()=="agr_krot" then sect = "neytral_gaz_outfit_m2" end  		
+				if npc_name=="esc_wolf" or npc_name=="esc_stalker_fanat" or npc_name=="esc_fox" or npc_name=="esc_provodnik" or npc_name=="gar_hellcar" or npc_name=="gar_seryi" or npc_name=="agr_krot" then sect = "neytral_gaz_outfit_m2" end
 			end
 			if vis == "stalker_prizrak" then sect = "outfit_stalker_m1" end
 			if vis == "stalker_neytral_nauchniy" or vis == "stalker_scien" then sect = "scientific_outfit" end
@@ -339,92 +360,50 @@ function drop_manager:create_release_item()
 			end
 		end
 	end
-if string.find(self.npc:name(),"snip_esc1") then
-  db.actor:give_info_portion("snip_esc1_dead")
-end
-if string.find(self.npc:name(),"snip_esc2") then
-  db.actor:give_info_portion("snip_esc2_dead")
-end
-if string.find(self.npc:name(),"snip_esc3") then
-  db.actor:give_info_portion("snip_esc3_dead")
-end	
-if string.find(self.npc:name(),"snip_esc4") then
-  db.actor:give_info_portion("snip_esc4_dead")
-end
-if string.find(self.npc:name(),"snip_esc5") then
-  db.actor:give_info_portion("snip_esc5_dead")
-end
-if string.find(self.npc:name(),"snip_esc6") then
-  db.actor:give_info_portion("snip_esc6_dead")
-end
-if string.find(self.npc:name(),"snip_esc7") then
-  db.actor:give_info_portion("snip_esc7_dead")
-end
-if string.find(self.npc:name(),"snip_esc8") then
-  db.actor:give_info_portion("snip_esc8_dead")
-end
-if string.find(self.npc:name(),"snip_esc9") then
-  db.actor:give_info_portion("snip_esc9_dead")
-end
-if string.find(self.npc:name(),"snip_esc10") then
-  db.actor:give_info_portion("snip_esc10_dead")
-end
-if string.find(self.npc:name(),"snip_esc11") then
-  db.actor:give_info_portion("snip_esc11_dead")
-end
-if string.find(self.npc:name(),"snip_esc12") then
-  db.actor:give_info_portion("snip_esc12_dead")
-end
-if string.find(self.npc:name(),"naem_zahar1") then
-  db.actor:give_info_portion("naem_zahar1_dead")
-end
-if string.find(self.npc:name(),"naem_zahar2") then
-  db.actor:give_info_portion("naem_zahar2_dead")
-end
-if string.find(self.npc:name(),"naem_zahar3") then
-  db.actor:give_info_portion("naem_zahar3_dead")
-end	
-if string.find(self.npc:name(),"naem_zahar4") then
-  db.actor:give_info_portion("naem_zahar4_dead")
-end
-if string.find(self.npc:name(),"naem_zahar5") then
-  db.actor:give_info_portion("naem_zahar5_dead")
-end
-if string.find(self.npc:name(),"naem_zahar6") then
-  db.actor:give_info_portion("naem_zahar6_dead")
-end
-if string.find(self.npc:name(),"ecolog_wound_bunker") then
-  db.actor:give_info_portion("ucen_talk_est")
-end
+	if dead_portion_names[npc_name] then
+		db.actor:give_info_portion(npc_name.."_dead")
+	elseif string.find(npc_name,"ecolog_wound_bunker") then
+		db.actor:give_info_portion("ucen_talk_est")
+	end
 end
 
 --' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
 function keep_item(npc, item)
-	
-	if npc == nil then return end
-	
-	local npc_community = npc:character_community()
+	if not npc or not item then
+		return
+	end
 
-    if item==nil or alife():object(item:id())==nil then return end
+	local item_id = item:id()
+	if not alife():object(item_id) then
+		return
+	end
 
-    local section = item:section()
+	local section = item:section()
+	if section == "bolt" then
+		return false
+	end
 
-    if section == "bolt" then
-        return false
-    end
-
+	if always_offs_items[section] then
+		alife():release(alife():object(item_id), true)
+		return false
+	end
     if always_keep_item[section] == true then
         return true
     end
-
-    local item_id = item:id()
-	local kond=75
-	if 		npc_community == "military" then kond=75
-	elseif 	npc_community == "killer" then kond=75
-	elseif 	npc_community == "monolith" then kond=20
-	elseif 	npc_community == "zombied" then kond=5
-	elseif 	npc_community == "bandit" then kond=40
-	else kond=60
+	local npc_community = npc:character_community()
+	local kond = 75
+	if npc_community == "military" then
+		kond=75
+	elseif 	npc_community == "killer" then
+		kond=75
+	elseif 	npc_community == "monolith" then
+		kond=20
+	elseif 	npc_community == "zombied" then
+		kond=5
+	elseif 	npc_community == "bandit" then
+		kond=40
+	else
+		kond=60
 	end
     local item_in_slot = npc:item_in_slot(1)
     if item_in_slot ~= nil and item_in_slot:id() == item_id then
@@ -440,16 +419,6 @@ function keep_item(npc, item)
                 item:set_condition((math.random(95-kond)+kond)/100)
         return true
     end
-
-        -- удалять ПДА, гитару\гармошку, фонарики и приборы ночного видения, рацию, бинокль.
-	for a=1,table.getn(always_offs_items),1 do
-		if always_offs_items[a]==section then
-			--if (npc.mark_item_dropped) then
---    npc:mark_item_dropped(item)
-		--end
-		alife():release(alife():object(item:id()), true)
-		end
-	end
 end
 
 --' Функция спавнит необходимое число предметов

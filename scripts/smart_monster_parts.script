@@ -57,6 +57,16 @@ function main_check(obj, amount, local_direction, who, bone_index)
          massive[id] = massive[id] + 1
       end
    end
+   if string.find(section,"rat") then
+      if bone_index==24
+      or bone_index==25 then
+         if massive[id]==nil then
+            massive[id] = 1
+            return
+         end
+         massive[id] = massive[id] + 1
+      end
+   end
    if string.find(section,"flesh") then
       if bone_index==13 then
          if massive[id]==nil then
@@ -257,9 +267,9 @@ local table_mobs = {
                     "pseudodog",
                     "psy_dog",
                     "tushkano",
-                    "flesh",
+		    "rat",
                     "cat",
-	"rat",
+                    "flesh",         --2
                     "burer",         --2
                     "snork",         --2
                     "controller",    --2
@@ -273,9 +283,9 @@ local table_mobs = {
                     "mutant_psevdodog_tail",
                     "mutant_psevdodog_tail",
                     "mutant_face_tushkano",
-                    "mutant_flesh_eye",
-                    "mutant_tail_cat",
 	"mutant_rat_tail",
+                    "mutant_tail_cat",
+                    "mutant_flesh_eye",
                     "mutant_burer_hand",
                     "mutant_snork_leg",
                     "mutant_hand_kontroler",
@@ -301,7 +311,7 @@ function spawn_parts(obj,number)
             if number==nil then
                arc.spawn_item_in_inv(table_mobs[2][a],obj)
             end
-            if a>7 then
+            if a>6 then
                if number==nil or (number and number<2) then
                   arc.spawn_item_in_inv(table_mobs[2][a],obj)
                end

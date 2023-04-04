@@ -274,7 +274,7 @@ end
 
 class "script_object"
 
-function script_object.__init(self,name,script,...)
+function script_object:__init(self,name,script,...)
   self.action         = action(nil,...)
   self.object_name    = name
   self.script_name    = script
@@ -291,7 +291,7 @@ function script_object:update()
 end
 
 --
--- іередача персонажу информации
+-- передача персонажу информации
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
@@ -757,6 +757,7 @@ function isWeapon(object)
     elseif id == clsid.wpn_grenade_rpg7 then return true
     elseif id == clsid.wpn_grenade_rgd5 then return true
     elseif id == clsid.wpn_grenade_fake then return true
+	elseif id == clsid.wpn_rg6_s then return true
     else return false end
 end
 
