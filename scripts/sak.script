@@ -1215,19 +1215,15 @@ function take_trasure(npc, npc1)
 	treasure_manager.get_treasure_manager():dialog(npc)
 end
 function have_trasure(first_speaker, second_speaker)
-	local tres
+	local tres = xr_statistic_freeplay.get_freeplay_statistic():get_actor_trust_ranks()
 	if amk.load_variable("option_treasure", 0) == 2 then 
-	  tres = 75
-	else 
-      tres = 50
+		tres = tres / 2
 	end
-	
-	local actor_trust = xr_statistic_freeplay.get_freeplay_statistic():get_actor_trust_ranks()
-	local dtres = tres * (1.0 - actor_trust)
-	
-	local ran=math.random(100)
-	if ran > dtres then db.actor:give_info_portion("have_sak_treasure")
-	else db.actor:give_info_portion("havent_sak_treasure")
+
+	if math.random() <= tres then
+		db.actor:give_info_portion("have_sak_treasure")
+	else
+		db.actor:give_info_portion("havent_sak_treasure")
 	end
 end
 function zombie_checkup()
