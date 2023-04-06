@@ -1,3 +1,7 @@
+--[[
+  TAG фенечка 1.2 стр.240, 369-387
+]]
+
 function init    (obj)
   xr_motivator.AddToMotivator(obj)
 end
@@ -288,6 +292,8 @@ function actor_binder:on_item_drop (obj)
   --AMK UTILS--
   sak.check_droped_item(obj)
   inventory.on_item_drop(item)
+------------- TAG ----------
+  tag_spb.refresh_zombie_team (self.object,obj)
 spawn_level_changer.checking_droped_item(obj)
 spawn_level_changer.checking_droped_item2(obj)
 spawn_level_changer.checking_droped_item3(obj)
@@ -430,6 +436,26 @@ end
 	end
 	]]
     inventory.update()
+
+    -- TAG Хлеб и колбаса портятся от радиации
+    if self.object.radiation>0.4 and (self.object:object("bread") or self.object:object("kolbasa")) then
+       local need_say = false
+       self.object:iterate_inventory(function (dummy,item)  
+                                  if item:section()=="bread" and math.random() <= self.object.radiation then
+                                      need_say = true 
+                                      amk.remove_item(item)  
+                                      amk.spawn_item_in_inv("bread_a")
+                                  elseif item:section()=="kolbasa" and self.object.radiation>0.6 and math.random() <= (self.object.radiation - 0.2) then
+                                      need_say = true 
+                                      amk.remove_item(item)  
+                                      amk.spawn_item_in_inv("kolbasa_a")
+                                  end 
+                                  end, nil)
+      if need_say then 
+          amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)    
+      end 
+    end
+
   --' Вывод сообщения о большой радиации
   if self.object.radiation >= 0.7 then
     local hud = get_hud()

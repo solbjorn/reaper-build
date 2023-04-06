@@ -1,0 +1,407 @@
+--[[
+========== TAG_SPB "Фенечка" v. 1.2.0 ============
+
+   нумерация версий v. A.B.C :
+   A - новая фенечка
+   B - модернизация существующей
+   C - правка ошибок
+
+   в файл  : amk_mod.script 
+   после строки 1001 : amk.del_variable("blowout")
+   добавляем         : tag_spb.zombie_team()
+
+   в файл bind_stalker.script :
+   после строки : amk_utils.actor_item_drop(obj)
+   добавляем    : tag_spb.refresh_zombie_team (self.object,obj)
+   и добавлены строки 369-387 (еда от радиации)
+
+   в файл amk.script :
+   после строки :     --user area 
+   добавляем    : 
+   if select_string=="tag_trup_to_zombie" then
+       tag_spb.trup_to_zombie(params_string)
+    end
+
+   в файле xr_wounded.script испр.строка 514 : 
+   if npc_id and db.storage[npc_id].wounded ~= nil then 
+
+Татуков А.Г. tag@mail.ru  2008г.
+никакими правами не защищено. 
+]]
+
+--------------------------------------
+
+local tag_reenter_c = 0  -- счетчик переносов вызова trup_to_zombie
+local tag_z_total   = 0  -- всего зомби в работе
+local tag_trup_sid  = {} -- таблица серверных ID клиентов
+
+-------------- TAG ---------- создаем команду веселых парней 
+
+function zombie_team (z_m)
+ --уровни где НЕ работаем
+ if not string.find("l01_escape,l03u_agr_underground,l04u_labx18,l08u_brainlab,l10u_bunker",level.name()) then 
+   local trup, trup_name = nil,nil
+   local zombie,zombie_c,zombie_max = nil,0,4 -- zombie count (3 max)
+   local tag_trup_id = {}
+   local i,j 
+   local level_num = string.sub (level.name(),2,3)
+   if z_m then zombie_max = z_m
+   elseif db.actor:character_rank()>500 then zombie_max = zombie_max * 2 
+   end
+   -- ищем подходящих покойников на уровне и пишем их в табличку
+     for j,i in pairs (db.storage) do
+        trup = level.object_by_id(j)
+        if trup and _g.IsStalker(trup) and not trup:alive() then 
+           trup_name = trup:name()
+        else 
+           trup_name = nil 
+        end 
+        if trup_name and zombie_c<zombie_max and tag_trup_sid[j]==nil and
+           string.find(trup_name,"respawn") and not string.find(trup_name,"zombie") and not string.find(trup_name,"ecolog") 
+--           and trup:position():distance_to(db.actor:position())<20 and db.actor:see(trup)  -- ОТЛАДКА
+           then
+           zombie_c = zombie_c+1
+                           -- 0.8,ОТЛАДКА : 10.8
+           if math.random() < 0.8 then
+              tag_add_trup(trup)   
+              table.insert (tag_trup_id,j) 
+           end           
+        end  
+        if zombie_c >= zombie_max then break end
+     end --for
+
+     zombie_c = math.random(2,5) --(5,15) (1,2)
+     for i,j in pairs (tag_trup_id) do -- c задержкой (чем дальше - тем страшнее) делаем zombi из trup. 
+          if math.random() <0.2 then zombie_max = 1 else zombie_max = 0 end -- на час
+-- amk.send_tip (level_num.." "..tostring(zombie_c).." "..tostring(j),nil,nil,3)    
+          amk.g_start_timer("tag_trup_to_zombie",0,zombie_max,zombie_c,"A"..tostring(j))
+          zombie_c = zombie_c + math.random(1,3)
+     end --for
+     tag_reenter_c = 0     
+ end --levels  
+end
+
+----------------------- если актер сьел аптечку на "опасном" уровне...
+
+function refresh_zombie_team (npc,item) 
+    if tag_z_total < 3 and math.random() < 0.7 and 
+       npc and npc:id() == db.actor:id() and 
+       item and string.find(item:section(),"medkit") and
+       string.find("03040607",string.sub(level.name(),2,3)) and
+       amk.load_variable("blowout",-1)==-1 then 
+       zombie_team (2) 
+    end
+end
+
+------------------------------------------------ собственно волшебство
+
+function trup_to_zombie (s_param)
+
+   local n_step = nil
+   local trup_id = tonumber(string.sub(s_param,2,20))
+   local trup = level.object_by_id(trup_id)
+
+   if trup then
+    trup:disable_talk() --no key [F]
+    if tag_im_alone(trup,string.sub(s_param,1,1)) then
+     local e_pos = trup:bone_position("bip01_spine") 
+     local l_v = trup:level_vertex_id()
+     local g_v = trup:game_vertex_id()
+     local level_num = string.sub (level.name(),2,3)
+
+     if string.find(s_param,"A") then
+        amk_particle.amk_particle({particle="anomaly2\\emi_idle_00",pos=e_pos,sound="anomaly\\emi_blowout"})   
+--        trup:set_const_force (vector():set(0,1,0):normalize(), 30000, 3)  -- подбросим дядю
+        n_step ="B" 
+
+     elseif string.find(s_param,"B") then
+        local t = string.find("010203040506",level_num) -- 1,3,5,7,9,11
+        if t then -- брак "по мясу"
+           if t>6 then t=12-t end  -- 1,3,5,5,3,1  30% брак = 15
+           if math.random(0,15)<t then --0,12 ОТЛАДКА 10,12
+               local skel = nil
+               if math.random()< 0.4 then
+                  skel = amk.spawn_item("breakable_object",e_pos,db.actor:game_vertex_id(),db.actor:level_vertex_id())  -- (c) AMK
+               end   
+               if skel then 
+                  t = amk.get_breakable_data(skel)
+                  t.visual ="physics\\dead_body\\skelet_"  
+                  if math.random()<0.7 then  t.visual = t.visual.."torso"
+                  else t.visual = t.visual.."combine_pose_0"..tostring(math.random(3,5)) end
+                  t.mass = 1.0
+                  t.physic_type = 3
+                  t.skeleton_flags = 1
+                  amk.set_breakable_data(t,skel)
+               end 
+               amk_particle.amk_particle({particle="amk\\zomb_explode",pos=e_pos,sound=[[anomaly\anomaly_body_tear_1]]})
+               tag_del_trup(trup) 
+               tag_drop_habar(level.object_by_id(trup_id),nil) -- тушка рассыпается. неповезло парню
+               return nil 
+           end      
+         end
+        if level_num > "02" then -- а этот будет "жить"   
+           local phe =  trup:get_physics_shell():get_element_by_bone_name("bip01_head")
+           if phe then phe:apply_force(0, 80000, 0) end  -- потянем дядю         
+           amk_particle.amk_particle({particle="anomaly2\\group_items\\tornado_flash_04",pos=e_pos,sound="anomaly\\emi_entrance"})
+           n_step ="Z" 
+        end
+     elseif string.find(s_param,"F") then  -- тут trup - это уже зомби.. им управляют..        
+        local e_pos = trup:bone_position("bip01_head")
+        e_pos.y = e_pos.y + 0.2 
+        amk_particle.amk_particle({particle="anomaly2\\electra_entrance_small",pos=e_pos,sound="anomaly\\electra_hit1"})
+        if trup:alive() and math.random()<0.8 then n_step ="F" end -- срыв контроля
+
+     else
+        local phe =  trup:get_physics_shell():get_element_by_bone_name("bip01_head")
+        if phe then phe:apply_force(0, 80000, 0) end -- потянем дядю
+
+        local zombie = nil   
+        local new_pos = trup:position()
+        local trup_human_name = news_main.get_npc_name(trup) 
+
+        new_pos.y = new_pos.y + 0.5 -- выше покойного
+
+        -- определяем уровень (игры)                                  
+        local zombie_name = "rad_zombied_respawn_"
+        if level_num > "06" then -- L06_rostok
+           zombie_name = "yan_zombied_respawn_"
+        end   
+        -- определяем крутость дохлого NPC
+        if trup:character_rank() > 600 then zombie_name = zombie_name.."3"
+        elseif trup:character_rank() > 300 then zombie_name = zombie_name.."2"
+        else zombie_name = zombie_name.."1" end
+
+        local vis = tag_get_npc_armor(level.object_by_id(trup_id))
+
+        zombie = alife():create(zombie_name,new_pos,l_v,g_v)
+
+        if zombie then
+           local z = amk.read_stalker_params(zombie)
+           if z then
+              z.charname = trup_human_name
+              z.rank = trup:character_rank()
+              if vis then z.visual = vis end
+              if math.random()<0.5 then  
+                 z.custom="[logic]\ncfg=scripts\\tag\\tag_zombie_2.ltx"
+--                 amk.logct("BRAK "..trup_human_name,"temp") 
+              else
+                 z.custom="[logic]\ncfg=scripts\\tag\\tag_zombie.ltx"
+--                 amk.logct("OK "..trup_human_name,"temp") 
+              end
+              amk.write_stalker_params(z,zombie,true)
+              amk.g_start_timer("tag_trup_to_zombie",0,0,2,"F"..tostring(zombie.id))
+              tag_add_trup (zombie) -- сменили труп на зомби
+           end    
+
+           amk_particle.amk_particle({particle="anomaly2\\group_items\\electra2_flash",pos=e_pos,sound="anomaly\\teleport_work_2"})
+ 
+           sound_from_npc(trup,[[monsters\zombie\zombie_take_damage_6]])
+
+           tag_drop_habar(level.object_by_id(trup_id),zombie)  -- грохаем тушку
+        
+           if not db.actor:see(trup) then  -- придумалась ерунда какая-то
+              amk.send_tip ("Подбор пароля. Абонент "..trup_human_name.." блокирован.","Системное сообщение",1,7,"gen_info","news")
+           end 
+        end -- zombie Ok
+     end -- ABZF...    
+     if n_step and trup then   -- развитие событий
+        local i = string.find("-ZF",n_step)
+        if i then i = math.random(1,i) else i = 1 end
+        amk.g_start_timer("tag_trup_to_zombie",0,0,i,n_step..string.sub(s_param,2,20))
+     end
+   else -- опа! not alone кто-то стоит рядом - зайдем позже
+        if tag_reenter_c < 50 then    
+           amk.g_start_timer("tag_trup_to_zombie",0,0,math.random(1,5),s_param)
+           tag_reenter_c = tag_reenter_c + 1
+        else
+-- amk.send_tip("No reenter to "..s_param,nil,nil,7)
+        end
+   end --alone
+  end --trup
+  if not n_step then tag_del_trup(trup) end
+end
+
+--------------------------------------- централизованный учет клиентов
+function tag_add_trup (trup)  
+    tag_z_total = tag_z_total + 1 
+    if trup and trup.id then 
+       table.insert(tag_trup_sid,trup.id) 
+    end    
+end
+function tag_del_trup (trup)  
+    if tag_z_total>0 then tag_z_total = tag_z_total - 1 end
+    if trup and tag_trup_sid[trup.id] then 
+       table.remove(tag_trup_sid,trup.id) 
+    end    
+end
+----------------------------------------------------------------------
+
+function tag_im_alone(trup, mode)
+   if trup then
+      local i,j,k  
+      i = trup:position():distance_to(db.actor:position())
+      if i<5 then -- актер получает хит чтоб близко не стоял
+          local h = hit()		
+            h.impulse = 0
+            h.direction = vector():set(0,0,0)
+	    h.draftsman = db.actor
+ 	    h:bone("bip01_spine")
+	    h.power = db.actor.health/(2*i) -- полжизни отнимем ..          
+	    h.type = hit.telepatic
+	    db.actor:hit(h)
+            j = string.find("..F.ABZ",mode)
+            if j then 
+               h.power = (db.actor.health*(0.1*j))/i -- но не добьем !
+  	       h.type = hit.shock
+	       db.actor:hit(h)
+            end
+            if db.actor:alive() then -- звон в ухах
+               sound_from_npc(db.actor,[[affects\tinnitus3a]],2)
+            end 
+       end    
+      if i<2 or i>130 then return false end 
+      for j,i in pairs (db.storage) do
+        k = level.object_by_id(j)
+        if k and k:alive() and k.id~=trup.id and -- _g.IsStalker(k) and
+           trup:position():distance_to(k:position())<2 then 
+           return false 
+        end 
+      end --for
+      return true -- никого нет
+   end
+   return false
+end
+----------------------------------------------------------------------
+
+function tag_get_npc_armor(trup)  -- нехороша, надо б переделать
+
+  local vis = nil
+  if trup then
+     local n,z = "stalker_",nil
+     local trup_type, other_type =trup:section(), nil
+     local trup_rank = trup:character_rank()
+     local cur_outfit= nil    -- определяется тем, кто м\переодеваться "bandit" "stalker" "neutral"
+
+--   amk.logct(trup_type,"temp") 
+--   trup:get_current_outfit()  -- nil
+
+     local net_p = amk.read_stalker_params(alife():object(trup:id())) -- серв.ID трупа 
+     if net_p then other_type = net_p.visual end
+
+--[[ 
+     получаем : 
+     trup:section() = esc_stalker_respawn_1          группировка из (spawn_sections.ltx)
+     net_p.visual   = actors\novice\green_stalker_3  модели из \gamedata\meshes\...
+]]
+
+-- пытаемся подобрать модель по рангу и группировке "клиента" (spawn_sections.ltx)
+--  типы : stalker_zombie1-8, stalker_zombie_specnaz, zombie_exoskeleton, zombie_fresh_0-2
+
+     if string.find(trup_type,"bandit")        then         -- бандит
+        z="1" cur_outfit=2
+     elseif string.find(trup_type,"dolg")      then         -- Долг 
+        if trup_rank < 600 then z="2"                       -- черн.комб.
+        elseif trup_rank<900 then n="" z="_fresh_1"         -- черн.комб.2
+        else n="" z="_exoskeleton"                          -- екза 
+        end   
+     elseif string.find(trup_type,"freedom") or             -- Свобода     
+            string.find(trup_type,"svoboda") then            
+        if trup_rank < 300 then 
+           z="3"                                            -- зел.комб.сталкера 
+        elseif trup_rank < 600 then 
+           n="" z="_fresh_2"                                -- зел.комб.с против.  
+        else
+           n="" z="_fresh_0"                                -- зел.-синий комб. 
+        end   
+     elseif string.find(trup_type,"killer")    then         -- киллер(4) в маске(5)
+        if string.find(trup_type,"_respawn_2") then z="5" else z="4" end           
+     elseif string.find(trup_type,"stalker") or             -- сталкерЫ
+        string.find(trup_type,"neutral") then
+        if trup_rank < 300 then     z="8" cur_outfit=1      -- новичок в бел.курт.(8)
+        elseif trup_rank < 600 then z="7" cur_outfit=2      -- сталкер в жел.курт.(7)   
+        else
+           cur_outfit=2 
+           if math.random()>0.2 then z="3" else z="6" end   -- зел.комб.(3) в очках(6)
+        end
+     elseif string.find(trup_type,"soldierZZ") or 
+            string.find(trup_type,"militaryZZ") or
+            string.find(trup_type,"specnaz") then           -- все вояки - как спецназ..плохо 
+        z="_specnaz"                                       
+     elseif string.find(trup_type,"monolith")  then         -- монолит 
+        n="" z="_exoskeleton"                               -- екза
+     elseif other_type then                     
+            return other_type                               -- не нашли ZOMBIE, возьмем ориг.модель
+     end
+
+     -- пытаемся подобрать модель по сод.рюкзака (переодевание)
+     if cur_outfit then
+        -- ищем эту броню (7 записей)               
+        local outfits_to_zombie = {"novice_outfit","stalker_outfit","killer_outfit",
+                                   "stalker_guard_outfit","dolg_outfit","svoboda_heavy_outfit","exo"}
+        local z_tab             = {"7","3","4",
+                                   "_fresh_0","_fresh_1","_fresh_2","_exoskeleton" } 
+         
+        local i,j 
+        trup:iterate_inventory(         
+                   function(dummy,item)
+                      if item:parent() then 
+                         local i_section = item:section()
+                         if string.find(i_section,"exoskelet") then cur_outfit=7 end 
+                         if string.find(i_section,"outfit") then
+                            for i,j in pairs(outfits_to_zombie) do
+                              if i>=cur_outfit and j==i_section then cur_outfit=i end      
+                            end 
+                         end
+                      end
+                   end,trup) -- end function
+
+        if cur_outfit>0 then z=z_tab[cur_outfit] end
+        if cur_outfit> 3 then n="" end
+     end
+ 
+     if z then  
+        vis = "actors\\stalker_zombi\\"..n.."zombie"..z 
+-- amk.send_tip(trup_type.." шкурка="..vis,nil,nil,17)
+     end             
+  end
+  return vis 
+end
+
+----------------------------------------------------------------------
+
+function sound_from_npc(npc,sound_name,ds) -- only(!) alife Stalker or Monstr ; string , [delay sec]
+    if npc and sound_name then
+       local npc_pos=npc:bone_position("bip01_spine")   
+       local snd_obj = xr_sound.get_safe_sound_object(sound_name)         
+       if snd_obj then
+           snd_obj:play_no_feedback(npc, sound_object.s3d,(ds or 0), npc_pos, 1.0)
+       end       
+    end
+end
+
+----------------------------------------------------------------------
+
+function tag_drop_habar (trup,zombie)
+   if trup and alife():object(trup:id()) then
+      trup:iterate_inventory(         -- выбрасываем шмотье
+                   function(dummy,item)
+                      if alife():object(item:id()) and item:parent() then 
+                         local i_section = item:section() 
+                         if not string.find("bolt,device_torch",i_section) and
+                            item:parent() then
+-- вылет?                           if zombie and math.random()<0.6 then trup:transfer_item(item, zombie) else trup:drop_item(item) end
+                            trup:drop_item(item) 
+                         end
+                      end
+                   end,trup) -- end function
+      if alife():object(trup:id()) then
+         -- пытаемся снять отметку с миникарты
+--         level_tasks.remove_location_safe(trup:id(), "deadbody_location")--_mini_spot")  deadbody_location
+         level.map_remove_object_spot(trup:id(), "deadbody_mini_spot") -- фигня,не работает
+         level.remove_calls_for_object(trup:id())
+         amk.remove_item(trup) 
+         end
+   end
+end
+
+-------------- TAG end ----------

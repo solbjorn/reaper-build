@@ -1,0 +1,41 @@
+[logic]
+active = remark@tag_zombie_1
+on_combat = combat@tag_zombie
+combat_ignore = combat_ignore@tag_zombie
+
+[remark@tag_zombie_1]
+anim = wounded_zombie
+snd = help_heavy
+meet = no_meet
+combat_ignore_cond = {=dist_to_enemy_ge(20)}
+on_game_timer = 60 | remark@tag_zombie_2
+;on_game_timer = 60 | remark@tag_zombie_2 %=play_snd_now(zombie_trans)%
+
+[remark@tag_zombie_2]
+anim = trans_0
+snd = state 
+snd_anim_synñ = true
+meet = no_meet
+combat_ignore_cond  = {=dist_to_enemy_ge(30)}
+on_game_timer = 60 | remark@tag_zombie_3 
+
+[remark@tag_zombie_3]
+anim = psy_pain
+snd = help_heavy
+snd_anim_synñ = true
+meet = no_meet
+combat_ignore_cond  = {=dist_to_enemy_ge(40)}
+on_game_timer = 90 | remark@tag_zombie_4
+
+[remark@tag_zombie_4]
+anim = trans_zombied
+snd = state 
+meet = no_meet
+combat_ignore_cond = {=dist_to_enemy_ge(70)}
+on_game_timer = 60 | nil
+
+[combat_ignore@tag_zombie]
+combat_ignore_cond = {=dist_to_enemy_ge(80)}  
+
+[combat@tag_zombie]
+combat_type = zombied
