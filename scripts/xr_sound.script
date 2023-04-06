@@ -180,8 +180,6 @@ function play_sound(npc, themes, timeout)
 		if sound_theme.theme[v] ~= nil then
 			snd_table[t].theme = v
 			get_sound(sound_theme.theme[v], snd_table[t], npc)
-		else
-			abort("ERROR: ILLEGAL PLAY SOUND!!! %s for %s", v, npc:name())
 		end
 		t = t + 1
 	end	
@@ -205,11 +203,7 @@ function play_sound(npc, themes, timeout)
 			snd.into_max > 0
 		then
 			if db.sound[npc_id].last_snd[snd.into_id] == snd.into_max - 1 then
-				if snd.into_cycled == true then
-					db.sound[npc_id].last_snd[snd.into_id] = nil 
-				else
-					return
-				end
+				db.sound[npc_id].last_snd[snd.into_id] = -1
 			end
 			
 			-- играем входные
