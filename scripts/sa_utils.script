@@ -1,0 +1,34 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_utils.script
+ Description  : Вспомогательные функции
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 16.06.2013
+ Last edit    : 08.11.2018
+--]]-----------------------------------------------------------------------------------------------
+--[[-----------------------------------------------------------------------------------------------
+ * Sounds
+--]]-----------------------------------------------------------------------------------------------
+function _G.play_safe_sound_object(sound_path, timeout, volume)
+	if sound_path then
+		if not timeout then
+			timeout = 0
+		end
+		if not volume then
+			volume = 1.0
+		end
+		sound_object(sound_path):play_no_feedback(db.actor, sound_object.s2d, timeout, vector(), volume)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Extended level namespace
+--]]-----------------------------------------------------------------------------------------------
+function level.add_cam_effector3(time, amplitude, period_number, power)
+	if time and amplitude and period_number and power then
+		level.set_ce_time(time)
+		level.set_ce_amplitude(amplitude)
+		level.set_ce_period_number(period_number)
+		level.set_ce_power(power)
+		level.add_ce()
+	end
+end

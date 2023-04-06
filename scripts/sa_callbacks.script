@@ -1,0 +1,22 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_callbacks.script
+ Description  : Библиотека колбеков
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 06.11.2012
+ Last edit    : 12.11.2018
+--]]-----------------------------------------------------------------------------------------------
+prefetch("sa_utils")
+--[[-----------------------------------------------------------------------------------------------
+ * MONSTER
+--]]-----------------------------------------------------------------------------------------------
+function monster_update(obj)
+	if obj:alive() and db.actor:alive() then
+		local enemy = obj:get_enemy()
+		if enemy and obj:see(enemy) and enemy:id() == db.actor:id() then
+			sa_monsters.pseudodog_psy_effect(obj)
+			sa_monsters.burer_tele_attack(obj)
+		end
+		sa_monsters.controller_death_zone(obj)
+	end
+end
