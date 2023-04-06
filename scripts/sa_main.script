@@ -1,0 +1,61 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_main.script
+ Description  : Новые фичи и возможности
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 21.07.2011
+ Last edit    : 11.11.2018
+--]]-----------------------------------------------------------------------------------------------
+--[[-----------------------------------------------------------------------------------------------
+ * Radar bunker cooling sound
+--]]-----------------------------------------------------------------------------------------------
+local cooling_snd = nil
+---------------------------------------------------------------------------------------------------
+function bunker_cooling_sound()
+	if level.name() == "l10u_bunker" then
+		if not has_alife_info("bar_deactivate_radar_done") then
+			if not (cooling_snd and cooling_snd:playing()) then
+				cooling_snd = sound_object("ambient\\cooling_run")
+				cooling_snd:play_at_pos(db.actor, vector(), 0, sound_object.s2d + sound_object.looped)
+			end
+		elseif cooling_snd then
+			play_safe_sound_object("ambient\\cooling_stop")
+			cooling_snd:stop()
+			cooling_snd = nil
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PDA news
+--]]-----------------------------------------------------------------------------------------------
+function pda_news(group, name)
+	local header = ""
+	if group == "Diary" then
+		header = game.translate_string("st_news_diary")
+	elseif group == "Mutants" then
+		header = game.translate_string("st_news_mutants")
+	elseif group == "Social" then
+		header = game.translate_string("st_news_social")
+	elseif group == "Artifacts" then
+		header = game.translate_string("st_news_artifacts")
+	elseif group == "Anomalies" then
+		header = game.translate_string("st_news_anomalies")
+	elseif group == "Locations" then
+		header = game.translate_string("st_news_locations")
+	elseif group == "Zone-story" then
+		header = game.translate_string("st_news_zone_story")
+	elseif group == "Stories" then
+		header = game.translate_string("st_news_stories")
+	elseif group == "memuars" then
+		header = game.translate_string("st_news_memuars")
+	elseif group == "Vehicles" then
+		header = game.translate_string("st_news_vehicles")
+	elseif group == "Found_PDA" then
+		header = game.translate_string("st_found_new_pda")
+	elseif group == "st_operation_agroprom" or group == "LabX18_information" or group == "aes_military_task" then
+		header = game.translate_string("st_news_diary")
+	end
+	if header ~= "" then
+		send_tip(game.translate_string(group).."/"..game.translate_string(name), header, nil, 5, "encyclopedia", "pda_news")
+	end
+end

@@ -18,33 +18,7 @@ is_debug = false
 ver = "0"
 oau_watchdog=0
 oau_reason=""
---переменные для типсов
-pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
-pda_tips = xr_sound.get_safe_sound_object([[device\pda\pda_tip]])
-pda_task = xr_sound.get_safe_sound_object([[device\pda\pda_objective]])
 
-tips_icons = {
-  default  = { 0, 658},
-  trader   = { 332, 893},
-  dolg     = { 0, 658},
-  freedom  = { 0, 658},
-  ecolog   = { 498, 0},
-  arena    = { 332, 141},
-  stalker  = { 0, 658},
-  krot     = { 332, 47},
-  barman   = { 332, 235},
-  wolf   = { 332, 940},
-  o_soznanie = { 498, 893},
-  monolith = { 0, 658},
-    saharov  = { 332, 470},
-    prizrak  = { 0, 658},
-    killer   = { 0, 658},
-  death     = { 0, 752},
-  	military  = { 249, 517},
-  gen_info  = { 0, 658},
-	trade 		= { 0, 0},
-  uniq  =  {  498, 47}    --{ 498, 188}
-}
 ----------------
 local bufferedmessages={}
 
@@ -89,32 +63,15 @@ end
 
 --показываем типс
 function send_tip(news_text, header, timeout, showtime, sender, sound)
-  if news_text==nil then return end
-  if header==nil then header=game.translate_string("st_tip") end
-  if timeout == nil then timeout = 0 end
-  if showtime == nil then showtime = 5 end
-  
-  local player
-  if sound=="news" then
-    player=pda_news
-  elseif sound=="task" then
-    player=pda_task
-  else
-    player=pda_tips
-  end   
-  
-  --' Играем дефолтный звук
-  player:play(db.actor, timeout, sound_object.s2d)
-  
-  if sender == nil then
-    sender = "default"
-  end
-  local x = tips_icons[sender][1]
-  local y = tips_icons[sender][2]
-  
-  local news_text = "%c[255,160,160,160]"..header.."\\n".."%c[default]"..news_text
-  db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(x,y,83,47), timeout*1000, showtime*1000)
-  return true
+	if sound == "news" then
+		sound = "pda_news"
+	elseif sound == "task" then
+		sound = "pda_objective"
+	else
+		sound = "pda_tip"
+	end
+
+	_G.send_tip(news_text, header, timeout, showtime, sender, sound)
 end
 
 function add_spot_on_map(obj_id,type,text)
