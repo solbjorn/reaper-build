@@ -60,6 +60,10 @@ end
 --[[-----------------------------------------------------------------------------------------------
  * Others
 --]]-----------------------------------------------------------------------------------------------
+local show_in_dialogs = {
+	["encyclopedia"]	= true,
+}
+---------------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 	if news_text then
 		if not header then header = game.translate_string("st_tip") end
@@ -67,8 +71,14 @@ function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 		if not showtime then showtime = 5 end
 		if not (sender and news_manager.tips_icons[sender]) then sender = "default" end
 		if sound then sound_object("device\\pda\\"..sound):play(db.actor, timeout, sound_object.s2d) end
+
 		local news_text = "%c[255,160,160,160]"..header.."\\n%c[default]"..news_text
 		local x, y = news_manager.tips_icons[sender][1], news_manager.tips_icons[sender][2]
-		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(x, y, 83, 47), timeout * 1000, showtime * 1000)
+		local rect = Frect():set(x, y, 83, 47)
+		if sender and show_in_dialogs[sender] and db.actor:is_talking() then
+			db.actor:give_talk_message(news_text, "ui\\ui_iconsTotal", rect, "iconed_answer_item")
+		else
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", rect, timeout * 1000, showtime * 1000)
+		end
 	end
 end
