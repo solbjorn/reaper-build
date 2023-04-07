@@ -10,7 +10,6 @@ local markers={}  --хранит маркеры на карте
 local x_objs={}     --хранит ИДшники объектов
 local timer_trigger=nil
 convert_npc={}
-g_kick=false
 
 local StartTime
 
@@ -911,9 +910,6 @@ flamethrower.have_a_vodko()
 flamethrower.have_a_gorelka()
 end
 
-local prev_health=0
-
-
 --колбэк на апдейт ГГ (удобно для проверки условий, так как вызывается постоянно, нельзя перегружать, а то будут лаги)
 function on_actor_upade(delta)
 	oau_watchdog=100
@@ -975,27 +971,6 @@ function on_actor_upade(delta)
     end
   end
 	oau_watchdog=90
-
-	if gg_kick then	
-		if prev_health>db.actor.health+0.05 then
-			level.add_pp_effector("amk_shoot.ppe", 2011, false)
-			level.set_pp_effector_factor(2011, (prev_health-db.actor.health)*100)  
-			
-			if prev_health>db.actor.health+0.30 then
-				level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")	
-				local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
-				snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-				if math.random()<0.20 then
-					local active_item = db.actor:active_item()
-					if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-						db.actor:drop_item(active_item)
-					end
-				end
-			end
-			
-		end
-		prev_health = db.actor.health
-	end
 	oau_watchdog=89
 	
 	if (amk_offline_alife) then
@@ -1199,7 +1174,6 @@ function on_game_load()
 ]]
   
 --user area 
-	if system_ini():r_float("gg_kick","enabled")>0.0 then gg_kick=true else gg_kick=false end
   mod_call("test_sleep_pp")
   mod_call("check_spawn")
 --  local str=string

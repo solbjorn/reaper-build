@@ -100,6 +100,9 @@ function actor_binder:net_destroy()
   self.object:set_callback(callback.level_border_enter, nil)
   self.object:set_callback(callback.level_border_exit, nil)
   self.object:set_callback(callback.take_item_from_box, nil)
+	self.object:set_callback(callback.hit, nil)
+	self.object:set_callback(callback.hit_effector, nil)
+	self.object:set_callback(callback.before_hit, nil)
 
   if sr_psy_antenna.psy_antenna then
     sr_psy_antenna.psy_antenna:destroy()
@@ -134,6 +137,9 @@ function actor_binder:reinit()
   self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
   self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
   self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+	self.object:set_callback(callback.hit, self.hit_callback, self)
+	self.object:set_callback(callback.hit_effector, self.hit_effector_callback, self)
+	self.object:set_callback(callback.before_hit, self.before_hit_callback, self)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
@@ -275,6 +281,19 @@ spawn_level_changer.checking_droped_item(obj)
 spawn_level_changer.checking_droped_item2(obj)
 spawn_level_changer.checking_droped_item3(obj)
 spawn_level_changer.checking_droped_item4(obj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+	sa_callbacks.actor_hit(obj, amount, local_direction, who, bone_index)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:hit_effector_callback(mob_type, side)
+	sa_callbacks.hit_effector(mob_type, side)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:before_hit_callback(hit_data, ignore_flags)
+	sa_callbacks.hit_effector(hit_mob_types.generic)
 end
 ----------------------------------------------------------------------------------------------------------------------
 

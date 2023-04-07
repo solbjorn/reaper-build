@@ -33,6 +33,31 @@ function level.add_cam_effector3(time, amplitude, period_number, power)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * Ini
+--]]-----------------------------------------------------------------------------------------------
+function _G.read_line(section, line, line_type, ini, default_value)
+	if section and line then
+		if not ini then
+			ini = system_ini()
+		end
+		if not line_type then
+			line_type = "number"
+		end
+		if ini:section_exist(section) and ini:line_exist(section, line) then
+			if line_type == "string" then
+				return ini:r_string(section, line)
+			elseif line_type == "number" then
+				return ini:r_float(section, line)
+			elseif line_type == "bool" then
+				return ini:r_bool(section, line)
+			elseif line_type == "vector" then
+				return ini:r_vector(section, line)
+			end
+		end
+		return default_value
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Others
 --]]-----------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
