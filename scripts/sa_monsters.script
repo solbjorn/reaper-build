@@ -15,13 +15,13 @@ local CONTROLLER_DEATH_ZONE_DIST = 10
 local pseudodog_psy_effect_timer = 0
 ---------------------------------------------------------------------------------------------------
 function pseudodog_psy_effect(obj)
-	if get_clsid(obj) == clsid.pseudodog_s and distance_between(obj, db.actor) <= PDOG_PSY_EFFECT_DIST then
+	if get_clsid(obj) == clsid.pseudodog_s and distance_between(obj, db_actor) <= PDOG_PSY_EFFECT_DIST then
 		local target_obj = level.get_target_obj()
 		if target_obj and target_obj:id() == obj:id() and pseudodog_psy_effect_timer < time_global() then
 			play_safe_sound_object("monsters\\pseudodog\\psy_affect_0")
 			level.add_cam_effector3(1.0, -30.0, 4.0, 2.0)
 			level.add_pp_effector("attack_effects\\monsters\\special\\pseudodog_psy.ppe", effector_ids.psy_effect, false)
-			db.actor.psy_health = -0.08
+			db_actor.psy_health = -0.08
 			pseudodog_psy_effect_timer = time_global() + math.random(8, 12) * 1000
 		end
 	end
@@ -32,15 +32,15 @@ end
 local burer_tele_attack_timer = 0
 ---------------------------------------------------------------------------------------------------
 function burer_tele_attack(obj)
-	if get_clsid(obj) == clsid.burer_s and distance_between(obj, db.actor) <= BURER_TELE_ATTACK_DIST then
+	if get_clsid(obj) == clsid.burer_s and distance_between(obj, db_actor) <= BURER_TELE_ATTACK_DIST then
 		local target_obj = level.get_target_obj()
 		if target_obj and target_obj:id() == obj:id() and burer_tele_attack_timer < time_global() then
-			local active_item = db.actor:active_item()
+			local active_item = db_actor:active_item()
 			if active_item and active_item:is_weapon() and math.random() < 0.4 then
-				db.actor:drop_item(active_item)
+				db_actor:drop_item(active_item)
 			end
 			play_safe_sound_object("monsters\\poltergeist\\tele_get_0")
-			db.actor.power = -1
+			db_actor.power = -1
 			burer_tele_attack_timer = time_global() + math.random(10, 18) * 1000
 		end
 	end
@@ -49,7 +49,7 @@ end
  * Controller death zone
 --]]-----------------------------------------------------------------------------------------------
 function controller_death_zone(obj)
-	if get_clsid(obj) == clsid.controller_s and distance_between(obj, db.actor) <= CONTROLLER_DEATH_ZONE_DIST then
-		db.actor.psy_health = -0.05
+	if get_clsid(obj) == clsid.controller_s and distance_between(obj, db_actor) <= CONTROLLER_DEATH_ZONE_DIST then
+		db_actor.psy_health = -0.05
 	end
 end

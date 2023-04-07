@@ -52,6 +52,9 @@ end
 
 
 function add_actor( obj )
+	_G.db_actor = obj
+	_G.db_actor_id = obj:id()
+
   actor = obj
   actor_proxy:net_spawn( obj )
   add_obj( obj )
@@ -61,6 +64,9 @@ function del_actor()
   del_obj( actor )
   actor_proxy:net_destroy()
   actor = nil
+
+	_G.db_actor_id = 0
+	_G.db_actor = nil
 end
 
 

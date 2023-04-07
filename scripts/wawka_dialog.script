@@ -11737,11 +11737,11 @@ function with_discount(num)
 end
 
 function have_money(actor, num)
-	return actor:money() > with_discount(num)
+	return db_actor:money() > with_discount(num)
 end
 
 function give_money(actor, num)
-	dialogs.relocate_money(actor, with_discount(num), "out")
+	dialogs.relocate_money(db_actor, with_discount(num), "out")
 end
 
 function have_money_5000(actor,npc)

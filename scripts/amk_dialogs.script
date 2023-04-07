@@ -93,12 +93,12 @@ function with_discount(num)
 end
 
 function actor_has_money_30000()
-	return db.actor:money() >= with_discount(30000)
+	return db_actor:money() >= with_discount(30000)
 end
 
 function give_money_30000(t1, t2)
 	local npc = t1
-	if npc:id() == db.actor:id() then
+	if npc:id() == db_actor_id then
 		npc = t2
 	end
 

@@ -19,7 +19,7 @@ local last_health
 ---------------------------------------------------------------------------------------------------
 function actor_hit(obj, amount, local_direction, who, bone_index)
 	if last_mob_type then
-		sa_main.hit_effectors(last_mob_type, who, last_health - db.actor.health)
+		sa_main.hit_effectors(last_mob_type, who, last_health - db_actor.health)
 	end
 	last_mob_type = nil
 end
@@ -27,16 +27,16 @@ end
 function hit_effector(mob_type, side)
 	if not last_mob_type or mob_type ~= hit_mob_types.generic then
 		last_mob_type = mob_type
-		last_health = db.actor.health
+		last_health = db_actor.health
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * MONSTER
 --]]-----------------------------------------------------------------------------------------------
 function monster_update(obj)
-	if obj:alive() and db.actor:alive() then
+	if obj:alive() and db_actor:alive() then
 		local enemy = obj:get_enemy()
-		if enemy and obj:see(enemy) and enemy:id() == db.actor:id() then
+		if enemy and obj:see(enemy) and enemy:id() == db_actor_id then
 			sa_monsters.pseudodog_psy_effect(obj)
 			sa_monsters.burer_tele_attack(obj)
 		end

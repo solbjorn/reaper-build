@@ -1232,12 +1232,12 @@ function with_discount(num)
 end
 
 function actor_has_money(num)
-	return db.actor:money() >= with_discount(num)
+	return db_actor:money() >= with_discount(num)
 end
 
 function give_money(t1, t2, num)
 	local npc = t1
-	if npc:id() == db.actor:id() then
+	if npc:id() == db_actor_id then
 		npc = t2
 	end
 
@@ -1285,15 +1285,15 @@ function give_money_400000(t1, t2)
 end
 
 function relocate_money(victim, num, type)
-	if db.actor and victim then
+	if db_actor and victim then
 		if type == "in" then
-			db.actor:give_money(num)
+			db_actor:give_money(num)
 			game_stats.money_quest_update (num) 
 		elseif type == 1 then
-			db.actor:give_money(-num)
+			db_actor:give_money(-num)
 			game_stats.money_quest_update (-num) 
 		end
-		news_manager.relocate_money(db.actor, type, num)
+		news_manager.relocate_money(db_actor, type, num)
 	end
 end
 
