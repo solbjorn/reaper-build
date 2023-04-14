@@ -374,7 +374,7 @@ function arena_give_reward(actor, npc)
 		m = 10000
 	end
 	dialogs.relocate_money(npc, m, "in")
-	db.actor:give_info_portion("bar_arena_reset")	
+	db_actor:give_info_portion("bar_arena_reset")
 	xr_zones.purge_arena_items("bar_arena")
 end
 
@@ -456,8 +456,16 @@ function locate_bar_dolg(actor,npc)
 	if sim == nil then
 		return
 	end
-	local obj = sim:story_object(507)
-	if obj then
-		level.map_add_object_spot(obj.id, "green_location", "bar_voronin_name")
+	local obj = sim:story_object(500) --barman
+	if npc:id() == obj.id then
+		obj = sim:story_object(507) --voronin
+		if obj then
+			level.map_add_object_spot(obj.id, "green_location", "bar_voronin_name")
+		end
+	else -- Kitsenko
+		obj = sim:story_object(572) --bar_dolg_locator restrictor
+		if obj then
+			level.map_add_object_spot(obj.id, "crlc_small", "bar_dolg_locator")
+		end
 	end
 end

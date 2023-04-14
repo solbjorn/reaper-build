@@ -1,0 +1,90 @@
+local trade_manager = {}
+
+local generic_ltx = "misc\\trade_generic.ltx"
+local generic_ini = ini_file(generic_ltx)
+
+function trade_init(npc, cfg)
+	local section = "trader"
+	local tt = {}
+	trade_manager[npc:id()] = tt
+	local ini
+
+	if cfg == nil then
+		ini = generic_ini
+		tt.cfg_ltx = generic_ltx
+		npc:disable_trade()
+	else
+		ini = ini_file(cfg)
+		tt.cfg_ltx = cfg
+	end
+	tt.config = ini
+
+	if ini:section_exist(section) then
+		if not ini:line_exist(section, "buy_condition") or not ini:line_exist(section, "sell_condition") then
+			abort("Incorrect trader settings. Missing buy_condition or missing sell_condition. [%s]->[%s]", npc:name(), cfg)
+			return
+		end
+		local str = ini:r_string(section, "buy_condition")
+		tt.buy_condition = xr_logic.parse_condlist_q(str)
+
+		str = ini:r_string(section, "sell_condition")
+		tt.sell_condition = xr_logic.parse_condlist_q(str)
+
+		-- список закупки
+		str = ini:line_exist(section, "buy_supplies") and ini:r_string(section, "buy_supplies")
+		if str then
+			tt.buy_supplies = xr_logic.parse_condlist_q(str)
+		end
+	end
+end
+
+local xr_logic_pick_section_from_condlist = xr_logic.pick_section_from_condlist
+
+function update(npc)
+	local tt = trade_manager[npc:id()]
+
+	if tt == nil then
+		return
+	end
+
+	if not tt.update_time then
+		tt.update_time = 0
+		if not npc:is_trade_enabled() then npc:enable_trade() end
+	end
+	if time_global() < tt.update_time then return end
+	tt.update_time = time_global() + 3600000
+
+	local str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.buy_condition)
+	if tt.current_buy_condition ~= str then
+		npc:buy_condition(tt.config, str)
+		tt.current_buy_condition = str
+	end
+
+	str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.sell_condition)
+	if tt.current_sell_condition ~= str then
+		npc:sell_condition(tt.config, str)
+		tt.current_sell_condition = str
+	end
+
+	if tt.buy_supplies == nil then
+		trade_manager[npc:id()] = nil
+		return
+	end
+
+	str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.buy_supplies)
+	if tt.current_buy_supplies ~= str then
+		if tt.resuply_time ~= nil and tt.resuply_time > time_global() then
+			return
+		end
+		npc:buy_supplies(tt.config, str)
+		tt.current_buy_supplies = str
+		tt.resuply_time = time_global() + 24*3600000
+	end
+end
+
+
+function save(obj, packet)
+end
+
+function load(obj, packet)
+end

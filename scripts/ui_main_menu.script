@@ -111,8 +111,8 @@ function main_menu:LoadLastSave()
 end
 
 function main_menu:OnButton_last_save()
-	if (alife() == nil) then
-		self:LoadLastSave	();
+	if (alife() == nil) or (db_actor and not db_actor:alive()) then
+		self:LoadLastSave();
 		return
 	end
 	
@@ -271,26 +271,18 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	local console = get_console()
 	
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE then
-			if level.present() and (db.actor ~= nil) and db.actor:alive() then
-				console:execute("main_menu off")
-			end
-		end
-		
+		if dik == DIK_keys.DIK_ESCAPE and level.present() and (db_actor ~= nil) and db_actor:alive() then
+			console:execute("main_menu off")
 		-- раскоментируем и заоодно включим убранное спавн меню 
-		if	dik == DIK_keys.DIK_S then
+		-- elseif dik == DIK_keys.DIK_S then
 		--	self:OnButton_load_spawn()
-		
-		elseif 	dik == DIK_keys.DIK_Q then
+		elseif dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
-			
-		elseif 	dik == DIK_keys.DIK_A then
-			if amk.check_game() then 
-				self:amk_options()
-			end	
-			
+		elseif dik == DIK_keys.DIK_A and amk.check_game() then
+			self:amk_options()
+		elseif dik == DIK_keys.DIK_RETURN then
+			return false
 		end
-		
 	end
    
 	return true

@@ -1,0 +1,36 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_hud_interface_mgr.script
+ Description  : Менеджер элементов интерактивного худа
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 17.01.2014
+ Last edit    : 24.03.2019
+--]]-----------------------------------------------------------------------------------------------
+local hud_interface_mgr
+local hud = get_hud()
+--[[-----------------------------------------------------------------------------------------------
+ * HUD INTERFACE MANAGER
+--]]-----------------------------------------------------------------------------------------------
+class "CHudInterfaceMgr"
+function CHudInterfaceMgr:__init()
+	self.night_vision_active = false
+end
+---------------------------------------------------------------------------------------------------
+function CHudInterfaceMgr:update()
+	self:date_static()
+end
+---------------------------------------------------------------------------------------------------
+function CHudInterfaceMgr:date_static()
+		local game_time = game.get_game_time()
+		hud:AddCustomStatic("hud_time", true):wnd():SetText(game_time:timeToString(game.CTime.TimeToMinutes))
+		hud:AddCustomStatic("hud_date", true):wnd():SetText(game_time:dateToString(game.CTime.DateToDay))
+end
+--[[-----------------------------------------------------------------------------------------------
+ * INIT
+--]]-----------------------------------------------------------------------------------------------
+function get_hud_interface_mgr()
+	if not hud_interface_mgr then
+		hud_interface_mgr = CHudInterfaceMgr()
+	end
+	return hud_interface_mgr
+end

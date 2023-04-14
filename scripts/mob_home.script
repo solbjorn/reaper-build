@@ -63,7 +63,7 @@ function mob_home:reset_scheme()
 
 	-- check min and max radius
 	if	minr > maxr then
-		_G.abort("Mob_Home : Home Min Radius MUST be < Max Radius. Got: min radius = %d, max radius = %d.", minr, maxr)
+		abort("Mob_Home : Home Min Radius MUST be < Max Radius. Got: min radius = %d, max radius = %d.", minr, maxr)
 	end 
 
 	self.object:set_home(self.st.home, minr, maxr, self.st.aggressive)
@@ -72,13 +72,11 @@ function mob_home:reset_scheme()
 end
 
 function add_to_home(home,mob)
---	amk.logct(mob:name().." adding to home "..home,"mcbt")	
 	if home_group[home]==nil then home_group[home]={} end
 	home_group[home][mob:id()]=true	
 end
 
 function remove_from_home(home,mob)
---	amk.logct(mob:name().." removing from home "..home,"mcbt")	
 	if home_group[home]==nil then
 	return
 		abort("Trying to remove "..mob:name().." from home "..home.." while home is empty.")
@@ -91,7 +89,6 @@ function mob_home:hit_callback(obj, amount, local_direction, who, bone_index)
 	if amount == 0 then
 		return
 	end
---	amk.logct(self.object:name().." mob_home hit_callback","mcbt")	
 	-- Ставим сигнал "sig_attacked" для всех зверушек из home
 	local group=home_group[self.st.home]
 	if group then
@@ -99,7 +96,6 @@ function mob_home:hit_callback(obj, amount, local_direction, who, bone_index)
 			local st=db.storage and db.storage[id]
 			if st and st.mob_home and st.mob_home.signals then
 				st.mob_home.signals.sig_attacked=true
---				amk.logct("Setting sig_attacked for id "..id,"mcbt")					
 			else
 			-- выкидываем зверушку из группы.
 				group[id]=nil
@@ -113,9 +109,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function mob_home:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
-		return
-	end
+	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
 end
 
 function mob_home:deactivate()
@@ -126,9 +120,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- ADD_TO_BINDER
 ----------------------------------------------------------------------------------------------------
-function add_to_binder(npc, ini, scheme, section, storage)
-	printf("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
-
+function add_to_binder_q(npc, storage)
 	local new_action = mob_home(npc, storage)
 
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
@@ -149,4 +141,3 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	
 	storage.aggressive			= ini:line_exist( section, "aggressive_home")
 end
-

@@ -7,6 +7,24 @@
  Last edit    : 08.11.2018
 --]]-----------------------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------------------------
+ * Object data
+--]]-----------------------------------------------------------------------------------------------
+function _G.get_ammo_data(obj, param)
+	if obj and param then
+		if param == "box_size" then
+			return obj:get_go_int16(nil, 476)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.set_ammo_data(obj, param, value)
+	if obj and param and value then
+		if param == "box_size" then
+			obj:set_go_int16(476, value)
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Sounds
 --]]-----------------------------------------------------------------------------------------------
 function _G.play_safe_sound_object(sound_path, timeout, volume)
@@ -19,6 +37,12 @@ function _G.play_safe_sound_object(sound_path, timeout, volume)
 		end
 		sound_object(sound_path):play_no_feedback(db_actor, sound_object.s2d, timeout, vector(), volume)
 	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Game log
+--]]-----------------------------------------------------------------------------------------------
+function _G.msg(fmt, ...)
+	log1(string.format(tostring(fmt), ...))
 end
 --[[-----------------------------------------------------------------------------------------------
  * Extended level namespace
@@ -60,6 +84,20 @@ end
 --[[-----------------------------------------------------------------------------------------------
  * Others
 --]]-----------------------------------------------------------------------------------------------
+function _G.get_item_place(obj, npc)
+	if not npc then
+		npc = db_actor
+	end
+	if npc:is_in_slot(obj) then
+		return item_place.slot
+	elseif npc:is_on_belt(obj) then
+		return item_place.belt
+	elseif npc:is_in_ruck(obj) then
+		return item_place.ruck
+	end
+	return item_place.undefined
+end
+---------------------------------------------------------------------------------------------------
 local show_in_dialogs = {
 	["encyclopedia"]	= true,
 }

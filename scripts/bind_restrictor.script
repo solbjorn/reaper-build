@@ -15,7 +15,6 @@ function actor_update(delta)
 end
 
 function bind( obj )
---  db.storage[obj:id()] = { }
   if obj:name()=="gar_vagon_in_restrictor" or obj:name()=="bar_restrictor" or 
      obj:name()=="rostok_sniper_killer_restrictor" or 
      obj:name()=="agr_u_bloodsucker_rest" then
@@ -42,11 +41,10 @@ function restrictor_binder:reload(section)
 end
 
 function restrictor_binder:reinit()
-  object_binder.reinit(self)
+	object_binder.reinit(self)
 
-  db.storage[self.object:id()] = { }
-
-  self.st = db.storage[self.object:id()]
+	self.st = { }
+	db.storage[self.object:id()] = self.st
 end
 
 function restrictor_binder:net_spawn(data)
@@ -58,10 +56,10 @@ function restrictor_binder:net_spawn(data)
 
   -- Не регистрироваться на апдейты, если у объекта в customdata
   -- нет секции logic вообще.
-  local char_ini = xr_logic.get_customdata_or_ini_file(self.object, "<customdata>")
-  if char_ini:section_exist("logic") then
-    updatable_binders[self.object:id()] = self
-  end
+	local ini = self.object:spawn_ini()
+	if ini and ini:section_exist("logic") then
+		updatable_binders[self.object:id()] = self
+	end
 
   return true
 end
@@ -83,9 +81,9 @@ end
 
 -- вызывается из обновления актёра!
 function restrictor_binder:actor_update(delta)
-  if not self.initialized and db.actor then
+  if not self.initialized then
     self.initialized = true
-    xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_restrictor)
+    xr_logic.initialize_obj(self.object, self.st, self.loaded, db_actor, modules.stype_restrictor)
   end
 
   if self.st.active_section ~= nil then
@@ -105,8 +103,6 @@ end
 
 function restrictor_binder:load(reader)
   self.loaded = true
-
-  printf( "restrictor_binder:load" )
 
   object_binder.load(self, reader)
 

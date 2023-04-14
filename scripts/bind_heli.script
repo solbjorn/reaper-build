@@ -38,10 +38,8 @@ end
 function heli_binder:reinit()
 	object_binder.reinit( self )
 
-	printf( "heli_binder:reinit()" )
-
-	db.storage[self.object:id()] = {}
-	self.st = db.storage[self.object:id()]
+	self.st = {}
+	db.storage[self.object:id()] = self.st
 
 	self.heliObject = self.object:get_helicopter()
 
@@ -52,9 +50,7 @@ function heli_binder:reinit()
 
 	self.last_hit_snd_timeout = 0
 
-	local ltx = system_ini()
-
-	self.flame_start_health   = utils.cfg_get_number( ltx, "helicopter", "flame_start_health", self.object, true )
+	self.flame_start_health   = utils.cfg_get_number( system_ini(), "helicopter", "flame_start_health", self.object, true )
 
 	self.st.flame_start_snd   = xr_sound.get_sound_object("heli_explosion", "random")
 
@@ -69,20 +65,13 @@ function heli_binder:update( delta )
 --	printf( "heli_binder update" )
 --	printf( "%d", self.object:level_vertex_light( db.actor:level_vertex_id() ) )
 
-	if not self.initialized and db.actor then
+	if not self.initialized then
 		self.initialized = true
-		xr_logic.initialize_obj( self.object, self.st, self.loaded, db.actor, modules.stype_heli )
+		xr_logic.initialize_obj( self.object, self.st, self.loaded, db_actor, modules.stype_heli )
 	end
-
-	self.object:info_clear()
 
 	if self.st.active_section ~= nil then
 		xr_logic.issue_event( self.object, self.st[self.st.active_scheme], "update", delta )
-	end
-
-	local active_section = db.storage[self.object:id()].active_section
-	if active_section then
-		self.object:info_add('section -- ' .. active_section)
 	end
 
 	self:check_health()
@@ -118,8 +107,6 @@ end
 function heli_binder:save( packet )
 	object_binder.save( self, packet )
 
-	printf( "heli_binder: save")
-
 	xr_logic.save_obj( self.object, packet )
 
 	self.st.combat:save( packet )
@@ -130,8 +117,6 @@ function heli_binder:load( packet )
 
 	--printf("generic_object_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load( self, packet )
-
-	printf( "heli_binder: load")
 
 	xr_logic.load_obj( self.object, packet )
 
@@ -162,8 +147,6 @@ end
 
 ------------------------------ callbacks ---------------------------------
 function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
-	printf( "heli_binder: hit callback")
-
 	local enemy        = level.object_by_id( enemy_id )
 	local enemy_cls_id = get_clsid( enemy )
 
@@ -217,7 +200,7 @@ end
 function heli_start_flame( obj )
 	obj:get_helicopter():StartFlame()
 
-	db.storage[obj:id()].flame_start_snd:play( obj )
+	db.storage[obj:id()].flame_start_snd:play_at_pos( obj, obj:position() )
 	
 	if (news_main and news_main.on_heli_flame and obj) then
 		news_main.on_heli_flame(obj)

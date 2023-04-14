@@ -99,7 +99,7 @@ end
 function on_game_start()
 	math.randomseed (device ():time_global ())
 end
-local tmp_intro=false
+
 function first_run() 
 	if amk.load_variable("x_first_run",true) then
 		amk.g_start_timer("gg_need_sleep",0,0,6)
@@ -136,7 +136,6 @@ function first_run()
 	end
 	
 	if amk.load_variable("amk_version",0)<1400 then
-		tmp_intro=true
 		amk.save_variable("amk_version",1400)
 		amk_anoms.pre_blow_off()
 		amk_anoms.after_blow_on()
@@ -149,16 +148,20 @@ end
 --'   **   **   **   **   **    **   **   **        CHECK_SPAWN          **   **   **   **   **    **   **   **  
 --'*******************************************************************************
 
+function get_weather(lname)
+	return amk.cfg_get_string(ini_file("game_maps_single.ltx"), lname, "weathers", "default")
+end
+
 function get_weather_sect(lname)
 	if weather_types[lname] == 1 then
-		return level.get_weather()
+		return get_weather(lname)
 	elseif weather_types[lname] == 2 then
-		return dynweather_types[lname].."_"..level.get_weather()
+		return dynweather_types[lname].."_"..get_weather(lname)
 	end
 
 	local dynw = amk.load_variable("dynweather", nil)
 	if not dynw then
-		return level.get_weather()
+		return get_weather(lname)
 	end
 
 	return dynweather_types[lname].."_"..dynw
@@ -299,10 +302,6 @@ function restore_sun()
 	if amk.load_variable("blow_started",0)==0 then
 		start_blow_timer()
 		amk.save_variable("blow_started",1)
-	end
-	if tmp_intro then
-		--amk.send_tip(game.translate_string("amk_welcome_msg"),game.translate_string("amk_welcome_title"),nil,35,"monolith")
-		tmp_intro=false
 	end
 	sync_done=true	
 end

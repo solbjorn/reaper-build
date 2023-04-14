@@ -11,6 +11,8 @@ prefetch("sa_utils")
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
 function actor_update(delta)
+	sa_hud_interface_mgr.get_hud_interface_mgr():update()
+	sa_inventory_items_mgr.repack_ammo()
 	sa_main.bunker_cooling_sound()
 end
 ---------------------------------------------------------------------------------------------------
@@ -22,6 +24,18 @@ function actor_hit(obj, amount, local_direction, who, bone_index)
 		sa_main.hit_effectors(last_mob_type, who, last_health - db_actor.health)
 	end
 	last_mob_type = nil
+end
+---------------------------------------------------------------------------------------------------
+function item_belt(obj)
+	if db_actor:belt_count() > 1 then
+		sa_inventory_items_mgr.check_ammo(obj)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function item_ruck(obj)
+	if db_actor:ruck_count() > 1 then
+		sa_inventory_items_mgr.check_ammo(obj)
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function hit_effector(mob_type, side)

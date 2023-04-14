@@ -1,3 +1,26 @@
+local quest_section = {
+	["gunslinger_flash"]	= true,
+	["af_blood_tutorial"]	= true,
+	["esc_wounded_flash"]	= true,
+	["quest_case_02"]	= true,
+	["dar_document1"]	= true,
+	["dar_document2"]	= true,
+	["dar_document3"]	= true,
+	["dar_document4"]	= true,
+	["dar_document5"]	= true,
+	["kruglov_flash"]	= true,
+	["lab_x16_documents"]	= true,
+	["good_psy_helmet"]	= true,
+	["bad_psy_helmet"]	= true,
+	["decoder"]		= true,
+	["dynamite"]		= true,
+	["quest_case_01"]	= true,
+	["hunters_toz"]		= true,
+	["bar_ecolog_flash"]	= true,
+	["bar_tiran_pda"]	= true,
+	["bar_lucky_pda"]	= true
+}
+
 function allow_break_dialog(first_speaker, second_speaker, id)
 	if second_speaker:profile_name() == "osoznanie" then
 		return false
@@ -130,10 +153,8 @@ function relocate_money(victim, num, type)
 	if db.actor and victim then
 		if type == "in" then
 			db.actor:give_money(num)
-			game_stats.money_quest_update (num) 
 		elseif type == "out" then
 			db.actor:transfer_money(num, victim)
-			game_stats.money_quest_update (-num) 
 		end
 		news_manager.relocate_money(db.actor, type, num)
 	end

@@ -547,13 +547,9 @@ function set_hide(npc, ini, scheme, section)
   local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
 
-function add_to_binder(object, char_ini, scheme, section, st)
-  bind_scheme(object,st)
-end
-
 local cnt=0
 
-function bind_scheme(npc,storage)  
+function add_to_binder_q(npc,storage)
   local evid_wounded=xr_evaluators_id.sidor_wounded_base
   local monolith=npc:character_community()=="monolith"
   local zombi=npc:character_community()=="zombied" or npc:character_community()=="trader" or

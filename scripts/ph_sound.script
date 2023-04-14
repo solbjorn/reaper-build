@@ -1,3 +1,5 @@
+local math_random = math.random
+
 class "snd_source"
 function snd_source:__init (obj, storage)
   self.object = obj
@@ -26,15 +28,6 @@ end
 
 function snd_source:hit_callback(obj, amount, local_direction, who, bone_index)
     if self.st.no_hit == true then return end
-    printf ("SOUND SOURCE HAVE A HIT")
-  local who_name
-  if who then
-    who_name = who:name()
-  else
-    who_name = "nil"
-  end
-
-  printf("_bp: snd_source:hit_callback obj='%s', amount=%d, who='%s'", obj:name(), amount, who_name)
 
     if self.played_sound ~= nil then
        self.played_sound:stop ()
@@ -67,14 +60,14 @@ function snd_source:update(delta)
     if self.played_sound then self.played_sound:stop() end
     self:reset_scheme(false)
     self.amk_override=false
-    self.st.pause_time=time_global()+math.random(30000,60000)
+    self.st.pause_time=time_global()+math_random(30000,60000)
   end
 
-  if xr_logic.try_switch_to_another_section (self.object, self.st, db.actor) then
+  if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
     return
   end
 
-  if self.st.pause_time - device ():time_global () > 0 then
+  if self.st.pause_time > time_global() then
       return
   end
        
@@ -83,9 +76,9 @@ function snd_source:update(delta)
       self.st.sound_set = false
     
     if self.amk_override then
-      rnd=math.random(0,100)
+      rnd=math_random(0,100)
       if rnd<2 then
-        self.siren=sound_object([[script_replics\megafon\music\megafon_music_]]..math.random(1,15))
+        self.siren=sound_object([[script_replics\megafon\music\megafon_music_]]..math_random(1,15))
       else
         self.siren=sound_object([[ambient\siren2]])
       end
@@ -104,7 +97,7 @@ function snd_source:update(delta)
       if self.amk_override then
         self.played_sound:play_at_pos (self.object, self.object:position (),0,sound_object.s3d+sound_object.looped)
       else
-        self.played_sound:play_at_pos (self.object, self.object:position ())
+        self.played_sound:play_at_pos(self.object, self.object:position(), 0, self.st.looped and 1 or 0)
       end
     else
       self.st.signals["theme_end"] = true
@@ -113,9 +106,9 @@ function snd_source:update(delta)
   end   
       
   if self.last_update == 0 then
-     self.last_update = device ():time_global ()
+     self.last_update = time_global() + 50
   else
-     if device ():time_global () - self.last_update > 50 then
+     if time_global() > self.last_update then
         self.last_update = 0
      else
         return     
@@ -130,8 +123,7 @@ function snd_source:update(delta)
                   
       self.st.sound_set = true
       if (self.st.pause_min ~= 0 or self.st.pause_max ~= 0) and (not self.amk_override) then
-        local time = math.random (self.st.pause_min, self.st.pause_max)
-        self.st.pause_time = device ():time_global () + time
+        self.st.pause_time = time_global() + math_random(self.st.pause_min, self.st.pause_max)
       end 
       self.first_sound = false
     else
@@ -149,7 +141,7 @@ end
 
 
 
-function add_to_binder (npc, ini, scheme, section, storage)
+function add_to_binder_q(npc, storage)
   local new_action = snd_source (npc, storage)
   -- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
   xr_logic.subscribe_action_for_events(npc, storage, new_action)
@@ -166,7 +158,6 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
   st.pause_max = utils.cfg_get_number (ini, section, "max_idle", npc, false, 0)
   st.no_hit   = utils.cfg_get_bool (ini, section, "no_hit", npc, false, true)
   if st.pause_max < st.pause_min then
-     abort ("PH_SOUND - invalid time range !!!")
+		abort("ph_sound.set_scheme: invalid time range (pause_max<pause_min) - object: %s, scheme: %s, section %s", npc, scheme, tostring(section))
     end     
 end
-    

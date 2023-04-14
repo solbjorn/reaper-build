@@ -1,0 +1,74 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_inventory_items_mgr.script
+ Description  : Различные нововведения по работе с предметами инвентаря
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 13.02.2014
+ Last edit    : 18.02.2019
+---------------------------------------------------------------------------------------------------
+ * Описание нововведений
+ - перепаковщик неполных пачек патронов (рюкзак и пояс)
+--]]-----------------------------------------------------------------------------------------------
+--[[-----------------------------------------------------------------------------------------------
+ * Repack ammo
+--]]-----------------------------------------------------------------------------------------------
+local ammo_sections = {}
+local need_to_repack = false
+---------------------------------------------------------------------------------------------------
+function check_ammo(obj)
+	if obj:is_ammo() then
+		local section = obj:section()
+		local box_size = read_line(section, "box_size")
+		if box_size > 1 and get_ammo_data(obj, "box_size") < box_size then
+			ammo_sections[section] = {}
+			ammo_sections[section].box_size = box_size
+			if get_item_place(obj) == item_place.ruck then
+				ammo_sections[section].ruck = true
+			else
+				ammo_sections[section].belt = true
+			end
+			need_to_repack = true
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function repack_ammo()
+	if need_to_repack and not db_actor:is_talking() then
+		local repack = function(section, box_size, place)
+			local ammo = {}
+			local total_size = 0
+			db_actor:iterate_inventory(
+				function(dummy, obj)
+					if obj:section() == section and get_item_place(obj) == place then
+						local current_size = get_ammo_data(obj, "box_size")
+						if current_size ~= box_size then
+							ammo[#ammo + 1] = obj
+							total_size = total_size + current_size
+						end
+					end
+				end
+			)
+			for i, v in ipairs(ammo) do
+				if total_size == 0 then
+					alife():release(v, true)
+				elseif total_size >= box_size then
+					set_ammo_data(v, "box_size", box_size)
+					total_size = total_size - box_size
+				else
+					set_ammo_data(v, "box_size", total_size)
+					total_size = 0
+				end
+			end
+		end
+		for k, v in pairs(ammo_sections) do
+			if v.ruck then
+				repack(k, v.box_size, item_place.ruck)
+			end
+			if v.belt then
+				repack(k, v.box_size, item_place.belt)
+			end
+		end
+		clear_table(ammo_sections)
+		need_to_repack = false
+	end
+end

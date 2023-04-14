@@ -436,10 +436,8 @@ function act_grab_body:execute()
 			elseif gi_rank == "master" and deadmoney >=400 then deadmoney=math.random(200,400)  
 		end
 		end
-		npc:give_money(deadmoney) 
-		game_stats.money_quest_update(deadmoney) 
-		gi:give_money(-num) 
-		game_stats.money_quest_update(-num) 
+		npc:give_money(deadmoney)
+		gi:give_money(-num)
 		end
 		corpse_checked[gi:id()]=false
 		amk_offline_alife.set_body_trap(npc:id(), gi:id())
@@ -545,7 +543,7 @@ function act_reach_item:execute()
 	end
 end
 
-function add_to_binder(object, char_ini, scheme, section, st)
+function add_to_binder_q(object, st)
 	local npc=object
 	st.disabled_objects={}
   local manager = object:motivation_action_manager()

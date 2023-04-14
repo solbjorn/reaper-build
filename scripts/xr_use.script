@@ -1,30 +1,16 @@
-
---function printf()
---end
-
 class "action_process_use"
 function action_process_use:__init(obj, storage)
 	self.object = obj
 	self.st = storage
 end
 function action_process_use:use_callback(victim, who)
-	--printf("[%s] used by [%s]", victim:name(), who:name())
 	if db.storage[self.object:id()].active_scheme then
-		if db.actor then
-			if xr_logic.try_switch_to_another_section(victim, self.st, db.actor) then
-				return
-			end
-		end
+		xr_logic.try_switch_to_another_section(victim, self.st, db_actor)
 	end
 end
 
 
 function notify_on_use(victim, who)
-	printf("NOTIFY [%s] used by [%s]", victim:name(), who:name())
---'	if true then	
---'		get_console():execute("dump_infos")
---'	end
-
 	-- Если мы мертвы - на юзание не реагировать
 	if not victim:alive() then
 		return
@@ -32,12 +18,11 @@ function notify_on_use(victim, who)
 	
 	-- Согласны ли мы говорить при этом юзании или нет.
 	if victim:is_talk_enabled() == true then
---[[
 		if victim:active_sound_count() ~= 0 then
 			return
 		end
 		-- Мы согласны говорить
-		if victim:best_enemy() ~= nil then
+		if victim:best_enemy() ~= nil and not xr_wounded.is_wounded(victim) then
 			-- Во время боя
 			xr_sound.set_sound_play(victim, "use_yes_fight")
 		elseif xr_wounded.is_wounded(victim) then
@@ -53,7 +38,6 @@ function notify_on_use(victim, who)
 			-- Дефолт
 			xr_sound.set_sound_play(victim, "use_yes_default")
 		end
-]]
 	else
 		if victim:active_sound_count() ~= 0 then
 			return
@@ -63,8 +47,8 @@ function notify_on_use(victim, who)
 		end
 		
 		-- Мы не согласны говорить
-		if victim:best_enemy() ~= nil then
-			if victim:relation(db.actor) ~= game_object.enemy then
+		if victim:best_enemy() ~= nil and not xr_wounded.is_wounded(victim) then
+			if victim:relation(db_actor) ~= game_object.enemy then
 				-- Во время боя
 				xr_sound.set_sound_play(victim, "use_no_fight")
 			end
@@ -104,9 +88,8 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- binder
 ----------------------------------------------------------------------------------------------------------------------
-function add_to_binder(npc, ini, scheme, section, storage) 	
-	local action = this.action_process_use(npc, storage)
-	storage.action = action
+function add_to_binder_q(npc, storage)
+	storage.action = action_process_use(npc, storage)
 end
 
 function set_use_checker(npc, ini, scheme, section)

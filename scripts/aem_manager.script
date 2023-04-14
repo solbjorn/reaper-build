@@ -2089,10 +2089,8 @@ function manage_money(num, type)
 	if actor then
 		if type == "in" then
 			actor:give_money(num)
-			game_stats.money_quest_update (num) 
 		elseif type == "out" then
 			actor:give_money(-num)
-			game_stats.money_quest_update(-num) 
 		end
 		news_manager.relocate_money(actor, type, num)
 	end

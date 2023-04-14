@@ -2,14 +2,11 @@ local light_zones = {}
 
 local indoor_levels = {
 	l03u_agr_underground = true,
-	l03u_agr_underground_e3 = true,
-	l03u_agr_underground_hw = true,
 	l04u_labx18 = true,
 	l08u_brainlab = true,
 	l10u_bunker = true,
 	l12u_sarcofag = true,
-	l12u_control_monolith = true,
-	chugai_test = true
+	l12u_control_monolith = true
 }
 ---------------------------------------------------------------------------------------------------------------------
 class "action_light"
@@ -23,11 +20,8 @@ function action_light:reset_scheme()
     light_zones[self.id] = self
 end
 function action_light:update(delta)
-	local actor = db.actor
-
-	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
-	   self.active = false     
-	   self.stalkers = {}
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+	   self.active = false
 	   light_zones[self.id] = nil
 	   return
 	end	
@@ -38,7 +32,7 @@ function action_light:check_stalker(stalker)
        return false, false
     end
     
-	if self.object:inside(stalker:position()) then
+	if stalker and self.object:inside(stalker:position()) then
 		return self.st.light, true
 	end
 
@@ -46,8 +40,7 @@ function action_light:check_stalker(stalker)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder(npc, ini, scheme, section, storage)
-	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
+function add_to_binder_q(npc, storage)
 	local new_action = action_light (npc, storage)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
@@ -58,79 +51,89 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.light = utils.cfg_get_bool (ini, section, "light_on", npc, false, false)
 end
 
-
+local engage_after = 20
+local engaged = {}
 
 ---------------------------------------------------------------------------------------------------------------------
 function check_light(stalker)
-	--'printf("[check_light %s] start", stalker:name())
-    if stalker == nil then 
-       return 
-    end
+	if not stalker then
+		return
+	end
+	
+	if not engaged[stalker:id()] then
+		engaged[stalker:id()] = 0
+	else	
+		if engaged[stalker:id()] < engage_after then
+			engaged[stalker:id()] = engaged[stalker:id()] + 1
+			return
+		end
+	end
 
-	--'printf("[check_light %s] start_passed", stalker:name())
-    local torch = stalker:object("device_torch")
-    if torch == nil then
-       return
-    end
+	local torch = stalker:object("device_torch")
+	if not torch then
+		return
+	end
 
-	--'printf("[check_light %s] torch_passed", stalker:name())
 	local light = false
 	local forced = false
 
 	if stalker:alive() == false then
-		light  = false
-		forced = true
+		if torch then
+			torch:enable_attachable_item(false)
+		end
+		return
 	end
 
-	--'printf("[check_light %s] alive_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
-    --' Проверка по лайтзонам
-    if not forced then
-	    for k,v in pairs(light_zones) do
-			light, forced = v:check_stalker(stalker)
-			if forced == true then
-				break
-			end
-	    end
+	--' Проверка по лайтзонам
+	for k,v in pairs(light_zones) do
+		light, forced = v:check_stalker(stalker)
+		if forced == true then
+			break
+		end
 	end
 
-	--'printf("[check_light %s] lightzone_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
 	if not forced then
 		--' Проверка по времени суток (ночью всегда включено)
 		local htime = level.get_time_hours()
-		if htime <= 4 or htime >= 22 then
-			light = true
+		if htime then
+			if htime <= 4 or htime >= 22 then
+				light = true
+			else
+				light = false
+			end
 		end
-	
+
 		--' Проверка на индор-аутдор (внутри всегда включено)
 		if light == false then
 			if indoor_levels[level.name()] == true then
 				light = true
 			end
 		end
-	end			
 
-	--'printf("[check_light %s] timezone_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
-	--' Проверка по активному действию
-	if not forced and light == true then
-		--' Фонарики должны быть выключены у костра
-		local scheme = db.storage[stalker:id()].active_scheme
-		if scheme == "kamp" or
-		   scheme == "camper" 
-		then
-			light = false
-			forced = true
+		--' Проверка по активному действию
+		if light == true then
+			--' Фонарики должны быть выключены у костра
+			local scheme = db.storage[stalker:id()].active_scheme
+			local state = state_mgr.get_state(stalker)
+			if scheme == "kamp" or
+				scheme == "camper" or
+				-- И во время сна
+				state == "sleep" or
+				state == "sleep_sit" or
+				scheme == "sleeper"
+			then
+				light = false
+			end
 		end
 	end
 
-	--'printf("[check_light %s] scheme_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))	
-	if not forced and light == true then
-		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
-		if stalker:best_enemy() ~= nil then
-			light = false
-		end				
+	--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+	if stalker and stalker:alive() and stalker:best_enemy() then
+		light = false
 	end
 	
-	if light ~= nil then
+	if light ~= nil and torch then
+		if light == false then torch:enable_attachable_item(true) end
 		torch:enable_attachable_item(light)
 	end
 end

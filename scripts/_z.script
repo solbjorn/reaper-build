@@ -1,0 +1,42 @@
+local current_game_version = -1
+local game_version_string = " none "
+
+function game_version()
+	if current_game_version < 0 then
+		local mm = _G.main_menu.get_main_menu()
+		if mm == nil then return -1 end
+		if type(mm.GetGSVer) ~= "function" then
+			game_version_string = "1.0"
+			current_game_version = 5
+			return current_game_version
+		end
+		game_version_string = mm:GetGSVer()
+		if game_version_string < "1.0005" then
+			if game_version_string < "1.0001" then
+				current_game_version = 5
+			else
+				current_game_version = 6
+			end
+		else
+			current_game_version = 7
+		end
+	end
+	return current_game_version
+end
+----------------------------------
+function kill_online_controllers()
+	local kill_count = 0
+	local clsid_controller_s = clsid.controller_s
+	for id_ = 0, 65534, 1 do
+		local lobj = level.object_by_id(id_)
+		if lobj ~= nil then
+			if lobj:clsid() == clsid_controller_s then
+				if lobj:alive() then
+					lobj:kill(lobj)
+					kill_count = kill_count + 1
+				end
+			end
+		end
+	end
+	return kill_count
+end

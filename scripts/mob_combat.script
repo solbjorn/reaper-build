@@ -12,36 +12,26 @@ function mob_combat:__init(obj, storage)
 end
 
 function mob_combat:reset_scheme()
---	amk.logct(self.object:name().." mob_combat ","mcbt")
 end
 
 function mob_combat:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
-		return
-	end
+	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
 end
 
 function mob_combat:deactivate()
---	amk.logct(self.object:name().." mob_combat deactivate","mcbt")
 end
 
 
 function mob_combat:combat_callback()
-	printf("_bp: mob_combat:combat_callback()")
---	amk.logct(self.object:name().." combat_callback","mcbt")
 	if self.st.enabled and self.object:get_enemy() then
 		if db.storage[self.object:id()].active_scheme then
-			if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
-				return
-			end
+			xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
 		end
 	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder(npc, ini, scheme, section, storage)
-	printf("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
-
+function add_to_binder_q(npc, storage)
  	local new_action = mob_combat(npc, storage)
 	storage.action = new_action
 	

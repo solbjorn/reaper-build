@@ -16,9 +16,7 @@ function lootmoney(npc)
 				local news_texti = "\\n%c[255,255,0,0]Мёртвый сталкер: %c[default]"..npc:character_name().."\\n%c[255,255,0,0]Обнаружено денег: %c[default]"..game.translate_string(tostring(deadmoney).."руб.")
 				db.actor:give_game_news(news_texti, "ui\\ui_iconsTotal", Frect():set(0,0,83,47), 1, 4000)
 				db.actor:give_money(deadmoney)
-				game_stats.money_quest_update(deadmoney) 
 				npc:give_money(-money)
-				game_stats.money_quest_update(-money)
 			end
 		end
 	end

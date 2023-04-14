@@ -5,8 +5,11 @@
 -----------------------------------------------------------------------------------
 local particles={}
 
+local callback_hit = callback.hit
+local callback_death = callback.death
+local callback_patrol_path_in_point = callback.patrol_path_in_point
+ 
 function bind(obj)
-	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 	local new_binder = generic_object_binder(obj)
 	obj:bind_object(new_binder)
 end
@@ -19,6 +22,7 @@ function generic_object_binder:__init(obj) super(obj)
 	self.chtime = 0
 	self.last_update = 0
 	self.particles = {}
+	self.is_trader = obj:clsid() == clsid_script_trader
 end 
 
 function generic_object_binder:reload(section)
@@ -29,18 +33,17 @@ function generic_object_binder:reinit()
 	object_binder.reinit(self)
 
 	-- У торговца нет поддержки перемещения
-	if self.object:clsid() ~= clsid.script_trader then
+	if not self.is_trader then
 		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
 	end
 
-	db.storage[self.object:id()] = { }
-	self.st = db.storage[self.object:id()]
-	self.object:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
-	self.object:set_callback(callback.hit,					self.hit_callback,		self)
-	self.object:set_callback(callback.death,				self.death_callback,	self)
-end
+	self.st = { }
+	db.storage[self.object:id()] = self.st
 
-prevent_gulag_registration_for_id=0
+	self.object:set_callback(callback_patrol_path_in_point, self.waypoint_callback, self)
+	self.object:set_callback(callback_hit,					self.hit_callback,		self)
+	self.object:set_callback(callback_death,				self.death_callback,	self)
+end
 
 function generic_object_binder:update(delta)
 	object_binder.update(self, delta)
@@ -79,7 +82,7 @@ function generic_object_binder:update(delta)
 		end
 
 	-- Апдейт торговли
-	if self.object:clsid() == clsid.script_trader then
+	if self.is_trader then
 		trade_manager.update(self.object)
 	end
 
@@ -97,34 +100,6 @@ function generic_object_binder:update(delta)
 	
 	local act_scheme = db.storage[self.object:id()].active_section or ""
 	local is_fake = string.find(act_scheme, "mob_fake_death") or false
-	--[[
-	if self.object:section()=="zombie_beee" and time_global()>(self.charge_time or 0)+5000 and 3>(self.charges_done or 0) and not is_fake and self.object.health>0.1 then
-		local target = self.object:get_enemy() or db.actor
-		local dist = target:position():distance_to(self.object:position())
-		if dist < 10 and self.object:see(target) then
-			local dir=self.object:direction()
-			local delta=vector():set(self.object:position()):sub(target:position())
-			local scalarmul=(delta.x*dir.x+delta.z*dir.z)/math.sqrt(delta.x*delta.x+delta.z*delta.z) 
-			if scalarmul < -0.8 then
-				bind_monster.play_particle(self.object,
-				{
-					obj=self.object,
-					particle="amk\\zomb_beee",
-					pos=self.object:bone_position("bip01_head"),
-					dir=amk.sub(target:bone_position("bip01_head"),self.object:bone_position("bip01_head")),
-					gravity=vector():set(0,-0.01,0),
-					len=10,
-					life_time=2000,
-					give_dmg=true,
-					target=target,
-					sound="monsters\\zombie\\zombie_take_damage_3"
-				})
-				self.charge_time=time_global()
-				self.charges_done=(self.charges_done or 0) + 1
-			end
-		end
-	end
-	]]
 	
 	if self.chtime<time_global() then
 	
@@ -133,13 +108,13 @@ function generic_object_binder:update(delta)
 			amk.mylog("zombifying")
 			local npc=self.object:get_enemy()
 			if npc then
-				if npc:id()~=db.actor:id() and npc:clsid()==clsid.script_stalker and self.object:see(npc) and 
+				if npc:id()~=db_actor_id and npc:clsid()==clsid.script_stalker and self.object:see(npc) and 
 				   npc:character_community()~="zombied" and self.object:position():distance_to(npc:position())<30 then
         
 					local sobj=alife():object( npc:id() )
 					if sobj and sobj.online then
 						local zomb=amk.load_table("zombies")
-						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(db.actor)}
+						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(db_actor)}
 						amk.save_table("zombies",zomb)															
 						npc:set_character_community("zombied",0,0)
 						local orgtbl=amk.read_stalker_params(sobj)
@@ -157,7 +132,7 @@ function generic_object_binder:update(delta)
             if (self.object:clsid()==clsid.dog_s or self.object:clsid()==clsid.bloodsucker_s) and self.object:alive() and self.object.health>0.05 then
 		    local npc=self.object:get_enemy()
 		    if npc then
-			if npc:id()==db.actor:id() and db.actor:see(self.object) and self.object:see(db.actor) and math.random()<0.2 then
+			if npc:id()==db_actor_id and db_actor:see(self.object) and self.object:see(db_actor) and math.random()<0.2 then
 			    local tag_w_down = true
 		  	    local tag_dist = 1
                 if self.object:clsid()==clsid.dog_s then -- DOG attack
@@ -169,16 +144,16 @@ function generic_object_binder:update(delta)
 			       h:bone("bip01_spine") -- чтобы учитывалась броня
 			       h.draftsman = self.object
 			       h.direction = self.object:direction()
-			       db.actor:hit(h)
+			       db_actor:hit(h)
 			       tag_w_down = math.random()<0.02 
 			    else -- Bloodsucker attack
-			       tag_dist = db.actor:position():distance_to(self.object:bone_position("bip01_head"))   
+			       tag_dist = db_actor:position():distance_to(self.object:bone_position("bip01_head"))   
 			    end   
 
 			    if tag_w_down and tag_dist<7 then
-			       local active_item = db.actor:active_item()
+			       local active_item = db_actor:active_item()
 			         if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-			         db.actor:drop_item(active_item)
+			         db_actor:drop_item(active_item)
 			       end
 			    end
 		        end
@@ -189,10 +164,10 @@ function generic_object_binder:update(delta)
 	
     if IsMonster(self.object) and time_global() - self.last_update > 1000 and not is_fake then
 		if self.object:alive() and self.object.health>0.03 then
-			if self.object:see(db.actor) and db.actor:position():distance_to(self.object:position())<40 then
+			if self.object:see(db_actor) and db_actor:position():distance_to(self.object:position())<40 then
 				amk.enemy_see_actor(self.object,"monster") 
 			end
-			if db.actor:see(self.object) and db.actor:position():distance_to(self.object:position())<80 then 
+			if db_actor:see(self.object) and db_actor:position():distance_to(self.object:position())<80 then 
 				amk.actor_see_enemy(self.object,"monster") 
 			end
 		end
@@ -250,17 +225,11 @@ function generic_object_binder:extrapolate_callback()
 	if (self.object == nil) then
 		return false
 	end
-
-	local cur_pt = self.object:get_current_point_index()
-
-    if self.object:get_script ()	== false then 
-       return false
-    end    
-    
-	if patrol(self.object:patrol()):flags(cur_pt):get() == 0 then
-		return true
+	if self.object:get_script() == false then
+		return false
 	end
-	return false
+
+	return patrol(self.object:patrol()):flags(self.object:get_current_point_index()):get() == 0
 end
 
 function generic_object_binder:waypoint_callback(obj, action_type, index)
@@ -273,7 +242,7 @@ function generic_object_binder:death_callback(victim, who)
 	if (self.object == nil) then
 		return
 	end
-	if who:id() == db.actor:id() then
+	if who:id() == db_actor_id then
 		xr_statistic.addKillCount(self.object)
 		xr_statistic_freeplay.get_freeplay_statistic():check_monster_killed_count(self.object)
 		if arc_main then
@@ -291,7 +260,7 @@ function generic_object_binder:death_callback(victim, who)
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
-	h.direction = db.actor:position():sub(self.object:position())
+	h.direction = db_actor:position():sub(self.object:position())
 	h:bone("pelvis")
 	h.power = 1
 	h.impulse = 10
@@ -347,24 +316,24 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 
 	amk_particle.amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
 
-	local dist = db.actor:position():distance_to(obj:bone_position("bip01_spine"))
+	local dist = db_actor:position():distance_to(obj:bone_position("bip01_spine"))
         local tag_weather = amk.load_variable("dynweather","?")                        
  
  	-- эл.химера поражает ГГ ударом и э.шоком ближе 20м
 	if dist > 0.2 and dist < 20 then
             local tag_ch_pos = obj:bone_position("bip01_spine")  -- spine1 or head ??
-            local tag_ac_pos = db.actor:position()
+            local tag_ac_pos = db_actor:position()
 	    local tag_m       --TAG,Mon correct shock power (AMK=15)
 
             local h = hit()		
 			
  	    h.impulse = 0
             h.direction = vector():set(0,0,0)
-	    h.draftsman = db.actor
+	    h.draftsman = db_actor
  	    h:bone("bip01_spine") -- чтобы учитывалась броня
 	    h.power = 1/dist
 	    h.type = hit.strike 
-	    db.actor:hit(h)
+	    db_actor:hit(h)
                         
 --            amk.send_tip (tag_weather,nil,nil,5) 
             if (string.find(tag_weather,"rain") or string.find(tag_weather,"groza")) then
@@ -385,7 +354,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
             end -- нет дождя    
 	    h.power = tag_m/dist                        
    	    h.type = hit.shock
-	    db.actor:hit(h)
+	    db_actor:hit(h)
 	end -- dist<20m
 
 -- TAG Химера "поражает" НПС на виду у ГГ
@@ -395,16 +364,15 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
     local hit_sound, hit_txt, h_t1, h_t2, h_t3 
     for i, k in pairs(db.storage) do -- ищем НПС в онлайновых обьектах (tnx Kolmogor)
         local hitobj=level.object_by_id(i)
-        if hitobj and _g.IsStalker(hitobj) and hitobj:id() ~= db.actor:id() then
+        if hitobj and _g.IsStalker(hitobj) and hitobj:id() ~= db_actor_id then
            dist = hitobj:position():distance_to(self.object:bone_position("bip01_spine"))
            if dist<20 then
 --              hit_sound = string.format("characters_voice\\human_01\\military\\fight\\hit\\hit_%d",math.random(1,5))                                         
 --              amk_particle.amk_particle({particle="damage_fx\\body_sparks00",pos=hitobj:bone_position("bip01_spine"),sound=hit_sound})
                 local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
                 if  rnd>3 then rnd=rnd+2 end
-                local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd)) 
---              snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector():set( 5, 5, 5 ), 1.0)
-                snd_obj:play_at_pos(db.actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d ) 
+                local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd))
+                snd_obj:play_at_pos(db_actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d ) 
            else --dist
                 if math.random()<0.3 then
                    if math.random()>0.5 then                     
@@ -481,9 +449,9 @@ function generic_object_binder:net_destroy()
 		end
 	end
 	amk.on_monster_go_offline(self.object)
-	self.object:set_callback(callback.death,				nil)
-	self.object:set_callback(callback.patrol_path_in_point, nil)
-	self.object:set_callback(callback.hit,					nil)
+	self.object:set_callback(callback_death,				nil)
+	self.object:set_callback(callback_patrol_path_in_point, nil)
+	self.object:set_callback(callback_hit,					nil)
 	
 	local st = db.storage[self.object:id()]
 	if st and st.active_scheme then
@@ -506,32 +474,26 @@ function generic_object_binder:net_destroy()
 	end	
 end 
 
-function generic_object_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function generic_object_binder:net_save_relevant()
 	return true
 end
 
 function generic_object_binder:save(packet)
-	printf("generic_object_binder:save(): self.object:name()='%s'", self.object:name())
 	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)
-	if self.object:clsid() == clsid.script_trader then
+	if self.is_trader then
 		trade_manager.save(self.object, packet)
 	end
 end
 
 function generic_object_binder:load(reader)
 	self.loaded = true
-	printf("generic_object_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load(self, reader)
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT "..self.object:name())
 	end
 	xr_logic.load_obj(self.object, reader)
-	if self.object:clsid() == clsid.script_trader then
+	if self.is_trader then
 		trade_manager.load(self.object, reader)
 	end
 end

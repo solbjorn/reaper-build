@@ -1,0 +1,66 @@
+local spawn_list = {}
+
+function check_spawn(s_object)
+	local s_object_id = s_object.id
+	local spawn = spawn_list[s_object_id]
+	if spawn == nil then
+		spawn = {
+			cond = xr_logic.cfg_get_condlist(s_object:spawn_ini(), "spawner", "cond", s_object),
+			npc = nil
+		}
+		spawn_list[s_object_id] = spawn
+	end
+	if db_actor ~= nil then
+		if spawn.cond ~= nil then
+			if spawn.npc == nil then
+				spawn.npc = level.object_by_id(s_object_id)
+			end
+			if xr_logic.pick_section_from_condlist(db_actor, spawn.npc, spawn.cond.condlist) ~= nil then
+				return true
+			else
+				spawn.npc = nil
+				return false 
+			end
+		else
+			return true
+		end
+	end
+	spawn.npc = nil
+	return false
+end
+
+---------------------------------------------------------------------
+class "se_car" (cse_alife_car)
+--------------------
+function se_car:__init (section) super (section)
+	--log("_bp: set_car:__init")
+	self.ini = nil
+	self.spawner_present = false
+end
+--------------------
+function se_car:can_switch_offline ()
+	return cse_alife_car.can_switch_offline(self)
+end
+--------------------
+function se_car:can_switch_online ()
+	if self.ini == nil then
+		self.ini = self:spawn_ini() 
+		self.spawner_present = self.ini:section_exist("spawner")
+	end
+
+	if self.ini == nil or self.spawner_present == false then 
+		return cse_alife_car.can_switch_online(self)
+	end    
+	return check_spawn(self)
+end    
+--------------------
+
+
+--'Helicopter
+class "se_heli" (cse_alife_helicopter)
+--------------------
+function se_heli:__init (section) super (section)
+end
+function se_heli:keep_saved_data_anyway()
+	return true
+end

@@ -41,8 +41,7 @@ function GetDamage(section)
 	local ltx = system_ini()
 			
 	local hit_power = ltx:r_float(section,"hit_power")
-	--local hit_rate = ltx:r_float(section,"hit_rate")
-	local hit_rate = read_if_exist(ltx, section, "hit_rate", 1)
+	local hit_rate = read_if_exist(ltx, section, "hit_rate", 1.8)
 	local ammo_list	= ltx:r_string(section,"ammo_class")
 	
 	local pos  = string.find(ammo_list,",",1)
@@ -80,8 +79,7 @@ function GetHandling(section)
 	local ltx = system_ini()
 			
 	local misfire_probability	= ltx:r_float(section,"misfire_probability")
-	--local misfire_condition_k = ltx:r_float(section,"misfire_condition_k")
-	local misfire_condition_k  = read_if_exist(ltx, section, "misfire_condition_k", 1)
+	local misfire_condition_k  = read_if_exist(ltx, section, "misfire_condition_k", 0.05)
 	local condition_shot_dec = ltx:r_float(section,"condition_shot_dec")
 
 	local ammo_list			= ltx:r_string(section,"ammo_class")
@@ -115,8 +113,7 @@ function GetAccuracy(section)
 	local ltx = system_ini()
 			
 	local fire_dispersion_base	= ltx:r_float(section,"fire_dispersion_base")
-	--local disp_rate = ltx:r_float(section,"disp_rate")
-	local disp_rate = read_if_exist(ltx, section, "disp_rate", 1)
+	local disp_rate = read_if_exist(ltx, section, "disp_rate", 1.8)
 	local ammo_list			= ltx:r_string(section,"ammo_class")
 	
 	local pos  = string.find(ammo_list,",",1)

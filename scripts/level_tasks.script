@@ -1,79 +1,52 @@
 local level_scripts = {
-	escape_tasks,
-	garbage_tasks,
-	agroprom_tasks,
-	darkvalley_tasks,
-	bar_rostok_tasks,
-    yantar_tasks,
-    mil_tasks,
-	radar_tasks,
-	pripyat_tasks
+	l01_escape  = escape_tasks,
+	l02_garbage = garbage_tasks,
+	l03u_agr_underground = agroprom_tasks,
+	l04u_labx18 = darkvalley_tasks,
+	l06_rostok  = bar_rostok_tasks,
+	l08_yantar = yantar_tasks,
+	l07_military = mil_tasks,
+	l10_radar = radar_tasks,
+	l11_pripyat = pripyat_tasks
 }
 
-local jump_level_by_name = {
-	l01_escape				= "l02_garbage",
-	l02_garbage				= "l03_agroprom",
-	l03_agroprom			= "l03u_agr_underground",
-	l03u_agr_underground	= "l04_darkvalley",
-	l04_darkvalley			= "l04u_labx18",
-	l04u_labx18				= "l05_bar",
-	l05_bar					= "l06_rostok",
-	l06_rostok				= "l07_military",
-	l07_military			= "l08_yantar",
-	l08_yantar				= "l08u_brainlab",
-	l08u_brainlab			= "l10_radar",
-	l10_radar				= "l10u_bunker",
-	l10u_bunker				= "l11_pripyat",
-	l11_pripyat				= "l12_stancia",
-	l12_stancia				= "l12u_sarcofag",
-	l12u_sarcofag			= "l12u_control_monolith",
-	l12u_control_monolith	= "l12_stancia_2",
-	l12_stancia_2			= "l01_escape"
+local info_scripts = {
+	esc = escape_tasks,
+	gar = garbage_tasks,
+	agr = agroprom_tasks,
+	val = darkvalley_tasks,
+	bar = bar_rostok_tasks,
+	yan = yantar_tasks,
+	mil = mil_tasks,
+	["rad"] = radar_tasks,
+	pri = pripyat_tasks,
+	aes = pripyat_tasks
 }
 
 function proceed()
-	if db.actor == nil then
+	if db_actor == nil then
 		return
 	end
-	for k, v in pairs( level_scripts ) do
-		v.proceed()
-	end
-
-	if db.actor:has_info("autojump_enabled") then
-		local jname = jump_level_by_name[level.name()]
-		if jname ~= nil then
-			get_console():execute("flush")
-			get_console():execute("jump_to_level "..jname)
-		end
-	end
+	local task_stuff = level_scripts[level.name()]
+	if task_stuff then task_stuff.proceed() end
 end
 
-function autojump()
-	db.actor:give_info_portion("autojump_enabled")
-end
-
+local string_sub = string.sub
 function process_info_portion(info_id)
-	if db.actor == nil then
+	if db_actor == nil then
 		return
 	end
-	for k, v in pairs( level_scripts ) do
-		if v.process_info_portion(info_id) then
-			return
-		end
-	end
+	local info_script = info_scripts[string_sub(info_id, 1, 3)]
+	if info_script then info_script.process_info_portion(info_id) end
 end
 
 function add_location(sid, location, hint)
 	local sim = alife()
 	if sim then
 		local obj = sim:story_object(sid)
-		
 		if obj then
-			if hint then
-				level.map_add_object_spot(obj.id, location, hint)
-			else
-				level.map_add_object_spot(obj.id, location, "")
-			end
+			if not hint then hint = "" end
+			level.map_add_object_spot(obj.id, location, hint)
 		end
 	end
 end
@@ -82,7 +55,7 @@ function remove_location(sid, location)
 	local sim = alife()
 	if sim then
 		local obj = sim:story_object(sid)
-		if obj and level.map_has_object_spot(obj.id, location) then
+		if obj and level.map_has_object_spot(obj.id, location) > 0 then
 			level.map_remove_object_spot(obj.id, location)
 		end
 	end
@@ -114,7 +87,7 @@ end
 
 function add_lchanger_location()
 	local sim = alife()
-	local actor = db.actor
+	local actor = db_actor
 	if sim then
 		-- escape
 		local obj = sim:story_object(91)
@@ -175,6 +148,11 @@ function add_lchanger_location()
 		
 
 		-- rostok
+		obj = sim:story_object(591)
+		if obj then
+			level.map_add_object_spot(obj.id, "level_changer", "to_bar")
+		end
+
 		obj = sim:story_object(608)
 		if obj then
 			level.map_add_object_spot(obj.id, "level_changer", "to_yantar")
@@ -317,8 +295,8 @@ end
 
 
 function set_task_state(id_state, id_task, id_subtask)
-	if db.actor then
-		db.actor:set_task_state(id_state, id_task, id_subtask)
+	if db_actor then
+		db_actor:set_task_state(id_state, id_task, id_subtask)
 	end
 end
 

@@ -1288,10 +1288,8 @@ function relocate_money(victim, num, type)
 	if db_actor and victim then
 		if type == "in" then
 			db_actor:give_money(num)
-			game_stats.money_quest_update (num) 
 		elseif type == 1 then
 			db_actor:give_money(-num)
-			game_stats.money_quest_update (-num) 
 		end
 		news_manager.relocate_money(db_actor, type, num)
 	end

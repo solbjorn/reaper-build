@@ -1,0 +1,76 @@
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+-- Обычное поведение
+
+class "action_process_death"
+
+function action_process_death:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function action_process_death:death_callback(victim, who)
+	local killer_id
+	if who ~= nil then
+		killer_id = who:id()
+		if killer_id == db_actor_id and victim:best_enemy() == nil then
+			killer_id = -1
+			if victim:relation(db_actor) ~= game_object.enemy then
+				local vic_smart_terrain_id = g_alife:object(victim:id()):smart_terrain_id()
+				if vic_smart_terrain_id and vic_smart_terrain_id ~= 65535 then
+					local smt_trn = g_alife:object(vic_smart_terrain_id)
+					for id, npc_info in pairs( smt_trn.npc_info ) do
+						local buddy = level.object_by_id(id)
+						if buddy and buddy:alive() then
+							if buddy:see(db_actor) or buddy:position():distance_to(db_actor:position()) < 5 then
+								killer_id = 0
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+	else
+		killer_id = -1
+	end
+	db.storage[victim:id()].death.killer = killer_id
+
+	if db_actor then
+		if self.st.info then
+			xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.info)
+		end
+
+		if self.st.info2 then
+			xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.info2)
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder_q(npc, storage)
+	local action = this.action_process_death(npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, action)
+end
+
+
+function set_death(npc, ini, scheme, section)
+	xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+end
+
+function reset_death(npc, scheme, st, section)
+	local death_section = utils.cfg_get_string(st.ini, st.section_logic, "on_death", npc, false, "")
+	if death_section then
+		local tmp = utils.cfg_get_string(st.ini, death_section, "on_info", npc, false, "")
+		if tmp then
+			st.death.info = xr_logic.parse_condlist_q(tmp)
+		end		
+		tmp = utils.cfg_get_string(st.ini, death_section, "on_info2", npc, false, "")
+		if tmp then
+			st.death.info2 = xr_logic.parse_condlist_q(tmp)
+		end
+	end
+end

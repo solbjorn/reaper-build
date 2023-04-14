@@ -1,7 +1,8 @@
-local t
 local ltx
 
 function load_job(sj, gname, type, squad, groups, st)
+	local t
+
 	ltx = "[meet@generic_lager_guard]\n"..
 		  "meet_state		= 10|wait@wait\n"..
 		  "meet_state_wpn	= 10|backoff@threat_weap\n"..
@@ -44,7 +45,7 @@ function load_job(sj, gname, type, squad, groups, st)
 					position_threshold = 50,
 					in_rest = "", out_rest = ""
 				}
-				table.insert(sj, t)
+				sj[#sj+1] = t
 			end
 
 			-- добавляем описание должности в лтх.
@@ -72,7 +73,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				position_threshold = 50,
 				in_rest = "", out_rest = ""
 			}
-			table.insert(sj, t)
+			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
@@ -99,7 +100,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				position_threshold = 50,
 				in_rest = "", out_rest = ""
 			}
-			table.insert(sj, t)
+			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
@@ -130,7 +131,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				position_threshold = 50,
 				in_rest = "", out_rest = ""
 			}
-			table.insert(sj, t)
+			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
@@ -168,7 +169,7 @@ function load_job(sj, gname, type, squad, groups, st)
 					position_threshold = 50,
 					in_rest = "", out_rest = ""
 				}
-				table.insert(sj, t)
+				sj[#sj+1] = t
 			end
 
 			-- добавляем описание должности в лтх.
@@ -202,7 +203,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				position_threshold = 50,
 				in_rest = "", out_rest = ""
 			}
-			table.insert(sj, t)
+			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
@@ -236,7 +237,7 @@ function load_job(sj, gname, type, squad, groups, st)
 								return npc_info.is_sniper == true
 				            end
 			}
-			table.insert(sj, t)
+			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
@@ -272,7 +273,7 @@ function load_job(sj, gname, type, squad, groups, st)
 					position_threshold = 50,
 					in_rest = "", out_rest = ""
 				}
-				table.insert(sj, t)
+				sj[#sj+1] = t
 			end
 
 			-- добавляем описание должности в лтх.
@@ -291,11 +292,8 @@ function load_job(sj, gname, type, squad, groups, st)
 			ltx = ltx..job_ltx
 			it = it + 1
 		end
-
-	end
-
 	-- УНИВЕРСАЛЬНОЕ ЛОГОВО МОНСТРОВ
-	if type == "general_lair" then
+	elseif type == "general_lair" then
 		-- Проверяем наличие моб_хом.
 		local it = 1
 		while level.patrol_path_exists(gname.."_home_"..it) do
@@ -316,7 +314,7 @@ function load_job(sj, gname, type, squad, groups, st)
 					position_threshold = 20,
 					in_rest = "", out_rest = ""
 				}
-				table.insert(sj, t)
+				sj[#sj+1] = t
 			end
 
 			-- добавляем описание должности в лтх.
@@ -360,7 +358,7 @@ function load_job(sj, gname, type, squad, groups, st)
 					position_threshold = 70,
 					in_rest = "", out_rest = ""
 				}
-				table.insert(sj, t)
+				sj[#sj+1] = t
 			end
 
 			-- добавляем описание должности в лтх.
@@ -386,10 +384,7 @@ function load_states(gname, type)
 				if gulag.population_comed == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db.actor, gulag.smrttrn, gulag.state_switch_1) ~= nil then
-
-					--level.map_add_object_spot(gulag.smrttrn.id, "alife_presentation_smart_ready", "Ready")	
-		
+				if xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_1) ~= nil then
 					return 1
 				end
 				return 0
@@ -403,26 +398,20 @@ function load_states(gname, type)
 				if gulag.population_comed == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db.actor, gulag.smrttrn, gulag.state_switch_0) ~= nil then
-					
-					--level.map_remove_object_spot(gulag.smrttrn.id, "alife_presentation_smart_ready")
+				if xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_0) ~= nil then
 					return 0
 				end
 				return 1
 			end
 		end
-	end
-
-	if type == "general_lair" then
+	elseif type == "general_lair" then
 		return function(gulag) 
 			if gulag.state == 0 then
 				if gulag.population_comed == 0 then
 					return 0
 				end
 
-				if xr_logic.pick_section_from_condlist(db.actor, gulag.object, gulag.state_switch_1) ~= nil then
-					
-					--level.map_add_object_spot(gulag.smrttrn.id, "alife_presentation_smart_ready", "Ready")	
+				if xr_logic.pick_section_from_condlist(db_actor, gulag.object, gulag.state_switch_1) ~= nil then
 					return 1
 				end
 				return 0
@@ -430,9 +419,7 @@ function load_states(gname, type)
 				if gulag.population_comed == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db.actor, gulag.object, gulag.state_switch_0) ~= nil then
-
-					--level.map_remove_object_spot(gulag.smrttrn.id, "alife_presentation_smart_ready")
+				if xr_logic.pick_section_from_condlist(db_actor, gulag.object, gulag.state_switch_0) ~= nil then
 					return 0
 				end
 				return 1
@@ -442,11 +429,11 @@ function load_states(gname, type)
 end
 
 
-function checkStalker(npc_community, type, npc_rank, se_obj, preset_name)
+function checkStalker(npc_community, type)
 	return type == "general_lager"
 end
 
-function checkMonster(npc_community, type, npc_rank, se_obj, preset_name)
+function checkMonster(npc_community, type)
 	return type == "general_lair"
 end
 

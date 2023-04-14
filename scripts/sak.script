@@ -824,22 +824,7 @@ local lev={"l01_escape","l11_pripyat","l07_military","l08_yantar","l12u_sarcofag
 		amk.del_variable("sak_teleport")
 		end
 	end
-	show_time()
 	arc_main.actor_update() -- !!!!!!!!!!!
-end
-function show_time()
-	local hud = get_hud()
-	local cs = hud:GetCustomStatic("hud_show_time")
-	if cs == nil then
-		hud:AddCustomStatic("hud_show_time", true)
-		cs = hud:GetCustomStatic("hud_show_time")
-	end
-	local time_h = level.get_time_hours()
-	local time_m = level.get_time_minutes()
-	local msg
-	msg = string.format("%02d:%02d\\n", time_h, time_m)
-	if cs ~= nil then cs:wnd():SetText(msg)
-	end
 end
 function readvu32u8(packet)
   local v={}
