@@ -1,0 +1,198 @@
+--[[---------------------------------------------------------------------------
+ * Globals
+--]]---------------------------------------------------------------------------
+
+_G.hit_mob_types = {
+	npc			= 0,
+	monster			= 1,
+	generic			= 2
+}
+
+_G.object_flags = {
+	UsedAI_Locations	= 128
+}
+
+_G.timer_types = {
+	game			= 0,
+	real			= 1
+}
+
+--[[---------------------------------------------------------------------------
+ * Callbacks
+--]]---------------------------------------------------------------------------
+
+function net_spawn()
+	set_timer_tick()
+end
+
+function update()
+	update_timers()
+end
+
+function save(packet)
+	save_timers(packet)
+end
+
+function load(reader)
+	load_timers(reader)
+end
+
+--[[---------------------------------------------------------------------------
+ * Hit effectors
+--]]---------------------------------------------------------------------------
+
+local gg_kick = read_line("gg_kick", "enabled") > 0
+
+function hit_effectors(mob_type, obj, amount)
+	if gg_kick ~= true or amount <= 0.05 or not db_actor:alive() then
+		return
+	end
+
+	level.add_pp_effector("amk_shoot.ppe", effector_ids.hit, false)
+	level.set_pp_effector_factor(effector_ids.hit, amount * 100)
+
+	if amount <= 0.3 then
+		return
+	end
+
+	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
+	local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
+	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+
+	if math.random() < (amount / 2) then
+		local active_item = db_actor:active_item()
+		if active_item and active_item:is_weapon() then
+			db_actor:drop_item(active_item)
+		end
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Timers
+--]]---------------------------------------------------------------------------
+
+local timer_res = 100
+local timer_tick
+
+local timers = { }
+local timer_nextup
+
+local string_match = string.match
+
+function set_timer_tick()
+	timer_tick = game.CTime()
+	timer_tick:setHMSms(0, 0, 0, timer_res * base_time_factor)
+end
+
+function start_timer(event, delay, type)
+	if not event or not delay then return false end
+	if not string_match(event, "(.+)[(].*[)]") then return false end
+
+	if type and type == timer_types.real then
+		delay = delay * base_time_factor
+	end
+
+	local exp = game.CTime()
+	exp:setHMSms(0, 0, 0, delay)
+	local now = game.get_game_time()
+
+	local tm = {
+		event	= event,
+		time	= now + exp
+	}
+	table.insert(timers, tm)
+
+	if not timer_nextup then
+		timer_nextup = now
+	end
+
+	return true
+end
+
+function has_timer(event)
+	if not timer_nextup or not event then return false end
+
+	local func = string_match(event, "(.+)[(].*[)]")
+	if not func then return false end
+
+	local i = 1
+	while i <= #timers do
+		local tm = timers[i]
+		if string_match(tm.event, "(.+)[(].*[)]") == func then
+			return true
+		else
+			i = i + 1
+		end
+	end
+
+	return false
+end
+
+function stop_timer(idx)
+	table.remove(timers, idx)
+
+	if #timers == 0 then
+		timer_nextup = nil
+	end
+end
+
+function update_timers()
+	if not timer_nextup then return end
+
+	local now = game.get_game_time()
+	if timer_nextup > now then return end
+	timer_nextup = now + timer_tick
+
+	local tm, func
+	local i = 1
+	while i <= #timers do
+		tm = timers[i]
+		if tm.time <= now then
+			func = loadstring(tm.event)
+			stop_timer(i)
+
+			if type(func) == "function" then
+				pcall(func)
+			end
+		else
+			i = i + 1
+		end
+	end
+end
+
+local utils_r_CTime = utils.r_CTime
+local utils_w_CTime = utils.w_CTime
+
+function save_timers(packet)
+	local num = #timers
+	packet:w_u16(num)
+
+	local tm
+	for i = 1, num do
+		tm = timers[i]
+		packet:w_stringZ(tm.event)
+		utils_w_CTime(packet, tm.time)
+	end
+end
+
+function load_timers(reader)
+	local num = reader:r_u16()
+	timers = { }
+
+	for i = 1, num do
+		timers[i] = {
+			event	= reader:r_stringZ(),
+			time	= utils_r_CTime(reader)
+		}
+	end
+
+	timer_nextup = (num > 0 and game.get_game_time()) or nil
+end
+
+--[[---------------------------------------------------------------------------
+ * Misc
+--]]---------------------------------------------------------------------------
+
+function with_discount(num)
+	return math.floor(num * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+end

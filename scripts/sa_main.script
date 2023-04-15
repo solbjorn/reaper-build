@@ -7,34 +7,6 @@
  Last edit    : 11.11.2018
 --]]-----------------------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------------------------
- * Hit effectors
---]]-----------------------------------------------------------------------------------------------
-local gg_kick = read_line("gg_kick", "enabled") > 0
----------------------------------------------------------------------------------------------------
-function hit_effectors(mob_type, obj, amount)
-	if not gg_kick or amount <= 0.05 or not db_actor:alive() then
-		return
-	end
-
-	level.add_pp_effector("amk_shoot.ppe", effector_ids.hit, false)
-	level.set_pp_effector_factor(effector_ids.hit, amount * 100)
-
-	if amount <= 0.3 then
-		return
-	end
-
-	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
-	local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
-
-	if math.random() < (amount / 2) then
-		local active_item = db_actor:active_item()
-		if active_item and active_item:is_weapon() then
-			db_actor:drop_item(active_item)
-		end
-	end
-end
---[[-----------------------------------------------------------------------------------------------
  * Radar bunker cooling sound
 --]]-----------------------------------------------------------------------------------------------
 local cooling_snd = nil

@@ -4,14 +4,9 @@
 ----------------
 local npc_spawner={}  --служебный массив, работает автоматически - не трогать шаловливыми русками
 
-local timers={}   --хранит реал-тайм таймеры
-local g_timers={} --хранит таймеры в игровом времени
 local markers={}  --хранит маркеры на карте
 local x_objs={}     --хранит ИДшники объектов
-local timer_trigger=nil
 convert_npc={}
-
-local StartTime
 
 is_debug = false
 ver = "0"
@@ -92,83 +87,124 @@ function remove_spot_from_map(obj_id,type)
   end
 end
 
+--[[---------------------------------------------------------------------------
+ * Legacy timer handlers
+--]]---------------------------------------------------------------------------
+
+function outfit_cond(params)
+	local arr = unpack_array_from_string(params)
+	local grade = arr[1]
+	local id = arr[2]
+	local rnd, add
+	local a
+
+	rnd = grade * 10 + 10
+	add = 65 - grade * 10
+
+	a = level.object_by_id(id)
+	if a then
+		a:set_condition((math.random(rnd) + add) / 100)
+	end
+end
+
+function smski_besu_handler(params)
+	wawka.smski_besu(tonumber(params))
+end
+
+function block_sleep_menu_handler()
+	save_variable("block_sleep_menu", 0)
+end
+
+function af_transform_handler(params)
+	mod_call("af_transform_end", unpack_array_from_string(params_string))
+end
+
+function amk_freeplay_handler()
+	if load_variable("freeplay", 0) == 1 and level.name() == "l12_stancia_2" then
+		xr_effects.game_credits()
+	end
+end
+
+function healing_enemies_handler(params)
+	local arr = unpack_array_from_string(params)
+	local npc_id = arr[1]
+	local npc_com = arr[2]
+	local npc = level.object_by_id(npc_id)
+	if math.random(1,100) > 80 then
+		npc:set_character_community(npc_com)
+		npc:set_relation(game_object.enemy, db_actor)
+	else
+		xr_wounded.custom_change(npc)
+	end
+end
+
+local legacy_acts = {
+	["tag_trup_to_zombie"]		= "tag_spb.trup_to_zombie",
+	["sms_new"]			= "braad_test.sms_new",
+	["sms_new1"]			= "braad_test.sms_new1",
+	["sms"]				= "amk.smski_besu_handler",
+	["smska_borova"]		= "wawka.smska_borova",
+	["smska_volka"]			= "wawka.smska_volka",
+	["smska_shurupa"]		= "wawka.smska_shurupa",
+	["smska_dana"]			= "wawka.smska_dana",
+	["smska_saharova"]		= "wawka.smska_saharova",
+	["smska_barmana"]		= "wawka.smska_barmana",
+	["show_news"]			= "amk_mod.show_news",
+	["gg_need_sleep"]		= "amk_mod.test_for_need_sleep",
+	["sleep_nrg"]			= "amk_mod.test_for_need_sleep_nrg",
+	["sleep_med"]			= "amk_mod.test_for_need_sleep_med",
+	["sleep_matras"]		= "amk_mod.test_for_need_sleep_matras",
+	["sleep_tr_item"]		= "amk_mod.test_for_need_sleep_tr_item",
+	["sleep_notebook"]		= "amk_mod.test_for_need_sleep_notebook",
+	["block_sleep_menu"]		= "amk.block_sleep_menu_handler",
+	["radar_fix"]			= "amk_mod.radar_fix",
+	["af_transform"]		= "amk.af_transform_handler",
+	["amk_freeplay"]		= "amk.amk_freeplay_handler",
+	["blowout"]			= "amk_mod.Blowout_pp",
+	["test"]			= "amk_mod.Run_Blowout_pp",
+	["blowout_ss"]			= "amk_mod.blowout_scary_sounds",
+	["blow_shift"]			= "amk_mod.Run_Blowout_pp",
+	["sleep_repbox"]		= "amk_mod.repair_weapon",
+	["repbox_cond"]			= "amk_mod.after_repair_weapon",
+	["collect_anomalies_info"]	= "amk_anoms.collect_info",
+	["news_check"]			= "news_main.check_news",
+	["healing_enemies"]		= "amk.healing_enemies_handler",
+	["nano_health_start"]		= "skunk.nano_health_s"
+}
+
 --старт таймера в реальном времени
-function start_timer(name,delay,action)
-  if not delay then
-    return false
-  end
-  
-  if not action then
-    action = ""
-  end
+function start_timer(call, delay, params)
+	if not call or not delay then return false end
 
-    local time = game.time() --time in seconds since 1970
-  local a=1
-  while db.storage[db.actor:id()].pstor["xt"..a] do
-    a=a+1
-    if a>100 then 
-      return false 
-    end
-  end
-  save_variable("xt"..a, name)
-  save_variable("xd"..a, time+delay*1000*system_ini():r_float("alife","time_factor"))
-  save_variable("xp"..a, action)
+	call = legacy_acts[call] or call
+	call = call .. "(\"" .. (params or "") .. "\")"
 
-  return true
+	return reap.start_timer(call, delay * 1000, timer_types.real)
 end
 
 --старт таймера в игровом времени
-function g_start_timer(name,delay_d,delay_h,delay_m,action)
+function g_start_timer(call, delay_d, delay_h, delay_m, params, delay_s)
+	if not call or not delay_d or not delay_h or not delay_m then return false end
+	local delay = (((delay_d * 60 * 24 + delay_h * 60 + delay_m) * 60) + (delay_s or 0)) * 1000
 
-  --local time = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
-  --sak.dbglog("g_start_timer: old time = %d",time)
-    
-  local t = game.get_game_time()
-  --sak.dbglog("g_start_timer: game time = %s %s", t:dateToString(0), t:timeToString(1))
-  local time = math.floor(t:diffSec(StartTime) / 60)  --time in game minutes
-  --sak.dbglog("g_start_timer: new time = %d",time)
+	call = legacy_acts[call] or call
+	call = call .. "(\"" .. (params or "") .. "\")"
 
-  if delay_d==nil or delay_h==nil or delay_m==nil then
-    return false
-  end
-  
-  if action==nil then
-    action = ""
-  end
-
-  local a=1
-  while db.storage[db.actor:id()].pstor["gt"..a] do
-    a=a+1
-    if a>100 then 
-      return false 
-    end
-  end
-
-  save_variable("gt"..a, name)
-  save_variable("gd"..a, time+delay_d*60*24+delay_h*60+delay_m)
-  save_variable("gp"..a, action)
-
-  return true
+	return reap.start_timer(call, delay)
 end
 
 function has_timer(name)
-  for a=1,100,1 do
-    tmp=load_variable("xt"..a,nil)
-    if tmp and tmp==name then
-      return true
-    end
-  end  
-  return false
+	if not name then return false end
+	name = legacy_acts[name] or name
+
+	return reap.has_timer(name)
 end
 
 function has_g_timer(name)
-  for a=1,100,1 do
-    tmp=load_variable("gt"..a,nil)
-    if tmp and tmp==name then
-      return true
-    end
-  end  
-  return false
+	if not name then return false end
+	name = legacy_acts[name] or name
+
+	return reap.has_timer(name)
 end
 
 -- Временное хранилище для переменных удалённых из pstor
@@ -180,17 +216,6 @@ function emergency_cleanup()
     emerg_store.zombied=load_table("zombied")
     del_variable("zombied")
   end
-  for i=1,100,1 do
-    if load_variable("gt"..i,"")=="af_transform" then
-      emerg_store[i]={}
-      emerg_store[i].gt=load_variable("gt"..i,"")
-      emerg_store[i].gd=load_variable("gd"..i,"")
-      emerg_store[i].gp=load_variable("gp"..i,"")
-      del_variable("gt"..i)
-      del_variable("gd"..i)
-      del_variable("gp"..i)
-    end
-  end
   save_variable("emerg",true)
 end
 
@@ -199,253 +224,11 @@ function emergency_restore()
   for k,v in pairs(emerg_store) do
     if k=="zombied" then
       save_table(k,v)
-    else
-      save_variable("gt"..k,v.gt)
-      save_variable("gd"..k,v.gd)
-      save_variable("gp"..k,v.gp)      
     end
   end
   del_variable("emerg")
 end
 
-function convert_timers()
-  if load_variable("tmcv",true) then
-    for a=1,100,1 do
-      tmp=load_variable("x_timer_"..a,nil)
-      if tmp~=nil then
-        local name,delay,params=tmp,load_variable("x_timer_"..a.."_delay",0),load_variable("x_timer_"..a.."_params","")
-        del_variable("x_timer_"..a)
-        del_variable("x_timer_"..a.."_delay")
-        del_variable("x_timer_"..a.."_params")
-        save_variable("xt"..a,name)
-        save_variable("xd"..a,delay)
-        save_variable("xp"..a,params)
-      end
-    end
-    for a=1,100,1 do
-      tmp=load_variable("x_gtimer_"..a,nil)
-      if tmp~=nil then
-        local name,delay,params=tmp,load_variable("x_gtimer_"..a.."_delay",0),load_variable("x_gtimer_"..a.."_params","")
-        del_variable("x_gtimer_"..a)
-        del_variable("x_gtimer_"..a.."_delay")
-        del_variable("x_gtimer_"..a.."_params")
-        save_variable("gt"..a,name)
-        save_variable("gd"..a,delay)
-        save_variable("gp"..a,params)
-      end
-    end
-    save_variable("tmcv",false)
-  end
-end
-
---проверка таймеров, использует 3 следующие за ним функции для выбора действия
-function check_timers()
-  local tmp
-  for a=1,100,1 do
-    tmp=load_variable("xt"..a,nil)
-    if tmp~=nil then
-      __timer_found(a)  
-    end
-  end
-  
-  for a=1,100,1 do
-    tmp=load_variable("gt"..a,nil)
-    if tmp~=nil then
-      __g_timer_found(a)  
-    end
-  end
-end
-function __timer_found(idx)
-    local time = game.time() --time in seconds since 1970
-
-  local name,params
-  if load_variable("xd"..idx, nil)<=time then
-    name=load_variable("xt"..idx, nil)
-    params=load_variable("xp"..idx, nil)
-    del_variable("xt"..idx)
-    del_variable("xd"..idx)
-    del_variable("xp"..idx)
-		oau_reason=name.." "..params
-    __do_timer_action(name,params)
-    return true
-  end
-  return false
-end
-function __g_timer_found(idx)
-  --local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
-  --sak.dbglog("g_start_timer: old time = %d",gtime)
-
-  local t = game.get_game_time()
-  --sak.dbglog("g_start_timer: game time = %s %s", t:dateToString(0), t:timeToString(1))
-  local gtime = math.floor(t:diffSec(StartTime) / 60)  --time in game minutes
-  --sak.dbglog("g_start_timer: new time = %d",gtime)
-
-  local name,params
-  local v = load_variable("gd"..idx, nil)
-
-  if load_variable("gd"..idx, nil)<=gtime then
-    name=load_variable("gt"..idx, nil)
-    params=load_variable("gp"..idx, nil)
-    del_variable("gt"..idx)
-    del_variable("gd"..idx)
-    del_variable("gp"..idx)
-		oau_reason=name.." "..params
-    __do_timer_action(name,params)
-    return true
-  end
-  return false
-end
-function __do_timer_action(select_string,params_string)
-local a
-  --[[
-  здесь описываем вызовы, оформялять в виде
-
-  if select_string=="название условия" then
-    <вызов сторонних функций>
-    -- можно передавать npc как параметр
-  end
-  
-  ]]
---user area 
-  if select_string=="tag_trup_to_zombie" then  -- TAG --
-       tag_spb.trup_to_zombie(params_string)
-  end
-  if select_string=="sms_new" then
-    braad_test.sms_new()
-  end
-  if select_string=="sms_new1" then
-    braad_test.sms_new1()
-  end
-  if select_string=="sms" then
-    wawka.smski_besu(tonumber(params_string))
-  end
-  if select_string=="smska_borova" then
-    wawka.smska_borova()
-  end
-  if select_string=="smska_volka" then
-    wawka.smska_volka()
-  end
-  if select_string=="smska_shurupa" then
-    wawka.smska_shurupa()
-  end
-  if select_string=="smska_dana" then
-    wawka.smska_dana()
-  end
-  if select_string=="smska_saharova" then
-    wawka.smska_saharova()
-  end
-  if select_string=="smska_barmana" then
-    wawka.smska_barmana()
-  end
-  if select_string=="show_news" then
-    mod_call("show_news")
-  end
-  if select_string=="gg_need_sleep" then
-    mod_call("test_for_need_sleep")
-  end
-  if select_string=="sleep_nrg" then
-    mod_call("test_for_need_sleep_nrg",params_string)
-  end
-  if select_string=="sleep_med" then
-    mod_call("test_for_need_sleep_med",params_string)
-  end
-  if select_string=="sleep_matras" then
-    mod_call("test_for_need_sleep_matras",params_string)
-  end
-  if select_string=="sleep_tr_item" then
-    mod_call("test_for_need_sleep_tr_item",params_string)
-  end
-  if select_string=="sleep_notebook" then
-    mod_call("test_for_need_sleep_notebook",params_string)
-  end
-  if select_string=="block_sleep_menu" then
-    save_variable("block_sleep_menu",0)
-  end
-  if select_string=="radar_fix" then
-    mod_call("radar_fix")
-  end
-  if select_string=="af_transform" then
-    mod_call("af_transform_end",unpack_array_from_string(params_string))
-  end
-  if select_string=="amk_freeplay" then
-    if amk.load_variable("freeplay",0)==1 and level.name()=="l12_stancia_2" then
-      xr_effects.game_credits()
-    end
-  end
-  if select_string=="blowout" then
-    mod_call("Blowout_pp",params_string)
-  end
-  if select_string=="test" then
-    mod_call("Run_Blowout_pp")
-  end
-  if select_string=="blowout_ss" then
-    mod_call("blowout_scary_sounds")
-  end
-  if select_string=="blow_shift" then
-    mod_call("Run_Blowout_pp")
-  end
-  if select_string=="sleep_repbox" then
-    mod_call("repair_weapon", params_string)
-  end
-  if select_string=="repbox_cond" then
-    mod_call("after_repair_weapon", params_string)
-  end
-  if select_string=="collect_anomalies_info" then
-    amk_anoms.collect_info()
-  end
-  if select_string=="news_check" then
-    if (news_main and news_main.check_news) then
-		news_main.check_news()
-	end
-  end
-	if select_string=="outfit_cond_1" then
-		a = level.object_by_id(tonumber(params_string))
-		if a then
-			a:set_condition((math.random(20)+55)/100)
-		end
-	end
-	if select_string=="outfit_cond_2" then
-		a = level.object_by_id(tonumber(params_string))
-		if a then
-			a:set_condition((math.random(30)+45)/100)
-		end
-	end
-	if select_string=="outfit_cond_3" then
-		a = level.object_by_id(tonumber(params_string))
-		if a then
-			a:set_condition((math.random(40)+35)/100)
-		end
-	end
-	if select_string=="outfit_cond_4" then
-		a = level.object_by_id(tonumber(params_string))
-		if a then
-			a:set_condition((math.random(50)+25)/100)
-		end
-	end
-	if select_string=="outfit_cond_5" then
-		a = level.object_by_id(tonumber(params_string))
-		if a then
-			a:set_condition((math.random(60)+15)/100)
-		end
-	end
-	if select_string=="healing_enemies" then
-		local arr = amk.unpack_array_from_string(params_string)
-		local npc_id = arr[1]
-		local npc_com = arr[2]
-		local npc = level.object_by_id(npc_id)
-		if math.random(1,100) > 80 then
-			npc:set_character_community(npc_com)
-			npc:set_relation(game_object.enemy, db.actor)
-		else
-			xr_wounded.custom_change(npc)
-		end
-	end
-	if select_string=="nano_health_start" then
-		skunk.nano_health_s()
-	end
-
------------
-end
 --------------------------------------------------------------------------------------------------------------------
 
 --спавним объекты на карту
@@ -913,15 +696,6 @@ end
 --колбэк на апдейт ГГ (удобно для проверки условий, так как вызывается постоянно, нельзя перегружать, а то будут лаги)
 function on_actor_upade(delta)
 	oau_watchdog=100
---	amk.mylog("on_actor_upade begin")
- --не удалять! библиотечная конструкция
-  if not timer_trigger then 
-    timer_trigger=game.time() 
-  end
-  if timer_trigger<=game.time() then
-    timer_trigger=game.time()+1000
-    check_timers()
-  end
 	--user area 
 	braad_test.check_npc_dead()
 	braad_test.check_ecolog_dead()
@@ -1160,19 +934,7 @@ function on_game_load()
   npc_spawner=unpack_array_from_string(load_variable("x_npc_spawner","") )
 
   mod_call("first_run")
-  convert_timers() -- исправим старые названия таймеров
--- Метки теперь ставятся на серверные объекты. Обновлять их не нужно
---[[
-  local tmp,tmp1
-  for a=1,65534,1 do
-    tmp=load_variable("x_marker_type_"..a,nil)
-    if tmp~=nil then
-      tmp1=load_variable("x_marker_text_"..a,nil)
-      level.map_add_object_spot(a, tmp, tmp1)
-    end
-  end
-]]
-  
+
 --user area 
   mod_call("test_sleep_pp")
   mod_call("check_spawn")
@@ -1195,16 +957,6 @@ end
 function on_game_start()
   mod_call("on_game_start")
 	ver = get_ver()
-
-  local strTime = system_ini():r_string("alife", "start_time")
-  local t = str_explode(":", strTime, true)
-  local d = str_explode(".",  system_ini():r_string("alife", "start_date"), true)
-  StartTime = game.CTime()
-  StartTime:set(d[3], d[2], 1, 0, 0, 0, 0)
-  local temp = game.CTime()
-  temp:setHMS(24,0,0)
-  StartTime = StartTime - temp
-  --sak.dbglog("on_game_start: StartTime = %s %s",StartTime:dateToString(0), StartTime:timeToString(1))
 end
 
 --------------------- user function section---------------

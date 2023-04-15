@@ -1227,12 +1227,8 @@ function repair_costs(first_speaker, second_speaker)
 	end
 end
 
-function with_discount(num)
-	return math.floor(num * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
-end
-
 function actor_has_money(num)
-	return db_actor:money() >= with_discount(num)
+	return db_actor:money() >= reap.with_discount(num)
 end
 
 function give_money(t1, t2, num)
@@ -1241,7 +1237,7 @@ function give_money(t1, t2, num)
 		npc = t2
 	end
 
-	relocate_money(npc, with_discount(num), 1)
+	relocate_money(npc, reap.with_discount(num), 1)
 end
 
 function actor_has_money_30000()

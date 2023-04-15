@@ -318,27 +318,27 @@ function drop_manager:create_release_item()
 			if vis == "stalker_sv_leader" then sect = "outfit_svoboda_m1" end
 		  end
 			if sect~=nil then 
-				local rnd, func, otf
+				local rnd, grade
 				if sect == "bandit_outfit" or sect == "outfit_bandit_m1" or sect == "bandit_gaz_outfit_m1" or sect == "bandit_veteran_outfit" or sect == "bandit_master_outfit" or sect == "novice_outfit" or sect == "neytral_novice_outfit_m1" or sect == "neytral_novice_gaz_outfit_m1" then
 					rnd = 650
-					func = "outfit_cond_1"
+					grade = 1
 				elseif sect == "stalker_outfit" or sect == "killer_outfit" or sect == "outfit_soldier_m1" or sect == "svoboda_light_outfit" or sect == "svoboda_gaz_outfit_m1" then
 					rnd = 550
-					func = "outfit_cond_2"
+					grade = 2
 				elseif sect == "dolg_outfit" or sect == "dolg_gaz_outfit_m1" or sect == "ecolog_outfit" or sect == "outfit_dolg_m1" or sect == "outfit_killer_m1" or sect == "killer_gaz_outfit_m1" or sect == "specops_outfit" or sect == "outfit_specnaz_m1" or sect == "monolit_outfit" or sect == "monolit_gaz_outfit_m1" or sect == "stalker_guard_outfit" or sect == "outfit_stalker_m1" or sect == "outfit_stalker_m2" or sect == "neytral_gaz_outfit_m1" or sect == "neytral_gaz_outfit_m2" or sect == "svoboda_heavy_outfit" or sect == "svoboda_heavy_gaz_outfit_m1" or sect == "outfit_svoboda_m1" then
 					rnd = 450
-					func = "outfit_cond_3"					
+					grade = 3
 				elseif sect == "dolg_scientific_outfit" or sect == "ecolog_outfit" or sect == "protection_outfit" or sect == "merc_scientific_outfit" or sect == "military_outfit" or sect == "militaryspec_outfit" or sect == "monolit_scientific_outfit" or sect == "scientific_outfit" or sect == "freedom_scientific_outfit" then
 					rnd = 350
-					func = "outfit_cond_4"
+					grade = 4
 				else
 					rnd = 250
-					func = "outfit_cond_5"
+					grade = 5
 				end	
 				if math_random(1000) <= rnd then
-					otf = alife():create(sect, npc_pos, npc_lvid, npc_gvid, npc_id)
+					local otf = alife():create(sect, npc_pos, npc_lvid, npc_gvid, npc_id)
 					if otf then
-						amk.start_timer(func, 1, otf.id)
+						amk.start_timer("amk.outfit_cond", 1, amk.pack_array_to_string({ grade, otf.id }))
 					end
 				end
 			end

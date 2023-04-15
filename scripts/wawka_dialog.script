@@ -11732,16 +11732,12 @@ end
 
 -- Δενόγθ
 
-function with_discount(num)
-	return math.floor(num * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
-end
-
 function have_money(actor, num)
-	return db_actor:money() > with_discount(num)
+	return db_actor:money() > reap.with_discount(num)
 end
 
 function give_money(actor, num)
-	dialogs.relocate_money(db_actor, with_discount(num), "out")
+	dialogs.relocate_money(db_actor, reap.with_discount(num), "out")
 end
 
 function have_money_5000(actor,npc)

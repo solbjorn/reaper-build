@@ -88,12 +88,8 @@ function info_received()
   amk.send_tip("",game.translate_string("st_found_new_pda"),0,10,"gen_info")
 end
 
-function with_discount(num)
-	return math.floor(num * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
-end
-
 function actor_has_money_30000()
-	return db_actor:money() >= with_discount(30000)
+	return db_actor:money() >= reap.with_discount(30000)
 end
 
 function give_money_30000(t1, t2)
@@ -102,5 +98,5 @@ function give_money_30000(t1, t2)
 		npc = t2
 	end
 
-	dialogs.relocate_money(npc, with_discount(30000), "out")
+	dialogs.relocate_money(npc, reap.with_discount(30000), "out")
 end
