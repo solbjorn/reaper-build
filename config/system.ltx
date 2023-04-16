@@ -7,7 +7,6 @@
 #include "misc\items.ltx"
 #include "misc\monster_items.ltx"
 
-
 #include "creatures\actor.ltx"
 
 #include "misc\zones.ltx"
@@ -62,6 +61,12 @@
 #include "blowout.ltx"
 #include "gg_kick.ltx"
 
+#include "weapons\grenadier.ltx"
+#include "medic.ltx"
+#include "misc\banderos_outfit.ltx"
+
+#include "creatures\aem_monsters.ltx"
+#include "creatures\aem_stalkers.ltx"
 
 [sound]
 occlusion_scale = 0.4
@@ -587,12 +592,12 @@ swing_fast_speed  = 0.5;1
 
 [ph_capture_visuals]
 
-//Список объектов которые можно таскать.
+; Список объектов которые можно таскать.
 
-//nano
+; nano
 actors\nano\stalker_nano
 
-//bandit
+; bandit
 actors\bandit\stalker_bandit_1
 actors\bandit\stalker_bandit_2
 actors\bandit\stalker_bandit_3
@@ -608,7 +613,7 @@ actors\bandit\stalker_bandit_master
 actors\bandit\stalker_bandit_veteran
 actors\bandit\stalker_bandit_exoskeleton
 
-//dolg
+; dolg
 actors\dolg\stalker_do_antigas
 actors\dolg\stalker_do_balon_1
 actors\dolg\stalker_do_balon_2
@@ -625,11 +630,11 @@ actors\dolg\stalker_do_mask
 actors\dolg\stalker_do_mask_1
 actors\dolg\stalker_do_nauchniy
 
-//ecolog
+; ecolog
 actors\ecolog\stalker_ecolog
 actors\ecolog\stalker_ecolog_military
 
-//killer
+; killer
 actors\killer\stalker_ki_antigas
 actors\killer\stalker_ki_exoskeleton
 actors\killer\stalker_ki_head_1
@@ -645,7 +650,7 @@ actors\killer\stalker_ki_nauchniy
 actors\killer\stalker_ki_temp
 actors\killer\stalker_ki_temp2
 
-//militari
+; militari
 actors\militari\stalker_militari_1
 actors\militari\stalker_militari_2
 actors\militari\stalker_militari_antigas_1
@@ -653,11 +658,11 @@ actors\militari\stalker_militari_antigas_2
 actors\militari\stalker_zp_exoskeleton
 actors\militari\stalker_rus_spec
 
-//nauchniy
+; nauchniy
 actors\nauchniy\nauchniy_0
 actors\nauchniy\nauchniy_1
 
-//neytral
+; neytral
 actors\neytral\stalker_bar_security
 actors\neytral\stalker_neytral_balon_1
 actors\neytral\stalker_neytral_balon_2
@@ -704,7 +709,7 @@ actors\neytral\serega
 actors\neytral\hellcar
 actors\neytral\lisiy
 
-//novice
+; novice
 actors\novice\green_stalker_1
 actors\novice\green_stalker_10
 actors\novice\green_stalker_11
@@ -718,7 +723,7 @@ actors\novice\green_stalker_8
 actors\novice\green_stalker_9
 actors\novice\green_stalker_antigas
 
-//soldier
+; soldier
 actors\soldier\soldier_antigas
 actors\soldier\soldier_bandana
 actors\soldier\soldier_bandana_1
@@ -739,7 +744,7 @@ actors\soldier\soldier_spetsnaz
 actors\soldier\stalker_military_black
 actors\soldier\stalker_military_green
 
-//stalker_zombi
+; stalker_zombi
 actors\stalker_zombi\stalker_zombie_specnaz
 actors\stalker_zombi\stalker_zombie1
 actors\stalker_zombi\stalker_zombie2
@@ -754,7 +759,7 @@ actors\stalker_zombi\zombie_fresh_0
 actors\stalker_zombi\zombie_fresh_1
 actors\stalker_zombi\zombie_fresh_2
 
-//svoboda
+; svoboda
 actors\svoboda\stalker_sv_balon_1
 actors\svoboda\stalker_sv_balon_10
 actors\svoboda\stalker_sv_cook
@@ -770,13 +775,13 @@ actors\svoboda\stalker_sv_rukzak_2
 actors\svoboda\stalker_sv_rukzak_3
 actors\svoboda\stalker_sv_rukzak_3_1
 
-//ucheniy
+; ucheniy
 actors\ucheniy\ucheniy_1
 actors\ucheniy\ucheniy_2
 actors\ucheniy\ucheniy_3
 actors\ucheniy\ucheniy_4
 
-//Monolith
+; Monolith
 actors\monolit\stalker_mo_exo
 actors\monolit\stalker_mo_head_1
 actors\monolit\stalker_mo_head1
@@ -784,7 +789,7 @@ actors\monolit\stalker_mo_hood_9
 actors\monolit\stalker_mo_mask
 actors\monolit\stalker_mo_nauchniy
 
-//Dead
+; Dead
 actors\corpses\dead_bandit_stage1
 actors\corpses\dead_bandit_stage2
 actors\corpses\dead_bandit_stage3
@@ -800,9 +805,9 @@ actors\corpses\dead_neytral_hood2
 actors\corpses\dead_neytral_hood3
 
 
-/////AMK section
+;;;;; AMK section
 
-//Original monsters
+; Original monsters
 
 monsters\dog\dog
 monsters\dog\dog_bulterier
@@ -845,7 +850,7 @@ monsters\stalker_zombi\stalker_zombi
 monsters\tushkano\tushkano
 monsters\tushkano\tushkano_dead
 
-//Cut monsters
+; Cut monsters
 
 monsters\burer\burer 
 monsters\burer\burer_1 
@@ -1123,20 +1128,13 @@ physics\weapons\vodka\vodka
 physics\weapons\walter_99\wpn_walter_99
 physics\weapons\winchester1300\wpn_winchester1300
 
-#include "weapons\grenadier.ltx"
-#include "medic.ltx"
-
-//;;banderos
+; banderos
 actors\killer\stalker_france_killer_antigas
 actors\killer\stalker_usa_killer_antigas
 actors\fisher\fisher
 actors\killer\stalker_tiran_killer
 
-#include "misc\banderos_outfit.ltx"
-
 ;---------------------------------------------------------------ARENA_EXTENSION_MOD------------------------------------------------------------------
-#include "creatures\aem_monsters.ltx"
-#include "creatures\aem_stalkers.ltx"
 
 [aem_sound]:space_restrictor
 GroupControlSection		= spawn_group_restrictor
