@@ -902,28 +902,97 @@ function bar_actor_enemy_set (actor, npc)
     end   
 end
 
-function bar_arena_weapon_spawn ()
-  
-  local obj = level_object_by_sid (606)
-  local spawn_items = {}
-  
-  for i = 1,100 do
-    table.insert( spawn_items, "bandit_outfit")
-  end
-  
-  local k,v = 0,0
-  
-  for k,v in pairs(spawn_items) do
-    alife():create(v, 
-            obj:position(),
-            obj:level_vertex_id(),  
-            obj:game_vertex_id())
-  end 
-end
-
 local function transfer_object_item(item)
     out_object:transfer_item(item, in_object)
 end
+
+local arena_equip = {
+	["bar_arena_fight_1"] = {
+		items = {
+			"wpn_pm",
+			"ammo_9x18_pmm",
+			"ammo_9x18_pmm",
+			"wpn_knife"
+		},
+		slot = 1
+	},
+	["bar_arena_fight_2"] = {
+		items = {
+			"wpn_mp5",
+			"ammo_9x19_pbp",
+			"wpn_knife"
+		},
+		slot = 1
+	},
+	["bar_arena_fight_3"] = {
+		items = {
+			"wpn_bm16",
+			"ammo_12x70_buck",
+			"ammo_12x70_buck",
+			"wpn_knife"
+		},
+		slot = 1
+	},
+	["bar_arena_fight_4"] = {
+		items = {
+			"wpn_ak74",
+			"ammo_5.45x39_ap",
+			"ammo_5.45x39_ap",
+			"wpn_knife",
+			"bandage",
+			"bandage"
+		},
+		slot = 2
+	},
+	["bar_arena_fight_5"] = {
+		items = {
+			"wpn_abakan",
+			"ammo_5.45x39_ap",
+			"ammo_5.45x39_ap",
+			"ammo_5.45x39_ap",
+			"wpn_knife",
+			"bandage",
+			"medkit",
+			"svoboda_light_outfit"
+		},
+		slot = 2
+	},
+	["bar_arena_fight_6"] = {
+		items = {
+			"wpn_groza",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"wpn_knife",
+			"grenade_f1",
+			"specops_outfit"
+		},
+		slot = 2
+	},
+	["bar_arena_fight_7"] = {
+		items = {
+			"wpn_knife",
+			"bandage",
+			"grenade_f1",
+			"grenade_f1",
+			"grenade_f1",
+			"grenade_f1"
+		},
+		slot = 0
+	},
+	["bar_arena_fight_8"] = {
+		items = {
+			"wpn_g36",
+			"ammo_5.56x45_ap",
+			"ammo_5.56x45_ap",
+			"ammo_5.56x45_ap",
+			"ammo_5.56x45_ap",
+			"wpn_knife"
+		},
+		slot = 2
+	}
+}
+
 function bar_arena_teleport ( actor, npc)
 
   local inv_box_1 = level_object_by_sid (573)
@@ -932,61 +1001,13 @@ function bar_arena_teleport ( actor, npc)
     in_object  = inv_box_1
     actor:inventory_for_each(transfer_object_item) 
 
-  local spawn_items = {}  
-
-  if  has_alife_info("bar_arena_fight_1") then 
-    table.insert(spawn_items, "wpn_pm")
-    table.insert(spawn_items, "ammo_9x18_pmm")
-    table.insert(spawn_items, "ammo_9x18_pmm")
-    table.insert(spawn_items, "wpn_knife")
-  elseif  has_alife_info("bar_arena_fight_2") then
-    table.insert(spawn_items, "wpn_mp5")
-    table.insert(spawn_items, "ammo_9x19_pbp")
-    table.insert(spawn_items, "wpn_knife")    
-  elseif  has_alife_info("bar_arena_fight_3") then
-    table.insert(spawn_items, "wpn_bm16")
-    table.insert(spawn_items, "ammo_12x70_buck")
-    table.insert(spawn_items, "ammo_12x70_buck")
-    table.insert(spawn_items, "wpn_knife")
-  elseif  has_alife_info("bar_arena_fight_4") then      
-    table.insert(spawn_items, "wpn_ak74")
-    table.insert(spawn_items, "ammo_5.45x39_ap")
-    table.insert(spawn_items, "ammo_5.45x39_ap")
-    table.insert(spawn_items, "wpn_knife")
-    table.insert(spawn_items, "bandage")
-    table.insert(spawn_items, "bandage")
-  elseif  has_alife_info("bar_arena_fight_5") then  
-    table.insert(spawn_items, "wpn_abakan")
-    table.insert(spawn_items, "ammo_5.45x39_ap")
-    table.insert(spawn_items, "ammo_5.45x39_ap")
-    table.insert(spawn_items, "ammo_5.45x39_ap")
-    table.insert(spawn_items, "wpn_knife")
-    table.insert(spawn_items, "bandage")
-    table.insert(spawn_items, "medkit")
-    table.insert(spawn_items, "svoboda_light_outfit")
-  elseif  has_alife_info("bar_arena_fight_6") then
-    table.insert(spawn_items, "wpn_groza")
-    table.insert(spawn_items, "ammo_9x39_ap")
-    table.insert(spawn_items, "ammo_9x39_ap")
-    table.insert(spawn_items, "ammo_9x39_ap")
-    table.insert(spawn_items, "wpn_knife")
-    table.insert(spawn_items, "grenade_f1")
-    table.insert(spawn_items, "specops_outfit")
-  elseif  has_alife_info("bar_arena_fight_7") then
-    table.insert(spawn_items, "wpn_knife")
-    table.insert(spawn_items, "bandage")
-    table.insert(spawn_items, "grenade_f1")
-    table.insert(spawn_items, "grenade_f1")
-    table.insert(spawn_items, "grenade_f1")
-    table.insert(spawn_items, "grenade_f1")
-  elseif  has_alife_info("bar_arena_fight_8") then
-    table.insert(spawn_items, "wpn_g36")
-    table.insert(spawn_items, "ammo_5.56x45_ap")
-    table.insert(spawn_items, "ammo_5.56x45_ap")
-    table.insert(spawn_items, "ammo_5.56x45_ap")
-    table.insert(spawn_items, "ammo_5.56x45_ap")
-    table.insert(spawn_items, "wpn_knife")
-  end
+	local spawn_items
+	for k, v in pairs(arena_equip) do
+		if has_alife_info(k) then
+			spawn_items = v.items
+			break
+		end
+	end
 
   for k,v in pairs(spawn_items) do
     alife():create(v, 
@@ -998,27 +1019,50 @@ function bar_arena_teleport ( actor, npc)
   
 end
 
-function bar_arena_weapon_slot ()
-  if  has_alife_info("bar_arena_fight_1") then  
-    db_actor:activate_slot(1)
-  else 
-    db_actor:activate_slot(2)
-  end
+function bar_arena_weapon_slot()
+	for k, v in pairs(arena_equip) do
+		if has_alife_info(k) then
+			reap.start_timer("db_actor:activate_slot(" .. v.slot .. ")", 240, timer_types.real)
+			break
+		end
+	end
 end
 
-function bar_arena_teleport_2 ( actor, npc)
+function bar_arena_teleport_2b()
+	xr_zones.purge_arena_items("bar_arena")
+	actor:set_actor_position(patrol("t_walk_2"):point(0))
+	local dir = patrol("t_look_2"):point(0):sub(patrol("t_walk_2"):point(0))
+	actor:set_actor_direction(-dir:getH())
+end
 
-    level.add_pp_effector ("blink.ppe", 234, false)       
-  
-    db_actor:set_actor_position(patrol("t_walk_2"):point(0))
-    local dir = patrol("t_look_2"):point(0):sub(patrol("t_walk_2"):point(0))
-    db_actor:set_actor_direction(-dir:getH())
-  
-  inv_box_2 = level_object_by_sid (574)
+local player_arena_item_ids
 
-  out_object = actor
-    in_object  = inv_box_2
-    actor:inventory_for_each(transfer_object_item) 
+local function log_inv_item(item)
+	player_arena_item_ids[#player_arena_item_ids + 1] = item:id()
+end
+
+function bar_arena_teleport_2_tp(actor)
+	level.add_pp_effector ("blink.ppe", 234, false)
+
+	actor:set_actor_position(vector():set(219.3,16,128.3))
+	actor:set_actor_direction(-vector():set(-1,0,0):getH())
+
+	reap.start_timer("xr_effects.bar_arena_teleport_2b()", 240, timer_types.real)
+end
+
+function bar_arena_teleport_2_box(actor)
+	player_arena_item_ids = {}
+	actor:inventory_for_each(log_inv_item)
+
+	local num_items = #player_arena_item_ids
+	for i = 1, num_items do
+		alife():release(alife():object(player_arena_item_ids[i]), false)
+	end
+end
+
+function bar_arena_teleport_2(actor, npc)
+	bar_arena_teleport_2_tp(actor)
+	bar_arena_teleport_2_box(actor)
 end
 
 function barman_give_extra_task (actor, npc)

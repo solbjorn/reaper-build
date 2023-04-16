@@ -1231,10 +1231,7 @@ function CArenaext:finish()
 	self:on_done_fight()
 
 	-- телепортация к Арни
-	level.add_pp_effector ("blink.ppe", 234, false)
-	actor:set_actor_position(patrol("t_walk_2"):point(0))
-	local dir = patrol("t_look_2"):point(0):sub(patrol("t_walk_2"):point(0))
-	actor:set_actor_direction(-dir:getH())
+	bar_arena_teleport_2_tp(actor)
 
 	-- ГГ покидает ряды торговцев
 	local community = xr_logic.pstor_retrieve(actor, "aem_cm")
@@ -1247,9 +1244,7 @@ function CArenaext:finish()
 	end
 
 	-- 'волшебный' ящичек
-	local box = level_object_by_sid(574)
-	-- возврат ГГ ранее отобранных вещей
-	get_items_from_box(box)
+	bar_arena_teleport_2_box(actor)
 
 	-- перезапуск логики рестриктов
 	actor:disable_info_portion("bar_arena_fight")
@@ -1342,8 +1337,6 @@ function CArenaext:close()
 		actor:disable_info_portion("aem_fight_foul")
 	end
 
-	-- чистка арены (если делать в finish, то есть глюки)
-	xr_zones.purge_arena_items("bar_arena")
 	-- сброс освещения после боя
 	--aem_lights.lights_reset()
 	aem_lights.remove_all_aem_lamps()
@@ -1954,23 +1947,6 @@ function put_items_to_box_exept(box, exept)
 				--printf(" section='%s'", obj:section())
 				actor:transfer_item(obj, box)
 			end
-		end
-	end
-end
-
--------
--- переносит все вещи из ящика в инвертарь ГГ
--- void get_items_from_box(game_object box)
-------
-function get_items_from_box(box)
-	--printf("get_items_from_box('%s')", box:name())
-	local obj
-	local ids = enum_box_items(box)
-	for i, id in pairs(ids) do
-		obj = level.object_by_id(id)
-		if obj ~= nil then
-			--printf(" section='%s'", obj:section())
-			box:transfer_item(obj, actor)
 		end
 	end
 end

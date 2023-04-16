@@ -40,3 +40,152 @@ function kill_online_controllers()
 	end
 	return kill_count
 end
+----------------------------------
+function on_add_actor(actor)
+	-- bardak's old fixes -- not needed for new games, but benign; fixes games in progress - reordered for less processing later in game
+	--' Включим гулаг кабанов на Свалке. По-хорошему надо исправлять
+	--' условия активации в логике рестриктора gar_boars_territory2.
+	if not has_alife_info("gar_kill_boars_done") and
+		has_alife_info("agroprom_military_case_done") then
+			actor:give_info_portion("gar_kill_boars_done")
+	end
+
+	-- fix "took wrong exit from Agroprom tunnels" (fixable via all.spawn change)
+	if not has_alife_info("agr_find_gunslinger_cache_final") and
+		has_alife_info ("agr_gunslinger_flash_have") and
+		level.name() ~= "l03u_agr_underground" then
+			actor:give_info_portion ("agr_find_gunslinger_cache_final")
+	end
+
+	-- deletion may not be 100% safe; possible xrGame.dll crashes when a fire-affected creature dies after fire removal
+	-- so we just disable them for now
+	if level.name() == "l06_rostok" then
+		if has_alife_info("yantar_scientists_talk") then
+			reap.start_timer("_z.disable_rostok_heli_fires()", 10, timer_types.real)
+		end
+	end
+end
+----------------------------------
+local rostok_heli_fires = {
+	["zone_flame_small_0005"] = true,
+	["zone_flame_small_0006"] = true,
+	["zone_flame_small_0007"] = true,
+	["zone_flame_small_0008"] = true,
+	["zone_flame_small_0010"] = true,
+	["zone_flame_0000"] = true, -- the three big ones
+	["zone_flame_0001"] = true,
+	["zone_flame_0002"] = true
+}
+
+function disable_rostok_heli_fires()
+	if level.name() ~= "l06_rostok" then return end
+	local clsid_fire = clsid.zone_mosquito_bald
+	local heli_fire_list = rostok_heli_fires
+	for id_ = 1, 10000, 1 do
+		local sobj = alife():object(id_)
+		if sobj ~= nil then
+			if sobj:clsid() == clsid_fire then
+				if heli_fire_list[sobj:name()] == true then
+					local lobj = level.object_by_id(id_)
+					if lobj ~= nil then
+						lobj:disable_anomaly()
+					end
+				end
+			end
+		end
+	end
+end
+
+----------------------------------
+-- Mr. Fusion's spot remover code
+local sticky_mapspots = {
+	["esc_flash_task"] = {
+		["2"] = {sid = 9, type = "green_location"},	-- Wolf's scouts
+		["3"] = {sid = 17, type = "green_location"},	-- Bandits at factory (kill)
+		["4"] = {sid = 4, type = "green_location"}	-- Nimble
+	},
+	["agroprom_find_gunslinger_cache"] = {
+		["3"] = {sid = 307, type = "green_location"}	-- "preferred" underground exit
+	},
+	["val_captive_help"] = {
+		["2"] = {sid = 400, type = "green_location"}	-- Dutyer to rescue in ambush
+	},
+	["yan_find_scientist"] = {
+		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+	},
+	["yan_find_scientist_semenov"] = {
+		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+	},
+	["yan_find_vasilyev_task"] = {
+		["2"] = {sid = 907, type = "green_location"}	-- lab entrance
+	},
+	["yan_kill_brain_task_2"] = {
+		["2"] = {sid = 921, type = "green_location"}	-- secret tunnel exit
+	},
+	["mil_kill_sniper"] = {
+		["2"] = {sid = 708, type = "blue_location"}	-- Skull (reward)
+	},
+	["mil_kill_lukash"] = {
+		["4"] = {sid = 707, type = "green_location"},	-- Lukash (kill)
+		["5"] = {sid = 774, type = "blue_location"}	-- Duty farmstead (reward)
+	},
+	["mil_mad_job"] = {
+		["2"] = {sid = 702, type = "blue_location"}	-- Max (reward)
+	},
+	["mil_lukash_job"] = {
+		["2"] = {sid = 708, type = "crlc_mdl"},		-- Skull (kill)
+		["3"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+	},
+	["mil_courier_job"] = {
+		["2"] = {sid = 710, type = "crlc_big"},		-- Pavlik (wait)
+		["3"] = {sid = 710, type = "green_location"},	-- Pavlik (kill)
+		["4"] = {sid = 719, type = "green_location"},	-- Pavlik's contact (kill)
+		["5"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+	},
+	["mil_blockpost_job"] = {
+		["2"] = {sid = 770, type = "crlc_big"}		-- Cap's barrier
+	},
+	["mil_freedom_rg6_task"] = {
+		["2"] = {sid = 728, type = "green_location"},	-- Cook
+		["3"] = {sid = 706, type = "green_location"}	-- Bulldog 6 in village
+	},
+	["bar_radar_deactivate"] = {
+		["2"] = {sid = 1005, type = "green_location"},	-- bunker entrance
+		["3"] = {sid = 1006, type = "green_location"}	-- radar switch
+	},
+	["cit_doctor_task"] = {
+		["2"] = {sid = 822, type = "green_location"}	-- hotel room with decoder
+	},
+	["rad_get_to_aes"] = {
+		["3"] = {sid = 830, type = "green_location"},	-- Stadium entrance
+		["4"] = {sid = 1102, type = "green_location"}	-- Sarcophagus entrance
+	},
+	["sar_monolith"] = {
+		["2"] = {sid = 1300, type = "green_location"}	-- Monolith
+	},
+	["sar_secret_lab"] = {
+		["2"] = {sid = 1303, type = "green_location"}	-- C-Con lab door
+	}
+}
+
+local task_mapspot_queue = {}
+
+function delayed_mapspot_removal()
+	for k,v in pairs(task_mapspot_queue) do
+		level_tasks.remove_location_safe(v.sid, v.type)
+	end
+	task_mapspot_queue = {}
+end
+
+function task_mapspot_cleanup(task_id, objective, status)
+	local task_needs_cleanup = sticky_mapspots[task_id]
+	if task_needs_cleanup then
+		local objective_needs_cleanup = task_needs_cleanup[tostring(objective)]
+		if objective_needs_cleanup then
+			if status == task.completed or status == task.fail then
+				task_mapspot_queue[#task_mapspot_queue+1] = objective_needs_cleanup
+				reap.start_timer("_z.delayed_mapspot_removal()", 10, timer_types.real)
+			end
+		end
+	end
+end

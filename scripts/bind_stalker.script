@@ -298,6 +298,7 @@ end
 
 function actor_binder:task_callback(_task, _objective, _state)
   task_manager.task_callback(_task:get_id(), _objective:get_idx(), _state)
+	_z.task_mapspot_cleanup(_task:get_id(), _objective:get_idx(), _state)
   if _objective:get_idx() == 0 then
     if _state == task.fail then
       news_manager.send_task(db_actor, "fail", _task, _objective)
