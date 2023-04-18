@@ -179,6 +179,7 @@ function init_clsids()
 	clsid_bloodsucker_s = clsid.bloodsucker_s
 	clsid_snork_s = clsid.snork_s
 	clsid_zombie_s = clsid.zombie_s
+	clsid_rat_s = clsid.rat_s
 
 	clsid_wpn_ak74_s = clsid.wpn_ak74_s
 	clsid_wpn_bm16_s = clsid.wpn_bm16_s
@@ -259,7 +260,7 @@ end
 --// ▀ты хЄё  ыш юbj ьюэёЄЁюь
 function is_object_monster(obj)
 	local otype = (obj and obj:clsid()) or 0
-	return (otype >= clsid_bloodsucker_s and otype <= clsid_zombie_s) or otype == clsid_crow
+	return (otype >= clsid_bloodsucker_s and otype <= clsid_zombie_s) or otype == clsid_rat_s or otype == clsid_crow
 end
 
 --возвращает произвольную точку пути у которой установлен бит
@@ -361,7 +362,7 @@ end
 -------------------------------------------------------------------------------------------
 function IsMonster (object, class_id)
 	local id = class_id or (object and object:clsid()) or 0
-	return id >= clsid_bloodsucker_s and id <= clsid_zombie_s
+	return (id >= clsid_bloodsucker_s and id <= clsid_zombie_s) or id == clsid_rat_s
 end
 -------------------------------------------------------------------------------------------
 function IsStalker (object, class_id)
