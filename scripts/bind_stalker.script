@@ -26,6 +26,8 @@ function actor_binder:__init (obj) super(obj)
   self.bCheckStart = false
   self.actor_detector = xr_detector.actor_detector()
   self.freeplay_stats = xr_statistic_freeplay.get_freeplay_statistic()
+
+	self.in_rad_zone = false
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
@@ -403,7 +405,8 @@ function actor_binder:update(delta)
     inventory.update()
 
     -- TAG Хлеб и колбаса портятся от радиации
-    if self.object.radiation>0.4 and (self.object:object("bread") or self.object:object("kolbasa")) then
+	if self.object.radiation > 0.4 and self.in_rad_zone == false then
+		if (self.object:object("bread") or self.object:object("kolbasa")) then
        local need_say = false
        self.object:iterate_inventory(function (dummy,item)  
                                   if item:section()=="bread" and math.random() <= self.object.radiation then
@@ -419,7 +422,12 @@ function actor_binder:update(delta)
       if need_say then 
           amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)    
       end 
-    end
+		end
+
+		self.in_rad_zone = true
+	elseif self.object.radiation < 0.3 and self.in_rad_zone == true then
+		self.in_rad_zone = false
+	end
 
   if self.freeplay_stats ~= nil then
         self.freeplay_stats:check_actor_money()
@@ -531,6 +539,7 @@ function actor_binder:save_old(packet)
     self.freeplay_stats:save(packet)
 
 	sa_callbacks.actor_save(packet)
+	packet:w_bool(self.in_rad_zone)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
@@ -591,6 +600,7 @@ function actor_binder:load(reader)
   end
 
 	sa_callbacks.actor_load(reader)
+	self.in_rad_zone = reader:r_bool()
 end
 ----------------------------------------------------------------------------------------------------------------------
 
