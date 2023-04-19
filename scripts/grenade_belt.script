@@ -1,0 +1,131 @@
+--[[-----------------------------------------------------------------------------------------------
+ File              : belt_grenade.script
+ Description       : Гранатометание с пояса
+ Created           : 10.11.2010
+ Lasd edit         : 25.07.2011
+ Copyright         : Charsi
+--]]-----------------------------------------------------------------------------------------------
+
+local grenades = {
+["grenade_f1"]=true,
+["grenade_rgd5"]=true,
+["grenade_gd-05"]=true
+}
+local grenades_on_belt = {}
+local grenades_1 = {}
+for k,v in pairs(grenades) do
+	grenades_1[k.."_1"] = true
+end
+local fake_grenades = {}
+for k,v in pairs(grenades) do
+	fake_grenades["fake_"..k] = k
+end
+
+local need_convert = true
+local hide_wpn = false
+
+function on_item_ruck(obj)
+	local sect = obj:section()
+
+	if grenades[sect] and need_convert == true then
+		del_item(obj:id())
+		spawn_in_inv("fake_"..sect)
+	elseif grenades_1[sect] and not grenades_on_belt[obj:id()] then
+		del_item(obj:id())
+	end
+end
+
+function on_item_belt(obj)
+	local sect = obj:section()
+	if grenades[sect] and need_convert == true then
+		hide_wpn = db_actor:active_slot() ~= 3
+		if hide_wpn == true then
+			bind_stalker.hide_weapon()
+		end
+
+		grenades_on_belt[spawn_in_inv(sect .. "_1")] = obj:id()
+
+		if hide_wpn == true then
+			bind_stalker.restore_weapon()
+			hide_wpn = false
+		end
+	end
+end
+
+function on_item_slot(obj)
+	if grenades_1[obj:section()] and not grenades_on_belt[obj:id()] then
+		db_actor:move_to_ruck(obj)
+	end
+end
+
+function on_item_drop(obj)
+	local id = grenades_on_belt[obj:id()]
+	if id and has_alife_info("ui_inventory_hide") and not has_alife_info("ui_car_body") and not db.actor:is_talking() then
+		grenades_on_belt[obj:id()] = nil
+		del_item(id)
+	end
+end
+
+function on_info(info_id)
+	if info_id=="ui_inventory" or info_id=="ui_car_body" or info_id=="ui_trade" then
+		need_convert = false
+		hide_wpn = db_actor:active_slot() ~= 3
+		if hide_wpn == true then
+			bind_stalker.hide_weapon()
+		end
+
+		local sect
+		db_actor:iterate_inventory(
+			function(dummy,item)
+				sect = item:section()
+				if grenades_1[sect] then
+					del_item(item:id())
+				elseif fake_grenades[sect] then
+					del_item(item:id())
+					spawn_in_inv(fake_grenades[sect])
+				end
+			end
+		)
+		grenades_on_belt={}
+	elseif info_id=="ui_inventory_hide" or info_id=="ui_car_body_hide" or info_id=="ui_trade_hide" then
+		need_convert = true
+		local sect
+		db_actor:iterate_inventory(
+			function(dummy,item)
+				sect = item:section()
+				if grenades[sect] and not db_actor:is_on_belt(item) then
+					del_item(item:id())
+					spawn_in_inv("fake_"..sect)
+				end
+			end
+		)
+		update_tbl()
+
+		if hide_wpn == true then
+			bind_stalker.restore_weapon()
+			hide_wpn = false
+		end
+	end
+end
+
+function update_tbl()
+	local sect
+	for id,v in pairs (inventory.belt_id) do
+		sect=level.object_by_id(id):section()
+		if grenades[sect] then
+			grenades_on_belt[spawn_in_inv(sect.."_1")]=id
+		end
+	end
+end
+
+function spawn_in_inv(sec)
+	local obj = alife():create(sec,db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),0)
+	return obj.id
+end
+
+function del_item(id)
+	local sobj=alife():object(id)
+	if sobj then
+		alife():release(sobj,true)
+	end
+end

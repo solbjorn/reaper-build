@@ -1,0 +1,84 @@
+local ammo_fake_types = {}
+local need_convert = true
+
+for k,v in pairs(ammo_section) do
+	ammo_fake_types[k .. "_fake"] = k
+end
+
+function on_info(info_id)
+	if info_id == "ui_inventory" or info_id == "ui_trade" or info_id == "ui_car_body" then
+        on_inventory_open()
+    elseif info_id == "ui_inventory_hide" or info_id == "ui_trade_hide" or info_id == "ui_car_body_hide" then
+        on_inventory_close()
+    end
+end
+
+function on_inventory_open()
+	need_convert = false
+	local t = {}
+	local sim = alife()
+	db.actor:iterate_inventory(
+		function(npc,item)
+			local sect = item:section()
+			if ammo_fake_types[sect] then
+				t[ammo_fake_types[sect]] = get_ammo_size(item) + (t[sect] or 0)
+				sim:release(sim:object(item:id()), true)
+			end
+		end
+	)
+	for sec, num in pairs(t) do
+		spawn_ammo_in_inv(sec, num)
+	end
+end
+
+function on_inventory_close()
+	need_convert = true
+	local sim = alife()
+	local t = {}
+	db.actor:iterate_inventory(
+		function(npc,item)
+			local sect = item:section()
+			if ammo_section[sect] and db_actor:is_in_ruck(item) then
+				t[sect .. "_fake"] = get_ammo_size(item) + (t[sect] or 0)
+				sim:release(sim:object(item:id()), true)
+			end
+		end
+	)
+	for sec, num in pairs(t) do
+		spawn_ammo_in_inv(sec, num)
+	end
+end
+
+function on_item_ruck(item)
+	local section = item:section()
+	if ammo_section[section] and need_convert == true then
+		local cnt = get_ammo_size(item)
+		if cnt > 0 then
+			local sim = alife()
+			sim:release(sim:object(item:id()),true)
+			spawn_ammo_in_inv(section.."_fake",cnt)
+		end
+	end
+end
+
+-- возвращает количество патронов в пачке
+function get_ammo_size(obj)
+	local se_obj = alife():object(obj:id())
+	if se_obj == nil then return 0 end
+	local packet = net_packet()
+	cse_alife_item_ammo.STATE_Write(se_obj,packet)
+	packet:r_seek(packet:w_tell()-2)
+	return packet:r_u16()
+end
+
+function spawn_ammo_in_inv(spawn_item,number,npc)
+	if npc == nil then npc = db.actor end
+	if number > 0 then
+		return se_respawn.create_ammo(spawn_item,
+							  npc:position(),
+							  npc:level_vertex_id(),
+							  npc:game_vertex_id(),
+							  npc:id(),
+							  number)
+	end
+end

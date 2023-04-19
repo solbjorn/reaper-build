@@ -21,6 +21,8 @@ end
 function on_item_belt(item)
 	insert_to_table(item:section())
 	belt_id[item:id()] = item
+
+	grenade_belt.on_item_belt(item)
 end
 
 function on_item_ruck(item)
@@ -28,6 +30,9 @@ function on_item_ruck(item)
 		remove_from_table(item:section())
 		belt_id[item:id()] = nil
 	end
+
+	ammo_belt.on_item_ruck(item)
+	grenade_belt.on_item_ruck(item)
 end
 
 function on_item_slot(item)
@@ -35,6 +40,8 @@ function on_item_slot(item)
 		remove_from_table(item:section())
 		belt_id[item:id()] = nil
 	end
+
+	grenade_belt.on_item_slot(item)
 end
 
 -- Выброс предмета
@@ -43,8 +50,12 @@ function on_item_drop(item)
 		remove_from_table(item:section())
 		belt_id[item:id()] = nil
 	end
+
+	grenade_belt.on_item_drop(item)
 end
 
 -- Открытие/закрытие инвентаря
 function on_inventory_info(info_id)
+	ammo_belt.on_info(info_id)
+	grenade_belt.on_info(info_id)
 end
