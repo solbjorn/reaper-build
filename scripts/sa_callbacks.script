@@ -32,6 +32,9 @@ function actor_hit(obj, amount, local_direction, who, bone_index)
 end
 ---------------------------------------------------------------------------------------------------
 function item_take(obj)
+	if device().precache_frame == 0 then
+		sa_inventory_items_mgr.artefacts_statistic(obj)
+	end
 end
 ---------------------------------------------------------------------------------------------------
 local belt_obj_by_id = {}

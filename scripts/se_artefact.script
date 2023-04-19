@@ -12,6 +12,7 @@ function se_artefact:__init (section) super (section)
     else
        self.is_day_night = false
     end 
+    self.already_taken = false
 end
 --------------------
 function se_artefact:can_switch_offline ()
@@ -54,5 +55,21 @@ function se_artefact:can_switch_online ()
        end
        return true -- актер далеко - в онлайн.
     end   
+end
+--------------------
+function se_artefact:STATE_Write(packet)
+    cse_alife_item_artefact.STATE_Write(self, packet)
+
+    packet:w_bool(self.already_taken)
+end
+--------------------
+function se_artefact:STATE_Read(packet, size)
+    cse_alife_item_artefact.STATE_Read(self, packet, size)
+
+    if packet:r_eof() then
+      return
+    end
+
+    self.already_taken = packet:r_bool()
 end
 --------------------

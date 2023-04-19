@@ -15,6 +15,10 @@ local artefact_clsid = {    [clsid.art_bast_artefact] = true,
                             [clsid.artefact] = true,
                             [clsid.artefact_s] = true                      
                     }
+local artefact_exceptions = {
+	bio		= true,
+	bioradar	= true
+}
 local found_artefact_sections = {}
 
 class "freeplay_statistic"
@@ -345,7 +349,9 @@ function freeplay_statistic:check_actor_rank()
 end
 
 function freeplay_statistic:check_found_item(obj)
-  if obj:section() == "device_pda_rank" then
+	local sect = obj:section()
+
+  if sect == "device_pda_rank" then
     self:check_found_pda_count()
     local pda = alife():object(obj:id())
     alife():release(pda, true)
@@ -356,10 +362,9 @@ function freeplay_statistic:check_found_item(obj)
 	return
   end
 
-  if artefact_clsid[obj:clsid()] ~= nil and found_artefact_sections[obj:section()] ~= true then
+  if artefact_clsid[obj:clsid()] ~= nil and not artefact_exceptions[sect] and found_artefact_sections[sect] ~= true then
       self:check_found_artefact_count(obj:cost())
-      actor_stats.add_points("artefacts", "st_pda_artefacts", 1, 1)
-      found_artefact_sections[obj:section()] = true
+      found_artefact_sections[sect] = true
   end
 end
 

@@ -330,7 +330,7 @@ function btn_take_art(slot)
     _menu:UpdateMenu()
     
     -- спавн арта
-    arc.give_item(arc_arts.get_art_section(a))
+    g_alife:object((arc.give_item(arc_arts.get_art_section(a))).id).already_taken = true
     
     arc_arts.register_artefact(arc_arts.get_art_section(a),-1,true)
 	
