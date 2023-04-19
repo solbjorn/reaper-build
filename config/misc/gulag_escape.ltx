@@ -1763,8 +1763,7 @@ path_walk = walk_wait1
 path_look = look_wait1
 on_info = {+esc_bandits_start} walker@esc_assault1_wait
 danger = danger_condition@esc_assault
-meet = no_meet
-show_spot = false 
+meet = meet@neutral
 
 [walker@esc_assault1_wait]
 path_walk = walk_syn2
@@ -1794,8 +1793,7 @@ path_walk = walk_wait2
 path_look = look_wait2
 danger = danger_condition@esc_assault
 on_info = {+esc_bandits_start} walker@esc_assault2_wait
-meet = no_meet
-show_spot = false 
+meet = meet@neutral
 
 [walker@esc_assault2_wait]
 path_walk = walk_syn2
@@ -1949,7 +1947,7 @@ on_death = death@petruha_friend
 
 [kamp@esc_assault_home2]
 center_point = kamp_center1
-on_info = {+esc_petruha_die -esc_petruha_report2 -esc_report_send} remark@esc_assault_home1
+on_info = {+esc_petruha_die -esc_petruha_report2 -esc_report_send} remark@esc_assault_home2
 
 [remark@esc_assault_home2]
 path_walk = escape_factory_return_path
@@ -1962,7 +1960,7 @@ on_actor_dist_ge_nvis = 20 | remark@esc_assault_home22 %+esc_petruha_report2%
 path_walk = escape_factory_return_path
 anim = guard_rac
 snd = esc_petruha_raport
-on_signal = sound_end| kamp@esc_assault_home1 %+esc_report_send%
+on_signal = sound_end| kamp@esc_assault_home2 %+esc_report_send%
 meet = no_meet
 tips = tip_petruha_report
 danger = danger_condition@esc_assault

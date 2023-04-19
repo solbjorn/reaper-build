@@ -1747,7 +1747,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
         end
 
         if task_desc.reward_reputation ~= nil then
-					db_actor:change_character_reputation(db_actor:character_reputation() + task_desc.reward_reputation)
+					db_actor:change_character_reputation(task_desc.reward_reputation)
         end
 
         if task_desc.reward_relation ~= nil then
@@ -1781,7 +1781,7 @@ function CRandomTask:task_reward_storyline(task)
   end
 
   if task_desc.reward_reputation ~= nil then
-		db_actor:change_character_reputation(db_actor:character_reputation() + task_desc.reward_reputation)
+		db_actor:change_character_reputation(task_desc.reward_reputation)
   end
 
   if task_desc.reward_relation ~= nil then

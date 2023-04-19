@@ -383,14 +383,14 @@ function keep_item(npc, item)
     if item_in_slot ~= nil and item_in_slot:id() == item_id then
         item:unload_magazine()
                 --' Тут надо уменьшить кондишн оружия
-                item:set_condition((math_random(90-kond)+kond)/100)
+                item:set_condition((math_random(90-kond)+kond)*item:condition()/100)
         return true
     end
     item_in_slot = npc:item_in_slot(2)
     if item_in_slot ~= nil and item_in_slot:id() == item_id then
         item:unload_magazine()
                 --' Тут надо уменьшить кондишн оружия
-                item:set_condition((math_random(95-kond)+kond)/100)
+                item:set_condition((math_random(95-kond)+kond)*item:condition()/100)
         return true
     end
 end

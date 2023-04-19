@@ -21,7 +21,7 @@ function action_territory:hit_callback(obj, amount, local_direction, who, bone_i
 		return
 	end	
   xr_logic.pstor_store(obj,"wasenemy",false) -- выстрел в нейтрала или друга. запомним
-	xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.territory_hit)
+	xr_logic.pick_section_from_condlist(db_actor, obj, self.st.territory_hit)
 end
 function action_territory:death_callback(victim, who)
 	if who:id() ~= db_actor_id then
@@ -30,7 +30,7 @@ function action_territory:death_callback(victim, who)
   if xr_logic.pstor_retrieve(victim,"wasenemy",true) then
     return -- ГГ убил врага. Не будем обижаться
   end
-	xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.territory_death)
+	xr_logic.pick_section_from_condlist(db_actor, victim, self.st.territory_death)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -50,17 +50,10 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
 
 	local tmp = utils.cfg_get_string(ini, section, "territory_hit", obj, false, "")
-	if tmp then
-		st.territory_hit = xr_logic.parse_condlist_q(tmp)
-	else
-		st.territory_hit = xr_logic.parse_condlist_q("")
-	end
+	st.territory_hit = xr_logic.parse_condlist_q(tmp or "")
+
 	tmp = utils.cfg_get_string(ini, section, "territory_death", obj, false, "")
-	if tmp then
-		st.territory_death = xr_logic.parse_condlist_q(tmp)
-	else
-		st.territory_death = xr_logic.parse_condlist_q("")
-	end
+	st.territory_death = xr_logic.parse_condlist_q(tmp or "")
 end
 
 function issue_event(npc, type_, ...)
