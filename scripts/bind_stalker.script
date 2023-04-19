@@ -91,10 +91,12 @@ function actor_binder:net_destroy()
   self.object:set_callback(callback.level_border_enter, nil)
   self.object:set_callback(callback.level_border_exit, nil)
   self.object:set_callback(callback.take_item_from_box, nil)
-	self.object:set_callback(callback.death, nil)
 	self.object:set_callback(callback.hit, nil)
+	self.object:set_callback(callback.death, nil)
 	self.object:set_callback(callback.on_item_belt, nil)
 	self.object:set_callback(callback.on_item_ruck, nil)
+	self.object:set_callback(callback.on_item_slot, nil)
+	self.object:set_callback(callback.drop_item_from_inventory, nil)
 	self.object:set_callback(callback.hit_effector, nil)
 	self.object:set_callback(callback.before_hit, nil)
 
@@ -128,17 +130,14 @@ function actor_binder:reinit()
   self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
   self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
   self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
-	self.object:set_callback(callback.death, self.on_death, self)
 	self.object:set_callback(callback.hit, self.hit_callback, self)
+	self.object:set_callback(callback.death, self.death_callback, self)
 	self.object:set_callback(callback.on_item_belt, self.on_item_belt, self)
 	self.object:set_callback(callback.on_item_ruck, self.on_item_ruck, self)
+	self.object:set_callback(callback.on_item_slot, self.on_item_slot, self)
+	self.object:set_callback(callback.drop_item_from_inventory, self.drop_item_from_inventory, self)
 	self.object:set_callback(callback.hit_effector, self.hit_effector_callback, self)
 	self.object:set_callback(callback.before_hit, self.before_hit_callback, self)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_death(object, who)
-	_z.kill_online_controllers()
-	level.enable_input()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
@@ -234,7 +233,7 @@ function actor_binder:on_item_take (obj)
 	end 
 
   --AMK UTILS--
-  inventory.on_item_take(item)
+
 spawn_zombi.checking_taken_item(obj)
 spawn_zombi.checking_taken_item2(obj)
 spawn_zombi.checking_taken_item3(obj)
@@ -255,6 +254,8 @@ spawn_zombi.checking_taken_item17(obj)
 spawn_zombi.checking_taken_item18(obj)
 spawn_teleport.checking_taken_item19(obj)
 spawn_teleport.checking_taken_item20(obj)
+
+	sa_callbacks.item_take(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop (obj)
@@ -274,11 +275,17 @@ spawn_level_changer.checking_droped_item(obj)
 spawn_level_changer.checking_droped_item2(obj)
 spawn_level_changer.checking_droped_item3(obj)
 spawn_level_changer.checking_droped_item4(obj)
-end
 
+	sa_callbacks.item_drop(obj)
+end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 	sa_callbacks.actor_hit(obj, amount, local_direction, who, bone_index)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:death_callback(victim, who)
+	_z.kill_online_controllers()
+	level.enable_input()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_belt(obj)
@@ -287,6 +294,14 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_ruck(obj)
 	sa_callbacks.item_ruck(obj)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_slot(obj)
+	sa_callbacks.item_slot(obj)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:drop_item_from_inventory(obj)
+	sa_callbacks.item_drop_from_inventory(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:hit_effector_callback(mob_type, side)
@@ -401,8 +416,6 @@ function actor_binder:update(delta)
   if sr_psy_antenna.psy_antenna then
     sr_psy_antenna.psy_antenna:update(delta)
   end
-
-    inventory.update()
 
     -- TAG Хлеб и колбаса портятся от радиации
 	if self.object.radiation > 0.4 and self.in_rad_zone == false then
