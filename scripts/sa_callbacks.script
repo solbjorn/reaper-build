@@ -50,9 +50,11 @@ function item_drop_from_inventory(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_drop_from_belt(obj)
+	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_belt(obj)
+	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
 	if db_actor:belt_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
@@ -61,6 +63,7 @@ function item_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_ruck(obj)
+	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
 	if db_actor:ruck_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
 	end

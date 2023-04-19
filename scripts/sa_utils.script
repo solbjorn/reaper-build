@@ -25,6 +25,10 @@ function _G.set_ammo_data(obj, param, value)
 		end
 	end
 end
+---------------------------------------------------------------------------------------------------
+function _G.set_inventory_item_flag(obj, mask, value)
+	obj:set_inventory_item_int16(132, flags16():assign(obj:get_inventory_item_int16(nil, 132)):set(mask, value):get())
+end
 --[[-----------------------------------------------------------------------------------------------
  * Sounds
 --]]-----------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@
  Last edit    : 18.02.2019
 ---------------------------------------------------------------------------------------------------
  * Описание нововведений
+ - ограничение количества артефактов на поясе
  - статистика добытых артефактов
  - перепаковщик неполных пачек патронов (рюкзак и пояс)
 --]]-----------------------------------------------------------------------------------------------
@@ -17,6 +18,31 @@ local not_art = {
 ---------------------------------------------------------------------------------------------------
 function is_true_art(obj)
 	return obj:is_artefact() and not not_art[obj:section()]
+end
+---------------------------------------------------------------------------------------------------
+local max_belt_af = read_line("inventory", "max_belt_af")
+--[[-----------------------------------------------------------------------------------------------
+ * Limit artefacts number on belt
+--]]-----------------------------------------------------------------------------------------------
+function update_artefacts_belt_lock(obj)
+	if is_true_art(obj) then
+		local af_count = 0
+		db_actor:iterate_inventory(
+			function(dummy, obj)
+				if is_true_art(obj) and db_actor:is_on_belt(obj) then
+					af_count = af_count + 1
+				end
+			end
+		)
+		local lock = af_count >= max_belt_af
+		db_actor:iterate_inventory(
+			function(dummy, obj)
+				if is_true_art(obj) and db_actor:is_in_ruck(obj) then
+					set_inventory_item_flag(obj, inventory_item_flags.belt, not lock)
+				end
+			end
+		)
+	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * Artefacts statistic
