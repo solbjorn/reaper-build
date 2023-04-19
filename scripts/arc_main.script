@@ -9,7 +9,7 @@ function lose_item(obj)
     if obj_sect == "arc_ballast" then
       arc_ballast.on_lose_ballast(obj)
     end
-  elseif obj_clsid == clsid.artefact then -- 39
+  elseif obj:is_artefact() then
     arc_arts.register_artefact(obj_sect, -1)
   elseif obj_clsid == clsid.obj_antirad then
     if obj_sect=="arc_art_box_basic" then
@@ -33,7 +33,7 @@ function get_item(obj)
     if obj_sect == "arc_ballast" then
       arc_ballast.on_get_ballast(obj)
     end
-  elseif obj_clsid == clsid.artefact then -- 39
+  elseif obj:is_artefact() then
     arc_arts.register_artefact(obj_sect, 1)
   elseif obj_clsid == clsid.obj_antirad then -- 65
     if obj_sect=="arc_art_box_basic" then

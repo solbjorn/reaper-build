@@ -43,9 +43,9 @@ function register_artefact(art_section, number, in_container)
     local ini = system_ini()
 
     if ini:section_exist(art_section) then
-      local class = ini:r_clsid(art_section, "class")
+      local class = ini:r_string(art_section, "class")
 
-      if class == clsid.artefact then -- clsid.artefact == 39. (кроме af_electra_*)
+      if class == "SCRPTART" then
         local tmp = {}
 
         tmp.section = art_section
