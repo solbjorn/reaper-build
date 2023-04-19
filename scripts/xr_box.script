@@ -5,9 +5,6 @@ local item_by_community = {}
 local mul_by_level = {}
 local count_by_level = {}
 
---' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
-local ammo_sections = {}
-
 local ready = nil
 
 local string_gfind = string.gfind
@@ -67,13 +64,6 @@ function full_init()
 
 		count_by_level[id] = {min = min, max = max}
 	end        
-	--' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
-	ammo_sections = {}
-	n = death_ini:line_count("ammo_sections")
-	for i=0,n-1 do
-		result, id, value	= death_ini:r_line("ammo_sections",i,"","")
-		ammo_sections[id] = true
-	end
 end
 
 local math_random = math.random
@@ -172,7 +162,7 @@ end
 function create_items(obj, section, number, rnd)
 	local pos, lvid, gvid
 	local x,y,z
-	if ammo_sections[section] == true then
+	if ammo_section[section] == true then
 		if math_random(1000) <= rnd then
 			local left, box_size = number, system_ini():r_u32(section, "box_size")
 			lvid = obj:level_vertex_id()

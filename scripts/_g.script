@@ -479,6 +479,8 @@ end
 
 function start_game_callback()
 	init_clsids()
+	fill_ammo_section()
+
 	g_alife = alife()
 
   task_manager.clear_task_manager()
@@ -490,4 +492,17 @@ function start_game_callback()
   amk.on_game_start(obj)
   amk_utils.start_game()
   --AMK UTILS--
+end
+
+ammo_section = { }
+
+function fill_ammo_section()
+	local ini = ini_file("misc\\death_generic.ltx")
+
+	local n = ini:line_count("ammo_sections")
+	local result, id, value
+	for i = 0, n - 1 do
+		result, id, value = ini:r_line("ammo_sections", i, "", "")
+		ammo_section[id] = true
+	end
 end

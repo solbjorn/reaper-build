@@ -54,9 +54,6 @@ local dead_portion_names = {
 ["naem_zahar6"] = true
 }
 
---' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
-local ammo_sections = {}
-
 local math_ceil   = math.ceil
 local math_random = math.random
 
@@ -138,13 +135,6 @@ function init_drop_settings()
             always_keep_item[id] = true
         end
     end
-
-        --' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
-    n = death_ini:line_count("ammo_sections")
-        for i=0,n-1 do
-                result, id, value        = death_ini:r_line("ammo_sections",i,"","")
-        ammo_sections[id] = true
-        end
 end
 
 class "drop_manager"
@@ -191,7 +181,7 @@ function drop_manager:create_release_item()
 			number = math_ceil(math_random(count_by_level[k].min, count_by_level[k].max))
 			--' Необходимо заспавнить нужное количество.
 			if number > 0 then
-				if ammo_sections[k] == true then
+				if ammo_section[k] == true then
 					if number > 0 then
 						local num_in_box = system_ini():r_u32(k, "box_size")
 						while number > num_in_box do
@@ -366,7 +356,7 @@ function keep_item(npc, item)
 		return false
 	end
 
-	if always_offs_items[section] or ammo_sections[section] then
+	if always_offs_items[section] or ammo_section[section] then
 		alife():release(sobj, true)
 		return false
 	end

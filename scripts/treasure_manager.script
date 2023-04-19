@@ -198,7 +198,6 @@ experienced_section = {
 }
 
 local treasure_manager = nil
-local ammo_sections = {}
 local math_random = math.random
 local n_rank
 
@@ -303,13 +302,6 @@ function CTreasure:__init()
 	self.treasure_by_target = {}
 	for k,v in pairs(self.treasure_info) do
 		self.treasure_by_target[v.target] = k
-	end
-
-	self_ini = ini_file("misc\\death_generic.ltx")
-	n = self_ini:line_count("ammo_sections")
-	for i = 0, n - 1 do
-		result, id, value = self_ini:r_line("ammo_sections", i, "", "")
-		ammo_sections[id] = true
 	end
 end
 
@@ -443,7 +435,7 @@ function CTreasure:give_treasure(k, hide)
 		gvid = obj.m_game_vertex_id
 		pid = obj.id
 		for kk,vv in pairs(v.items) do
-			if ammo_sections[vv.section] == true then
+			if ammo_section[vv.section] == true then
 				left, box_size = vv.prob, system_ini():r_u32(vv.section, "box_size")
 				while left > box_size do
 					g_alife:create_ammo(vv.section, pos, lvid, gvid, pid, box_size)
@@ -593,7 +585,7 @@ function CTreasure:give_item_list()
    end	 
   
   -- установка кол-ва предметов в зависимости от секции  
-   if ammo_sections[spawn.section] == true then
+   if ammo_section[spawn.section] == true then
       local ini = system_ini()
       local num_in_box = ini:r_u32(spawn.section, "box_size")
       local h = math_random(1, 5)
