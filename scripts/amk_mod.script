@@ -156,7 +156,7 @@ function get_weather_sect(lname)
 	if weather_types[lname] == 1 then
 		return get_weather(lname)
 	elseif weather_types[lname] == 2 then
-		return dynweather_types[lname].."_"..get_weather(lname)
+		return dynweather_types[lname] .. "_" .. get_weather(lname) .. get_moon_phase()
 	end
 
 	local dynw = amk.load_variable("dynweather", nil)
@@ -1040,11 +1040,12 @@ function Blowout_pp(phase)
 		if bt<1 then
 			local snd_obj = xr_sound.get_safe_sound_object([[anomaly\teleport_work2]])
 			snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-		
-			level.set_weather(dynweather_types[level.name()].."_groza_groza_"..level.get_time_hours())
+
+			local sect = "groza_groza_" .. level.get_time_hours() .. get_moon_phase()
+			level.set_weather(dynweather_types[level.name()] .. "_" .. sect)
 			amk.save_variable("dynw","groza")
 			amk.save_variable("dynlasthour", level.get_time_hours())
-			amk.save_variable("dynweather", "groza_groza_"..level.get_time_hours())
+			amk.save_variable("dynweather", sect)
 		end
 		amk.del_variable("blowout")
 -- TAG --
@@ -2469,6 +2470,36 @@ local dynweathers = {
 	}
 }
 
+function get_moon_phase()
+	local Y, M, D, h, m, s, ms = game.get_game_time():get(Y, M, D, h, m, s, ms)
+
+	if h > 4 and h < 23 then return "" end
+
+	local months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+	local math_mod = math.mod
+	local day = D
+
+	for yy = 1, Y - 2012 do
+		day = day + ((math_mod(yy - 1, 4) == 0 and 366) or 365)
+	end
+	for mm = 1, M - 1 do
+		day = day + months[mm]
+	end
+	if math_mod(Y, 4) == 0 and M > 2 then
+		day = day + 1
+	end
+	if h >= 12 then
+		day = day + 1
+	end
+
+	local phase = math_mod(day, 14) + 1
+	if phase < 10 then
+		return "_ph_0" .. phase
+	else
+		return "_ph_" .. phase
+	end
+end
+
 function weather_manager()
 	if sync_done==false then return end
 	local hour = level.get_time_hours()
@@ -2479,24 +2510,24 @@ function weather_manager()
 		local dynw = amk.load_variable("dynw", "pasmurno")
 		local dynw_type = dynweather_types[level.name()]
 		for k,v in pairs(dynweathers[dynw_type][dynw]) do
-			if rnd<=v then 
+			if v > 0 and rnd <= v then 
 				next_weather=k 
 				break
 			end
 			rnd=rnd-v
 		end
 		local bt=blowout_type()
+		local sect = dynw .. "_" .. next_weather .. "_" .. hour .. get_moon_phase()
 		if (amk.load_variable("blowout",0)==0 and bt<1) or level.name()==0 then 
-			level.set_weather(dynw_type.."_"..dynw.."_"..next_weather.."_"..hour)
+			level.set_weather(dynw_type .. "_" .. sect)
 		end
-		amk.mylog(hour.." "..dynw.."->"..next_weather)
 		if (news_main and news_main.on_weather_change) then
 			news_main.on_weather_change(dynw, next_weather)	
 		end
-		
+
 		amk.save_variable("dynw",next_weather)
 		amk.save_variable("dynlasthour",hour)
-		amk.save_variable("dynweather", dynw.."_"..next_weather.."_"..hour)
+		amk.save_variable("dynweather", sect)
 	end
 end
 
