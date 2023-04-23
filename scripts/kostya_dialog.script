@@ -133,13 +133,13 @@ end
 
 function kostya_art2_have(task, objective)
 if db.actor ~= nil then
-return db.actor:object("af_electra_moonlight") ~= nil
+return db.actor:object("af_dummy_battery") ~= nil
 end
 return false
 end
 
 function kostya_art2_done(first_speaker, second_speaker)
-dialogs.relocate_item_section(second_speaker, "af_electra_moonlight", "out")
+dialogs.relocate_item_section(second_speaker, "af_dummy_battery", "out")
 end
 
 
@@ -160,17 +160,19 @@ function kostya_teleport3(first_speaker, second_speaker)
 dialogs.relocate_item_section(second_speaker, "science_teleport3", "in")
 end
 
+function kostya_teleport4(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "device_teleport", "in")
+end
+
 
 function actor_has_money_100000()
-  return db.actor:money()>=100000
+	return db_actor:money() >= reap.with_discount(100000)
 end
 
-function give_money_100000(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  dialogs.relocate_money(npc,100000,"out")
+function give_money_100000(t1, t2)
+	local npc = t1
+	if npc:id() == db_actor_id then
+		npc = t2
+	end
+	dialogs.relocate_money(npc, reap.with_discount(100000), "out")
 end
-
-

@@ -1,0 +1,185 @@
+---------------------------------------
+-- функции дл€ работы с нет-пакетами
+---------------------------------------
+
+----------
+-- чтение формы из нет-пакета
+----------
+function r_shape(packet)
+	local s
+	local st = {}
+	st.count = packet:r_u8()
+	st.shapes = {}
+	for i=1, st.count do
+		s = {}
+		s.type = packet:r_u8()
+		if s.type == 0 then
+			s.center = packet:r_vec3()
+			s.radius = packet:r_float()
+		else
+			s.axis_x = packet:r_vec3()
+			s.axis_y = packet:r_vec3()
+			s.axis_z = packet:r_vec3()
+			s.offset = packet:r_vec3()
+		end
+		st.shapes[i] = s
+	end
+	return st
+end
+
+----------
+-- запись формы в нет-пакет
+----------
+function w_shape(packet, st)
+	local s
+	packet:w_u8(st.count)
+	for i=1, st.count do
+		s = st.shapes[i]
+		packet:w_u8(s.type)
+		if s.type == 0 then
+			packet:w_vec3(s.center)
+			packet:w_float(s.radius)
+		else
+			packet:w_vec3(s.axis_x)
+			packet:w_vec3(s.axis_y)
+			packet:w_vec3(s.axis_z)
+			packet:w_vec3(s.offset)
+		end
+	end
+end
+
+----------
+-- перепаковка нет-пакета созданного скриптом рестрикта
+----------
+function rewrite_restrictor(se_obj, custom, radius)
+	local packet = net_packet()
+	se_obj:STATE_Write(packet)
+	local game_vertex_id	= packet:r_u16()
+	local distance		= packet:r_float()
+	local direct_control	= packet:r_s32()
+	local level_vertex_id	= packet:r_s32()
+	local object_flags		= packet:r_s32()
+	local custom_data		= packet:r_stringZ()
+	local story_id		= packet:r_s32()
+	local spawn_story_id	= packet:r_s32()
+	local shape		= r_shape(packet)
+	local restrictor_type	= packet:r_u8()
+
+	custom_data = custom
+	shape = {}
+	shape.count = 1
+	shape.shapes = {}
+	shape.shapes[1] = {}
+	shape.shapes[1].type = 0
+	shape.shapes[1].center = vector():set(0,0,0)
+	shape.shapes[1].radius = radius
+
+	packet:w_u16(game_vertex_id)
+	packet:w_float(distance)
+	packet:w_s32(direct_control)
+	packet:w_s32(level_vertex_id)
+	packet:w_s32(object_flags)
+	packet:w_stringZ(custom_data)
+	packet:w_s32(story_id)
+	packet:w_s32(spawn_story_id)
+	w_shape(packet, shape)
+	packet:w_u8(restrictor_type)
+	se_obj:STATE_Read(packet, packet:w_tell() - packet:r_tell())
+end
+
+------------
+-- рестриктор в нычке —трелка
+------------
+function create_sr1()
+local se_obj = alife():create("space_restrictor",vector():set(-79.746505737305,-5.0705714225769,-70.735511779785),2803,717)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+info_restriction} nil %=play_zvuk%"
+rewrite_restrictor(se_obj, custom, 2.0)
+end 
+
+
+
+--------------
+-- рестриктор на спавн телепорта в нычку
+--------------
+function create_sr2() 
+local se_obj = alife():create("space_restrictor",vector():set(-44.471733093262,-11.463814735413,-37.093990325928),4455,738)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+info_restriction} nil %=info1 =spawn_teleport6 =create_sr5%"
+rewrite_restrictor(se_obj, custom, 2.0)
+end 
+
+----------------------
+-- рестрикторы в ’18
+----------------------
+function create_sr7() 
+local se_obj = alife():create("space_restrictor",vector():set(-0.76473021507263,4.3528213500977,-10.842367172241),2671,1127)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+info_restriction} nil %=create_sr8 =create_sr9 =play_zvuk3%"
+rewrite_restrictor(se_obj, custom, 2.0)
+end 
+
+function create_sr10() 
+local se_obj = alife():create("space_restrictor",vector():set(-1.9785075187683,-10.817359924316,19.746885299683),2451,1144)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+kostya_x18_taynik_have} nil %=spawn_krovosos3 =spawn_krovosos4 =spawn_krovosos5 =play_zvuk5%"
+rewrite_restrictor(se_obj, custom, 2.5)
+db.actor:give_info_portion("xvatit_restrictor1")
+end 
+
+function create_sr11() 
+local se_obj = alife():create("space_restrictor",vector():set(-0.45858502388,-10.817345619202,-8.19189453125),2676,1134)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+kostya_x18_taynik_have} nil %=spawn_krovosos6%"
+rewrite_restrictor(se_obj, custom, 2.0)
+db.actor:give_info_portion("xvatit_restrictor2")
+end 
+
+-- янтарь
+function create_sr12() 
+local se_obj = alife():create("space_restrictor",vector():set(70.543083190918,0.079399138689041,53.515247344971),23064,1527)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+kostya_yantar_taynik_have} nil %=spawn_teleport31 =spawn_teleport32 =spawn_teleport33 =spawn_teleport34 =spawn_controller =create_sr13%"
+rewrite_restrictor(se_obj, custom, 2.0)
+db.actor:give_info_portion("xvatit_restrictor3")
+end 
+
+-- ’-10
+function create_sr14() 
+local se_obj = alife():create("space_restrictor",vector():set(-40.398349761963,-21.837560653687,56.543983459473),1324,2737)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+info_restriction} nil %=spawn_teleport35 =spawn_teleport36 =new_inventory11 =create_sr15%"
+rewrite_restrictor(se_obj, custom, 2.0)
+end 
+
+-------------------------------------------------------------------------------
+
+function on_item_take(obj)
+	local sect = obj:section()
+	if sect == "kostya_pda3" then
+		if not has_alife_info("xvatit_restrictor1") then
+			create_sr10()
+		end
+		if not has_alife_info("xvatit_restrictor2") then
+			create_sr11()
+		end
+	elseif sect == "kostya_pda4" then
+		if not has_alife_info("xvatit_restrictor3") then
+			create_sr12()
+		end
+	end
+end

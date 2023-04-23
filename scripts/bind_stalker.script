@@ -234,26 +234,10 @@ function actor_binder:on_item_take (obj)
 
   --AMK UTILS--
 
-spawn_zombi.checking_taken_item(obj)
-spawn_zombi.checking_taken_item2(obj)
-spawn_zombi.checking_taken_item3(obj)
-spawn_zombi.checking_taken_item4(obj)
-spawn_zombi.checking_taken_item5(obj)
-spawn_zombi.checking_taken_item6(obj)
-spawn_zombi.checking_taken_item7(obj)
-spawn_zombi.checking_taken_item8(obj)
-spawn_zombi.checking_taken_item9(obj)
-spawn_zombi.checking_taken_item10(obj)
-spawn_zombi.checking_taken_item11(obj)
-spawn_zombi.checking_taken_item12(obj)
-spawn_zombi.checking_taken_item13(obj)
-spawn_zombi.checking_taken_item14(obj)
-spawn_zombi.checking_taken_item15(obj)
-spawn_zombi.checking_taken_item16(obj)
-spawn_zombi.checking_taken_item17(obj)
-spawn_zombi.checking_taken_item18(obj)
-spawn_teleport.checking_taken_item19(obj)
-spawn_teleport.checking_taken_item20(obj)
+	spawn_zombi.on_item_take(obj)
+	spawn_teleport.on_item_take(obj)
+	new_spawn.on_item_take(obj)
+	spawn_restrictor.on_item_take(obj)
 
 	sa_callbacks.item_take(obj)
 end
@@ -271,10 +255,7 @@ function actor_binder:on_item_drop (obj)
   inventory.on_item_drop(item)
 ------------- TAG ----------
   tag_spb.refresh_zombie_team (self.object,obj)
-spawn_level_changer.checking_droped_item(obj)
-spawn_level_changer.checking_droped_item2(obj)
-spawn_level_changer.checking_droped_item3(obj)
-spawn_level_changer.checking_droped_item4(obj)
+	spawn_level_changer.on_item_drop(obj)
 
 	sa_callbacks.item_drop(obj)
 end

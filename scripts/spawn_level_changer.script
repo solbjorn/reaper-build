@@ -282,7 +282,7 @@ end
 
 function exit_pripyat()	
 		create_level_changer(9804, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
-                    	260269,
+                    	260478,
 			            2219,
 			            vector():set(190.84159851074,2.8052725791931,212.05661010742),	
                         vector():set(0.0, 0.0, 0.0),	
@@ -472,16 +472,6 @@ function exit_kordon14()
                         1)
 end
 
-function exit_kordon15()	
-		create_level_changer(9860, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
-                    	274973,
-			            108,
-			            vector():set(-1.5780007839203,-17.687986373901,-152.26568603516),	
-                        vector():set(0.0, 0.0, 0.0),	
-						"l01_escape",
-                        1)
-end
-
 function exit_radar()	
 		create_level_changer(9806, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
                     	93230,
@@ -523,15 +513,15 @@ function exit_radar4()
 		db.actor:give_info_portion("exit_radar4")				
 end
 
-function exit_sarcofag()	
+function exit_undergraund()	
 		create_level_changer(9810, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
-                    	4172,
-			            2424,
-			            vector():set(25.027828216553,-4.7533054351807,2.9020295143127),	
+                    	2505,
+			            745,
+			            vector():set(-84.987205505371,-16.462963104248,-60.738975524902),	
                         vector():set(0.0, 0.0, 0.0),	
-						"l12u_sarcofag",
+						"l03_agr_underground",
                         1)
-end	
+end
 
 function exit_bar()	
 		create_level_changer(9821, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
@@ -833,16 +823,6 @@ function exit_dt9()
                         1)
 end
 
-function exit_dt10()	
-		create_level_changer(9879, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
-                    	27318,
-			            1326,
-			            vector():set(-192.9693145752,-0.0026823878288269,119.04988098145),	
-                        vector():set(0.0, 0.0, 0.0),	
-						"l06_rostok",
-                        1)
-end
-
 function exit_dt11()	
 		create_level_changer(9880, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
                     	46578,
@@ -853,553 +833,252 @@ function exit_dt11()
                         1)
 end
 
-
-function checking_droped_item(obj)
-	if obj:section() == "device_teleport" then
-		local rnd = math.random(75)
-		if rnd == 1 then
-			exit_svalka()
-		elseif rnd == 2 then
-			exit_bunker()
-		elseif rnd == 3 then
-			exit_pripyat()
-		elseif rnd == 4 then
-			exit_x18()
-		elseif rnd == 5 then
-			exit_radar()
-		elseif rnd == 6 then
-			exit_radar2()
-		elseif rnd == 7 then
-			exit_radar3()
-		elseif rnd == 8 then
-			exit_radar4()
-		elseif rnd == 9 then
-			exit_as2()
-		elseif rnd == 10 then
-			exit_as3()	
-		elseif rnd == 11 then
-			exit_as4()
-		elseif rnd == 12 then
-			exit_sarcofag()
-		elseif rnd == 13 then
-			exit_pripyat2()
-		elseif rnd == 14 then
-			exit_bar()
-		elseif rnd == 15 then
-			exit_svalka2()
-		elseif rnd == 16 then
-			exit_svalka3()
-		elseif rnd == 17 then
-			exit_td()	
-		elseif rnd == 18 then
-			exit_td2()
-		elseif rnd == 19 then
-			exit_kordon()
-		elseif rnd == 20 then
-			exit_kordon2()
-		elseif rnd == 21 then
-			exit_agroprom()
-		elseif rnd == 22 then
-			exit_agroprom2()
-		elseif rnd == 23 then
-			exit_agroprom3()
-		elseif rnd == 24 then
-			exit_yantar1()
-		elseif rnd == 25 then
-			exit_yantar2()
-		elseif rnd == 26 then
-			exit_yantar3()
-		elseif rnd == 27 then
-			exit_yantar4()
-		elseif rnd == 28 then
-			exit_yantar5()
-		elseif rnd == 29 then
-			exit_yantar6()
-		elseif rnd == 30 then
-			exit_yantar7()
-		elseif rnd == 31 then
-			exit_yantar8()
-		elseif rnd == 32 then
-			exit_yantar9()
-		elseif rnd == 33 then
-			exit_yantar10()
-		elseif rnd == 34 then
-			exit_yantar11()
-		elseif rnd == 35 then
-			exit_bar2()	
-		elseif rnd == 36 then
-			exit_bar3()
-		elseif rnd == 37 then
-			exit_bar4()
-		elseif rnd == 38 then
-			exit_bar5()	
-		elseif rnd == 39 then
-			exit_bar6()	
-		elseif rnd == 40 then
-			exit_bar7()	
-		elseif rnd == 41 then
-			exit_kordon3()
-		elseif rnd == 42 then
-			exit_kordon4()		
-		elseif rnd == 43 then
-			exit_kordon5()
-		elseif rnd == 44 then
-			exit_kordon6()
-		elseif rnd == 45 then
-			exit_kordon7()
-		elseif rnd == 46 then
-			exit_kordon8()
-		elseif rnd == 47 then
-			exit_kordon9()
-		elseif rnd == 48 then
-			exit_kordon10()	
-		elseif rnd == 49 then
-			exit_kordon11()
-		elseif rnd == 50 then
-			exit_kordon12()
-		elseif rnd == 51 then
-			exit_kordon13()	
-		elseif rnd == 52 then
-			exit_kordon13()
-		elseif rnd == 53 then
-			exit_kordon14()	
-		elseif rnd == 54 then
-			exit_kordon15()	
-		elseif rnd == 55 then
-			exit_svalka4()
-		elseif rnd == 56 then
-			exit_svalka5()	
-		elseif rnd == 57 then
-			exit_svalka6()
-		elseif rnd == 58 then
-			exit_svalka7()
-		elseif rnd == 59 then
-			exit_svalka8()
-		elseif rnd == 60 then
-			exit_svalka9()
-		elseif rnd == 61 then
-			exit_svalka10()	
-		elseif rnd == 62 then
-			exit_svalka11()	
-		elseif rnd == 63 then
-			exit_svalka12()
-		elseif rnd == 64 then
-			exit_dt1()
-		elseif rnd == 65 then
-			exit_dt2()
-		elseif rnd == 66 then
-			exit_dt3()
-		elseif rnd == 67 then
-			exit_dt4()
-		elseif rnd == 68 then
-			exit_dt5()
-		elseif rnd == 69 then
-			exit_dt6()
-		elseif rnd == 70 then
-			exit_dt7()
-		elseif rnd == 71 then
-			exit_dt8()
-		elseif rnd == 72 then
-			exit_dt9()
-		elseif rnd == 73 then
-			exit_dt10()	
-		elseif rnd == 74 then
-			exit_dt11()	
-		else
-			exit_as()
-		end
-	end
+function exit_kordon15()	
+		create_level_changer(9860, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	18736,
+			            47,
+			            vector():set(-241.71829223633,-16.903062820435,-155.92127990723),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l01_escape",
+                        1)
 end
 
-
-function checking_droped_item2(obj)
-	if obj:section() == "science_teleport3" then
-		local rnd = math.random(11)
-		if rnd == 1 then
-			exit_yantar1()
-		elseif rnd == 2 then
-			exit_yantar2()
-		elseif rnd == 3 then
-			exit_yantar3()
-		elseif rnd == 4 then
-			exit_yantar4()
-		elseif rnd == 5 then
-			exit_yantar5()
-		elseif rnd == 6 then
-			exit_yantar6()
-		elseif rnd == 7 then
-			exit_yantar7()
-		elseif rnd == 8 then
-			exit_yantar8()
-		elseif rnd == 9 then
-			exit_yantar9()
-		elseif rnd == 10 then
-			exit_yantar10()
-		else
-			exit_yantar11()
-		end
-	end
+function exit_to_sarcofag()	
+		create_level_changer(8377, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),	 
+                    	6321,
+			            2417,
+			            vector():set(69.901214599609,67.818977355957,19.644428253174),	
+                        vector():set(0.0, 0.0, 0.0),	
+						"l12u_sarcofag",
+                        1)
 end
 
+-------------------------------------------------------------------------------
 
-function checking_droped_item3(obj)
-	if obj:section() == "science_teleport2" then
-		local rnd = math.random(7)
-		if rnd == 1 then
-			exit_bar()
-		elseif rnd == 2 then
-			exit_bar2()
-		elseif rnd == 3 then
-			exit_bar3()
-		elseif rnd == 4 then
-			exit_bar4()
-		elseif rnd == 5 then
-			exit_bar5()
-		elseif rnd == 6 then
-			exit_bar6()
-		else
-			exit_bar7()
-		end
-	end
+local device_dests = {
+	[1]	= exit_svalka,
+	[2]	= exit_bunker,
+	[3]	= exit_pripyat,
+	[4]	= exit_x18,
+	[5]	= exit_radar,
+	[6]	= exit_radar2,
+	[7]	= exit_radar3,
+	[8]	= exit_radar4,
+	[9]	= exit_as2,
+	[10]	= exit_as3,
+	[11]	= exit_as4,
+	[12]	= exit_undergraund,
+	[13]	= exit_pripyat2,
+	[14]	= exit_bar,
+	[15]	= exit_svalka2,
+	[16]	= exit_svalka3,
+	[17]	= exit_td,
+	[18]	= exit_td2,
+	[19]	= exit_kordon,
+	[20]	= exit_kordon2,
+	[21]	= exit_agroprom,
+	[22]	= exit_agroprom2,
+	[23]	= exit_agroprom3,
+	[24]	= exit_yantar1,
+	[25]	= exit_yantar2,
+	[26]	= exit_yantar3,
+	[27]	= exit_yantar4,
+	[28]	= exit_yantar5,
+	[29]	= exit_yantar6,
+	[30]	= exit_yantar7,
+	[31]	= exit_yantar8,
+	[32]	= exit_yantar9,
+	[33]	= exit_yantar10,
+	[34]	= exit_yantar11,
+	[35]	= exit_bar2,
+	[36]	= exit_bar3,
+	[37]	= exit_bar4,
+	[38]	= exit_bar5,
+	[39]	= exit_bar6,
+	[40]	= exit_bar7,
+	[41]	= exit_kordon3,
+	[42]	= exit_kordon4,
+	[43]	= exit_kordon5,
+	[44]	= exit_kordon6,
+	[45]	= exit_kordon7,
+	[46]	= exit_kordon8,
+	[47]	= exit_kordon9,
+	[48]	= exit_kordon10,
+	[49]	= exit_kordon11,
+	[50]	= exit_kordon12,
+	[51]	= exit_kordon13,
+	[52]	= exit_kordon13,
+	[53]	= exit_kordon14,
+	[54]	= exit_kordon15,
+	[55]	= exit_svalka4,
+	[56]	= exit_svalka5,
+	[57]	= exit_svalka6,
+	[58]	= exit_svalka7,
+	[59]	= exit_svalka8,
+	[60]	= exit_svalka9,
+	[61]	= exit_svalka10,
+	[62]	= exit_svalka11,
+	[63]	= exit_svalka12,
+	[64]	= exit_dt1,
+	[65]	= exit_dt2,
+	[66]	= exit_dt3,
+	[67]	= exit_dt4,
+	[68]	= exit_dt5,
+	[69]	= exit_dt6,
+	[70]	= exit_dt7,
+	[71]	= exit_dt8,
+	[72]	= exit_dt9,
+	[73]	= exit_dt10,
+	[74]	= exit_dt11,
+	[75]	= exit_as
+}
+
+local science3_dests = {
+	[1]	= exit_yantar1,
+	[2]	= exit_yantar2,
+	[3]	= exit_yantar3,
+	[4]	= exit_yantar4,
+	[5]	= exit_yantar5,
+	[6]	= exit_yantar6,
+	[7]	= exit_yantar7,
+	[8]	= exit_yantar8,
+	[9]	= exit_yantar9,
+	[10]	= exit_yantar10,
+	[11]	= exit_yantar11
+}
+
+local science2_dests = {
+	[1]	= exit_bar,
+	[2]	= exit_bar2,
+	[3]	= exit_bar3,
+	[4]	= exit_bar4,
+	[5]	= exit_bar5,
+	[6]	= exit_bar6,
+	[7]	= exit_bar7
+}
+
+local science_dests = {
+	[1]	= exit_kordon,
+	[2]	= exit_kordon2,
+	[3]	= exit_kordon3,
+	[4]	= exit_kordon4,
+	[5]	= exit_kordon5,
+	[6]	= exit_kordon6,
+	[7]	= exit_kordon7,
+	[8]	= exit_kordon8,
+	[9]	= exit_kordon9,
+	[10]	= exit_kordon10,
+	[11]	= exit_kordon11,
+	[12]	= exit_kordon12,
+	[13]	= exit_kordon13,
+	[14]	= exit_kordon14,
+	[15]	= exit_kordon15
+}
+
+local teleports = {
+	device_teleport		= device_dests,
+	science_teleport3	= science3_dests,
+	science_teleport2	= science2_dests,
+	science_teleport	= science_dests
+}
+
+function on_item_drop(obj)
+	if not teleports[obj:section()] then return end
+	if not db_actor:object("af_electra_moonlight") then return end
+
+	local dests = teleports[obj:section()]
+	local exit = dests[math.random(#dests)]
+
+	exit()
+	g_alife:release(g_alife:object(obj:id()))
+	g_alife:release(g_alife:object((db_actor:object("af_electra_moonlight")):id()))
 end
 
-
-function checking_droped_item4(obj)
-	if obj:section() == "science_teleport" then
-		local rnd = math.random(15)
-		if rnd == 1 then
-			exit_kordon()		
-		elseif rnd == 2 then
-			exit_kordon2()
-		elseif rnd == 3 then
-			exit_kordon3()
-		elseif rnd == 4 then
-			exit_kordon4()
-		elseif rnd == 5 then
-			exit_kordon5()
-		elseif rnd == 6 then
-			exit_kordon6()
-		elseif rnd == 7 then
-			exit_kordon7()	
-		elseif rnd == 8 then
-			exit_kordon8()
-		elseif rnd == 9 then
-			exit_kordon9()
-		elseif rnd == 10 then
-			exit_kordon10()	
-		elseif rnd == 11 then
-			exit_kordon11()
-		elseif rnd == 12 then
-			exit_kordon12()
-		elseif rnd == 13 then
-			exit_kordon13()
-		elseif rnd == 14 then
-			exit_kordon14()		
-		else
-			exit_kordon15()
-		end
-	end	
-end
-
+local teleport_sids = {
+	9801,
+	9802,
+	8955,
+	9996,
+	9803,
+	9804,
+	9805,
+	9806,
+	9810,
+	9811,
+	9812,
+	9813,
+	9814,
+	9815,
+	9816,
+	9820,
+	9821,
+	9822,
+	9823,
+	9824,
+	9825,
+	9826,
+	9827,
+	9828,
+	9829,
+	9830,
+	9831,
+	9832,
+	9833,
+	9834,
+	9835,
+	9836,
+	9837,
+	9838,
+	9839,
+	9840,
+	9841,
+	9842,
+	9843,
+	9844,
+	9845,
+	9846,
+	9847,
+	9848,
+	9849,
+	9850,
+	9851,
+	9852,
+	9853,
+	9854,
+	9855,
+	9856,
+	9857,
+	9858,
+	9859,
+	9860,
+	9861,
+	9862,
+	9863,
+	9864,
+	9865,
+	9866,
+	9867,
+	9868,
+	9869,
+	9870,
+	9871,
+	9872,
+	9873,
+	9874,
+	9875,
+	9876,
+	9877,
+	9878,
+	9879,
+	9880
+}
 
 function remove_old_teleport()
-	local sim = alife()
-	local se_obj = sim:story_object(9801)
-	if se_obj then
-		sim:release(se_obj, true)
+	local se_obj
+	for i = 1, #teleport_sids do
+		se_obj = g_alife:story_object(teleport_sids[i])
+		if se_obj then
+			g_alife:release(se_obj, true)
+		end
 	end
-	se_obj = sim:story_object(9802)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9803)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9804)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9805)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9806)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9810)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9811)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9812)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9813)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9814)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9815)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9816)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9820)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9821)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9822)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9823)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9824)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9825)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9826)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9827)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9828)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9829)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9830)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9831)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9832)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9833)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9834)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9835)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9836)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9837)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9838)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9839)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9840)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9841)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9842)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9843)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9844)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9845)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9846)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9847)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9848)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9849)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9850)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9851)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9852)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9853)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9854)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9855)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9856)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9857)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9858)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9859)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9860)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9861)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9862)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9863)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9864)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9865)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9866)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9867)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9868)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9869)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9870)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9871)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9872)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9873)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9874)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9875)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9876)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9877)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9878)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9879)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-	se_obj = sim:story_object(9880)
-	if se_obj then
-		sim:release(se_obj, true)
-	end
-
-	local actor = db.actor
 end

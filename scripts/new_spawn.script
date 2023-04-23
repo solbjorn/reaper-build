@@ -950,6 +950,7 @@ local obj = alife():create("controller_tubeman",vector():set(446.917,-0.09459,73
 end
 
 
+-- Hand Teleport
 
 function esc_kostya_ammo()
 local obj = alife():create("ammo_12x70_buck", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
@@ -963,61 +964,15 @@ function esc_kostya_ammo2()
 local obj = alife():create("ammo_12x70_buck", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
 end
 
-function new_inventory()
-local obj = alife():create("m_inventory_box_new",vector():set(-102.70054626465,4.7556557655334,74.453811645508),158594,81) 
-end
-
-
-function new_inventory2()
-local obj = alife():create("m_inventory_box2",vector():set(262.59692382813,-6.907244682312,-128.52972412109),370862,405) 
-end
-
-function new_inventory3()
-local obj = alife():create("m_inventory_box3",vector():set(6.60,-12.40,14.90),4086,1155) 
-end
-
-function new_inventory4()
-local obj = alife():create("m_inventory_box4",vector():set(95.66,0.49,25.55),87213,1512) 
-end
-
-function new_inventory5()
-local obj = alife():create("m_inventory_box5",vector():set(-168.85943603516,0.9873458147049,61.529857635498),67155,674) 
-end
-
-function new_inventory6()
-local obj = alife():create("m_inventory_box6",vector():set(-53.206405639648,-22.350099563599,378.87237548828),255911,1820) 
-end
-
-function new_inventory7()
-local obj = alife():create("m_inventory_box7",vector():set(356.0654296875,-40.244911193848,-190.06597900391),97701,2099) 
-end
-
-function new_inventory8()
-local obj = alife():create("m_inventory_box8",vector():set(138.54,-0.83,-52.73),238927,2239) 
-end
-
-function new_inventory9()
-local obj = alife():create("m_inventory_box9",vector():set(110.59019470215,3.9986562728882,115.9913482666),227060,2173)
-end
-
-function new_inventory10()
-local obj = alife():create("m_inventory_box10",vector():set(207.82891845703,-1.5676128864288,206.11070251465),261214,2219)
-end
-
-function new_inventory11()
-local obj = alife():create("m_inventory_box11",vector():set(-18.479963302612,-23.519651412964,-20.292081832886),2821,2784)
-end
 
 function new_inventory12()
 local obj = alife():create("m_inventory_box12",vector():set(7.7449460029602,-22.623861312866,7.6079015731812),7689,2703)
+db.actor:give_info_portion("new_inventory12")
 end
 
-function have_a_document()
-    local actor = db.actor
-    if actor ~= nil and actor:object("kostya_documents") ~= nil and actor:dont_has_info("kostya_documents_have") then
-actor:give_info_portion("kostya_documents_have")
-    news_manager.send_tip(db.actor, "Найдена информация", nil, nil, 30000)
-    end
+function new_inventory13()
+local obj = alife():create("m_inventory_box13",vector():set(-295.2509765625,25.836132049561,-119.17073059082),42457,303)
+db.actor:give_info_portion("kostya_documents_have")
 end
 
 function pda_vasilyev()
@@ -1028,4 +983,18 @@ function spawn_art()
 local obj = alife():create("kostya_af_gold_fish",vector():set(8.8234663009644,2.8059701919556,90.253837585449),285376,92)
 end
 
+-------------------------------------------------------------------------------
 
+function on_item_take(obj)
+	local sect = obj:section()
+	if sect == "kostya_documents" then
+		if not has_alife_info("kostya_documents_have") then
+			new_inventory13()
+			news_manager.send_tip(db_actor, "Найдена информация", nil, nil, 30000)
+		end
+	elseif sect == "kostya_pda9" then
+		if not has_alife_info("new_inventory12") then
+			new_inventory12()
+		end
+	end
+end

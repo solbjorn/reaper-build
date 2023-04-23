@@ -2392,8 +2392,12 @@
 				<action>spawn_teleport.spawn_teleport2</action>
 				<action>spawn_teleport.spawn_teleport3</action>
 				<action>spawn_teleport.spawn_teleport5</action>
-				<action>spawn_teleport.spawn_teleport6</action>
 				<action>spawn_teleport.spawn_teleport7</action>
+				<action>spawn_teleport.spawn_teleport9</action>
+				<action>spawn_restrictor.create_sr1</action>
+				<action>spawn_restrictor.create_sr2</action>
+				<action>spawn_teleport.spawn_item1</action>
+				<give_info>info_restriction</give_info>
                 <action>escape_dialog.give_weapon_to_actor</action>
 
 				<!--<action>sak.add_tail</action> -->
@@ -2848,7 +2852,7 @@
         </phrase_list>
     </dialog>
 	<dialog id="escape_kostya_taynik1">
-	    <dont_has_info>escape_kostya_taynik1_start</dont_has_info>	
+	    <dont_has_info>kostya_taynik1_start</dont_has_info>	
         <phrase_list>
             <phrase id="0">
                 <text>escape_kostya_taynik1_0</text>
@@ -2891,17 +2895,25 @@
 		<next>10</next>
             </phrase>
             <phrase id="10">
-                <text>escape_kostya_taynik1_10</text>    
-				<action>new_spawn.new_inventory</action>
+                <text>escape_kostya_taynik1_10</text> 
+		<next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>escape_kostya_taynik1_11</text>
+		<next>12</next>
+            </phrase>
+            <phrase id="12">
+                <text>escape_kostya_taynik1_12</text>		
+				<action>taynik_spawn.new_inventory</action>
 				<action>kostya_dialog.esc_pda_have</action>
+				<give_info>kostya_taynik1_start</give_info>
 				<give_info>kostya_walk</give_info>
-				<give_info>escape_kostya_taynik1_start</give_info>	
 			</phrase>
         </phrase_list>
     </dialog>
 	<dialog id="kostya_taynik_have">
 	    <has_info>kostya_pda_have</has_info>
-		<dont_has_info>kostya_pda_done</dont_has_info>
+		<dont_has_info>kostya_art_start</dont_has_info>
 	    <phrase_list>
 		    <phrase id="0">
 			    <text>kostya_taynik_0</text>
@@ -2954,6 +2966,7 @@
 		</phrase_list>
     </dialog>
 	<dialog id="kostya_artefact">	
+	<precondition>kostya_dialog.esc_art_have</precondition>
 	        <dont_has_info>kostya_art_done</dont_has_info>
 			<has_info>kostya_art_have</has_info> 
 		<phrase_list>	
@@ -3007,8 +3020,9 @@
 			<phrase id="8">
                 <text>kostya_svalka_taynik_8</text>
 				<give_info>kostya_svalka_taynik_start</give_info>
-				<action>new_spawn.new_inventory2</action>
+				<action>taynik_spawn.new_inventory2</action>
 				<action>kostya_dialog.esc_pda2_have</action>
+				<action>spawn_teleport.spawn_teleport24</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3036,8 +3050,6 @@
                 <text>kostya_svalka_taynik_13</text>
 				<action>kostya_dialog.esc_pda2_done</action>
 		        <give_info>kostya_svalka_taynik_done</give_info>
-				<give_info>kostya_bar_kamp</give_info>
-				<action>spawn_teleport.spawn_teleport9</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3099,8 +3111,9 @@
 		    	<give_info>kostya_x18_taynik_start</give_info>
 				<give_info>kostya_meet_done</give_info>
 				<action>kostya_dialog.esc_pda3_have</action>
-				<action>new_spawn.new_inventory3</action>
+				<action>taynik_spawn.new_inventory3</action>
 				<action>spawn_teleport.spawn_teleport8</action>
+				<action>spawn_restrictor.create_sr7</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3119,9 +3132,8 @@
             <phrase id="2">
                 <text>kostya_bar_taynik_10</text>
 	            <action>kostya_dialog.esc_pda3_done</action>
-				<action>new_spawn.new_inventory5</action>
+				<action>taynik_spawn.new_inventory5</action>
 		        <give_info>kostya_x18_taynik_done</give_info>
-				<give_info>kostya_agroprom_taynik_start</give_info>
 				<action>kostya_dialog.esc_pda5_have</action>
 				<action>spawn_teleport.spawn_teleport4</action>
             </phrase>
@@ -3159,10 +3171,13 @@
                 <text>kostya_agroprom_taynik_6</text>
 		    	<give_info>kostya_agroprom_taynik_done</give_info>
 				<action>kostya_dialog.esc_pda5_done</action>
-				<action>new_spawn.new_inventory4</action>
+				<action>taynik_spawn.new_inventory4</action>
 				<give_info>kostya_yantar_taynik_start</give_info>
 				<give_info>kostya_as_kamp</give_info>
 				<action>kostya_dialog.esc_pda4_have</action>
+				<action>spawn_teleport.spawn_teleport28</action>
+				<action>spawn_teleport.spawn_teleport29</action>
+				<action>spawn_teleport.spawn_teleport30</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3190,7 +3205,7 @@
                 <text>kostya_yantar_taynik_4</text>
 				<give_info>kostya_yantar_taynik_done</give_info>
 				<action>kostya_dialog.esc_pda4_done</action>
-				<action>new_spawn.new_inventory6</action>
+				<action>taynik_spawn.new_inventory6</action>
 				<give_info>kostya_as_taynik_start</give_info>
 				<action>kostya_dialog.esc_pda6_have</action>
 			</phrase>
@@ -3222,7 +3237,7 @@
 				<action>kostya_dialog.esc_pda6_done</action>
 				<give_info>kostya_radar_taynik_start</give_info>
 				<action>kostya_dialog.esc_pda7_have</action>
-				<action>new_spawn.new_inventory7</action>
+				<action>taynik_spawn.new_inventory7</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3256,9 +3271,8 @@
                 <text>kostya_radar_taynik_5</text>
 				<give_info>kostya_x10_taynik_start</give_info>
 				<action>kostya_dialog.esc_pda9_have</action>
-				<action>new_spawn.new_inventory11</action>
-				<action>new_spawn.new_inventory12</action>
-		    </phrase>
+				<action>spawn_restrictor.create_sr14</action>
+			</phrase>
 		</phrase_list>
     </dialog>
 	<dialog id="kostya_x10_taynik">
@@ -3310,11 +3324,10 @@
 				<give_info>kostya_x10_taynik_done</give_info>
 				<action>kostya_dialog.esc_pda9_done</action>
 				<give_info>kostya_sacharov_start</give_info>
-				<give_info>kostya_pripyat_taynik_start</give_info>
 				<action>kostya_dialog.esc_pda8_have</action>
-				<action>new_spawn.new_inventory8</action>
-				<action>new_spawn.new_inventory9</action>
-				<action>new_spawn.new_inventory10</action>
+				<action>taynik_spawn.new_inventory8</action>
+				<action>taynik_spawn.new_inventory9</action>
+				<action>taynik_spawn.new_inventory10</action>
 			</phrase>
 		</phrase_list>
     </dialog>
@@ -3523,6 +3536,31 @@
             <phrase id="5">
                 <text>kostya_teleport_5</text>  
 		    </phrase>
+		</phrase_list>
+    </dialog>
+	<dialog id="svalka_yurik">
+	    <dont_has_info>svalka_yurik</dont_has_info>
+	    <phrase_list>
+		    <phrase id="0">
+			    <text>svalka_yurik_0</text>
+		<next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>svalka_yurik_1</text>
+		<next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>svalka_yurik_2</text>
+		<next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>svalka_yurik_3</text>
+		<next>4</next>
+            </phrase>
+            <phrase id="4">
+                <text>svalka_yurik_4</text>
+				<give_info>svalka_yurik</give_info>
+			</phrase>
 		</phrase_list>
     </dialog>
 </game_dialogs>

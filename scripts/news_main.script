@@ -1485,7 +1485,10 @@ function format_template_actor_seen_group(level_, position, class, count)
 end
 
 
-function get_point_description(level, point)
+function get_point_description(level, point, names, points)
+	if not names then names = news_data.level_name end
+	if not points then points = news_data.base_points end
+
 	local m_s = ""
 	local dist = 10000
 	local angle = 0	
@@ -1493,17 +1496,17 @@ function get_point_description(level, point)
 	if (level == "l10u_bunker" or level == "l11_pripyat" or level == "l12_stancia" or level == "l12_stancia_2" or level == "l12u_control_monolith" or level == "l12u_sarcofag") then
 		if (isRadarDeactivated() == false) then	return "" end
 	end
-	if (level and news_data.level_name[level] ~= nil) then
-		if (news_data.level_name[level][2] ~= nil) then
-			m_tmp_str = news_data.level_name[level][2]..""
+	if (level and names[level] ~= nil) then
+		if (names[level][2] ~= nil) then
+			m_tmp_str = names[level][2]..""
 		end
 	end	
-	if (level and news_data.base_points[level] and point) then
+	if (level and points[level] and point) then
 		local m_str = ""
 		local m_str0 = ""
 		local m_point = nil
 		local m_dist = 0
-		local m_points = news_data.base_points[level]
+		local m_points = points[level]
 		local dx = 0
 		local dy = 0
 		local radians = 0

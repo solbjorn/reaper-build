@@ -15,6 +15,11 @@ function abs_comp(a,b)
 	end
 end
 
+function snd_shock()
+	play_safe_sound_object("affects\\tinnitus3a")
+	level.add_pp_effector("snd_shock.ppe", effector_ids.snd_shock, false)
+end
+
 function teleportate(x,y,z)
 -- Функция телепортации
 	local a = vector()
@@ -27,9 +32,9 @@ function teleportate(x,y,z)
 	db.actor:set_actor_position(a)
 
 	-- Звуковое сопровождение
-	local snd_obj = xr_sound.get_safe_sound_object([[affects\tinnitus3a]])
+	local snd_obj = xr_sound.get_safe_sound_object([[anomaly\teleport_work_1]])
 	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-
+	reap.start_timer("bind_mteleport.snd_shock()", 200, timer_types.real)
 end
 
 
