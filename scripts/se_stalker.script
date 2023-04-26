@@ -34,6 +34,9 @@ function se_stalker:__init (section) super (section)
 
 	--' Вызывался ли генератор ссылок на тайники.
 	self.treasure_processed = false
+
+	-- включенность фонаря в момент смерти
+	self.death_light = false
 end
 --------------------
 function se_stalker:get_ini()
@@ -119,6 +122,7 @@ function se_stalker:STATE_Write (packet)
 	if self.death_droped then flags = bit_or(flags, 1) end
 	if self.treasure_processed then flags = bit_or(flags, 2) end
 	if self.wounded then flags = bit_or(flags, 4) end
+	if self.death_light then flags = bit_or(flags, 8) end
 	packet:w_u8(flags)
 end
 --------------------
@@ -150,6 +154,7 @@ function se_stalker:STATE_Read (packet, size)
 		self.death_droped = bit_and(flags, 1) ~= 0
 		self.treasure_processed = bit_and(flags, 2) ~= 0
 		self.wounded = bit_and(flags, 4) ~= 0
+		self.death_light = bit_and(flags, 8) ~= 0
 	end
 end
 --------------------

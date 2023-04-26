@@ -13,17 +13,42 @@ local hud = get_hud()
 --]]-----------------------------------------------------------------------------------------------
 class "CHudInterfaceMgr"
 function CHudInterfaceMgr:__init()
+	hud:AddCustomStatic("night_vision_static")
+	local nv = hud:GetCustomStatic("night_vision_static"):wnd()
+	nv:SetWidth(0)
+
+	self.night_vision = nv
 	self.night_vision_active = false
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:update()
 	self:date_static()
+	self:night_vision_static()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:date_static()
-		local game_time = game.get_game_time()
-		hud:AddCustomStatic("hud_time", true):wnd():SetText(game_time:timeToString(game.CTime.TimeToMinutes))
-		hud:AddCustomStatic("hud_date", true):wnd():SetText(game_time:dateToString(game.CTime.DateToDay))
+	local game_time = game.get_game_time()
+	hud:AddCustomStatic("hud_time", true):wnd():SetText(game_time:timeToString(game.CTime.TimeToMinutes))
+	hud:AddCustomStatic("hud_date", true):wnd():SetText(game_time:dateToString(game.CTime.DateToDay))
+end
+---------------------------------------------------------------------------------------------------
+function CHudInterfaceMgr:night_vision_static()
+	if level.has_pp_effector(effector_ids.night_vision) > 0 then
+		if not self.night_vision_active then
+			local rect = amk_mod.get_hud_rect()
+			self.night_vision:SetWndRect(rect.x, rect.y, rect.w, rect.h)
+			self.night_vision_active = true
+		end
+	elseif self.night_vision_active then
+		self.night_vision:SetWidth(0)
+		self.night_vision_active = false
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CHudInterfaceMgr:actor_death()
+	level.remove_pp_effector(effector_ids.night_vision)
+	self.night_vision:SetWidth(0)
+	self.night_vision_active = false
 end
 --[[-----------------------------------------------------------------------------------------------
  * INIT

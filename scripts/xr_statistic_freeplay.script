@@ -46,7 +46,7 @@ function freeplay_statistic:check_actor_money()
                             }    
     for k,v in pairs(trader_ranks) do
         if actor_money >= tonumber(v) and not has_alife_info("trader_freeplay_reward_task_"..k.."_start") then
-            news_manager.send_tip( db.actor, "trader_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            news_manager.send_tip( db.actor, "trader_freeplay_reward_tips_"..k, nil, "trader", nil )
             db.actor:give_info_portion("trader_freeplay_reward_task_"..k.."_start")
         end
     end
@@ -125,7 +125,7 @@ function freeplay_statistic:check_found_secrets_count()
 
     for k,v in pairs(barman_ranks) do
         if self.secrets_found == tonumber(v) and not has_alife_info("barman_freeplay_reward_task_"..k.."_start") then
-            news_manager.send_tip( db.actor, "barman_freeplay_reward_tips_"..k, nil, "stalker", nil )
+            news_manager.send_tip( db.actor, "barman_freeplay_reward_tips_"..k, nil, "barman", nil )
             db.actor:give_info_portion("barman_freeplay_reward_task_"..k.."_start")            
         end
     end
@@ -167,7 +167,7 @@ function freeplay_statistic:check_found_pda_count()
                              }    
      for k,v in pairs(svoboda_ranks) do
          if self.pda_found == tonumber(v) and not has_alife_info("svoboda_freeplay_reward_task_"..k.."_start") then
-             news_manager.send_tip( db.actor, "svoboda_freeplay_reward_tips_"..k, nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "svoboda_freeplay_reward_tips_"..k, nil, "freedom", nil )
              db.actor:give_info_portion("svoboda_freeplay_reward_task_"..k.."_start")            
          end
      end
@@ -197,7 +197,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
         printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[1]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_1", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_1", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_1_objective_1_done")
             self.monster_killed = 0
         end
@@ -205,7 +205,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[2]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_2", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_2", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_2_objective_1_done")
             self.monster_killed = 0
         end
@@ -213,7 +213,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[3]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_3", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_3", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_3_objective_1_done")
             self.monster_killed = 0
         end
@@ -221,7 +221,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[4]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_4", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_4", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_4_objective_1_done")
              self.monster_killed = 0
         end
@@ -229,7 +229,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[5]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_5", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_5", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_5_objective_1_done")
             self.monster_killed = 0
         end
@@ -237,7 +237,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[6]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_6", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_6", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_6_objective_1_done")
             self.monster_killed = 0
         end
@@ -245,7 +245,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
          printf("FREEPLAY STATS: monster_killed_count = [%s]", tostring(self.monster_killed))
         if self.monster_killed ==  tonumber(dolg_ranks[7]) then
-             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_7", nil, "stalker", nil )
+             news_manager.send_tip( db.actor, "dolg_freeplay_reward_tips_7", nil, "dolg", nil )
              db.actor:give_info_portion("dolg_freeplay_reward_task_7_objective_1_done")
              self.monster_killed = 0
         end

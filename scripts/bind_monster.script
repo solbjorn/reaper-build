@@ -7,6 +7,7 @@ local particles={}
 
 local callback_hit = callback.hit
 local callback_death = callback.death
+local callback_use_object = callback.use_object
 local callback_patrol_path_in_point = callback.patrol_path_in_point
  
 function bind(obj)
@@ -43,6 +44,7 @@ function generic_object_binder:reinit()
 	self.object:set_callback(callback_patrol_path_in_point, self.waypoint_callback, self)
 	self.object:set_callback(callback_hit,					self.hit_callback,		self)
 	self.object:set_callback(callback_death,				self.death_callback,	self)
+	self.object:set_callback(callback_use_object, self.use_callback, self)
 end
 
 function generic_object_binder:update(delta)
@@ -293,6 +295,10 @@ function generic_object_binder:death_callback(victim, who)
 	smart_monster_parts.death_spawn(victim)
 end
 
+function generic_object_binder:use_callback(obj, who)
+	sa_callbacks.monster_use(obj, who)
+end
+
 function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
@@ -452,7 +458,8 @@ function generic_object_binder:net_destroy()
 	self.object:set_callback(callback_death,				nil)
 	self.object:set_callback(callback_patrol_path_in_point, nil)
 	self.object:set_callback(callback_hit,					nil)
-	
+	self.object:set_callback(callback_use_object, nil)
+
 	local st = db.storage[self.object:id()]
 	if st and st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")

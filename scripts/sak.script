@@ -4,50 +4,50 @@
 
 
 
-function add_new_escape_100() 
-add_new_lc(9100,6854,"На Кордон","info_way100a")
+function add_new_escape_100()
+add_new_lc(9100,6854,"to_escape","info_way100a")
 end
 function add_new_agroprom_101()
-add_new_lc(9101,16,"На Агропром","info_way101a")
+add_new_lc(9101,16,"to_agroprom","info_way101a")
 end
 function add_new_yantar_102()
-add_new_lc(9102,6855,"На Янтарь","info_way102a")
+add_new_lc(9102,6855,"to_yantar","info_way102a")
 end
 function add_new_agroprom_103()
-add_new_lc(9103,7853,"На Агропром","info_way103a")
+add_new_lc(9103,7853,"to_agroprom","info_way103a")
 end
 function add_new_mil_104()
-add_new_lc(9104,7378,"На Армейские Склады","info_way104a")
+add_new_lc(9104,7378,"to_military","info_way104a")
 end
 function add_new_rostok_105()
-add_new_lc(9105,1940,"На Дикую Территорию","info_way105a")
+add_new_lc(9105,1940,"to_rostok","info_way105a")
 end
 function add_new_radar_106()
-add_new_lc(9106,7854,"На Выжигатель","info_way106a")
+add_new_lc(9106,7854,"to_radar","info_way106a")
 end
 function add_new_darkvalley_107()
-add_new_lc(9107,3449, "В Темную Долину","info_way107a")
+add_new_lc(9107,3449,"to_darkvalley","info_way107a")
 end
 function add_new_yantar_108()
-add_new_lc(9108,3448,"На Янтарь","info_way108a")
+add_new_lc(9108,3448,"to_yantar","info_way108a")
 end
 function add_new_radar_109()
-add_new_lc(9109,4590,"На Выжигатель","info_way109a")
+add_new_lc(9109,4590,"to_radar","info_way109a")
 end
 function add_new_mil_110()
-add_new_lc(9110,4591,"На Армейские Склады","info_way110a")
+add_new_lc(9110,4591,"to_military","info_way110a")
 end
 function add_new_darkvalley_111()
-add_new_lc(9111,1941,"В Тёмную Долину","info_way111a")
+add_new_lc(9111,1941,"to_darkvalley","info_way111a")
 end
 function add_new_military_01()
-add_new_lc(1008,3730,"На Армейские Склады","info_way112a")
+add_new_lc(1008,3730,"to_military","info_way112a")
 end
 function add_new_military()
-add_new_lc(592,1883,"На Армейские Склады","info_way113a")
+add_new_lc(592,1883,"to_military","info_way113a")
 end
 function add_new_rostok()
-add_new_lc(594,1591,"На Дикую территорию","info_way114a")
+add_new_lc(594,1591,"to_rostok","info_way114a")
 end
 function add_new_lc(levch,levchn,levchm,info)
   local objt = alife():story_object(levch)
@@ -56,14 +56,14 @@ function add_new_lc(levch,levchn,levchm,info)
   end
   local obj = alife():story_object(levch)
   if obj then
-  level.map_add_object_spot(obj.id, "level_changer",levchm)
+		db_actor:binded_object().bCheckStart = true
   db.actor:give_info_portion(info)
   info_received()
   end
 end
 function add_new_military_false()
 local obj = alife():story_object(5212)
-level.map_add_object_spot(obj.id, "level_changer","На ЧАЭС")
+level.map_add_object_spot(obj.id, "lchanger_up_location","to_aes")
   db.actor:give_info_portion("info_way_false")
   info_received()
 end

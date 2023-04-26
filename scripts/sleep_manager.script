@@ -27,6 +27,7 @@ function main(scale)
 	db.actor:stop_talk()
 	--db.actor:hide_weapon()
 	level.disable_input()
+	actor_flags.sleep_state = true
 	sleep_manager.hp_corrector(scale)
 --	get_console():execute("_main_done")
 	sleep_manager.starter (scale)
@@ -76,8 +77,7 @@ function stopper()
 	    level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
 	end
 	level.enable_input()	
-	--level.set_snd_volume(1.0)
---	get_console():execute("stoped")
+	actor_flags.sleep_state = false
 end
 
 function hp_corrector(fr)

@@ -1217,6 +1217,7 @@ function pstor_load_all(obj, reader, npc_storage)
 			pstor[varname] = reader:r_bool()
 		else
 			abort("xr_logic: pstor_load_all: unregistered type N %d encountered (corrupted save?)", tn)
+			pstor[varname] = nil
 		end
 	end
 end

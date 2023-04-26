@@ -2314,22 +2314,19 @@ function load_states(gname, type)
 
 	if type == "esc_assault" then
 		return function(gulag)
-			local ret=0
 			if has_alife_info("esc_kill_bandits_quest_have") and not has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_done") then
-				ret=1 -- сидят у костра
+				return 1 -- сидят у костра
 			elseif has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_kill") then
-				ret=2 -- атакуют фабрику
+				return 2 -- атакуют фабрику
 			elseif has_alife_info("esc_kill_bandits_quest_kill") and (not has_alife_info("esc_kill_bandits_quest_done") or not has_alife_info("esc_petruha_great")) then
-				ret=3 -- идут домой	
+				return 3 -- идут домой
 			elseif has_alife_info("esc_kill_bandits_quest_done") or has_alife_info("esc_petruha_great") then
-				ret=4 -- идут домой
+				return 4 -- идут домой
 			else
-				ret=0 -- сидят в оффлайне
+				return 0 -- сидят в оффлайне
 			end
-		  return ret
 		end
 	end
-
 end
 
 

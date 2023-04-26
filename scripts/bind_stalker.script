@@ -93,6 +93,8 @@ function actor_binder:net_destroy()
   self.object:set_callback(callback.take_item_from_box, nil)
 	self.object:set_callback(callback.hit, nil)
 	self.object:set_callback(callback.death, nil)
+	self.object:set_callback(callback.on_key_press, nil)
+	self.object:set_callback(callback.on_key_release, nil)
 	self.object:set_callback(callback.on_item_belt, nil)
 	self.object:set_callback(callback.on_item_ruck, nil)
 	self.object:set_callback(callback.on_item_slot, nil)
@@ -132,6 +134,8 @@ function actor_binder:reinit()
   self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	self.object:set_callback(callback.hit, self.hit_callback, self)
 	self.object:set_callback(callback.death, self.death_callback, self)
+	self.object:set_callback(callback.on_key_press, self.on_key_press, self)
+	self.object:set_callback(callback.on_key_release, self.on_key_release, self)
 	self.object:set_callback(callback.on_item_belt, self.on_item_belt, self)
 	self.object:set_callback(callback.on_item_ruck, self.on_item_ruck, self)
 	self.object:set_callback(callback.on_item_slot, self.on_item_slot, self)
@@ -191,6 +195,8 @@ function actor_binder:info_callback(npc, info_id)
   amk_utils.actor_info(npc, info_id)
   --AMK UTILS--
   inventory.on_inventory_info(info_id)
+
+	sa_callbacks.info(info_id)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
@@ -267,6 +273,16 @@ end
 function actor_binder:death_callback(victim, who)
 	_z.kill_online_controllers()
 	level.enable_input()
+
+	sa_callbacks.actor_death(victim, who)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key_press(dik)
+	sa_callbacks.key_press(dik)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key_release(dik)
+	sa_callbacks.key_release(dik)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_belt(obj)

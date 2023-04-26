@@ -14,10 +14,12 @@ function actor_update(delta)
 	sa_hud_interface_mgr.get_hud_interface_mgr():update()
 	sa_inventory_items_mgr.repack_ammo()
 	sa_main.bunker_cooling_sound()
+	sa_main.radar_psy_zone()
 	reap.update()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_net_spawn()
+	sa_main.disable_ui_info()
 	reap.net_spawn()
 end
 ---------------------------------------------------------------------------------------------------
@@ -29,6 +31,11 @@ function actor_hit(obj, amount, local_direction, who, bone_index)
 		reap.hit_effectors(last_mob_type, who, last_health - db_actor.health)
 	end
 	last_mob_type = nil
+end
+---------------------------------------------------------------------------------------------------
+function actor_death(victim, who)
+	sa_hud_interface_mgr.get_hud_interface_mgr():actor_death()
+	sa_main.restore_torch(victim)
 end
 ---------------------------------------------------------------------------------------------------
 function item_take(obj)
@@ -76,11 +83,29 @@ function item_slot(obj)
 	belt_obj_by_id[obj:id()] = nil
 end
 ---------------------------------------------------------------------------------------------------
+function info(info_id)
+	sa_main.hiding_weapons(info_id)
+	sa_main.dead_body_sounds(info_id)
+	sa_main.lchanger_indoor_locations(info_id)
+end
+---------------------------------------------------------------------------------------------------
 function hit_effector(mob_type, side)
 	if not last_mob_type or mob_type ~= hit_mob_types.generic then
 		last_mob_type = mob_type
 		last_health = db_actor.health
 	end
+end
+---------------------------------------------------------------------------------------------------
+function key_press(dik)
+	pressed_keys[dik] = true
+end
+---------------------------------------------------------------------------------------------------
+function key_release(dik)
+	pressed_keys[dik] = nil
+end
+---------------------------------------------------------------------------------------------------
+function new_game()
+	start_timer("psy_blowout_timer", "sa_main.yantar_psy_blowout()", "real", 0, math.random(5, 7))
 end
 ---------------------------------------------------------------------------------------------------
 function actor_save(packet)
@@ -91,15 +116,33 @@ function actor_load(reader)
 	reap.load(reader)
 end
 --[[-----------------------------------------------------------------------------------------------
+ * NPC
+--]]-----------------------------------------------------------------------------------------------
+function npc_use(obj, who)
+	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
+		db.actor:give_info_portion("ui_dead_body")
+	end
+end
+---------------------------------------------------------------------------------------------------
+function npc_death(victim, who)
+	sa_main.restore_torch(victim)
+end
+--[[-----------------------------------------------------------------------------------------------
  * MONSTER
 --]]-----------------------------------------------------------------------------------------------
 function monster_update(obj)
-	if obj:alive() and db_actor:alive() then
+	if obj:alive() and db_actor:alive() and not actor_flags.sleep_state then
 		local enemy = obj:get_enemy()
 		if enemy and obj:see(enemy) and enemy:id() == db_actor_id then
 			sa_monsters.pseudodog_psy_effect(obj)
 			sa_monsters.burer_tele_attack(obj)
 		end
 		sa_monsters.controller_death_zone(obj)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function monster_use(obj, who)
+	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
+		db.actor:give_info_portion("ui_dead_body")
 	end
 end

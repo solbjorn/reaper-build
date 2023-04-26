@@ -164,7 +164,6 @@ local legacy_acts = {
 	["sleep_tr_item"]		= "amk_mod.test_for_need_sleep_tr_item",
 	["sleep_notebook"]		= "amk_mod.test_for_need_sleep_notebook",
 	["block_sleep_menu"]		= "amk.block_sleep_menu_handler",
-	["radar_fix"]			= "amk_mod.radar_fix",
 	["af_transform"]		= "amk.af_transform_handler",
 	["amk_freeplay"]		= "amk.amk_freeplay_handler",
 	["blowout"]			= "amk_mod.Blowout_pp",
@@ -707,8 +706,6 @@ function on_actor_upade(delta)
 	braad_test.check_ecolog_dead()
 	oau_watchdog=99
   mod_call("blowout_phantoms")
-	oau_watchdog=98
-  mod_call("check_radar_off")
 	oau_watchdog=97
   mod_call("check_metka")
 	oau_watchdog=96
@@ -750,7 +747,6 @@ function on_actor_upade(delta)
 			convert_npc[k]=nil
     end
   end
-	oau_watchdog=90
 	oau_watchdog=89
 	
 	if (amk_offline_alife) then
@@ -767,15 +763,6 @@ function on_actor_upade(delta)
 	oau_watchdog=0
 	oau_reason=""
 
---хех, определяем тип патронов в стволе...	
-	--[[
-	local weapon = db.actor:item_in_slot(2)
-	
-	if db.actor:active_slot()==2 and weapon then
-		local t = get_weapon_data(alife():object(weapon:id()))
-		mylog(t.ammo_type)
-	end
-	]]
 skunk.nano_bronik()
 skunk.nano_bronik_bad()
 skunk.nano_bronik_good()

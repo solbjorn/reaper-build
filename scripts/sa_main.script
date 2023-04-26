@@ -7,6 +7,69 @@
  Last edit    : 11.11.2018
 --]]-----------------------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------------------------
+ * Disable UI info portions
+--]]-----------------------------------------------------------------------------------------------
+function disable_ui_info()
+	db_actor:give_info_portion("ui_pda_hide")
+	db_actor:give_info_portion("ui_pda_dialog_hide")
+	db_actor:give_info_portion("ui_pda_task_description_hide")
+	db_actor:give_info_portion("ui_inventory_hide")
+	db_actor:give_info_portion("ui_talk_hide")
+	db_actor:give_info_portion("ui_trade_hide")
+	db_actor:give_info_portion("ui_car_body_hide")
+	db_actor:give_info_portion("ui_dead_body_hide")
+end
+--[[-----------------------------------------------------------------------------------------------
+ * UI disable weapon
+--]]-----------------------------------------------------------------------------------------------
+function hiding_weapons(info_id)
+	if info_id == "ui_pda" then
+		bind_stalker.hide_weapon()
+	elseif info_id == "ui_pda_hide" then
+		bind_stalker.restore_weapon()
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Dead body sounds
+--]]-----------------------------------------------------------------------------------------------
+function dead_body_sounds(info_id)
+	if has_alife_info("ui_dead_body") then
+		if info_id == "ui_car_body" then
+			play_safe_sound_object("interface\\inv_open")
+		elseif info_id == "ui_car_body_hide" then
+			play_safe_sound_object("interface\\inv_close")
+			db_actor:give_info_portion("ui_dead_body_hide")
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Yantar psy blowout
+--]]-----------------------------------------------------------------------------------------------
+function yantar_psy_blowout()
+	if not has_alife_info("yan_labx16_switcher_primary_off") then
+		if level.name() == "l08_yantar" and not actor_flags.sleep_state then
+			local need_hit, khit = amk_mod.blowout_khit()
+			if db_actor:object("good_psy_helmet") then
+				khit = 0.05
+			elseif db_actor:object("bad_psy_helmet") then
+				khit = 0.2 * khit
+			else
+				khit = 0.35 * khit
+			end
+			if khit < 0.05 then khit = 0.05 end
+			db_actor.psy_health = -khit
+
+			play_safe_sound_object([[ambient\blowout]])
+			play_safe_sound_object([[characters_voice\scenario\yantar\psy_voices_1]])
+			level.add_pp_effector("yantar_blowout.ppe", effector_ids.yantar_blowout, false)
+			level.add_pp_effector("yantar_underground_psi.ppe", effector_ids.yantar_underground_psi, false)
+			level.add_cam_effector("camera_effects\\shell_shock.anm", effector_ids.shell_shock, false, "")
+			level.add_cam_effector("camera_effects\\earthquake.anm", effector_ids.earthquake, false, "")
+		end
+		start_timer("psy_blowout_timer", "sa_main.yantar_psy_blowout()", "real", 0, math.random(5, 7))
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Radar bunker cooling sound
 --]]-----------------------------------------------------------------------------------------------
 local cooling_snd = nil
@@ -26,36 +89,88 @@ function bunker_cooling_sound()
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * Radar psy zone death
+--]]-----------------------------------------------------------------------------------------------
+function radar_psy_zone()
+	if level.name() == "l10_radar" and not has_alife_info("bar_deactivate_radar_done") then
+		local position = db_actor:position()
+		if position.z > 65 and position.x > 350 and position.x < 410 then
+			db_actor.psy_health = -0.004
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * PDA news
 --]]-----------------------------------------------------------------------------------------------
+local news_headers = {
+	["Diary"]			= game.translate_string("st_news_diary"),
+	["Mutants"]			= game.translate_string("st_news_mutants"),
+	["Social"]			= game.translate_string("st_news_social"),
+	["Artifacts"]			= game.translate_string("st_news_artifacts"),
+	["Anomalies"]			= game.translate_string("st_news_anomalies"),
+	["Locations"]			= game.translate_string("st_news_locations"),
+	["Zone-story"]			= game.translate_string("st_news_zone_story"),
+	["Stories"]			= game.translate_string("st_news_stories"),
+	["memuars"]			= game.translate_string("st_news_memuars"),
+	["Vehicles"]			= game.translate_string("st_news_vehicles"),
+	["Found_PDA"]			= game.translate_string("st_found_new_pda"),
+	["st_operation_agroprom"]	= game.translate_string("st_news_diary"),
+	["LabX18_information"]		= game.translate_string("st_news_diary"),
+	["aes_military_task"]		= game.translate_string("st_news_diary")
+}
+---------------------------------------------------------------------------------------------------
 function pda_news(group, name)
-	local header = ""
-	if group == "Diary" then
-		header = game.translate_string("st_news_diary")
-	elseif group == "Mutants" then
-		header = game.translate_string("st_news_mutants")
-	elseif group == "Social" then
-		header = game.translate_string("st_news_social")
-	elseif group == "Artifacts" then
-		header = game.translate_string("st_news_artifacts")
-	elseif group == "Anomalies" then
-		header = game.translate_string("st_news_anomalies")
-	elseif group == "Locations" then
-		header = game.translate_string("st_news_locations")
-	elseif group == "Zone-story" then
-		header = game.translate_string("st_news_zone_story")
-	elseif group == "Stories" then
-		header = game.translate_string("st_news_stories")
-	elseif group == "memuars" then
-		header = game.translate_string("st_news_memuars")
-	elseif group == "Vehicles" then
-		header = game.translate_string("st_news_vehicles")
-	elseif group == "Found_PDA" then
-		header = game.translate_string("st_found_new_pda")
-	elseif group == "st_operation_agroprom" or group == "LabX18_information" or group == "aes_military_task" then
-		header = game.translate_string("st_news_diary")
-	end
-	if header ~= "" then
+	local header = news_headers[group]
+	if header then
 		send_tip(game.translate_string(group).."/"..game.translate_string(name), header, nil, 5, "encyclopedia", "pda_news")
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Restore torch on corpses
+--]]-----------------------------------------------------------------------------------------------
+function restore_torch(victim)
+	if sr_light.check_light(victim) then
+		local torch = victim:item_in_slot(9)
+		if torch and torch:is_torch_enabled() then
+			victim:transfer_item(torch, victim)
+			local id = torch:id()
+			local x = 2
+			level.add_call(
+				function() x = x - 1 return x == 0 end,
+				function()
+					torch = level.object_by_id(id)
+					victim:move_to_slot(torch)
+					torch:enable_attachable_item(true)
+					torch:switch_torch(true)
+				end
+			)
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Level changer indoor locations
+--]]-----------------------------------------------------------------------------------------------
+local lchanger_precond_info = {
+	["exit_to_control_monolith_01"] = "sar_finish_decoding",
+	["exit_to_stancia2_01"] = "oso_question"
+}
+---------------------------------------------------------------------------------------------------
+local lchanger_precond_info_list = {}
+for k, v in pairs(lchanger_precond_info) do
+	lchanger_precond_info_list[v] = true
+end
+---------------------------------------------------------------------------------------------------
+function lchanger_indoor_locations(info_id)
+	if level.indoor() and (not info_id or lchanger_precond_info_list[info_id]) then
+		local lname = level.name()
+		for i = 1, 65534 do
+			local se_obj = g_alife:object(i)
+			if se_obj and se_obj:clsid() == clsid_level_changer and level_name_by_game_vertex(se_obj.m_game_vertex_id) == lname then
+				local precond_info = lchanger_precond_info[se_obj:name()]
+				if not precond_info or has_alife_info(precond_info) then
+					level.map_add_object_spot(se_obj.id, "lchanger_indoor_location", "")
+				end
+			end
+		end
 	end
 end

@@ -267,6 +267,14 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 					self:GetHolder():start_stop_menu	(self,true)
 					self.owner:Show						(true)
 				end
+			elseif dik == DIK_keys.DIK_RETURN then
+				self:OnBtnAccept()
+			elseif dik == DIK_keys.DIK_TAB then
+				local i = self.tab:GetActiveIndex() + 1
+				if i > self.tab:GetTabsCount() - 1 then
+					i = 0
+				end
+				self.tab:SetNewActiveTab(i)
 			end	
 		
 		end

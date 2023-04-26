@@ -461,7 +461,7 @@ function CTreasure:give_treasure(k, hide)
 		end
 
 		if not hide then
-			news_manager.send_treasure(v.name)
+			news_manager.send_treasure(v.name, level_name_by_game_vertex(obj.m_game_vertex_id))
 			level.map_add_object_spot_ser(obj.id, "treasure", text)
 		end
 

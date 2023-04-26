@@ -96,45 +96,51 @@ pda_tips = xr_sound_get_safe_sound_object([[device\pda\pda_tip]])
 pda_task = xr_sound_get_safe_sound_object([[device\pda\pda_objective]])
 
 tips_icons = {
-	kalugin  = { 249, 705},
-	vasilyev = { 249, 705},
-	voronin  = { 332, 423},
-	wolfhound = { 332, 517},
-	bes      = { 415, 0},
-	blockpost = { 415, 47},
-	seriy    = { 415, 141},
-	cap      = { 415, 188},
-	["max"]  = { 415, 282},
-	fanatic  = { 415, 658},
-	kruglov  = { 498, 0},
-	default  = { 0, 658},
-	trader	 = { 332, 893},
-	dolg     = { 0, 658},
-	freedom  = { 0, 658},
-	ecolog   = { 498, 0},
-	arena    = { 332, 141},
-	stalker  = { 0, 658},
-	krot     = { 332, 47},
-	barman   = { 332, 235},
-	wolf	 = { 332, 940},
-	o_soznanie = { 415, 893},
-	monolith = { 0, 658},
-    saharov  = { 332, 470},
-	prizrak  = { 415, 705},
-    killer   = { 0, 658},
-  death     = { 0, 752},
-  	military  = { 249, 517},
-  gen_info  = { 0, 658},
-	trade 		= { 0, 0},
-  uniq  =  {  498, 47},
-	encyclopedia	= { 82, 282 }
+	default		= { 0, 658 },
+	trader		= { 332, 893 },
+	bes		= { 415, 0 },
+	seryi		= { 415, 141 },
+	fanat		= { 415, 658 },
+	dolg		= { 498, 141 },
+	freedom		= { 498, 94 },
+	ecolog		= { 498, 0 },
+	arena		= { 332, 141 },
+	stalker		= { 0, 658 },
+	krot		= { 332, 47 },
+	barman		= { 332, 235 },
+	wolf		= { 332, 940 },
+	o_soznanie	= { 415, 893 },
+	monolith	= { 0, 658 },
+	saharov		= { 332, 470 },
+	prizrak		= { 415, 705 },
+	doctor		= { 415, 846 },
+	killer		= { 0, 658 },
+	volkodav	= { 332, 517 },
+	lukash		= { 415, 235 },
+	["max"]		= { 415, 282 },
+	cap		= { 415, 188 },
+	voronin		= { 332, 423 },
+	petrenko	= { 332, 376 },
+	ivancov		= { 332, 329 },
+	plichko		= { 332, 282 },
+	prapor		= { 415, 47 },
+	encyclopedia	= { 82, 282 },
+  	military	= { 249, 517 },
+	vasilyev	= { 249, 705 },
+	kalugin		= { 249, 705 },
+	kruglov		= { 498, 0 },
+	borov		= { 332, 564 },
+	death		= { 0, 752 },
+	gen_info	= { 0, 658 },
+	trade 		= { 0, 0 },
+	uniq		= { 498, 47 }
 }
 
 tips_by_sender = {
 	tips_esc_trader_about_anomalies = "trader",
 	escape_fox_quest = "trader",
-	gar_dolg_blokpost_warning = "blockpost",
-	gar_dolg_monster_rush = "blockpost",
+	gar_dolg_blokpost_warning = "prapor",
+	gar_dolg_monster_rush = "prapor",
 	mil_info_max_mines = "max",
 	mil_actor_blockpost = "cap"
 }
@@ -276,33 +282,13 @@ function send_encyclopedy(type, title)
 	end
 end
 
-local secret_level = {
-	["esc"]  = "Кордон",
-	["gar"]  = "Свалка",
-	["agr"]  = "НИИ Агропром",
-	["agru"] = "Подвалы Агропрома",
-	["val"]  = "Темная Долина",
-	["mil"]  = "Армейские склады",
-	["yan"]  = "Янтарь",
-	["x16"]  = "Лаборатория x16",
-	["rad"]  = "Радар",
-	["pri"]  = "Припять",
-	["x18"]  = "Лаборатория x18",
-	["bar"]  = "Территория Долга",
-	["ros"]  = "Дикая территория",
-}
-
-function send_treasure(name)
+function send_treasure(name, level)
 	pda_news:play(db_actor, 0, sound_object.s2d)
 
 	local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
-	local level_key = string.sub(name,1,string.find(name,"_s",1,plain)-1)
-	local tmp_str = ""
-	if secret_level[level_key] ~= nil then
-		tmp_str = secret_level[level_key]..": "
-	end
-	local news_text = "%c[255,160,160,160]"..game.translate_string("st_found_new_treasure").."\\n".."%c[120,255,120,160]"..tmp_str.."%c[170,200,200,200]"..game.translate_string(name)	
-	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 3000)
+
+	local news_text = "%c[255,160,160,160]"..game.translate_string("st_found_new_treasure").."\\n".."%c[120,255,120,160]"..game.translate_string(level)..": %c[170,200,200,200]"..game.translate_string(name)	
+	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 end
 
 function get_inv_name(section)

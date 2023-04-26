@@ -7,6 +7,7 @@
  Last edit    : 08.11.2018
 --]]-----------------------------------------------------------------------------------------------
 _G.base_time_factor = level.get_time_factor()
+_G.pressed_keys = {}
 --[[-----------------------------------------------------------------------------------------------
  * Object data
 --]]-----------------------------------------------------------------------------------------------
@@ -61,6 +62,20 @@ function level.add_cam_effector3(time, amplitude, period_number, power)
 		level.add_ce()
 	end
 end
+---------------------------------------------------------------------------------------------------
+local indoors = { }
+---------------------------------------------------------------------------------------------------
+function level.indoor()
+	if level.present() == false then return false end
+
+	local ind = indoors[level.name()]
+	if ind == nil then
+		ind = read_line(level.name(), "indoor", "bool", game_ini())
+		indoors[level.name()] = ind
+	end
+
+	return ind
+end
 --[[-----------------------------------------------------------------------------------------------
  * Ini
 --]]-----------------------------------------------------------------------------------------------
@@ -87,8 +102,35 @@ function _G.read_line(section, line, line_type, ini, default_value)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * Timers (with save)
+--]]-----------------------------------------------------------------------------------------------
+function _G.start_timer(name, action, type, sec, min, hour)
+	if not sec then sec = 0 end
+	if not min then min = 0 end
+	if not hour then hour = 0 end
+
+	if type == "real" then
+		type = timer_types.real
+	elseif type == "game" then
+		type = timer_types.game
+	end
+
+	local delay = (((hour * 60 + min) * 60) + sec) * 1000
+	reap.start_timer(action, delay, type)
+end
+--[[-----------------------------------------------------------------------------------------------
  * Others
 --]]-----------------------------------------------------------------------------------------------
+function _G.is_key_pressed(dik)
+	return dik and pressed_keys[dik]
+end
+---------------------------------------------------------------------------------------------------
+function _G.level_name_by_game_vertex(game_vertex_id)
+	if game_vertex_id then
+		return alife():level_name(game_graph():vertex(game_vertex_id):level_id())
+	end
+end
+---------------------------------------------------------------------------------------------------
 function _G.get_item_place(obj, npc)
 	if not npc then
 		npc = db_actor

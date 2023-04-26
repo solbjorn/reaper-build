@@ -167,13 +167,6 @@ function action_meet_wait:execute ()
     end
   end
 
-  --' Туториал на спрятать оружие
-  if meet_manager.disable_talk_weapon == true and
-       not has_alife_info("tutorial_part_15_hide_weapon")
-  then
-    db_actor:give_info_portion("tutorial_part_15_hide_weapon")
-  end
-
   local tt = db.storage[self.object:id()]
   if tt.active_scheme then
       xr_logic.try_switch_to_another_section(self.object, tt[tt.active_scheme], db_actor)
@@ -211,14 +204,9 @@ function Cmeet_manager:update()
     local tmp = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_dialog)
     if self.startdialog ~= tmp then
       self.startdialog = tmp
---      printf("*DIALOGS %s* SET [%s]", self.npc:name(), utils.to_str(tmp))
       if tmp == nil or tmp == "nil" then
-        -- восстановление начального
---        printf("RESTORE")
         self.npc:restore_default_start_dialog()
       else
---        printf("SET")
-        -- установка нового
         self.npc:set_start_dialog(tmp)
       end
     end
@@ -255,11 +243,11 @@ function Cmeet_manager:update()
   else
     self.state,self.sound = self:process_meet()
   end
-  -- Если актер говорит, и говорит не с нами, то мы не должны говорить звуков.
-  if db_actor:is_talking() and not self.npc:is_talking() then
-    self.sound = "nil"
-  end
-  -- printf("MEET [%s], state: [%s], sound: [%s]", self.npc:name(), tostring(self.state), tostring(self.sound))
+	-- Если актер говорит, и говорит не с нами, то мы не должны говорить звуков.
+	-- Ray Twitty aka Shadows: вместо проверки на разговор ГГ добавим проверку на любое открытое меню
+	if level.main_input_receiver() and not self.npc:is_talking() then
+		self.sound = "nil"
+	end
 end
 function Cmeet_manager:process_zone()
   if self.a.zone == nil then return "nil","nil" end
@@ -381,7 +369,6 @@ function Cmeet_manager:process_use()
   -- запрещаем юзать спящих
   if xr_sleeper.is_npc_asleep(self.npc) then
     self.npc:disable_talk()
-    self.disable_talk_weapon = false
     if is_talking then
       self.npc:stop_talk()
     end
@@ -391,19 +378,13 @@ function Cmeet_manager:process_use()
   local t
   if isWeapon(db_actor:active_item()) then
     t = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.use_wpn)
-    if t == "false" then
-      self.disable_talk_weapon = true
-    end
   else
     t = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.use)
-    self.disable_talk_weapon = false
   end
   -- проверка по дистанции
---  printf("MM2 %s %s", self.npc:name(), tostring(t))
   if (is_talking and self.npc:position():distance_to_sqr(db_actor:position()) > 9) and
     t ~= "self"
   then
---    printf("MM3 %s stop talk", self.npc:name())
     self.npc:stop_talk()
   end
 
@@ -415,8 +396,9 @@ function Cmeet_manager:process_use()
       self.npc:stop_talk()
     end
   elseif t == "self" then
+		-- Eсли npc враг (Р.М.А.).
+		self.npc:enable_talk()
     if not is_talking then
---      printf("MM3 %s start talk", self.npc:name())
       db_actor:run_talk_dialog(self.npc)
     end
   end

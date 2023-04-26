@@ -245,7 +245,7 @@ function motivator_binder:death_callback(victim, who)
 	if xrs_ai then 
 		xrs_ai.npc_death_callback(self_object) 
 	end
-
+	sa_callbacks.npc_death(victim, who)
 
   if who:id() == db_actor_id then
     xr_statistic.addKillCount(self_object)
@@ -262,7 +262,8 @@ function motivator_binder:death_callback(victim, who)
 		sr_territory.issue_event(self_object, "death_callback", victim, who)
 	end
 
-  sr_light.check_light(self_object)
+	local se_obj = alife():object(self_object:id())
+	se_obj.death_light = sr_light.check_light(self_object)
 
   smart_terrain.on_death( self_object:id() )
 
@@ -330,6 +331,7 @@ function motivator_binder:use_callback(obj, who)
   amk.on_use(obj, who)
   -- end of addition
 
+	sa_callbacks.npc_use(obj, who)
 end
 
 local xr_sound_update = xr_sound.update
@@ -337,6 +339,7 @@ local xr_sound_update = xr_sound.update
 function motivator_binder:update(delta)
         if amk.oau_watchdog~=0 then
                 abort("Watchdog "..amk.oau_watchdog..".Reason "..amk.oau_reason)
+		return
         end
 	local self_object = self.object
 	if self_object == nil then 
@@ -365,10 +368,8 @@ function motivator_binder:update(delta)
 
 	local npc_alive = self_object:alive()
     if self.first_update == false then
-		if not npc_alive then
-			if alife():object(self_object:id()).death_droped ~= true then
-      death_manager.drop_manager(self_object):create_release_item()
-			end
+		if not npc_alive and alife():object(self_object:id()).death_droped ~= true then
+			death_manager.drop_manager(self_object):create_release_item()
 		end
         self.first_update = true
     end
@@ -391,14 +392,23 @@ function motivator_binder:update(delta)
                                                 amk.actor_see_enemy(self_object,"npc")
                                         end
                         end
-      sr_light.check_light(self_object)
 
+		-- Ray Twitty aka Shadows: если НПС зажмурился, то нас уже не интересуют условия, важно лишь состояние фонарика в момент смерти
 		if npc_alive then
+			sr_light.check_light(self_object)
 			self.update_time = time_global() + 1000
 		else
+			local se_obj = g_alife:object(self_object:id())
+			if se_obj.death_light then
+				local torch = self_object:item_in_slot(9)
+				if torch then
+					torch:enable_attachable_item(true)
+					torch:switch_torch(true)
+				end
+			end
 			self.death_recorded = true
 		end
-    end
+	end
 
                 local wpn = utils.wpn_info_get(self_object)
                 if wpn["ammo"]~=nil then
@@ -428,8 +438,7 @@ function motivator_binder:update(delta)
 		self_object:set_tip_text_default()
 	end
 
-  if xrs_ai then xrs_ai.npc_update(self) end
-
+	if xrs_ai then xrs_ai.npc_update(self) end
 end
 
 function motivator_binder:reload(section)
