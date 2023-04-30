@@ -4,9 +4,19 @@
 --'	автор: xStream
 --'	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
-gr_types={
+
+local game_object_enemy = game_object.enemy
+local level_object_by_id = level.object_by_id
+
+local gr_types = {
 	[1]="grenade_f1",
 	[2]="grenade_rgd5"
+}
+local gr_fakes = {
+	["grenade_f1_test"]	= true,
+	["grenade_f1_fake"]	= true,
+	["grenade_rgd5_test"]	= true,
+	["grenade_rgd5_fake"]	= true
 }
 
 grenades = {}
@@ -109,7 +119,7 @@ function evaluator_crazy_grenadier:evaluate()
 	if self.a.testing then
 		if not self.a.test_grenades.hi or not self.a.test_grenades.lo or
 			not alife():object(self.a.test_grenades.hi) or not alife():object(self.a.test_grenades.hi) or
-			not level.object_by_id(self.a.test_grenades.hi) or not level.object_by_id(self.a.test_grenades.lo)
+			not level_object_by_id(self.a.test_grenades.hi) or not level_object_by_id(self.a.test_grenades.lo)
 			then
 			self.a.testing = false
 			self.a.test_running = false
@@ -179,8 +189,8 @@ function evaluator_crazy_grenadier:evaluate()
 	end
 	
 	if self.a.next_check_time < time_global() then
-		if npc:body_state()==move.crouch then return false end
 		self.a.next_check_time = time_global() + 1000
+		if npc:body_state()==move.crouch then return false end
 		local be = npc:best_enemy()
 		if not be then return false end
 		if check_enemy(npc,be) then
@@ -236,7 +246,7 @@ function evaluator_crazy_grenadier:check_grenade(section)
 		obj=obj:object()
 		if obj==nil or obj.clsid==nil then return false end
 		if not obj:clsid() == clsid.actor and not obj:clsid() == clsid.script_stalker then return false end
-		if npc:relation(obj) ~= game_object.enemy then
+		if npc:relation(obj) ~= game_object_enemy then
 			local d=bp:distance_to(obj:position())
 			if d<self.a.grenades[section].radius then return true end
 		end
@@ -265,15 +275,17 @@ function evaluator_aaa_grenade:__init(name, storage) super (nil, name)
 	end
 end
 function evaluator_aaa_grenade:evaluate()
-	local npc = self.object
 	if self.a.danger_inert and self.a.danger_inert>time_global() then return true end
 	local danger,danger_r,dist = false,0,1000
+	local npc = self.object
+	local lobj_grenade
 	for k,v in pairs(grenades) do
-		if get_grenade(k) and v-1500 > time_global() then
-			local gdist = get_grenade(k):position():distance_to(npc:position())
-			if gdist<self.a.grenades[get_grenade(k):section()].radius and gdist<dist then
-				danger = get_grenade(k):position()
-				danger_r = self.a.grenades[get_grenade(k):section()].radius
+		lobj_grenade = level_object_by_id(k)
+		if lobj_grenade and v-1500 > time_global() then
+			local gdist = lobj_grenade:position():distance_to(npc:position())
+			if gdist<self.a.grenades[lobj_grenade:section()].radius and gdist<dist then
+				danger = lobj_grenade:position()
+				danger_r = self.a.grenades[lobj_grenade:section()].radius
 				dist=gdist
 			end
 		end
@@ -324,7 +336,8 @@ end
 function action_fire_in_the_hole:execute()
 	action_base.execute (self)
 	if self.finalized then return end
-	if not get_grenade(self.a.grenade) then
+	local lobj_grenade = level_object_by_id(self.a.grenade)
+	if not lobj_grenade then
 		self.a.throwing = false
 		return
 	end
@@ -338,14 +351,15 @@ function action_fire_in_the_hole:execute()
 		if self.a.from_vert==npc:level_vertex_id() and self.a.from_pos:distance_to(npc:position())<0.3 then
 		
 			local en_inj,fr_inj = false,false
-			local r = self.a.grenades[get_grenade(self.a.grenade):section()].radius
-			for a=0,65535 do
-				local obj = level.object_by_id(a)
-				if obj and obj.clsid and obj:alive() then
-					local od=self.a.target_point:distance_to(obj:position())
+			local r = self.a.grenades[lobj_grenade:section()].radius
+			local obj, od
+			for k,v in pairs(db.storage) do
+				obj = level_object_by_id(k)
+				if obj and obj:alive() then
+					od=self.a.target_point:distance_to(obj:position())
 					if od<r then
-						if obj:clsid() == clsid.actor or obj:clsid() == clsid.script_stalker then
-							if npc:relation(obj) == game_object.enemy then
+						if IsStalker(obj) then
+							if npc:relation(obj) == game_object_enemy then
 								en_inj=true
 							else
 								if od<r/2 then 
@@ -353,7 +367,7 @@ function action_fire_in_the_hole:execute()
 									break
 								end
 							end
-						elseif IsMonster(alife():object(a)) then
+						elseif IsMonster(obj) then
 							en_inj=true
 						end
 					end
@@ -375,7 +389,7 @@ function action_fire_in_the_hole:execute()
 			npc:movement_enabled(true)
 			
 			local snd_sect = snd_grenade_replics[npc:character_community()] or snd_grenade_replics.stalker
-			local snd = [[characters_voice\grenadier\]]..snd_sect[math.random(table.getn(snd_sect))]
+			local snd = [[characters_voice\grenadier\]]..snd_sect[math.random(#snd_sect)]
 			snd = xr_sound.get_safe_sound_object(snd)
 			snd:play_no_feedback(npc, sound_object.s3d, 0, npc:position(), 1.0)
 			
@@ -415,7 +429,7 @@ function action_fire_in_the_hole:execute()
 	end
 	
 	if time_global() > self.end_time and not self.can_explode then
-		npc:drop_item_and_teleport(get_grenade(self.a.grenade), self.a.grenades_from_pos)
+		npc:drop_item_and_teleport(lobj_grenade, self.a.grenades_from_pos)
 		grenadiers[npc:id()]=nil
 		self.can_explode=time_global()
 		return
@@ -423,11 +437,11 @@ function action_fire_in_the_hole:execute()
 
 	if self.can_explode then
 		throw(self.a.grenade,self.a.throwing_type,self.a.target_point)
-		level.map_add_object_spot(self.a.grenade, "grenade_location", get_grenade(self.a.grenade):section())
+		level.map_add_object_spot(self.a.grenade, "grenade_location", lobj_grenade:section())
 		
-		local timeout = self.a.grenades[get_grenade(self.a.grenade):section()].explode_time-(time_global()-self.can_explode)
+		local timeout = self.a.grenades[lobj_grenade:section()].explode_time-(time_global()-self.can_explode)
 		
-		grenades[get_grenade(self.a.grenade):id()] = time_global() + timeout
+		grenades[lobj_grenade:id()] = time_global() + timeout
 		
 		self.a.grenade = nil	
 		self.a.next_check_time = time_global() + math.random(10000,60000)
@@ -490,56 +504,53 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
+local wp_stalker_ids_property_alive_true = world_property(stalker_ids.property_alive, true)
+local wp_stalker_ids_property_enemy_true = world_property(stalker_ids.property_enemy, true)
+local xr_evaluators_id_sidor_wounded_base = xr_evaluators_id.sidor_wounded_base
+local xr_actions_id_alife = xr_actions_id.alife
+local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
+local stalker_ids_action_danger_planner = stalker_ids.action_danger_planner
+
 function add_to_binder_q(object, storage)
-  		local operators	= {}
-	  	local properties  = {}
-
-	   	local manager = object:motivation_action_manager()
-
-		operators["fire_in_the_hole"]			= actid_crazy_fire_in_the_hole
-		operators["run_from_grenade"]			= actid_run_from_grenade
-
-		properties["crazy_grenadier"]			= evid_crazy_grenadier
-		properties["aaa_grenade"]				= evid_aaa_grenade
+		local manager = object:motivation_action_manager()
 
 		local zombi=object:character_community()=="ecolog" or object:character_community()=="zombied" or object:character_community()=="trader" or
 			  object:out_restrictions()=="bar_arena_restrictor" or object:name()=="mil_stalker0012" or object:name()=="yantar_ecolog_general"
-
 		if zombi then
-			manager:add_evaluator (properties["crazy_grenadier"], property_evaluator_const(false))
-			manager:add_evaluator (properties["aaa_grenade"], property_evaluator_const(false))
+			manager:add_evaluator (evid_crazy_grenadier, property_evaluator_const(false))
+			manager:add_evaluator (evid_aaa_grenade, property_evaluator_const(false))
 		else
-			manager:add_evaluator (properties["crazy_grenadier"], evaluator_crazy_grenadier("crazy_grenadier", storage))
-			manager:add_evaluator (properties["aaa_grenade"], evaluator_aaa_grenade("aaa_grenade", storage))
+			manager:add_evaluator (evid_crazy_grenadier, evaluator_crazy_grenadier("crazy_grenadier", storage))
+			manager:add_evaluator (evid_aaa_grenade, evaluator_aaa_grenade("aaa_grenade", storage))
 		end
-		
+
 		local action = action_fire_in_the_hole (object,"fire_in_the_hole", storage)
-		action:add_precondition(world_property(stalker_ids.property_alive, true))
-		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
-		action:add_precondition	(world_property(properties["aaa_grenade"], false))
-		action:add_precondition	(world_property(properties["crazy_grenadier"], true))
-		action:add_effect (world_property(properties["crazy_grenadier"], false))
-		manager:add_action (operators["fire_in_the_hole"], action)
+		action:add_precondition(wp_stalker_ids_property_alive_true)
+		action:add_precondition(world_property(xr_evaluators_id_sidor_wounded_base, false))
+		action:add_precondition	(world_property(evid_aaa_grenade, false))
+		action:add_precondition	(world_property(evid_crazy_grenadier, true))
+		action:add_effect (world_property(evid_crazy_grenadier, false))
+		manager:add_action (actid_crazy_fire_in_the_hole, action)
+
+		action = action_run_from_grenade (object,"run_from_grenade", storage)
+		action:add_precondition(wp_stalker_ids_property_alive_true)
+		action:add_precondition(world_property(xr_evaluators_id_sidor_wounded_base, false))
+		action:add_precondition	(world_property(evid_crazy_grenadier, false))
+		action:add_precondition	(world_property(evid_aaa_grenade, true))
+		action:add_effect (world_property(evid_aaa_grenade, false))
+		manager:add_action (actid_run_from_grenade, action)
+
+		action = manager:action (xr_actions_id_alife)
+		action:add_precondition	(world_property(evid_crazy_grenadier, false))
+		action:add_precondition	(world_property(evid_aaa_grenade, false))
+
+		action = manager:action (stalker_ids_action_combat_planner)
+		action:add_precondition	(world_property(evid_crazy_grenadier, false))
+		action:add_precondition	(world_property(evid_aaa_grenade, false))
 		
-		local action = action_run_from_grenade (object,"run_from_grenade", storage)
-		action:add_precondition(world_property(stalker_ids.property_alive, true))
-		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
-		action:add_precondition	(world_property(properties["crazy_grenadier"], false))
-		action:add_precondition	(world_property(properties["aaa_grenade"], true))
-		action:add_effect (world_property(properties["aaa_grenade"], false))
-		manager:add_action (operators["run_from_grenade"], action)
-		
-		action = manager:action (xr_actions_id.alife)	
-		action:add_precondition	(world_property(properties["crazy_grenadier"], false))
-		action:add_precondition	(world_property(properties["aaa_grenade"], false))
-		
-		action = manager:action (stalker_ids.action_combat_planner)	
-		action:add_precondition	(world_property(properties["crazy_grenadier"], false))
-		action:add_precondition	(world_property(properties["aaa_grenade"], false))
-		
-		action = manager:action (stalker_ids.action_danger_planner)	
-		action:add_precondition	(world_property(properties["crazy_grenadier"], false))
-		action:add_precondition	(world_property(properties["aaa_grenade"], false))
+		action = manager:action (stalker_ids_action_danger_planner)
+		action:add_precondition	(world_property(evid_crazy_grenadier, false))
+		action:add_precondition	(world_property(evid_aaa_grenade, false))
 
 end
 
@@ -558,7 +569,7 @@ end
 -- HELPERS
 ----------------------------------------------------------------------------------------------------------------------
 function get_grenade(id)
-	return level.object_by_id(id)
+	return level_object_by_id(id)
 end
 
 function get_grenade_radius(section)
@@ -576,7 +587,7 @@ function update(delta)
 	for k,v in pairs(pseudo_grenades) do
 		local sobj = alife():object(k)
 		if sobj then
-			local obj = level.object_by_id(k)
+			local obj = level_object_by_id(k)
 			if obj then 
 				obj:explode(0)
 				pseudo_grenades[k]=nil
@@ -590,7 +601,7 @@ function update(delta)
 		local sobj = alife():object(k)
 		if sobj then
 			if time_global()>v then
-				local obj = level.object_by_id(k)
+				local obj = level_object_by_id(k)
 				if obj then 
 					local a = alife():create(obj:section().."_fake",obj:position():add(vector():set(0,1,0)),obj:level_vertex_id(),obj:game_vertex_id())
 					if a then
@@ -624,7 +635,7 @@ function death_callback(npc)
 		local grenade = grenadiers[npc:id()]
 		local dummy,timeout = get_grenade_radius(get_grenade(grenade):section())
 		grenade = alife():create(get_grenade(grenade):section(), npc:bone_position(grenade_bone), npc:level_vertex_id(), npc:game_vertex_id())
-		grenades[grenade.id] = time_global() + timeout		
+		grenades[grenade.id] = time_global() + timeout
 		grenadiers[npc:id()]=nil
 	end
 	
@@ -644,16 +655,14 @@ function death_callback(npc)
 end
 
 function check_enemy(npc,be)
-	return npc:alive() and be and (
-		be:clsid() == clsid.script_stalker or
-		be:clsid() == clsid.actor or 
-		be:clsid() == clsid.bloodsucker_s or
-		be:clsid() == clsid.burer_s or
-		be:clsid() == clsid.controller_s or
-		be:clsid() == clsid.poltergeist_s or
-		be:clsid() == clsid.gigant_s or
-		be:clsid() == clsid.zombie_s
-		) and be:alive() and npc:see(be) and be:position():distance_to(level.vertex_position(be:level_vertex_id()))<2 --из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
+	if not be then return false end
+	local be_clsid = be:clsid()
+	return npc:alive() and (
+		be_clsid == clsid_script_stalker or
+		be_clsid == clsid_actor or
+		(be_clsid >= clsid_bloodsucker_s and be_clsid <= clsid_zombie_s)
+		) and be:alive() and not be:wounded() and npc:see(be)
+		and be:position():distance_to(level.vertex_position(be:level_vertex_id()))<2 --из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
 end
 
 function npc_update(binder)
@@ -666,7 +675,7 @@ function npc_update(binder)
 	if time_global()>binder.grenade_update_time then
 		for k,v in pairs(gr_types) do
 			local curr_gr = npc:object(v)
-			if not curr_gr then 
+			if not curr_gr then
 				local sobj = alife():object(npc:id())
 				if sobj and sobj.rank and sobj:rank()~=0 then
 					local prb = sobj:rank()/2500
@@ -684,10 +693,12 @@ function npc_update(binder)
 end
 
 function throw(id,typ,target)
-	if not get_grenade(id):get_physics_shell() then return end
-	
-	local bone = get_grenade(id):get_physics_shell():get_element_by_bone_name("wpn_body")
-	local dir=utils.vector_copy_by_val(target):sub(get_grenade(id):position())
+	local lobj_grenade = level_object_by_id(id)
+	local grenade_shell = lobj_grenade and lobj_grenade:get_physics_shell()
+	if not grenade_shell then return end
+
+	local bone = grenade_shell:get_element_by_bone_name("wpn_body")
+	local dir=utils.vector_copy_by_val(target):sub(lobj_grenade:position())
 	dir:mul(1300)
 	if typ=="lo" then
 		dir:add(vector():set(0,8000,0))
@@ -698,25 +709,22 @@ function throw(id,typ,target)
 end
 
 function net_spawn()
+	local sim = alife()
+	local sobj
 	for a=0,65534 do
-		local sobj = alife():object(a)
+		sobj = sim:object(a)
 		if sobj then
-			for k,v in pairs(gr_types) do
-				if sobj:section_name()==v.."_test" or sobj:section_name()==v.."_fake" then
-					alife():release(sobj)
-					break
-				end
+			if gr_fakes[sobj:section_name()] then
+				sim:release(sobj)
 			end
 		end
 	end
 end
 
 function fake_pickup(obj)
-	level.map_remove_object_spot(obj:id(), "grenade_location")
-	for k,v in pairs(gr_types) do
-		if obj:section()==v.."_test" or obj:section()==v.."_fake" then
-			alife():release(alife():object(obj:id()))
-			return
-		end
+	if gr_fakes[obj:section()] then
+		local id = obj:id()
+		level.map_remove_object_spot(id, "grenade_location")
+		alife():release(alife():object(id))
 	end
 end

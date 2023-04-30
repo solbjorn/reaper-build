@@ -3,8 +3,7 @@
 -----------------------------------------------------------------------------------
 
 function bind_mob(obj)
-	local new_binder = aem_mob_binder(obj)
-	obj:bind_object(new_binder)
+	obj:bind_object(aem_mob_binder(obj))
 end
 
 ------------------------------------------------------------------------------------
@@ -172,6 +171,7 @@ function aem_mob_binder:load(reader)
 
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT")
+		return
 	end
 
 	xr_logic.load_obj(self.object, reader)

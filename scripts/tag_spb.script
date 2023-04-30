@@ -51,7 +51,7 @@ function zombie_team (z_m)
    -- ищем подходящих покойников на уровне и пишем их в табличку
      for j,i in pairs (db.storage) do
         trup = level.object_by_id(j)
-        if trup and _g.IsStalker(trup) and not trup:alive() then 
+        if trup and IsStalker(trup) and not trup:alive() then 
            trup_name = trup:name()
         else 
            trup_name = nil 
@@ -183,10 +183,8 @@ function trup_to_zombie (s_param)
               if vis then z.visual = vis end
               if math.random()<0.5 then  
                  z.custom="[logic]\ncfg=scripts\\tag\\tag_zombie_2.ltx"
---                 amk.logct("BRAK "..trup_human_name,"temp") 
               else
                  z.custom="[logic]\ncfg=scripts\\tag\\tag_zombie.ltx"
---                 amk.logct("OK "..trup_human_name,"temp") 
               end
               amk.write_stalker_params(z,zombie,true)
               amk.g_start_timer("tag_trup_to_zombie",0,0,2,"F"..tostring(zombie.id))
@@ -281,9 +279,6 @@ function tag_get_npc_armor(trup)  -- нехороша, надо б переделать
      local trup_type, other_type =trup:section(), nil
      local trup_rank = trup:character_rank()
      local cur_outfit= nil    -- определяется тем, кто м\переодеваться "bandit" "stalker" "neutral"
-
---   amk.logct(trup_type,"temp") 
---   trup:get_current_outfit()  -- nil
 
      local net_p = amk.read_stalker_params(alife():object(trup:id())) -- серв.ID трупа 
      if net_p then other_type = net_p.visual end

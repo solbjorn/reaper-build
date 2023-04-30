@@ -1,13 +1,5 @@
 local light_zones = {}
 
-local indoor_levels = {
-	l03u_agr_underground = true,
-	l04u_labx18 = true,
-	l08u_brainlab = true,
-	l10u_bunker = true,
-	l12u_sarcofag = true,
-	l12u_control_monolith = true
-}
 ---------------------------------------------------------------------------------------------------------------------
 class "action_light"
 function action_light:__init (obj, storage)
@@ -80,7 +72,7 @@ function check_light(stalker)
 
 		--' Проверка на индор-аутдор (внутри всегда включено)
 		if light == false then
-			if indoor_levels[level.name()] == true then
+			if level.indoor() == true then
 				light = true
 			end
 		end

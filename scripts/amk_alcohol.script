@@ -1,6 +1,9 @@
 -- Алкогольная зависимость by Terrapack. Основноые функции.
 -- Также правились файлы amk.script, amk_mod.script
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local amk_game_minutes = amk.game_minutes
+
 --
 --===	переменные	===--
 -- старый буфер
@@ -132,7 +135,7 @@ end
 function check_alcohol()
 	--задаем параметры
 	-- получение игрового времени
-	local time = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()
+	local time = amk_game_minutes()
 	-- распаковка состояний и флагов таймеров, переменных
 	if amk.load_variable("alcv", 0) == 0 then
 		convert_variables()
@@ -220,7 +223,7 @@ end
 -- Проверка распития бутылки водки
 function drink_vodka(obj)
 	-- получение игрового времени
-	local time = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()
+	local time = amk_game_minutes()
 	local section = obj:section()
 	local oid = obj:id()
 	if (section=="vodka") then

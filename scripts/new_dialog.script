@@ -60,6 +60,8 @@ local nagrad = {
  }
 }
 
+local amk_utils_inventory_search = amk_utils.inventory_search
+
 function prines_kopyto(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
@@ -69,15 +71,8 @@ function prines_kopyto(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local mutant_boar_leg = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_boar_leg" then         
-        mutant_boar_leg = mutant_boar_leg+1 end end, nil)
-    if mutant_boar_leg>=30 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_boar_leg", 30)
 end
 function otdal_kopyto(first_speaker, second_speaker)
 	local item = ""
@@ -104,14 +99,8 @@ function prines_hvost(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local mutant_dog_tail = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_dog_tail" then                 mutant_dog_tail=mutant_dog_tail+1 end end, nil)
-    if mutant_dog_tail>=15 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_dog_tail", 15)
 end
 function otdal_hvost(first_speaker, second_speaker)
 	local item = ""
@@ -353,22 +342,9 @@ local items_count=0
 local itemin=nil
 
 function item_much(itm,need_namber)
-local actor=db.actor
-items_count=0
-itemin=itm
-actor:iterate_inventory(cheking_item,actor)
-	if items_count>=need_namber then
-		return true
-	else
-		return false
-	end
+	return amk_utils_inventory_search(itm, need_namber)
 end	
-function cheking_item(actor,item)
-local items=item:section()
-	if items==itemin then
-		items_count=items_count+1
-	end
-end
+
 function create_items(npc,section,number)
         for i=1,number do
 			alife():create(section, 
@@ -385,8 +361,6 @@ local stalk
 function out_item_much(itm_section,need_number)
 	reloc_params.itm_section=itm_section
 	reloc_params.itm_cnt=need_number
-	reloc_params.itm_cnt_found=0
-	db.actor:iterate_inventory(checkout_items_count,db.actor)
 	reloc_params.itm_cnt_found=0
 	if reloc_params.itm_cnt_found<=reloc_params.itm_cnt then
 		db.actor:iterate_inventory(out_items_count,db.actor)
@@ -408,42 +382,42 @@ function out_items_count(actor,item)
 end
 
 function krov_kamen()
-	return new_dialog.item_much("mutant_flesh_eye",5) ~= false
+	return item_much("mutant_flesh_eye",5) ~= false
 end
    
 function otdal_kamen(first_speaker, second_speaker)
-new_dialog.out_item_much("mutant_flesh_eye",5) 
+out_item_much("mutant_flesh_eye",5) 
 end
 
 function nagrada_kamen(first_speaker, second_speaker)
-new_dialog.create_items(db.actor,"ammo_9x19_pbp",2)
+create_items(db.actor,"ammo_9x19_pbp",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_9x19_pbp", "in")
 end
 
 function prines_gravi()
-	return new_dialog.item_much("mutant_face_tushkano",15) ~= false
+	return item_much("mutant_face_tushkano",15) ~= false
 end
    
 function otdal_gravi(first_speaker, second_speaker)
-new_dialog.out_item_much("mutant_face_tushkano",15) 
+out_item_much("mutant_face_tushkano",15) 
 end
 
 function nagrada_gravi(first_speaker, second_speaker)
-new_dialog.create_items(db.actor,"ammo_11.43x23_hydro",2)
+create_items(db.actor,"ammo_11.43x23_hydro",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_11.43x23_hydro", "in")
 end
 
 function prines_ruki()
-	return new_dialog.item_much("mutant_hand_kontroler",2) ~= false
+	return item_much("mutant_hand_kontroler",2) ~= false
 end
    
 function otdal_ruki(first_speaker, second_speaker)
-new_dialog.out_item_much("mutant_hand_kontroler",2) 
+out_item_much("mutant_hand_kontroler",2) 
 end
 
 function nagrada_ruki(first_speaker, second_speaker)
-new_dialog.create_items(db.actor,"ammo_5.45x39_ap",4)
-new_dialog.create_items(db.actor,"vodka",1)
+create_items(db.actor,"ammo_5.45x39_ap",4)
+create_items(db.actor,"vodka",1)
 	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_ap", "in")
 	dialogs.relocate_item_section(first_speaker, "vodka", "in")
 end
@@ -621,11 +595,11 @@ end
 function yakut_ograblen_done(first_speaker, second_speaker) 
     dialogs.relocate_item_section(second_speaker, "inventory_new_box", "out")
     dialogs.relocate_item_section(second_speaker, "ammo_5.56x45_ss190", "in")
-	new_dialog.create_items(db.actor,"ammo_5.56x45_ss190",4)
+	create_items(db.actor,"ammo_5.56x45_ss190",4)
 	dialogs.relocate_item_section(second_speaker, "antirad", "in")
-	new_dialog.create_items(db.actor,"antirad",2)
+	create_items(db.actor,"antirad",2)
 	dialogs.relocate_item_section(second_speaker, "medkit_army", "in")
-	new_dialog.create_items(db.actor,"medkit_army",3)
+	create_items(db.actor,"medkit_army",3)
 end	
 
 function helmet_est(task, objective) 
@@ -669,7 +643,7 @@ function atak_larger_done(first_speaker, second_speaker)
 end
 
 function tri_kristal()
-	return new_dialog.item_much("af_cristall",2) ~= false
+	return item_much("af_cristall",2) ~= false
 end
    
 function otdal_kristal(first_speaker, second_speaker)
@@ -688,7 +662,7 @@ function otdal_kristal(first_speaker, second_speaker)
 end
 
 function prines_lomot()
-	return new_dialog.item_much("af_mincer_meat",2) ~= false
+	return item_much("af_mincer_meat",2) ~= false
 end
    
 function otdal_lomot(first_speaker, second_speaker)
@@ -707,15 +681,15 @@ function otdal_lomot(first_speaker, second_speaker)
 end
 
 function prines_odingrav()
-	return new_dialog.item_much("af_gravi",1) ~= false
+	return db_actor:object("af_gravi") or false
 end
    
 function otdal_odingrav(first_speaker, second_speaker)
-new_dialog.out_item_much("af_gravi",1) 
+out_item_much("af_gravi",1) 
 end
 
 function nagrada_odingrav(first_speaker, second_speaker)
-new_dialog.create_items(db.actor,"medkit_scientic",2)
+create_items(db.actor,"medkit_scientic",2)
     dialogs.relocate_item_section(first_speaker, "medkit_scientic", "in")
 end
 
@@ -735,16 +709,16 @@ function zahar_naemnik_done(first_speaker, second_speaker)
 end
 
 function prapor_apt_have()
-	return new_dialog.item_much("medkit_scientic",10) ~= false
+	return item_much("medkit_scientic",10) ~= false
 end
    
    
 function prapor_apt_done(first_speaker, second_speaker)
-new_dialog.out_item_much("medkit_scientic",10) 
+out_item_much("medkit_scientic",10) 
 end
 
 function barrem_talk_have()
-	return new_dialog.item_much("af_cry_2",1) ~= false
+	return db_actor:object("af_cry_2") or false
 end
 
 function vzal_pda_voen(first_speaker, second_speaker)
@@ -756,7 +730,7 @@ function otdal_pda_voen(first_speaker, second_speaker)
 end
 
 function prizrak_tainiy_have(first_speaker, second_speaker)
-    return new_dialog.item_much("plan_document",1) ~= false
+	return db_actor:object("plan_document") or false
 end
 
 function prizrak_tainiy_done(first_speaker, second_speaker)
@@ -764,34 +738,31 @@ function prizrak_tainiy_done(first_speaker, second_speaker)
 end
 
 function gold_art_have()
-	return new_dialog.item_much("gold_art",10) ~= false
+	return item_much("gold_art",10) ~= false
 end
 
 function gold_art_done()
-new_dialog.out_item_much("gold_art",10)
+out_item_much("gold_art",10)
 end
 
 function tri_tainik_first()
-	return new_dialog.item_much("new_prizrak_document1",1) ~= false
+	return db_actor:object("new_prizrak_document1") or false
 end
 
 function tri_tainik_second()
-	return new_dialog.item_much("new_prizrak_document2",1) ~= false
+	return db_actor:object("new_prizrak_document2") or false
 end
 
 function tri_tainik_third()
-	return new_dialog.item_much("new_prizrak_document3",1) ~= false
+	return db_actor:object("new_prizrak_document3") or false
 end
 
 function tri_tainik_have()
-     return new_dialog.item_much("new_prizrak_document1",1) ~= false and                                           new_dialog.item_much("new_prizrak_document2",1) ~= false  and 
-new_dialog.item_much("new_prizrak_document3",1) ~= false
+	return tri_tainik_first() and tri_tainik_second() and tri_tainik_third() or false
 end
 
 function tri_tainik_done()
-new_dialog.out_item_much("new_prizrak_document1",1)
-new_dialog.out_item_much("new_prizrak_document2",1)
-new_dialog.out_item_much("new_prizrak_document3",1)
+	out_item_much("new_prizrak_document1",1)
+	out_item_much("new_prizrak_document2",1)
+	out_item_much("new_prizrak_document3",1)
 end
-
-									

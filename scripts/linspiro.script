@@ -1,3 +1,5 @@
+local amk_utils_inventory_search = amk_utils.inventory_search
+
 --*************************************************************
 --                               “Œ–√Œ¬Àﬂ “¿…Õ» ¿Ã»
 --*************************************************************
@@ -137,19 +139,10 @@ function have_a_item(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local mutant_krovosos_jaw=0
-	local mutant_burer_hand=0
-	local mutant_psevdodog_tail=0
-    
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_krovosos_jaw" then mutant_krovosos_jaw=mutant_krovosos_jaw+1 end end, nil)
-    actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_burer_hand" then mutant_burer_hand=mutant_burer_hand+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_psevdodog_tail" then mutant_psevdodog_tail=mutant_psevdodog_tail+1 end end, nil)
-	if mutant_krovosos_jaw>=3 and mutant_burer_hand>=3 and mutant_psevdodog_tail>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_krovosos_jaw", 3) and 
+	       amk_utils_inventory_search("mutant_burer_hand", 3) and
+	       amk_utils_inventory_search("mutant_psevdodog_tail", 3)
 end
 
 function out_item(first_speaker, second_speaker)
@@ -196,6 +189,16 @@ end
 --*************************************************************
 --                             Œ“ÕŒÿ≈Õ»≈   —¬Œ¡Œƒ≈
 --*************************************************************
+local mods = {
+	af_spirit_2	= true,
+	af_cry_2	= true,
+	af_babka_2	= true,
+	af_pudd_2	= true,
+	af_dik_2	= true,
+	af_kol_2	= true,
+	af_armor_2	= true
+}
+
 function have_mod(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
@@ -205,20 +208,12 @@ function have_mod(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local a1,a2,a3,a4,a5,a6,a7 = 0,0,0,0,0,0,0
-    actor:iterate_inventory(function (dummy, item) if item:section()=="af_spirit_2" then a1=a1+1 end end, nil)
-    actor:iterate_inventory(function (dummy, item) if item:section()=="af_cry_2" then a2=a2+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="af_babka_2" then a3=a3+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="af_pudd_2" then a4=a4+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="af_dik_2" then a5=a5+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="af_kol_2" then a6=a6+1 end end, nil)
-	actor:iterate_inventory(function (dummy, item) if item:section()=="af_armor_2" then a7=a7+1 end end, nil)
-	if a1>=1 or a2>=1 or a3>=1 or a4>=1 or a5>=1 or a6>=1 or a7>=1 then
-        return true
-	else
-        return false
+
+	for k, v in pairs(mods) do
+		if actor:object(k) then return true end
 	end
+
+	return false
 end
 function out_mod(first_speaker, second_speaker)
 	local actor, trader
@@ -229,15 +224,14 @@ function out_mod(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	actor:iterate_inventory(function (dummy, item) 
-	if item:section()=="af_spirit_2" then dialogs.relocate_item_section(trader, "af_spirit_2", "out")
-    elseif item:section()=="af_cry_2" then dialogs.relocate_item_section(trader, "af_cry_2", "out")	
-	elseif item:section()=="af_babka_2" then dialogs.relocate_item_section(trader, "af_babka_2", "out")	
-	elseif item:section()=="af_pudd_2" then dialogs.relocate_item_section(trader, "af_pudd_2", "out")	
-	elseif item:section()=="af_dik_2" then dialogs.relocate_item_section(trader, "af_dik_2", "out")	
-	elseif item:section()=="af_kol_2" then dialogs.relocate_item_section(trader, "af_kol_2", "out")	
-	elseif item:section()=="af_armor_2" then dialogs.relocate_item_section(trader, "af_armor_2", "out") end end, nil)
-	
+
+	for k, v in pairs(mods) do
+		if actor:object(k) then
+			dialogs.relocate_item_section(trader, k, "out")
+			break
+		end
+	end
+
 	relation_registry.set_community_goodwill ("freedom", actor, 1250)
 end
 --*************************************************************
@@ -284,14 +278,8 @@ function krovosos(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local krovosos = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_krovosos_jaw" then krovosos=krovosos+1 end end, nil)
-    if krovosos>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_krovosos_jaw", 3)
 end
 function out_krovosos(first_speaker, second_speaker)
 	local item = ""
@@ -317,14 +305,8 @@ function burer(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local burer = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_burer_hand" then burer=burer+1 end end, nil)
-    if burer>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_burer_hand", 3)
 end
 function out_burer(first_speaker, second_speaker)
 	local item = ""
@@ -350,14 +332,8 @@ function psevdodog(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local psevdodog  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_psevdodog_tail" then psevdodog=psevdodog+1 end end, nil)
-    if psevdodog>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_psevdodog_tail", 3)
 end
 function out_psevdodog(first_speaker, second_speaker)
 	local item = ""
@@ -383,14 +359,8 @@ function zombie(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local zombie  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_zombie_hand" then zombie=zombie+1 end end, nil)
-    if zombie>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_zombie_hand", 3)
 end
 function out_zombie(first_speaker, second_speaker)
 	local item = ""
@@ -416,14 +386,8 @@ function snork(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local snork  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_snork_leg" then snork=snork+1 end end, nil)
-    if snork>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_snork_leg", 3)
 end
 function out_snork(first_speaker, second_speaker)
 	local item = ""
@@ -449,14 +413,8 @@ function dog(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local dog  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_dog_tail" then dog=dog+1 end end, nil)
-    if dog>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_dog_tail", 3)
 end
 function out_dog(first_speaker, second_speaker)
 	local item = ""
@@ -483,14 +441,8 @@ function flesh(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local flesh  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_flesh_eye" then flesh=flesh+1 end end, nil)
-    if flesh>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_flesh_eye", 3)
 end
 function out_flesh(first_speaker, second_speaker)
 	local item = ""
@@ -517,14 +469,8 @@ function boar(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local boar  = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="mutant_boar_leg" then boar=boar+1 end end, nil)
-    if boar>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("mutant_boar_leg", 3)
 end
 function out_boar(first_speaker, second_speaker)
 	local item = ""
@@ -541,113 +487,3 @@ function out_boar(first_speaker, second_speaker)
 	flamethrower.relocate_n_items_section(trader, "mutant_boar_leg", "out", 3)
     flamethrower.relocate_n_items_section(second_speaker, item , "in", count)
 end
---[[
---*************************************************************
---                         œ”“» Õ≈œ»—≈… ƒÀﬂ ÀŒ√» »
---*************************************************************
-[bar_linspiro_dolg_kamp]
-points = p0
-p0:name = wp00
-p0:position = 204.37, 0.10, 89.30
-p0:game_vertex_id = 1193
-p0:level_vertex_id = 49244
-
-[bar_linspiro_dolg_kamp_task]
-points = p0
-p0:name = wp00
-p0:position = 201.34, -0.00, 94.81
-p0:game_vertex_id = 1193
-p0:level_vertex_id = 48213
-
-[bar_linspiro_dolg_walk1]
-points = p0, p1, p2, p3, p4
-p0:name = wp00
-p0:flags = 0x1
-p0:position = 189.55, 7.36, 86.79
-p0:game_vertex_id = 1186
-p0:level_vertex_id = 45472
-p0:links = p1(1)
-
-p1:name = wp01
-p1:flags = 0x1
-p1:position = 186.55, 6.91, 91.57, 45472, 1186
-p1:game_vertex_id = 1186
-p1:level_vertex_id = 45472
-p1:links = p2(1)
-
-p2:name = wp02
-p2:flags = 0x1
-p2:position = 197.79, 6.91, 91.80
-p2:game_vertex_id = 1186
-p2:level_vertex_id = 45472
-p2:links = p3(1)
-
-p3:name = wp03
-p3:flags = 0x1
-p3:position = 197.84, 6.90, 72.46
-p3:game_vertex_id = 1186
-p3:level_vertex_id = 45472
-p3:links = p4(1)
-
-p4:name = wp04
-p4:flags = 0x1
-p4:position = 187.16, 7.00, 71.74
-p4:game_vertex_id = 1186
-p4:level_vertex_id = 45472
-p4:links = p1(1)
-
-[bar_linspiro_sniper_camper1_path]
-points = p0
-p0:name = wp00
-p0:flags = 0x1
-p0:position = 184.15, 8.37, 96.34
-p0:game_vertex_id = 1186
-p0:level_vertex_id = 45473
-
-[bar_linspiro_sniper_camper1_look1]
-points = p0, p1
-p0:name = wp00
-p0:flags = 0x1
-p0:position = 154.28, -0.00, 59.94
-p0:game_vertex_id = 1228
-p0:level_vertex_id = 40788
-po:links = p1(1)
-
-p1:name = wp01
-p1:flags = 0x1
-p1:position = 155.49, -0.00, 123.08
-p1:game_vertex_id = 1192
-p1:level_vertex_id = 41108
-p1:links = p0(1)
-
-[bar_linspiro_nayk_walk1]
-points = p0, p1
-p0:name = wp00
-p0:flags = 0x1
-p0:position = 208.98, 0.43, 62.20
-p0:game_vertex_id = 1203
-p0:level_vertex_id = 50947
-po:links = p1(1)
-
-p1:name = wp01
-p1:flags = 0x1
-p1:position = 208.84, 0.43, 64.94
-p1:game_vertex_id = 1203
-p1:level_vertex_id = 50694
-
-[bar_linspiro_nayk_look1]
-points = p0
-p0:name = wp00
-p0:flags = 0x1
-p0:position = 208.98, 0.43, 62.20
-p0:game_vertex_id = 1203
-p0:level_vertex_id = 50947
-]]--
-
-
-
-
-
-
-
-

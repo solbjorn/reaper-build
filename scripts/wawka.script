@@ -3,29 +3,31 @@ function add_krysyk_pomer_treasure()
 end
 
 function check_bes_dead()
-    if db.actor and db.actor:has_info("gar_hellcar_umer") and 
-        db.actor:has_info("val_pula_ammo_start") and 
-        not db.actor:has_info("val_pula_ammo_done") then  
-            if not db.actor:has_info("val_pula_ammo_newsinfo1") then
-        for i=0, db.actor:object_count()-1 do
-            local obj = db.actor:object(i)
+	local actor = db.actor
+
+    if actor and actor:has_info("gar_hellcar_umer") and 
+        actor:has_info("val_pula_ammo_start") and 
+        not actor:has_info("val_pula_ammo_done") then  
+            if not actor:has_info("val_pula_ammo_newsinfo1") then
+        for i=0, actor:object_count()-1 do
+            local obj = actor:object(i)
             if obj and obj:section() == "inventory_sakbox_01" then
                 amk.start_timer("sms",math.random(20,30),1)
-                db.actor:give_info_portion("val_pula_ammo_newsinfo1")
+                actor:give_info_portion("val_pula_ammo_newsinfo1")
             end
-            if not db.actor:has_info("val_pula_ammo_newsinfo2") then 
-        for i=0, db.actor:object_count()-1 do
-            local obj = db.actor:object(i)
+            if not actor:has_info("val_pula_ammo_newsinfo2") then 
+        for i=0, actor:object_count()-1 do
+            local obj = actor:object(i)
             if obj and obj:section() == "inventory_sakbox_01" then
                 amk.start_timer("sms",math.random(50,60),2)
-                db.actor:give_info_portion("val_pula_ammo_newsinfo2")
+                actor:give_info_portion("val_pula_ammo_newsinfo2")
             end
-            if not db.actor:has_info("val_pula_ammo_newsinfo3") then
-         for i=0, db.actor:object_count()-1 do
-            local obj = db.actor:object(i)
+            if not actor:has_info("val_pula_ammo_newsinfo3") then
+         for i=0, actor:object_count()-1 do
+            local obj = actor:object(i)
             if obj and obj:section() == "inventory_sakbox_01" then
                amk.start_timer("sms",math.random(70,80),3)
-                db.actor:give_info_portion("val_pula_ammo_newsinfo3")
+                actor:give_info_portion("val_pula_ammo_newsinfo3")
             end
             end
             end
@@ -49,12 +51,14 @@ function smski_besu(st)
 end
 
 function check_krysyk_dead()
-    if db.actor and db.actor:has_info("bandit_krisyk_umer") and 
-        db.actor:has_info("bandit_krisyk_start") and 
-        not db.actor:has_info("bandit_krisyk_done") and 
-        not db.actor:has_info("bandit_krisyk_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("bandit_krisyk_umer") and 
+        actor:has_info("bandit_krisyk_start") and 
+        not actor:has_info("bandit_krisyk_done") and 
+        not actor:has_info("bandit_krisyk_newsinfo") then
                 amk.start_timer("smska_borova",math.random(30,60))
-      db.actor:give_info_portion("bandit_krisyk_newsinfo")
+      actor:give_info_portion("bandit_krisyk_newsinfo")
     end
 end
 function smska_borova()
@@ -63,25 +67,29 @@ function smska_borova()
 end
 
 function check_tolik_dead()
-    if db.actor and db.actor:has_info("esc_vagon_wounded_umer") and 
-        db.actor:has_info("mil_volk_resiver_start") and 
-        not db.actor:has_info("mil_volk_resiver_done") and 
-        not db.actor:has_info("mil_volk_resiver_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("esc_vagon_wounded_umer") and 
+        actor:has_info("mil_volk_resiver_start") and 
+        not actor:has_info("mil_volk_resiver_done") and 
+        not actor:has_info("mil_volk_resiver_newsinfo") then
                 amk.start_timer("smska_volka",math.random(30,60))
-      db.actor:give_info_portion("mil_volk_resiver_newsinfo")
+      actor:give_info_portion("mil_volk_resiver_newsinfo")
     end
 end
 function smska_volka()
-      db.actor:give_info_portion("sms_volk")
+      actor:give_info_portion("sms_volk")
                 amk.send_tip(game.translate_string("sms_volk_text"),nil,nil,30, "wolf")
 end
 function check_maks_dead()
-    if db.actor and db.actor:has_info("mil_freedom_member0018_umer") and 
-        db.actor:has_info("mil_max_teleport_08_start") and 
-        not db.actor:has_info("mil_max_teleport_08_done") and 
-        not db.actor:has_info("mil_max_teleport_08_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("mil_freedom_member0018_umer") and 
+        actor:has_info("mil_max_teleport_08_start") and 
+        not actor:has_info("mil_max_teleport_08_done") and 
+        not actor:has_info("mil_max_teleport_08_newsinfo") then
                 amk.start_timer("smska_shurupa",math.random(30,60))
-      db.actor:give_info_portion("mil_max_teleport_08_newsinfo")
+      actor:give_info_portion("mil_max_teleport_08_newsinfo")
     end
 end
 function smska_shurupa()
@@ -89,12 +97,14 @@ function smska_shurupa()
                 amk.send_tip(game.translate_string("sms_shurup_text"),nil,nil,30, "freedom")
 end
 function check_yurik_dead()
-    if db.actor and db.actor:has_info("gar_dm_novice_umer") and 
-        db.actor:has_info("gar_dram_novice_mp5_m1_start") and 
-        not db.actor:has_info("gar_dram_novice_mp5_m1_done") and 
-        not db.actor:has_info("gar_dram_novice_mp5_m1_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("gar_dm_novice_umer") and 
+        actor:has_info("gar_dram_novice_mp5_m1_start") and 
+        not actor:has_info("gar_dram_novice_mp5_m1_done") and 
+        not actor:has_info("gar_dram_novice_mp5_m1_newsinfo") then
                 amk.start_timer("smska_dana",math.random(30,60))
-      db.actor:give_info_portion("gar_dram_novice_mp5_m1_newsinfo")
+      actor:give_info_portion("gar_dram_novice_mp5_m1_newsinfo")
     end
 end
 function smska_dana()
@@ -102,10 +112,12 @@ function smska_dana()
                 amk.send_tip(game.translate_string("sms_dan_text"),nil,nil,30)
 end
 function check_sms_bioradar()
-    if db.actor and db.actor:has_info("bar_rescue_research_reward") and 
-        not db.actor:has_info("bioradar_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("bar_rescue_research_reward") and 
+        not actor:has_info("bioradar_newsinfo") then
                 amk.start_timer("smska_saharova",math.random(10,30))
-      db.actor:give_info_portion("bioradar_newsinfo")
+      actor:give_info_portion("bioradar_newsinfo")
     end
 end
 function smska_saharova()
@@ -113,13 +125,33 @@ function smska_saharova()
                 amk.send_tip(game.translate_string("sms_saharov_text"),nil,nil,30, "saharov")
 end
 function check_sms_awm()
-    if db.actor and db.actor:has_info("yan_kill_brain_done") and 
-        not db.actor:has_info("barman_newsinfo") then
+	local actor = db.actor
+
+    if actor and actor:has_info("yan_kill_brain_done") and 
+        not actor:has_info("barman_newsinfo") then
                 amk.start_timer("smska_barmana",math.random(90,100))
-      db.actor:give_info_portion("barman_newsinfo")
+      actor:give_info_portion("barman_newsinfo")
     end
 end
 function smska_barmana()
       db.actor:give_info_portion("sms_barman")
                 amk.send_tip(game.translate_string("sms_barman_text"),nil,nil,30, "barman")
+end
+
+-------------------------------------------------------------------------------
+
+local portions = {
+	["gar_hellcar_umer"]		= check_bes_dead,
+	["bandit_krisyk_umer"]		= check_krysyk_dead,
+	["esc_vagon_wounded_umer"]	= check_tolik_dead,
+	["mil_freedom_member0018_umer"]	= check_maks_dead,
+	["gar_dm_novice_umer"]		= check_yurik_dead,
+	["bar_rescue_research_reward"]	= check_sms_bioradar,
+	["yan_kill_brain_done"]		= check_sms_awm
+}
+
+function update()
+	for k, v in pairs(portions) do
+		if has_info(k) then v() end
+	end
 end

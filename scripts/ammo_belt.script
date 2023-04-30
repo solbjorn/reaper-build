@@ -13,72 +13,58 @@ function on_info(info_id)
     end
 end
 
+local se_respawn_create_ammo = se_respawn.create_ammo
+
 function on_inventory_open()
 	need_convert = false
+	local sim = g_alife
 	local t = {}
-	local sim = alife()
-	db.actor:iterate_inventory(
+	db_actor:iterate_inventory(
 		function(npc,item)
-			local sect = item:section()
-			if ammo_fake_types[sect] then
-				t[ammo_fake_types[sect]] = get_ammo_size(item) + (t[sect] or 0)
+			local sect = ammo_fake_types[item:section()]
+			if sect then
+				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
 				sim:release(sim:object(item:id()), true)
 			end
 		end
 	)
+
+	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
 	for sec, num in pairs(t) do
-		spawn_ammo_in_inv(sec, num)
+		se_respawn_create_ammo(sec, pos, lvid, gvid, db_actor_id, num)
 	end
 end
 
 function on_inventory_close()
 	need_convert = true
-	local sim = alife()
+	local sim = g_alife
 	local t = {}
-	db.actor:iterate_inventory(
+	db_actor:iterate_inventory(
 		function(npc,item)
 			local sect = item:section()
 			if ammo_section[sect] and db_actor:is_in_ruck(item) then
-				t[sect .. "_fake"] = get_ammo_size(item) + (t[sect] or 0)
+				sect = sect .. "_fake"
+				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
 				sim:release(sim:object(item:id()), true)
 			end
 		end
 	)
+
+	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
 	for sec, num in pairs(t) do
-		spawn_ammo_in_inv(sec, num)
+		se_respawn_create_ammo(sec, pos, lvid, gvid, db_actor_id, num)
 	end
 end
 
 function on_item_ruck(item)
 	local section = item:section()
 	if ammo_section[section] and need_convert == true then
-		local cnt = get_ammo_size(item)
-		if cnt > 0 then
-			local sim = alife()
-			sim:release(sim:object(item:id()),true)
-			spawn_ammo_in_inv(section.."_fake",cnt)
-		end
-	end
-end
+		local cnt = get_ammo_data(item, "box_size")
 
--- возвращает количество патронов в пачке
-function get_ammo_size(obj)
-	local se_obj = alife():object(obj:id())
-	if se_obj == nil then return 0 end
-	local packet = net_packet()
-	cse_alife_item_ammo.STATE_Write(se_obj,packet)
-	packet:r_seek(packet:w_tell()-2)
-	return packet:r_u16()
-end
-
-function spawn_ammo_in_inv(spawn_item,number,npc)
-	if npc == nil then npc = db.actor end
-	if number > 0 then
-		return se_respawn.create_ammo(spawn_item,
-							  npc:position(),
-							  npc:level_vertex_id(),
-							  npc:game_vertex_id(),
-							  npc:id(),
-							  number)
+		g_alife:release(g_alife:object(item:id()), true)
+		se_respawn_create_ammo(section .. "_fake", db_actor:position(),
+				       db_actor:level_vertex_id(),
+				       db_actor:game_vertex_id(),
+				       db_actor_id, cnt)
 	end
 end

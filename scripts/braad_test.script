@@ -1,59 +1,98 @@
+local math_random = math.random
+
+local falses = {
+	l01_escape = {
+		has	= "prizrak_finalzver_start",
+		give	= "info_spawn_zver"
+	},
+	l03_agroprom = {
+		has	= "yakut_false_have",
+		give	= "yakut_false_done"
+	},
+	l03u_agr_underground = {
+		has	= "yakut_false_start",
+		give	= "yakut_false_have"
+	},
+	l06_rostok = {
+		has	= "zahar_naemnik_start",
+		give	= "zahar_naemnik_begin"
+	},
+	l10u_bunker = {
+		has	= "ucen_talk_need",
+		give	= "ucen_talk_spawn"
+	}
+}
+
 function false_info()
-   if level.name()=="l03u_agr_underground" and db.actor:has_info("yakut_false_start") then db.actor:give_info_portion("yakut_false_have")
-elseif level.name()=="l03_agroprom" and db.actor:has_info("yakut_false_have") then
-db.actor:give_info_portion("yakut_false_done")
-elseif level.name()=="l06_rostok" and db.actor:has_info("zahar_naemnik_start") then
-db.actor:give_info_portion("zahar_naemnik_begin")
---elseif level.name()=="l02_garbage" and db.actor:has_info("voen_document_est") then
---db.actor:give_info_portion("bandranen_pda_need")
---elseif level.name()=="l02_garbage" and db.actor:has_info("bandranen_pda_est") then
---db.actor:give_info_portion("fraer_pda_need")
---elseif db.actor:has_info("fraer_pda_est") then db.actor:give_info_portion("prapor_talk_need")
---elseif level.name()=="l07_military" and db.actor:has_info("barrem_talk_est") then
---db.actor:give_info_portion("ara_pda_need")
---elseif level.name()=="l07_military" and db.actor:has_info("ara_pda_est") then
---db.actor:give_info_portion("siv_pda_need")
---elseif db.actor:has_info("siv_pda_est") then db.actor:give_info_portion("sah_talk_need")
-elseif level.name()=="l10u_bunker" and db.actor:has_info("ucen_talk_need") then
-db.actor:give_info_portion("ucen_talk_spawn")
-elseif level.name()=="l01_escape" and db.actor:has_info("prizrak_finalzver_start") then
-db.actor:give_info_portion("info_spawn_zver")
-end
+	local entry = falses[level.name()]
+	if entry and not has_info(entry.give) and has_info(entry.has) then
+		db_actor:give_info_portion(entry.give)
+	end
 end
 
+local items = {
+	l01_escape = {
+		item	= "voen_document",
+		info	= "bandranen_pda_need"
+	},
+	l02_garbage = {
+		item	= "bandranen_pda",
+		info	= "bandranen_pda_est"
+	},
+	l06_rostok = {
+		item	= "sysh_flash",
+		info	= "treasure_sysh_start"
+	},
+	l07_military = {
+		item	= "ara_flash",
+		info	= "ara_pda_est"
+	},
+	l10u_bunker = {
+		item	= "sysh_document",
+		info	= "treasure_sysh_have"
+	}
+}
+
+local always_items = {
+	fraer_pda = {
+		has	= "bandranen_pda_est",
+		give	= "prapor_talk_need"
+	},
+	siv_pda = {
+		has	= "ara_pda_est",
+		give	= "sah_talk_need"
+	}
+}
 
 function checking_use_item(obj)
-if level.name()=="l10u_bunker" and obj:section()=="sysh_document" then db.actor:give_info_portion("treasure_sysh_have") amk.drop_item(db.actor,obj) amk.remove_item(obj) 
-elseif level.name()=="l06_rostok" and obj:section()=="sysh_flash" then db.actor:give_info_portion("treasure_sysh_start") amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l01_escape" and obj:section()=="voen_document" then db.actor:give_info_portion("bandranen_pda_need") amk.drop_item(db.actor,obj) amk.remove_item(obj)
---elseif level.name()=="l01_escape" and obj:section()=="wpn_knife" and db.actor:has_info("voen_document_est") then
---db.actor:give_info_portion("bandranen_pda_need")
-elseif level.name()=="l02_garbage" and obj:section()=="bandranen_pda" then db.actor:give_info_portion("bandranen_pda_est") amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif obj:section()=="fraer_pda" and db.actor:has_info("bandranen_pda_est") then db.actor:give_info_portion("prapor_talk_need") amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l07_military" and obj:section()=="ara_flash" then db.actor:give_info_portion("ara_pda_est") amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif obj:section()=="siv_pda" and db.actor:has_info("ara_pda_est") then db.actor:give_info_portion("sah_talk_need") amk.drop_item(db.actor,obj) amk.remove_item(obj)
-end
+	local sect = obj:section()
+
+	local entry = always_items[sect]
+	if entry then
+		if has_info(entry.has) then db_actor:give_info_portion(entry.give) end
+		return
+	end
+
+	local entry = items[level.name()]
+	if entry and sect == entry.item then db_actor:give_info_portion(entry.info) end
 end
 
-local nepis={9613,9622}
-local nepis_id={9850,9851}
+local nepis = {
+	9613,	-- Захар
+	9622	-- Дэн
+}
 
 function dead_npc()
-  for a=1,table.getn(nepis),1 do
-	local npis=nepis[a]
-	local obj=alife():story_object(npis)
-	if  obj and IsStalker(obj) and not obj:alive() then
-	local name=obj:name()
-		if not has_alife_info(name.."_umer") then
-			db.actor:give_info_portion(name.."_umer")
+	local sim = alife()
+	for a=1, #nepis do
+		local obj = sim:story_object(nepis[a])
+		if obj and IsStalker(obj) and not obj:alive() then
+			local info = obj:name() .. "_umer"
+			if not has_alife_info(info) then
+				db.actor:give_info_portion(info)
+			end
 		end
 	end
-	end
---	if	has_alife_info("esc_dan_umer") and not has_alife_info("atak_larger_fail") then
---	db.actor:give_info_portion("atak_larger_fail") 
---	elseif has_alife_info("stalker_green_zahar_umer") and not has_alife_info("atak_larger_fail2") then
---	db.actor:give_info_portion("atak_larger_fail2") 
---	end
 end
 
 
@@ -65,38 +104,29 @@ end
 
 function setGulagEnemy()
 local npc,obj
+	local sim = alife()
 	
-	for i=0,65534 do 
+	for i, v in pairs(db.storage) do
         npc = level.object_by_id(i)
         if npc and npc:name() == "rostok_stalker" then 
-            obj = alife():object(npc:id()) 
+            obj = sim:object(npc:id()) 
+			break
         end
     end
-	alife():create("wpn_mp5",
-	obj.position,
-	obj.m_level_vertex_id,
-	obj.m_game_vertex_id,
-	obj.id)
-	alife():create("wpn_val",
-	obj.position,
-	obj.m_level_vertex_id,
-	obj.m_game_vertex_id,
-	obj.id)
-        alife():create_ammo("ammo_5.56x45_ss190",
-	obj.position,
-	obj.m_level_vertex_id,
-	obj.m_game_vertex_id,
-	obj.id,
-        30)
+	sim:create("wpn_mp5",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
+	sim:create("wpn_val",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
+	sim:create_ammo("ammo_5.56x45_ss190",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id,30)
 end
 
 function bloodsucker()
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
-local obj = alife():create("bloodsucker_strong",vector():set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	local sim = alife()
+	local v = vector()
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
 end
 
 function main_friend(npc)
@@ -104,44 +134,50 @@ npc:set_relation(game_object.friend, db.actor)
 end
 
 function zombie_blow()
-local obj = alife():create("zombie_blow",vector():set(-108.36364746,21.564731597,-35.483924865),312,1529)
-local obj = alife():create("zombie_blow",vector():set(-108.36364746,21.564731597,-35.483924865),312,1529)
-local obj = alife():create("zombie_blow",vector():set(-108.36364746,21.564731597,-35.483924865),312,1529)
-local obj = alife():create("zombie_blow",vector():set(-91.32671356,21.57417869,-23.8667068),741,1529)
-local obj = alife():create("zombie_blow",vector():set(-91.32671356,21.57417869,-23.8667068),741,1529)
-local obj = alife():create("zombie_blow",vector():set(-91.32671356,21.57417869,-23.8667068),741,1529)
-local obj = alife():create("zombie_blow",vector():set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-local obj = alife():create("zombie_blow",vector():set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-local obj = alife():create("zombie_blow",vector():set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-local obj = alife():create("zombie_blow",vector():set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-local obj = alife():create("zombie_blow",vector():set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-local obj = alife():create("zombie_blow",vector():set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-local obj = alife():create("zombie_blow",vector():set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-local obj = alife():create("zombie_blow",vector():set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-local obj = alife():create("zombie_blow",vector():set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-local obj = alife():create("zombie_blow",vector():set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-local obj = alife():create("zombie_blow",vector():set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-local obj = alife():create("zombie_blow",vector():set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	local sim = alife()
+	local v = vector()
+	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
 end
 
 function zasada_for()
-local obj = alife():create("electro_chimera",vector():set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-local obj = alife():create("electro_chimera",vector():set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-local obj = alife():create("electro_chimera",vector():set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-local obj = alife():create("electro_chimera",vector():set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	local sim = alife()
+	local v = vector()
+	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
 end
 
 function radar_man()
-local obj = alife():create("m_controller_old",vector():set(-61.979244232178,-21.8962020874,35.8896102905),195,2727)
-local obj = alife():create("m_controller_old",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-local obj = alife():create("zombie_blow",vector():set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	local sim = alife()
+	local v = vector()
+	sim:create("m_controller_old",v:set(-61.979244232178,-21.8962020874,35.8896102905),195,2727)
+	sim:create("m_controller_old",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
 end
 
 function killactor (sid)
@@ -168,12 +204,14 @@ local npc = level_object_by_sid (9905)
 end
 
 function killactor_spawn()
-local obj = alife():create("killer_boevik2",vector():set(43.09783554,-8.13079166,14.410468),345215,1582)
-local obj = alife():create("killer_boevik1",vector():set(59.50757599,-8.5839643,9.3478708),358211,1570)
-local obj = alife():create("killer_boevik3",vector():set(59.52076721,-8.7670116,22.850177765),358227,1559)
-local obj = alife():create("killer_boevik4",vector():set(40.780555725,-8.319325447,19.2897949),343015,1582)
-local obj = alife():create("killer_boevik5",vector():set(46.9849434,-8.1420059,20.492004),348191,1582)
-local obj = alife():create("killer_boevik6",vector():set(51.40478897,-8.08700466,13.5054283),351374,1582)
+	local sim = alife()
+	local v = vector()
+	sim:create("killer_boevik2",v:set(43.09783554,-8.13079166,14.410468),345215,1582)
+	sim:create("killer_boevik1",v:set(59.50757599,-8.5839643,9.3478708),358211,1570)
+	sim:create("killer_boevik3",v:set(59.52076721,-8.7670116,22.850177765),358227,1559)
+	sim:create("killer_boevik4",v:set(40.780555725,-8.319325447,19.2897949),343015,1582)
+	sim:create("killer_boevik5",v:set(46.9849434,-8.1420059,20.492004),348191,1582)
+	sim:create("killer_boevik6",v:set(51.40478897,-8.08700466,13.5054283),351374,1582)
 end
 
 function sorok_pda()
@@ -186,19 +224,20 @@ new_dialog.out_item_much("device_pda_npc",40)
 end
 
 function chern_dogs()
-local obj = alife():create("psy_dog_radar",vector():set(338.74279785,-46.47824478,-163.8179168),86443,2086)
-local obj = alife():create("psy_dog_radar",vector():set(338.74279785,-46.47824478,-163.8179168),86443,2086)
-local obj = alife():create("psy_dog_radar",vector():set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
-local obj = alife():create("psy_dog_radar",vector():set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
+	local sim = alife()
+	local v = vector()
+	sim:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
+	sim:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
+	sim:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
+	sim:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
 end
 
 function create_monstr()
+	local sim = alife()
 local position = db.actor:position()
 	position.x = position.x + 13
-local obj = alife():create("burer_strong",
-			position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
-local obj = alife():create("burer_strong",
-			position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
+	sim:create("burer_strong", position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
+	sim:create("burer_strong", position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
 end			
 			
 function kill_npc(sid)
@@ -216,7 +255,7 @@ end
 
 
 function new_comp()
-local obj = alife():create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
+	alife():create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
 end
 
 function release_actor_items()
@@ -314,17 +353,15 @@ function release_actor_items()
 		["wpn_flame"] = true}
     local obj
     local sim = alife()
-    local actor = db.actor;
+    local actor = db.actor
     -- перебор вещей инвентаря
     local cnt = actor:object_count()
     for i=0, cnt-1 do
         obj = actor:object(i)
         if not items[obj:section()] then
             -- удаление вещи
-			--amk.start_timer(math.random(20,30))
             sim:release(sim:object(obj:id()), true)
 		sleep_manager.main(5+amk.load_variable("gg_need_sleep_nrg",0))
-			--sak.add_new_military()
         end
     end
 end	
@@ -339,31 +376,52 @@ relation_registry.set_community_goodwill ("stalker", "actor", 2000)
 end
 
 function atak_larger_have(task, info)
-  if db.actor and db.actor:has_info("snip_esc1_dead") and db.actor:has_info("snip_esc2_dead") and db.actor:has_info("snip_esc3_dead") and db.actor:has_info("snip_esc4_dead") and db.actor:has_info("snip_esc5_dead") and db.actor:has_info("snip_esc6_dead")and db.actor:has_info("snip_esc7_dead") and db.actor:has_info("snip_esc8_dead") and db.actor:has_info("snip_esc9_dead") and db.actor:has_info("snip_esc10_dead") and db.actor:has_info("snip_esc11_dead") and db.actor:has_info("snip_esc12_dead") ~= nil then
-  return db.actor:give_info_portion("atak_larger_have") ~= nil   
-  end
-return false
+	local actor = db.actor
+	if actor and
+	   actor:has_info("snip_esc1_dead") and
+	   actor:has_info("snip_esc2_dead") and
+	   actor:has_info("snip_esc3_dead") and
+	   actor:has_info("snip_esc4_dead") and
+	   actor:has_info("snip_esc5_dead") and
+	   actor:has_info("snip_esc6_dead")and
+	   actor:has_info("snip_esc7_dead") and
+	   actor:has_info("snip_esc8_dead") and
+	   actor:has_info("snip_esc9_dead") and
+	   actor:has_info("snip_esc10_dead") and
+	   actor:has_info("snip_esc11_dead") and
+	   actor:has_info("snip_esc12_dead") ~= nil then
+		return actor:give_info_portion("atak_larger_have") ~= nil
+	end
+	return false
 end
 
 function zahar_naemnik_have(task, info)
-  if db.actor and db.actor:has_info("naem_zahar1_dead") and db.actor:has_info("naem_zahar2_dead") and db.actor:has_info("naem_zahar3_dead") and db.actor:has_info("naem_zahar4_dead") and db.actor:has_info("naem_zahar5_dead") and db.actor:has_info("naem_zahar6_dead") ~= nil then
-  return db.actor:give_info_portion("zahar_naemnik_have") ~= nil   
-  end
-return false
+	local actor = db.actor
+	if actor and
+	   actor:has_info("naem_zahar1_dead") and
+	   actor:has_info("naem_zahar2_dead") and
+	   actor:has_info("naem_zahar3_dead") and
+	   actor:has_info("naem_zahar4_dead") and
+	   actor:has_info("naem_zahar5_dead") and
+	   actor:has_info("naem_zahar6_dead") ~= nil then
+		return actor:give_info_portion("zahar_naemnik_have") ~= nil
+	end
+	return false
 end
 
 function check_npc_dead()
-    if db.actor and db.actor:has_info("esc_dan_umer") and db.actor:has_info("informator_pda_start") and not db.actor:has_info("informator_pda_have") and not db.actor:has_info("informator_pda_done") and not db.actor:has_info("esc_dan_umer_newsinfo1") then
-                amk.start_timer("sms_new",math.random(30,60))
-               db.actor:give_info_portion("esc_dan_umer_newsinfo1")  
+	local actor = db.actor
+    if actor and actor:has_info("esc_dan_umer") and actor:has_info("informator_pda_start") and not actor:has_info("informator_pda_have") and not actor:has_info("informator_pda_done") and not actor:has_info("esc_dan_umer_newsinfo1") then
+                amk.start_timer("sms_new",math_random(30,60))
+               actor:give_info_portion("esc_dan_umer_newsinfo1")  
 	end
-	if db.actor and db.actor:has_info("esc_dan_umer") and db.actor:has_info("dan_grab_start") and  db.actor:has_info("dan_grab_have") and not db.actor:has_info("dan_grab_done") and not db.actor:has_info("esc_dan_umer_newsinfo2") then
-                amk.start_timer("sms_new",math.random(40,70))
-               db.actor:give_info_portion("esc_dan_umer_newsinfo2")
+	if actor and actor:has_info("esc_dan_umer") and actor:has_info("dan_grab_start") and  actor:has_info("dan_grab_have") and not actor:has_info("dan_grab_done") and not actor:has_info("esc_dan_umer_newsinfo2") then
+                amk.start_timer("sms_new",math_random(40,70))
+               actor:give_info_portion("esc_dan_umer_newsinfo2")
 	end
-    if db.actor and db.actor:has_info("esc_dan_umer") and db.actor:has_info("dan_flash_start") and  db.actor:has_info("dan_flash_have")  and not db.actor:has_info("dan_flash_done") and not db.actor:has_info("esc_dan_umer_newsinfo3") then
-                amk.start_timer("sms_new",math.random(40,70))
-               db.actor:give_info_portion("esc_dan_umer_newsinfo3")
+    if actor and actor:has_info("esc_dan_umer") and actor:has_info("dan_flash_start") and  actor:has_info("dan_flash_have")  and not actor:has_info("dan_flash_done") and not actor:has_info("esc_dan_umer_newsinfo3") then
+                amk.start_timer("sms_new",math_random(40,70))
+               actor:give_info_portion("esc_dan_umer_newsinfo3")
 	end		
 end
 
@@ -373,9 +431,10 @@ function sms_new()
 end
 
 function check_ecolog_dead()
-    if db.actor and db.actor:has_info("ucen_talk_est") and not db.actor:has_info("esc_dan_umer_newsinfo4") then
-                amk.start_timer("sms_new1",math.random(140,170))
-               db.actor:give_info_portion("esc_dan_umer_newsinfo4")
+	local actor = db.actor
+    if actor and actor:has_info("ucen_talk_est") and not actor:has_info("esc_dan_umer_newsinfo4") then
+                amk.start_timer("sms_new1",math_random(140,170))
+               actor:give_info_portion("esc_dan_umer_newsinfo4")
 	end		
 end
 
@@ -406,5 +465,3 @@ function delete_smart()
     alife():release(se_obj, true)
   end
 end
-
-

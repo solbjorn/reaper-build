@@ -11,25 +11,16 @@
  - статистика добытых артефактов
  - перепаковщик неполных пачек патронов (рюкзак и пояс)
 --]]-----------------------------------------------------------------------------------------------
-local not_art = {
-	bio		= true,
-	bioradar	= true
-}
----------------------------------------------------------------------------------------------------
-function is_true_art(obj)
-	return obj:is_artefact() and not not_art[obj:section()]
-end
----------------------------------------------------------------------------------------------------
 local max_belt_af = read_line("inventory", "max_belt_af")
 --[[-----------------------------------------------------------------------------------------------
  * Limit artefacts number on belt
 --]]-----------------------------------------------------------------------------------------------
 function update_artefacts_belt_lock(obj)
-	if is_true_art(obj) then
+	if obj:is_artefact() then
 		local af_count = 0
 		db_actor:iterate_inventory(
 			function(dummy, obj)
-				if is_true_art(obj) and db_actor:is_on_belt(obj) then
+				if obj:is_artefact() and db_actor:is_on_belt(obj) then
 					af_count = af_count + 1
 				end
 			end
@@ -37,7 +28,7 @@ function update_artefacts_belt_lock(obj)
 		local lock = af_count >= max_belt_af
 		db_actor:iterate_inventory(
 			function(dummy, obj)
-				if is_true_art(obj) and db_actor:is_in_ruck(obj) then
+				if obj:is_artefact() and db_actor:is_in_ruck(obj) then
 					set_inventory_item_flag(obj, inventory_item_flags.belt, not lock)
 				end
 			end
@@ -47,30 +38,13 @@ end
 --[[-----------------------------------------------------------------------------------------------
  * Artefacts statistic
 --]]-----------------------------------------------------------------------------------------------
-local artefact_points = {
-	["0"]		= 1,
-	["2500"]	= 2,
-	["5000"]	= 3,
-	["10000"]	= 4,
-	["20000"]	= 5
-}
----------------------------------------------------------------------------------------------------
 function artefacts_statistic(obj)
-	if is_true_art(obj) then
+	if obj:is_artefact() then
 		local se_obj = g_alife:object(obj:id())
 		if not se_obj.already_taken then
 			local inv_name = read_line(obj:section(), "inv_name", "string")
-			local cost = obj:cost()
-			local points
-			for k, v in pairs(artefact_points) do
-				if cost >= tonumber(k) then
-					points = v
-				else
-					break
-				end
-			end
-			actor_stats.add_points("artefacts", inv_name, 1, points)
-			db_actor:set_character_rank(db_actor:character_rank() + points)
+			actor_stats.add_points("artefacts", inv_name, 1, 1)
+			db_actor:set_character_rank(db_actor:character_rank() + 1)
 			se_obj.already_taken = true
 		end
 	end

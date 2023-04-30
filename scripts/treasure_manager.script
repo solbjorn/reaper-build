@@ -360,10 +360,7 @@ function CTreasure:use(npc)
 	else 
       rarets = 90
   end
-  if amk.is_debug then
-    rarets=0
-  end
-	
+
 	if math_random(100) < rarets then 
 	  return
 	end
@@ -423,8 +420,9 @@ function CTreasure:check(hide)
 end
 --' Выдача тайника
 function CTreasure:give_treasure(k, hide)
+	local sim = g_alife
 	local v = self.treasure_info[k]
-	local obj = g_alife:story_object(v.target)
+	local obj = sim:story_object(v.target)
 	if obj ~= nil then
 		--' Пометить на карте		
 		local text = "%c[255,238,155,23]"..game.translate_string(v.name).."\\n"..
@@ -437,41 +435,29 @@ function CTreasure:give_treasure(k, hide)
 		end  
 		
 		--' Сгенерить вещи
-		local pos, lvid, gvid, pid
-		local left, box_size
-		pos = obj.position
-		lvid = obj.m_level_vertex_id
-		gvid = obj.m_game_vertex_id
-		pid = obj.id
+		local pos, lvid, gvid, pid = obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id
 		for kk,vv in pairs(v.items) do
 			if ammo_section[vv.section] == true then
-				left, box_size = vv.prob, system_ini():r_u32(vv.section, "box_size")
-				while left > box_size do
-					g_alife:create_ammo(vv.section, pos, lvid, gvid, pid, box_size)
-					left = left - box_size
-				end
-				if left > 0 then
-					g_alife:create_ammo(vv.section, pos, lvid, gvid, pid, left)
-				end
+				se_respawn.create_ammo(vv.section, pos, lvid, gvid, pid, vv.prob)
 			else
 				for i=1,vv.prob do
-					g_alife:create(vv.section, pos, lvid, gvid, pid)
+					sim:create(vv.section, pos, lvid, gvid, pid)
 				end
 			end
 		end
 
 		if not hide then
-			news_manager.send_treasure(v.name, level_name_by_game_vertex(obj.m_game_vertex_id))
-			level.map_add_object_spot_ser(obj.id, "treasure", text)
+			news_manager.send_treasure(v.name, level_name_by_game_vertex(gvid))
+			level.map_add_object_spot_ser(pid, "treasure", text)
 		end
 
 		--' Пометим тайник как выданный
 		self.treasure_info[k].active = true
 		self.treasure_info[k].done = true
     -- Отправим тайник в оффлайн
-    if g_alife ~= nil and obj.online then
-       g_alife:set_switch_online  (obj.id, false)
-       g_alife:set_switch_offline (obj.id, true)
+    if sim ~= nil and obj.online then
+       sim:set_switch_online  (obj.id, false)
+       sim:set_switch_offline (obj.id, true)
        amk.convert_npc[obj.id]=1 -- ставим в очередь на вывод в онлайн
     end
 	else
@@ -490,6 +476,7 @@ function CTreasure:treasure_empty(box, box_story_id)
 		if self.treasure_info[k].active ~= false then
 			xr_statistic_freeplay.get_freeplay_statistic():check_found_secrets_count()
 			actor_stats.add_points("artefacts", "st_pda_secrets", 1, 1)
+			db_actor:set_character_rank(db_actor:character_rank() + 1)
 			amk_offline_alife.empty_treasure(box:id())
 		end
 

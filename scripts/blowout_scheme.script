@@ -549,12 +549,38 @@ end
 
 local cnt=0
 
+--Задаем список неписей с игнором на выброс(например постовых, которые уже находятся в зоне укрытия и могут спокойно выполнять свою работу во время выброса)
+--[[------------------------------ ignor blowout -------------------------------]]
+local npcNameBlowoutIgnore = {
+    ["mil_stalker0012"]         = true, --Псих на АС
+    ["yantar_ecolog_general"]   = true, --Сахаров
+    ["mil_freedom_member0009"]  = true, --Охранник Лукаша
+    ["mil_freedom_member0012"]  = true, --Лукаш
+    ["mil_freedom_member0019"]  = true, --Охранник Лукаша
+    ["mil_freedom_member0021"]  = true, --Скряга
+    ["bar_bar_guard"]           = true, --Гарик в баре
+    ["bar_bar_osvedomitel"]     = true, --Информатор в баре
+    ["bar_bar_guard_2"]         = true, --Жорик в баре
+	["yantar_semenov"]          = true, --Семенов на Янтаре
+	["yan_scientist_help"] = true,
+-- Добавляем пятёрку у костра в ТД, чтобы не бегали на базу к бандитам и не гибли
+	["gar_seryi"] = true,            -- Серый
+	["gar_hellcar"] = true,          -- Бес
+	["agr_krot"] = true,             -- Крот
+	["esc_fox"] = true,              -- Лис
+	["val_sos_wounded"] = true,       -- Мессер
+}
+local npcCommunityBlowoutIgnore = {
+    ["zombied"]     = true,
+    ["trader"]      = true,
+    ["arena_enemy"] = true
+}
+
 function add_to_binder_q(npc,storage)
   local evid_wounded=xr_evaluators_id.sidor_wounded_base
   local monolith=npc:character_community()=="monolith"
-  local zombi=npc:character_community()=="zombied" or npc:character_community()=="trader" or
-          npc:character_community()=="arena_enemy" or npc:name()=="mil_stalker0012" or npc:name()=="yantar_ecolog_general" or -- сумашедший на милитари и Сахаров
-          npc:name()=="mil_freedom_member0021" or -- Скрягу в зомби!
+    local zombi = npcCommunityBlowoutIgnore[npc:character_community()] or
+        npcNameBlowoutIgnore[npc:name()] or
 		  npc:out_restrictions()=="bar_arena_restrictor" or -- и всех аренных неписей  и мобов
 		  string.find(npc:name(), "aem_a") -- и админов
 

@@ -9,6 +9,9 @@ load
 net_spawn
 --------------------------------------------------------------------------------------------------------------------]]
 
+local amk_particle_amk_particle = amk_particle.amk_particle
+local table_remove = table.remove
+
 local game_version_lt_7 = _z.game_version() < 7
 
 local db_storage = db.storage
@@ -77,11 +80,13 @@ function motivator_binder:net_spawn(sobject)
     return false
   end
 
-  local self_object=self.object
+	local self_object = self.object
+	local sim = alife()
+
   local zomb=amk.load_table("zombies")
   for k,v in pairs(zomb) do
     if k==self_object:id() then
-      if alife():object(v.master) and alife():object(v.master).alive and (not alife():object(v.master):alive()) then
+      if sim:object(v.master) and sim:object(v.master).alive and (not sim:object(v.master):alive()) then
         if amk_mod.dezombify(k,v) then
           zomb[k]=nil
         end
@@ -91,6 +96,8 @@ function motivator_binder:net_spawn(sobject)
   amk.save_table("zombies",zomb)
 
   db.add_obj(self_object)
+	-- регистрация в схеме биорадара
+	biodetector.add_obj(self_object)
 
   -- Все CALLBACK-и ставить здесь:
   self_object:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
@@ -143,13 +150,14 @@ end
 function motivator_binder:net_destroy()
 	local self_object = self.object
 
-  if xrs_ai then xrs_ai.npc_net_destroy(self_object) end
+	xrs_ai.npc_net_destroy(self_object)
 
-        if table.getn(self.particles)>0 then
-                for kk,vv in pairs(self.particles) do
+	local self_particles = self.particles
+        if #self_particles > 0 then
+                for kk,vv in pairs(self_particles) do
                         if not vv:is_finished() then
                                 vv:stop()
-                                self.particles[kk]=nil
+                                self_particles[kk]=nil
                         end
                 end
         end
@@ -166,8 +174,9 @@ function motivator_binder:net_destroy()
   end
 
   db.del_obj(self_object)
-
   db_storage[self_object:id()] = nil
+	-- отрегистрация в схеме биорадара
+	biodetector.remove_obj(self_object)
 
   self:clear_callbacks()
   self_object:set_callback(callback.use_object, nil)
@@ -241,10 +250,8 @@ function motivator_binder:death_callback(victim, who)
 	if self_object == nil then 
 		return 
 	end
-		
-	if xrs_ai then 
-		xrs_ai.npc_death_callback(self_object) 
-	end
+
+	xrs_ai.npc_death_callback(self_object)
 	sa_callbacks.npc_death(victim, who)
 
   if who:id() == db_actor_id then
@@ -285,8 +292,9 @@ function motivator_binder:death_callback(victim, who)
   h.impulse = 10
   self_object:hit(h)
 
-        if table.getn(self.particles)>0 then
-                for kk,vv in pairs(self.particles) do
+	local self_particles = self.particles
+        if #self_particles > 0 then
+                for kk,vv in pairs(self_particles) do
                                 vv:on_death()
                 end
         end
@@ -345,26 +353,30 @@ function motivator_binder:update(delta)
 	if self_object == nil then 
 		return 
 	end
-  object_binder.update(self, delta)
+	local self_object_id = self_object:id()
+
+	object_binder.update(self, delta)
+
+	local self_particles = self.particles
+	if particles[self_object_id] and #particles[self_object_id] > 0 then
+		for kk, vv in pairs(particles[self_object_id]) do
+			self_particles[#self_particles + 1] = amk_particle_amk_particle(vv)
+			table_remove(particles[self_object_id], kk)
+		end
+	end
+	if #self_particles > 0 then
+		for kk, vv in pairs(self_particles) do
+			if vv then
+				if vv:is_finished() then
+					self_particles[kk] = nil
+				else
+					vv:update(delta)
+				end
+			end
+		end
+	end
 
 	if self.death_recorded then return end
-
-                if particles[self_object:id()] and table.getn(particles[self_object:id()])>0 then
-                        for kk,vv in pairs(particles[self_object:id()]) do
-                                table.insert(self.particles,amk_particle.amk_particle(vv))
-                                table.remove(particles[self_object:id()],kk)
-                        end
-                end
-
-                if table.getn(self.particles)>0 then
-                        for kk,vv in pairs(self.particles) do
-                                if vv:is_finished() then
-                                        self.particles[kk]=nil
-                                else
-                                        vv:update(delta)
-                                end
-                        end
-                end
 
 	local npc_alive = self_object:alive()
     if self.first_update == false then
@@ -438,7 +450,7 @@ function motivator_binder:update(delta)
 		self_object:set_tip_text_default()
 	end
 
-	if xrs_ai then xrs_ai.npc_update(self) end
+	xrs_ai.npc_update(self)
 end
 
 function motivator_binder:reload(section)
@@ -509,13 +521,15 @@ function addCommonPrecondition(action)
 		action:add_precondition(wp_evid_see_stuff_false)
 	end
 
-  if xrs_ai then xrs_ai.addCommonPrecondition(action) end
-
+	xrs_ai.addCommonPrecondition(action)
 end
 
 function play_particle(obj,params)
-        if not particles[obj:id()] then
-                particles[obj:id()]={}
-        end
-        table.insert(particles[obj:id()],params)
+	if obj then
+		local id = obj:id()
+		if not particles[id] then
+			particles[id]={}
+		end
+		particles[id][#particles[id]+1] = params
+	end
 end

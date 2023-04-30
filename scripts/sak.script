@@ -2,6 +2,9 @@
 -- Привет от Сяка 
 ---------------------------------------------------------------------
 
+local amk_spawn_item = amk.spawn_item
+local math_random = math.random
+local string_find = string.find
 
 
 function add_new_escape_100()
@@ -81,96 +84,98 @@ amk.spawn_item_in_inv(item,nps)
 end
 local krysyk_treasure
 function add_new_lcitem()
-amk.spawn_item("sak_document",vector():set(350,-51.74,-24.45),2031,93051) -- документ под трупом ученого в рж лесу
-amk.spawn_item("rad_document6",vector():set(621.95,-42.64,187.38),1910,224619) -- дело в кунге у монолитовцув
-amk.spawn_item("amk_zapiska",vector():set(-132.93,11.04,-203.2),629,105467) --записка на третьем этаже Агропрома
-amk.spawn_item("sak_document2",vector():set(-80,-1.30,153),163,187916) -- документ  под жд насыпью Кордона
-amk.spawn_item("garbage_pda",vector():set(-226,-7.37,-132.36),252,208345) -- ПДА в лагере бандитов на свалке
-amk.spawn_item("rad_document6",vector():set(-28.4,-0.26,-173.55),676,211656) -- дело в вагончике Агропрома
-amk.spawn_item("rad_pda",vector():set(530.7,-49.41,-241.61),2061,180657) -- ПДА в вагончике на Радаре
-amk.spawn_item("rad_document6",vector():set(-139.6,-25.03,-355.6),19,116593) -- дело на кордоне
-amk.spawn_item("sak_book4",vector():set(-3.77,-4.25,191.19),2195,97948) --книга доктора
-amk.spawn_item("playboy3",vector():set(-212.99,-22.51,-126.06),59,40605) 
-amk.spawn_item("playboy2",vector():set(112.87,-1.94,1.6),117,413895)
-amk.spawn_item("playboy1",vector():set(138.57,-3.5,22.0),1237,37466)
-amk.spawn_item("playboy4",vector():set(-156.23,1.44,-162.05),669,82783)
-amk.spawn_item("playboy5",vector():set(-19.52,-3.22,-19.91),1593,287481)
-amk.spawn_item("playboy6",vector():set(-52.11,-10.52,35.31),1608,257284)
-amk.spawn_item("playboy7",vector():set(41.4,5.45,-84.15),1100,226116)
-amk.spawn_item("playboy8",vector():set(-135.57,1.29,-523.72),832,22097)
-amk.spawn_item("playboy9",vector():set(-6.19,-4.21,201.42),2195,94368)
-amk.spawn_item("playboy10",vector():set(306.45,-38.06,-23.05),1930,69058)
-amk.spawn_item("playboy11",vector():set(30.92,-2.46,-41.34),1997,20510)
-amk.spawn_item("m_inventory_seif",vector():set(306.47,-39.39,-26.22),1930,69058)
+	local vec = vector()
+
+amk_spawn_item("sak_document",vec:set(350,-51.74,-24.45),2031,93051) -- документ под трупом ученого в рж лесу
+amk_spawn_item("rad_document6",vec:set(621.95,-42.64,187.38),1910,224619) -- дело в кунге у монолитовцув
+amk_spawn_item("amk_zapiska",vec:set(-132.93,11.04,-203.2),629,105467) --записка на третьем этаже Агропрома
+amk_spawn_item("sak_document2",vec:set(-80,-1.30,153),163,187916) -- документ  под жд насыпью Кордона
+amk_spawn_item("garbage_pda",vec:set(-226,-7.37,-132.36),252,208345) -- ПДА в лагере бандитов на свалке
+amk_spawn_item("rad_document6",vec:set(-28.4,-0.26,-173.55),676,211656) -- дело в вагончике Агропрома
+amk_spawn_item("rad_pda",vec:set(530.7,-49.41,-241.61),2061,180657) -- ПДА в вагончике на Радаре
+amk_spawn_item("rad_document6",vec:set(-139.6,-25.03,-355.6),19,116593) -- дело на кордоне
+amk_spawn_item("sak_book4",vec:set(-3.77,-4.25,191.19),2195,97948) --книга доктора
+amk_spawn_item("playboy3",vec:set(-212.99,-22.51,-126.06),59,40605) 
+amk_spawn_item("playboy2",vec:set(112.87,-1.94,1.6),117,413895)
+amk_spawn_item("playboy1",vec:set(138.57,-3.5,22.0),1237,37466)
+amk_spawn_item("playboy4",vec:set(-156.23,1.44,-162.05),669,82783)
+amk_spawn_item("playboy5",vec:set(-19.52,-3.22,-19.91),1593,287481)
+amk_spawn_item("playboy6",vec:set(-52.11,-10.52,35.31),1608,257284)
+amk_spawn_item("playboy7",vec:set(41.4,5.45,-84.15),1100,226116)
+amk_spawn_item("playboy8",vec:set(-135.57,1.29,-523.72),832,22097)
+amk_spawn_item("playboy9",vec:set(-6.19,-4.21,201.42),2195,94368)
+amk_spawn_item("playboy10",vec:set(306.45,-38.06,-23.05),1930,69058)
+amk_spawn_item("playboy11",vec:set(30.92,-2.46,-41.34),1997,20510)
+amk_spawn_item("m_inventory_seif",vec:set(306.47,-39.39,-26.22),1930,69058)
 	for a=1000,20000,1 do
 		local obj=alife():object(a)
-		if obj and ((string.find(obj:name(),"af_") and not string.find(obj:name(),"esc_af_")  and not string.find(obj:name(),"pri_af_" ) and not string.find(obj:name(),"af_dumm")) or string.find(obj:name(),"esc_wpn")) then
+		if obj and ((string_find(obj:name(),"af_") and not string_find(obj:name(),"esc_af_")  and not string_find(obj:name(),"pri_af_" ) and not string_find(obj:name(),"af_dumm")) or string_find(obj:name(),"esc_wpn")) then
 			alife():release(obj,true)
 		end
 	end
 end
 function add_ak47()
-amk.spawn_item("wpn_ak47",vector():set(108.5,7.74,-9.07),987,304788)
+amk_spawn_item("wpn_ak47",vector():set(108.5,7.74,-9.07),987,304788)
 end
 function add_doktor_book()
-amk.spawn_item("sak_book4",vector():set(-3.49,-4.26,191.34),2195,96166)
+amk_spawn_item("sak_book4",vector():set(-3.49,-4.26,191.34),2195,96166)
 end
 function add_notebook()
-amk.spawn_item("notebook",vector():set(23.87,-5.65,-18.38),1140,6287) 
+amk_spawn_item("notebook",vector():set(23.87,-5.65,-18.38),1140,6287) 
 end
 function add_diplomat()
-amk.spawn_item("diplomat",vector():set(90.96,10.18,-9.03),1544,6334) 
+amk_spawn_item("diplomat",vector():set(90.96,10.18,-9.03),1544,6334) 
 end
 function add_computer()
-amk.spawn_item("computer",vector():set(-114.96,-2.23,8.18),2248,8511) 
+amk_spawn_item("computer",vector():set(-114.96,-2.23,8.18),2248,8511) 
 end
 function add_new_103item()
-amk.spawn_item("quest_case_06",vector():set(-196.5,2.48,92.88),678,40284) --кейс в кунге дезертира
+amk_spawn_item("quest_case_06",vector():set(-196.5,2.48,92.88),678,40284) --кейс в кунге дезертира
 end
 function add_sak_plan()
-amk.spawn_item("sak_plan",vector():set(-213.13,2.96,92.58),535,22245) -- мешок плана в кунге дезертира 
+amk_spawn_item("sak_plan",vector():set(-213.13,2.96,92.58),535,22245) -- мешок плана в кунге дезертира 
 end
 function add_krot_pda()
-amk.spawn_item("agroprom_pda",vector():set(253,-0.2,76.17),498,428034) --ПДА в ЖД тоннеле Агропрома
+amk_spawn_item("agroprom_pda",vector():set(253,-0.2,76.17),498,428034) --ПДА в ЖД тоннеле Агропрома
 end
 function add_und_pda()
-amk.spawn_item("und_pda",vector():set(-45.12,-4.01,-30.08),718,4466) --ПДА в подземелье Агропрома
+amk_spawn_item("und_pda",vector():set(-45.12,-4.01,-30.08),718,4466) --ПДА в подземелье Агропрома
 end
 function add_seif()
-amk.spawn_item("inventory_sakbox_03",vector():set(15.52,-12.43,8.59),1156,5132) --Сейф в подземелье X-18
+amk_spawn_item("inventory_sakbox_03",vector():set(15.52,-12.43,8.59),1156,5132) --Сейф в подземелье X-18
 end
 function give_seif(obj)
 amk.remove_item_from_inventory_by_name(obj,db.actor)
-amk.spawn_item("m_inventory_seif",vector():set(34.37,-3.37,-37.29),1997,21736)  --передача сейфа
+amk_spawn_item("m_inventory_seif",vector():set(34.37,-3.37,-37.29),1997,21736)  --передача сейфа
 end
 function add_decoder()
-amk.spawn_item("decoder1",vector():set(-42.65,19.18,1.97),1530,2557) --декодер в  X-16 возле главного пульта
+amk_spawn_item("decoder1",vector():set(-42.65,19.18,1.97),1530,2557) --декодер в  X-16 возле главного пульта
 end
 function add_gauss()
-amk.spawn_item("wpn_gungauss",vector():set(-126.11,0.91,-533.55),836,31356) --Гаусс-пистолет  в ТД
+amk_spawn_item("wpn_gungauss",vector():set(-126.11,0.91,-533.55),836,31356) --Гаусс-пистолет  в ТД
 end
 function add_medusa_green()
-amk.spawn_item("af_medusa_green",vector():set(260.59,-9.82,-135),404,373051) --Изумрудная медуза на свалке
+amk_spawn_item("af_medusa_green",vector():set(260.59,-9.82,-135),404,373051) --Изумрудная медуза на свалке
 end
 function add_pellicle_red()
-amk.spawn_item("af_dummy_pellicle_red",vector():set(-239.99,4.85,99.93),1362,13956) --Изумрудная медуза на Ростке
+amk_spawn_item("af_dummy_pellicle_red",vector():set(-239.99,4.85,99.93),1362,13956) --Изумрудная медуза на Ростке
 end
 function add_vyvert_green()
-amk.spawn_item("af_vyvert_green",vector():set(115.13,4.83,-409.26),942,311330) --Изумрудный выверт в ТД
+amk_spawn_item("af_vyvert_green",vector():set(115.13,4.83,-409.26),942,311330) --Изумрудный выверт в ТД
 end
 function add_blood_green()
-amk.spawn_item("af_blood_green",vector():set(55.34,1.27,40.89),1511,68094) --Изумрудная кровь на Янтаре 
+amk_spawn_item("af_blood_green",vector():set(55.34,1.27,40.89),1511,68094) --Изумрудная кровь на Янтаре 
 end
 function add_battery_red()
-amk.spawn_item("af_dummy_battery_red",vector():set(668.9,-45.79,-39.93),1896,227187) --Рубиновая батарейка на Радаре 
+amk_spawn_item("af_dummy_battery_red",vector():set(668.9,-45.79,-39.93),1896,227187) --Рубиновая батарейка на Радаре 
 end
 function add_order()
 local obj = alife():story_object(9115)
 alife():create("rad_document7",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_two_corpses()
-	local obj=amk.spawn_item("yan_ecolog_respawn_2",vector():set(187.84,5.18,-360.68),938,386349)
-	if (_g.IsStalker(obj)) then
+	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(187.84,5.18,-360.68),938,386349)
+	if (IsStalker(obj)) then
 		local tbl = amk.read_stalker_params(obj)
 		tbl.sid = 48800
 		tbl.health = 0
@@ -178,19 +183,19 @@ function add_two_corpses()
 		amk.write_stalker_params(tbl, obj)					
 	end	
 	alife():create("scaintist_docs",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
-	local obj=amk.spawn_item("yan_ecolog_respawn_2",vector():set(187.66,5.03,-375.97),938,386327)
-	if (_g.IsStalker(obj)) then
+	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(187.66,5.03,-375.97),938,386327)
+	if (IsStalker(obj)) then
 		local tbl = amk.read_stalker_params(obj)
 		tbl.sid = 48801
 		tbl.health = 0
 		tbl.updhealth = 0
 		amk.write_stalker_params(tbl, obj)					
 	end	
-	amk.spawn_item("inventory_sakbox_05",vector():set(176.83,8.37,-375.96),938,377568)
+	amk_spawn_item("inventory_sakbox_05",vector():set(176.83,8.37,-375.96),938,377568)
 end
 function add_scaintist_body()
-	local obj=amk.spawn_item("yan_ecolog_respawn_2",vector():set(-46.53,-2.2,-98.36),2258,53082)
-	if (_g.IsStalker(obj)) then
+	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(-46.53,-2.2,-98.36),2258,53082)
+	if (IsStalker(obj)) then
 		local tbl = amk.read_stalker_params(obj)
 		tbl.sid = 48802
 		tbl.health = 0
@@ -204,41 +209,39 @@ function add_agroprom_box()
 	local obj=alife():object(a)
 		if (obj and obj.name and obj:name() == "agr_quest_case_02") then
 		alife():release(obj, true)
-		--dbglog("keis: "..a) ~5665
 		end
 	end	
-	--amk.spawn_item("quest_case_02",vector():set(18.76,-2.23,-219.12),436,259029)
 	dialogs.relocate_item_section(db.actor, "quest_case_02", "in")
 end
 function add_kontainer()
-amk.spawn_item("inventory_sakbox_05",vector():set(378,-52,-179.20),2097,101537)
+amk_spawn_item("inventory_sakbox_05",vector():set(378,-52,-179.20),2097,101537)
 end
 function agroprom_wpm()
 local obj = alife():story_object(9115)
 alife():create("wpn_vintorez_m1",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_books()
-amk.spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530) 
-amk.spawn_item("sak_book2",vector():set(-120.27,21.56,-32.65),1529,165) 
-amk.spawn_item("sak_book3",vector():set(0.77,-19.45,24.89),2768,6203) 
+amk_spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530) 
+amk_spawn_item("sak_book2",vector():set(-120.27,21.56,-32.65),1529,165) 
+amk_spawn_item("sak_book3",vector():set(0.77,-19.45,24.89),2768,6203) 
 end
 function add_new_111item()
-amk.spawn_item("dynamite",vector():set(-213.57,-23.19,-127.39),59,39928) 
+amk_spawn_item("dynamite",vector():set(-213.57,-23.19,-127.39),59,39928) 
 end
 function add_new_109item()
-amk.spawn_item("quest_case_05",vector():set(150.57,7.02,-254.55),966,348350)  
+amk_spawn_item("quest_case_05",vector():set(150.57,7.02,-254.55),966,348350)  
 end
 function info_received()
   amk.send_tip("","Новый путь!",0,10,"gen_info")
 end
 function add_resiver()
-amk.spawn_item("sak_resiver",vector():set(-185.57,-3.58,94.89),338,39411) 
+amk_spawn_item("sak_resiver",vector():set(-185.57,-3.58,94.89),338,39411) 
 end
 function add_drug()
-amk.spawn_item("dogfrend",vector():set(-6.71,0.41,247.19),258,170000) 
+amk_spawn_item("dogfrend",vector():set(-6.71,0.41,247.19),258,170000) 
 end
 function add_strelok_pda()
-amk.spawn_item("strelok_pda",vector():set(42.95,61.56,-26.25),2417,6406) 
+amk_spawn_item("strelok_pda",vector():set(42.95,61.56,-26.25),2417,6406) 
 end
 function info_strelok_pda()
   amk.send_tip("","Сталкер! Остановись!",0,10,"gen_info")
@@ -257,21 +260,7 @@ local items_count=0
 local itemin=nil
 
 function have_item_namber(itm,need_namber)
-local actor=db.actor
-items_count=0
-itemin=itm
-actor:iterate_inventory(cheking_item,actor)
-	if items_count>=need_namber then
-		return true
-	else
-		return false
-	end
-end
-function cheking_item(actor,item)
-local items=item:section()
-	if items==itemin then
-		items_count=items_count+1
-	end
+	return amk_utils.inventory_search(itm, need_namber)
 end
 function create_items(npc,section,number)
         for i=1,number do
@@ -288,8 +277,6 @@ function out_item_namber(itm_section,need_number)
 	reloc_params.itm_section=itm_section
 	reloc_params.itm_cnt=need_number
 	reloc_params.itm_cnt_found=0
-	db.actor:iterate_inventory(checkout_items_count,db.actor)
-	reloc_params.itm_cnt_found=0
 	if reloc_params.itm_cnt_found<=reloc_params.itm_cnt then
 		db.actor:iterate_inventory(out_items_count,db.actor)
 	end
@@ -301,18 +288,11 @@ function relocate_item_namber(stalker,itm_section,need_number)
 	reloc_params.itm_section=itm_section
 	reloc_params.itm_cnt=need_number
 	reloc_params.itm_cnt_found=0
-	db.actor:iterate_inventory(checkout_items_count,db.actor)
-	reloc_params.itm_cnt_found=0
 	if reloc_params.itm_cnt_found<=reloc_params.itm_cnt then
 		db.actor:iterate_inventory(reloc_items_count,db.actor)
 	end
 	news_manager.relocate_item(db.actor, "out", itm_section)
 	reloc_params={}
-end
-function checkout_items_count(actor,item)
-	if item.section and item:section()==reloc_params.itm_section then
-		reloc_params.itm_cnt_found = reloc_params.itm_cnt_found + 1
-	end
 end
 function reloc_items_count(actor,item)
 	if item.section and item:section()==reloc_params.itm_section and reloc_params.itm_cnt_found<reloc_params.itm_cnt then
@@ -329,7 +309,7 @@ end
 
 function artmodscheck(nearest_anomaly,af,anom_sect)
 local af_sect=af:section()
-if string.find(anom_sect,"_zharka")~=nil then 
+if string_find(anom_sect,"_zharka")~=nil then 
   artmod(nearest_anomaly,af,"af_medusa","af_rusty_thorn","af_vyvert","vodka","info_artmod_electra_flash_zharka","af_electra_flash") 
   artmod(nearest_anomaly,af,"af_medusa","af_blood","kolbasa","mutant_dog_tail","info_artmod_ameba_slime_zharka","af_ameba_slime",1) 
   artmod(nearest_anomaly,af,"af_medusa","af_blood","bandage","conserva","info_artmod_gravi_zharka","af_gravi",2) 
@@ -337,7 +317,7 @@ if string.find(anom_sect,"_zharka")~=nil then
   artmod(nearest_anomaly,af,"af_gravi","af_medusa","af_electra_flash","mutant_krovosos_jaw","info_artmod_electra_moonlight_zharka","af_electra_moonlight") 
   artmod(nearest_anomaly,af,"af_electra_flash","af_ameba_mica","vodka","mutant_dog_tail","info_artmod_dummy_battery_zharka","af_dummy_battery",4)  
 end
-if string.find(anom_sect,"_galant")~=nil then 
+if string_find(anom_sect,"_galant")~=nil then 
   if af_sect=="af_dummy_battery_red" then af_zone_off(af)  end
   artmod(nearest_anomaly,af,"af_blood","af_medusa","vodka","mutant_dog_tail","info_artmod_fireball_galant","af_fireball",2) 
   artmod(nearest_anomaly,af,"af_vyvert","af_drops","conserva","mutant_dog_tail","info_artmod_cristall_flower_galant","af_cristall_flower",2) 
@@ -347,7 +327,7 @@ if string.find(anom_sect,"_galant")~=nil then
   artmod(nearest_anomaly,af,"af_cristall_flower","af_cristall","mutant_psevdodog_tail","conserva","info_artmod_dummy_spring_galant","af_dummy_spring") 
   artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_medusa_galant","af_medusa",1) 
 end
-if string.find(anom_sect,"_buzz")~=nil then 
+if string_find(anom_sect,"_buzz")~=nil then 
   artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","af_drops","bread","info_artmod_rusty_kristall_buzz","af_rusty_kristall",2) 
   artmod(nearest_anomaly,af,"af_blood","bandage","bread","mutant_dog_tail","info_artmod_rusty_thorn_buzz","af_rusty_thorn",1) 
   artmod(nearest_anomaly,af,"af_rusty_thorn","af_vyvert","mutant_snork_leg","bread","info_artmod_fireball_buzz","af_fireball",2) 
@@ -356,7 +336,7 @@ if string.find(anom_sect,"_buzz")~=nil then
   artmod(nearest_anomaly,af,"af_night_star","af_soul","af_electra_moonlight","af_rusty_sea-urchin","info_artmod_fuzz_kolobok_buzz","af_fuzz_kolobok",4)
   artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_vyvert_buzz","af_vyvert",1)   
 end 
-if string.find(anom_sect,"_mincer")~=nil then 
+if string_find(anom_sect,"_mincer")~=nil then 
   artmod(nearest_anomaly,af,"af_blood","af_medusa","bandage","conserva","info_artmod_cristall_flower_mincer","af_cristall_flower",2) 
   artmod(nearest_anomaly,af,"af_vyvert","bandage","vodka","mutant_dog_tail","info_artmod_drops_mincer","af_drops",1) 
   artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","conserva","mutant_dog_tail","info_artmod_rusty_kristall_mincer","af_rusty_kristall",2) 
@@ -365,7 +345,7 @@ if string.find(anom_sect,"_mincer")~=nil then
   artmod(nearest_anomaly,af,"af_ameba_mica","af_rusty_sea-urchin","af_gold_fish","af_night_star","info_artmod_dummy_glassbeads_mincer","af_dummy_glassbeads",4) 
   if af_sect=="af_dummy_spring_red" and db.actor:has_info("info_red_spring") then af_zone_off(af) end
 end
-if string.find(anom_sect,"_mosquito_bald")~=nil then 
+if string_find(anom_sect,"_mosquito_bald")~=nil then 
   artmod(nearest_anomaly,af,"af_vyvert","af_blood","vodka","mutant_dog_tail","info_artmod_mincer_meat_mosquito_bald","af_mincer_meat",2) 
   artmod(nearest_anomaly,af,"af_drops","bandage","kolbasa","mutant_dog_tail","info_artmod_electra_sparkler_mosquito_bald","af_electra_sparkler",2) 
   artmod(nearest_anomaly,af,"af_medusa","af_drops","bandage","vodka","info_artmod_ameba_slug_mosquito_bald","af_ameba_slug",2) 
@@ -374,7 +354,7 @@ if string.find(anom_sect,"_mosquito_bald")~=nil then
   artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_mincer_meat","af_night_star","info_artmod_dummy_dummy_mosquito_bald","af_dummy_dummy") 
   if af_sect=="af_dummy_pellicle_red" and db.actor:has_info("info_red_pellicle") then af_zone_off(af) end
 end
-if string.find(anom_sect,"_gravi_zone")~=nil then 
+if string_find(anom_sect,"_gravi_zone")~=nil then 
   artmod(nearest_anomaly,af,"af_vyvert","af_medusa","kolbasa","mutant_dog_tail","info_artmod_ameba_slug_gravi_zone","af_ameba_slug",2) 
   artmod(nearest_anomaly,af,"af_medusa","bandage","conserva","mutant_dog_tail","info_artmod_ameba_slime_gravi_zone","af_ameba_slime",1) 
   artmod(nearest_anomaly,af,"af_vyvert","af_blood","mutant_dog_tail","vodka","info_artmod_electra_flash_gravi_zone","af_electra_flash") 
@@ -383,7 +363,7 @@ if string.find(anom_sect,"_gravi_zone")~=nil then
   artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_gold_fish","af_soul","info_artmod_dummy_pellicle_gravi_zone","af_dummy_pellicle",4) 
   if af_sect=="af_dummy_battery_red" and db.actor:has_info("info_red_battery") then af_zone_off(af) end 
 end
-if string.find(anom_sect,"_ice")~=nil then
+if string_find(anom_sect,"_ice")~=nil then
 	artmod(nearest_anomaly,af,"af_dummy_dummy","af_rusty_sea-urchin","af_gold_fish","af_night_star","life_heart_final","af_life_heart",6) 
   artmod01(af,"af_dummy_battery","af_dummy_battery_red","info_red_battery")
   artmod01(af,"af_dummy_spring","af_dummy_spring_red","info_red_spring")
@@ -512,7 +492,7 @@ elseif obj:section()=="sak_book4" and not db.actor:has_info("doktor_alife")
 then info="doktor_alife" info_doktor()
 elseif obj:section()=="repair_item_outfit" or obj:section()=="repair_item_weapon" then repair_box_close(obj) 
 end 
-  if db.actor==nil or info==nil or db.actor:has_info(info) then
+  if info==nil or db.actor:has_info(info) then
     return
   end
   db.actor:give_info_portion(info)
@@ -532,20 +512,23 @@ local point_drop={
 	} 
 
 function check_droped_item(obj)
+	local actor = db_actor
+	local vec = vector()
+
 arc_main.lose_item(obj)
 local info=nil 
-if level.name()=="l07_military" and db.actor:has_info("yan_scientist_teleport_01_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(db.actor, point_drop[1],point_drop[2])~=false then info="yan_scientist_teleport_01_done" amk.remove_item(obj) amk.spawn_item("m_sak_resiver_yantar",vector():set(-244.62,-5.98,299.94),1797,89408) 
-elseif level.name()=="l01_escape" and db.actor:has_info("yan_scientist_teleport_02_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(db.actor, point_drop[3],point_drop[4])~=false then info="yan_scientist_teleport_02_done" amk.remove_item(obj) amk.spawn_item("m_sak_resiver_yantar",vector():set(62.99,29.23,154.39),97,359827) 
-elseif level.name()=="l11_pripyat" and db.actor:has_info("yan_scientist_teleport_03_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(db.actor, point_drop[5],point_drop[6])~=false then info="yan_scientist_teleport_03_done" amk.remove_item(obj) amk.spawn_item("m_sak_resiver_yantar",vector():set(9.47,0.32,119.13),2166,113785)
-elseif level.name()=="l12_stancia" and db.actor:has_info("life_heart_sahar_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(db.actor, point_drop[9],point_drop[10])~=false then info="life_heart_sahar_have" amk.remove_item(obj) amk.spawn_item("m_sak_resiver_yantar",vector():set(387.51,0.16,31.10),2384,168953)
-elseif level.name()=="l12u_sarcofag" and db.actor:has_info("strelok_pda_have") and obj:section()=="af_gold_fish" and amk.check_npc_in_box(db.actor, point_drop[7],point_drop[8])~=false then amk_mod.af_flash(obj) get_sarcofag_stancia()
-elseif obj:section()=="af_life_heart" and db.actor:has_info("life_heart_final") then deadman_to_life(obj)
+if level.name()=="l07_military" and actor:has_info("yan_scientist_teleport_01_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[1],point_drop[2])~=false then info="yan_scientist_teleport_01_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(-244.62,-5.98,299.94),1797,89408) 
+elseif level.name()=="l01_escape" and actor:has_info("yan_scientist_teleport_02_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[3],point_drop[4])~=false then info="yan_scientist_teleport_02_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(62.99,29.23,154.39),97,359827) 
+elseif level.name()=="l11_pripyat" and actor:has_info("yan_scientist_teleport_03_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[5],point_drop[6])~=false then info="yan_scientist_teleport_03_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(9.47,0.32,119.13),2166,113785)
+elseif level.name()=="l12_stancia" and actor:has_info("life_heart_sahar_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[9],point_drop[10])~=false then info="life_heart_sahar_have" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(387.51,0.16,31.10),2384,168953)
+elseif level.name()=="l12u_sarcofag" and actor:has_info("strelok_pda_have") and obj:section()=="af_gold_fish" and amk.check_npc_in_box(actor, point_drop[7],point_drop[8])~=false then amk_mod.af_flash(obj) get_sarcofag_stancia()
+elseif obj:section()=="af_life_heart" and actor:has_info("life_heart_final") then deadman_to_life(obj)
 elseif obj:section()=="repair_box_outfit" then repair_box_outfit(obj)
 end 
-  if db.actor==nil or info==nil or db.actor:has_info(info) then
+	  if info==nil or actor:has_info(info) then
     return
   end
-  db.actor:give_info_portion(info)
+	  actor:give_info_portion(info)
 end
 function agr_ratcatcher__id()
 for a=5000,6000,1 do
@@ -556,25 +539,37 @@ for a=5000,6000,1 do
 		end
 	end
 end
-local nepis={9501,4,5,6,7,9,22,32,92,104,107,115,302,370,400,406,505,506,507,516,702,707,728,734,777888}
+local nepis = {
+	9501,	-- Сяк
+	4,	-- Шустрый
+	5,	-- Лис
+	6,	-- Волк
+	7,	-- Толик
+	9,	-- Петруха
+	22,	-- Фанат
+	32,	-- Кузнецов
+	92,	-- Проводник
+	104,	-- Юрик
+	107,	-- Бес
+	115,	-- Прапор
+	302,	-- Крот
+	370,	-- Дезертир
+	400,	-- Макс Любер
+	406,	-- Пуля
+	505,	-- Иванцов
+	506,	-- Петренко
+	507,	-- Воронин
+	516,	-- Пличко
+	702,	-- Макс
+	707,	-- Лукаш
+	728,	-- Повар
+	734,	-- Скряга
+	777888
+}
 local nepis_id={3450,499,193,156,161,174,244,224,344,998,1101,1019,7026,7058,4899,4902,1667,1666,1668,1674,2157,2161,2162,2163,2158}
-local nepis_logic={4,5,6,7,9,22,32,92,104,107} --шустрый, лис,волк,толик,петруха,фанат,кузнецов, проводник,юрик, бес
-function new_sak_logic()
-		--[[--local npis=nepis_logic[3]
-		local obj=alife():story_object(npis)
-		local tbl = amk.read_stalker_params(obj)
-		dbglog("Entered: "..tbl.custom)
-		tbl.custom="[smart_terrains]\nsak_lager = true"
-		dbglog("Entered: "..obj:name().." sid-"..obj.m_story_id) --id~11017
-		dbglog("Entered: "..tbl.custom)
-		amk.write_stalker_params(tbl, obj)	
-			--local tb2 = amk.read_stalker_params(obj)
-			--dbglog("Entered: "..tb2.custom)--]]
-end
 function deadman_to_life(art)
-	for a=1,table.getn(nepis),1 do 
+	for a=1,#nepis,1 do 
 		local npis=nepis[a]
-		local npis_id=nepis_id[a]
 		local obj=alife():story_object(npis)
 		if  obj and IsStalker(obj) and not obj:alive() then
 			local name=obj:name()
@@ -582,20 +577,17 @@ function deadman_to_life(art)
 			local actorpos=db.actor:position()
 			if (posobj:distance_to(actorpos) < 2) then 
 			amk_mod.af_flash(art)
-			set_npc_health(obj,npis_id)
+			set_npc_health(obj, nepis_id[a])
 			end
 		end
 	end
 end
 function set_npc_health(obj,nps_id)
 	alife():release(obj)
-	--local obj = alife():story_object(sid)  
-	--if not obj then 
-		alife():create(nps_id)
-	--end				
+	alife():create(nps_id)
 end
 function nepis_umer()
-	for a=1,table.getn(nepis),1 do
+	for a=1,#nepis,1 do
 	local npis=nepis[a]
 	local obj=alife():story_object(npis)
 	if  obj and IsStalker(obj) and not obj:alive() then
@@ -681,8 +673,8 @@ function set_lc_data(t,obj)
 	packet:w_stringZ(t.custom_data)
 	packet:w_s32(t.story_id)
 	packet:w_s32(t.spawn_story_id)
-	packet:w_u8(table.getn(t.shapes))
-	for i=1,table.getn(t.shapes) do
+	packet:w_u8(#t.shapes)
+	for i=1,#t.shapes do
 	packet:w_u8(t.shapes[i].shtype)
 	if t.shapes[i].shtype == 0 then
 	packet:w_vec3(t.shapes[i].center)
@@ -781,13 +773,13 @@ elseif pos_out == "sarcofag" then 	a = out_points_sarcofag[1]
 end
 if made==0 then 
 if     pos_in == "kordon"	then	name_level="l01_escape" 
-b = points_kordon[math.random(table.getn(points_kordon))]
+b = points_kordon[math_random(#points_kordon)]
 elseif pos_in == "pripat" 	then 	name_level="l11_pripyat" 
-b = points_pripat[math.random(table.getn(points_pripat))]
+b = points_pripat[math_random(#points_pripat)]
 elseif pos_in == "military" then 	name_level="l07_military" 
-b = points_military[math.random(table.getn(points_military))]
+b = points_military[math_random(#points_military)]
 elseif pos_in == "yantar" 	then 	name_level="l08_yantar" 
-b = points_yantar[math.random(table.getn(points_yantar))] end
+b = points_yantar[math_random(#points_yantar)] end
 elseif made==1 then
 if     pos_in == "kordon"	then	name_level="l01_escape" b = points_kordon[1]
 elseif pos_in == "pripat" 	then 	name_level="l11_pripyat" b = points_pripat[1]
@@ -795,7 +787,7 @@ elseif pos_in == "military" then 	name_level="l07_military" b = points_military[
 elseif pos_in == "yantar" 	then 	name_level="l08_yantar" b = points_yantar[1]
 elseif pos_in == "stancia" 	then 	name_level="l12_stancia" b = points_stancia[1]  end end
 obj1=alife():create("level_changer",vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
-obj_tp=amk.spawn_item("zone_teleport",vector():set(a.position.x,a.position.y,a.position.z), a.gv, a.lv)
+obj_tp=amk_spawn_item("zone_teleport",vector():set(a.position.x,a.position.y,a.position.z), a.gv, a.lv)
 obj_tport=obj_tp.id
 amk.save_variable("sak_teleport", obj_tport)  
 if obj1 then local obj2 = alife():story_object(9120) local t = get_lc_data(obj2)
@@ -811,7 +803,7 @@ end
 function out_teleport()
 local sid={9121,9122,9123,9124,9125}
 local lev={"l01_escape","l11_pripyat","l07_military","l08_yantar","l12u_sarcofag"}
-	for a=1,table.getn(sid),1 do
+	for a=1,#sid,1 do
 	local sidlc=sid[a]
 	local lname=lev[a]	
 	local obj=alife():story_object(sidlc)
@@ -824,7 +816,6 @@ local lev={"l01_escape","l11_pripyat","l07_military","l08_yantar","l12u_sarcofag
 		amk.del_variable("sak_teleport")
 		end
 	end
-	arc_main.actor_update() -- !!!!!!!!!!!
 end
 function readvu32u8(packet)
   local v={}
@@ -845,7 +836,7 @@ function readvu32u16(packet)
     table.insert(v,packet:r_u16())
   end return v end
 function writevu32u8(pk,v)
-  local len=table.getn(v)
+  local len=#v
   pk:w_s32(len)
   for i=1,len,1 do
     pk:w_u8(v[i])
@@ -858,7 +849,7 @@ function writevu8u8(pk,v)
   end
 end
 function writevu32u16(pk,v)
-  local len=table.getn(v)
+  local len=#v
   pk:w_s32(len)
   for i=1,len,1 do
     pk:w_u16(v[i])
@@ -911,8 +902,8 @@ function parse_shape_packet(t,stpk,uppk)
 	end
 end
 function fill_shape_packet(t,stpk,updpk)
-	stpk:w_u8(table.getn(t.shapes))
-	for i=1,table.getn(t.shapes) do
+	stpk:w_u8(#t.shapes)
+	for i=1,#t.shapes do
 		stpk:w_u8(t.shapes[i].shtype)
 		if t.shapes[i].shtype == 0 then
 			stpk:w_vec3(t.shapes[i].center)
@@ -1057,7 +1048,7 @@ function repair_box_outfit(obj)
 			if obj:section()=="repair_box_outfit" then 
 				if (repiout~=0 or repiweap~=0) and (repiout or repiweap) then
 	amk.remove_item(obj)
-				robjd=amk.spawn_item("m_repair_box_outfit",vector():set((act_pos.x+xdelta),(act_pos.y+0.5),(act_pos.z+zdelta)),gvid,lvid)
+				robjd=amk_spawn_item("m_repair_box_outfit",vector():set((act_pos.x+xdelta),(act_pos.y+0.5),(act_pos.z+zdelta)),gvid,lvid)
 					if repiout~=0 then
 					se_respawn.create_ammo("repair_item_outfit", robjd.position, robjd.level_vertex_id, robjd.game_vertex_id, robjd.id,repiout)
 					end
@@ -1067,7 +1058,7 @@ function repair_box_outfit(obj)
 				amk.save_variable("repair_box", robjd.id)
 				else
 				amk.remove_item(obj)
-				amk.spawn_item("repair_box_outfit",vector():set((act_pos.x+xdelta),(act_pos.y+0.5),(act_pos.z+zdelta)),gvid,lvid)
+				amk_spawn_item("repair_box_outfit",vector():set((act_pos.x+xdelta),(act_pos.y+0.5),(act_pos.z+zdelta)),gvid,lvid)
 				end
 			end
 		end
@@ -1158,7 +1149,7 @@ function repair_box_closed(obj)
 			alife():release(alife():object(obj), true)
 		end
 	amk.del_variable("repair_box")
-	amk.spawn_item("repair_box_outfit",pos,gvid,lvid)
+	amk_spawn_item("repair_box_outfit",pos,gvid,lvid)
 end
 function add_3repair_item_outfit()
 	local repiout =amk.load_variable("repair_item_outfit", 0)
@@ -1185,7 +1176,6 @@ function add_repair_item_weapon()
 	amk.send_tip("","Получен ремкомплект RIW-10",0,10,"gen_info")
 end
 function add_repair_box()
-	--amk.spawn_item("repair_box_outfit",vector():set(301.11,13.31,276.43),246,565356)
 end
 function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "medkit", "in")
@@ -1205,7 +1195,7 @@ function have_trasure(first_speaker, second_speaker)
 		tres = tres / 2
 	end
 
-	if math.random() <= tres then
+	if math_random() <= tres then
 		db.actor:give_info_portion("have_sak_treasure")
 	else
 		db.actor:give_info_portion("havent_sak_treasure")
@@ -1213,8 +1203,8 @@ function have_trasure(first_speaker, second_speaker)
 end
 function zombie_checkup()
 	if db.actor ~= nil then
-		if math.random() > 0.7 then
-		local a=math.random()
+		if math_random() > 0.7 then
+		local a=math_random()
 		local h = hit()
 		h.draftsman = db.actor
 		h.type = hit.telepatic
@@ -1226,7 +1216,7 @@ function zombie_checkup()
 		h.type = hit.radiation
 		db.actor:hit(h)
 		level.add_pp_effector("alcohol.ppe", 100, false)
-		local rnd=math.random(1,6)
+		local rnd=math_random(1,6)
 		local snd_obj
 			if rnd==1 then
 			snd_obj = 	xr_sound.get_safe_sound_object([[characters_voice\human_01\stalker\fight\hit\hit_1]])
@@ -1260,29 +1250,43 @@ local obj = alife():story_object(a)
 	amk.save_variable("spot_of_nps", old_spot)
 	end
 end
+
+local no_arts = {
+	["l03u_agr_underground"]	= true,
+	["l04u_labx18"]			= true,
+	["l08u_brainlab"]		= true,
+	["l10u_bunker"]			= true,
+	["l12u_control_monolith"]	= true,
+	["l12u_sarcofag"]		= true,
+	["l12_stancia_2"]		= true
+}
+
 function add_tail()
-	if level.name()=="l04_darkvalley" then
+	local lname = level.name()
+	if lname=="l04_darkvalley" then
 		local obj=alife():story_object(425)
 		if obj and IsStalker(obj) and obj:alive() then
 			if db.actor:has_info("val_bandit_talk") then
-			db.actor:set_character_community("stranger", 0, 0)
+				db.actor:set_character_community("stranger", 0, 0)
 			end
-		
+		else
+			db.actor:set_character_community("actor", 0, 0)
+		end
 	else
-	db.actor:set_character_community("actor", 0, 0)
+		db.actor:set_character_community("actor", 0, 0)
 	end
-else
-	db.actor:set_character_community("actor", 0, 0)
-	end
+
 	local testobj=0
-	for a=10,65635,1 do
-	local obj=alife():object(a)
-		if obj and string.find(obj:name(),"testsak_"..level.name()) then
-		--dbglog("Vot on: "..obj:name())
-		testobj=1
+	local sim = alife()
+	local obj
+	for a = 1, 65634 do
+		obj = sim:object(a)
+		if obj and string_find(obj:name(), "testsak_" .. lname) then
+			testobj=1
+			break
 		end
 	end
-	if (level.name()~="l03u_agr_underground" and level.name()~="l04u_labx18" and level.name()~="l08u_brainlab" and level.name()~="l10u_bunker" and level.name()~="l12u_control_monolith" and level.name()~="l12u_sarcofag" and level.name()~="l12_stancia_2") then
+	if not no_arts[lname] then
 		if testobj==0 then
 		amk_anoms.generate_arts()
 		end
@@ -1294,7 +1298,7 @@ end
 function off_testobj()
 	for a=10,65635,1 do
 	local obj=alife():object(a)
-		if obj and string.find(obj:name(),"testsak_") then
+		if obj and string_find(obj:name(),"testsak_") then
 		alife():release(obj,true)
 		end
 	end
@@ -1302,7 +1306,7 @@ end
 function off_repair_box()
 	for a=10,65635,1 do
 	local obj=alife():object(a)
-		if obj and string.find(obj:name(),"repair_box_outfit") then
+		if obj and string_find(obj:name(),"repair_box_outfit") then
 		alife():release(obj,true)
 		end
 	end
@@ -1315,10 +1319,5 @@ function add_krysyk_treasure()
 end
 function add_krysyk_pda()
 	treasure_manager.get_treasure_manager():give_treasure("val_krysyk_secret")
-end
-function dbglog(fmt,...)
-  local msg = string.format(fmt, ...)
-  local msg_no_ws = string.gsub(msg, "%s", "___")
-  get_console():execute("dbg:" .. msg_no_ws)
 end
 -----------------------------------------------------------------------------------------------------------

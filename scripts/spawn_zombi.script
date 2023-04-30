@@ -194,11 +194,11 @@ local items = {
 }
 
 function on_item_take(obj)
-	if not items[obj:section()] then return end
-
 	local set = items[obj:section()]
+	if not set then return end
+
 	for k, v in pairs(set) do
-		if not has_alife_info(k) then
+		if not has_info(k) then
 			v()
 		end
 	end

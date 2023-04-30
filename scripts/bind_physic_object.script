@@ -164,21 +164,15 @@ function generic_physics_binder:use_callback(obj, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
-	
 
-  
 	--AMK UTILS--
 	amk.on_use(obj, who)
-	amk_utils.physics_use(obj, who)
 	--AMK UTILS--
-
 end
 
 function generic_physics_binder:hit_callback(obj, amount, local_direction, who, bone_index)
-
 	--AMK UTILS--
 	amk.on_ph_obj_hit(obj, amount, local_direction, who, bone_index)
-	amk_utils.physics_hit(obj, amount, local_direction, who, bone_index)
 	--AMK UTILS--
 
   self.nofixonhit=true
@@ -206,9 +200,4 @@ function generic_physics_binder:death_callback(victim, who)
 	if self.is_drop_box then
 		self.box_items:spawn_items()
 	end
-    
-	--AMK UTILS--
-	amk_utils.physics_death(victim, who)
-	--AMK UTILS--
-	
 end

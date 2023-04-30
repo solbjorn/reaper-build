@@ -273,9 +273,31 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE and level.present() and (db_actor ~= nil) and db_actor:alive() then
 			console:execute("main_menu off")
-		-- раскоментируем и заоодно включим убранное спавн меню 
-		-- elseif dik == DIK_keys.DIK_S then
-		--	self:OnButton_load_spawn()
+		-- OGSE Team on 
+		-- Система быстрых сохранений игры
+		elseif dik == DIK_keys.DIK_F6 and level.present() and (db.actor ~= nil) and db.actor:alive() then
+				console:execute("main_menu off")
+				console:execute("save " .. "pseudoquicksave")
+		elseif dik == DIK_keys.DIK_F7 and ui_load_dialog.file_exist("pseudoquicksave.sav") then
+				if (alife() == nil) then
+					console:execute	("disconnect")	
+					console:execute	("start server(" .. "pseudoquicksave" .. "/single/alife/load) client(localhost)")	
+				else
+					console:execute	("load " .. "pseudoquicksave")	
+				end
+		elseif dik == DIK_keys.DIK_F8 then
+			if level.present() and (db.actor ~= nil) and db.actor:alive() then
+				local s_date = ""
+				s_date = AddTextDigit(s_date, level.get_time_days())
+				s_date = s_date .. "_"
+				s_date = AddTextDigit(s_date, level.get_time_hours())
+				s_date = s_date .. "_"
+				s_date = AddTextDigit(s_date, level.get_time_minutes())
+				local s_level = level.name()
+				console:execute("main_menu off")
+				console:execute("save " .. "pqs_" .. s_level .. "_" .. s_date)
+			end
+		-- OGSE Team off
 		elseif dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
 		elseif dik == DIK_keys.DIK_L then
@@ -300,6 +322,13 @@ function main_menu:amk_options()
 	self:GetHolder():start_stop_menu(self.amk_options_dlg, true)
 	self:GetHolder():start_stop_menu(self, true)
 	self:Show(false)
-
 end
 
+function AddTextDigit(str, dig)
+	if (dig > 9) then
+		str = str .. dig
+	else
+		str = str .. "0" .. dig
+	end
+	return str
+end

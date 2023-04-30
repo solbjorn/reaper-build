@@ -8,58 +8,30 @@ Copyright © AMK TEAM 2007-2008
 
 ]]
 
+local math_floor = math.floor
+local string_explode = string.explode
+local string_find = string.find
+local string_gfind = string.gfind
+local string_gsub = string.gsub
+local string_trim = string.trim
+local string_to_table = string.to_table
+local table_to_string = table.to_string
+
+local actor_pstor
+
 ----------------
 local npc_spawner={}  --служебный массив, работает автоматически - не трогать шаловливыми русками
 
 local markers={}  --хранит маркеры на карте
 local x_objs={}     --хранит ИДшники объектов
 convert_npc={}
+local StartTime
 
-is_debug = false
 ver = "0"
 oau_watchdog=0
 oau_reason=""
 
-----------------
-local bufferedmessages={}
-
-function logct(msg,tag)
-	if true and (tag and (tag=="mcbt" or tag=="temp")) then --(tag=="dram")) then
-	    get_console():execute("load ~~~ "..string.sub(msg,1,200))		
-	end
-end
-
-function rep(npc,msg,tag)
-	if string.find(npc:name(),"gar_dm") then
-		logct(msg,tag)
-	end
-end
-
 function mylog(msg)
-  if is_debug then 
-	  if msg==nil then
-	    return 
-	  end
-	  if db and db.actor then
-	    if bufferedmessages then
-	      for k,v in ipairs(bufferedmessages) do
-	        db.actor:give_game_news(v, "ui\\ui_iconsTotal", Frect():set(0,658,83,47), 0, 15000)
-	      end
-	      bufferedmessages=nil
-	    end
-	  db.actor:give_game_news(msg, "ui\\ui_iconsTotal", Frect():set(0,658,83,47), 0, 15000)
-	  else
-	    if bufferedmessages then
-	      table.insert(bufferedmessages,msg)
-	    end
-	  end
-
-	  if get_console() then
-	    get_console():execute("load ~~~ "..string.sub(msg,1,200))
-	    get_console():execute("flush")
-	  end
-
-	end
 end
 
 --показываем типс
@@ -99,7 +71,7 @@ end
 --]]---------------------------------------------------------------------------
 
 function outfit_cond(params)
-	local arr = unpack_array_from_string(params)
+	local arr = string_to_table(params)
 	local grade = arr[1]
 	local id = arr[2]
 	local rnd, add
@@ -123,7 +95,7 @@ function block_sleep_menu_handler()
 end
 
 function af_transform_handler(params)
-	mod_call("af_transform_end", unpack_array_from_string(params_string))
+	mod_call("af_transform_end", string_to_table(params_string))
 end
 
 function amk_freeplay_handler()
@@ -133,7 +105,7 @@ function amk_freeplay_handler()
 end
 
 function healing_enemies_handler(params)
-	local arr = unpack_array_from_string(params)
+	local arr = string_to_table(params)
 	local npc_id = arr[1]
 	local npc_com = arr[2]
 	local npc = level.object_by_id(npc_id)
@@ -142,6 +114,13 @@ function healing_enemies_handler(params)
 		npc:set_relation(game_object.enemy, db_actor)
 	else
 		xr_wounded.custom_change(npc)
+	end
+end
+
+function timer_drop_obj_teleport_handler(params)
+	local tbl = string_to_table(params)
+	if not alife():object(tbl.obj_id) then
+		spawn_level_changer.teleport_start(tbl.obj_sect)
 	end
 end
 
@@ -175,7 +154,8 @@ local legacy_acts = {
 	["collect_anomalies_info"]	= "amk_anoms.collect_info",
 	["news_check"]			= "news_main.check_news",
 	["healing_enemies"]		= "amk.healing_enemies_handler",
-	["nano_health_start"]		= "skunk.nano_health_s"
+	["nano_health_start"]		= "skunk.nano_health_s",
+	["timer_drop_obj_teleport"]	= "amk.timer_drop_obj_teleport_handler"
 }
 
 --старт таймера в реальном времени
@@ -240,17 +220,17 @@ end
 --спавним объекты на карту
 --для спавна неписей смотрим config\creatures\spawn_sections.ltx - там написаны имена секций для разных типов неписей
 function spawn_item(spawn_item, pos, gv,lv)
-  if gv==nil then gv=db.actor:game_vertex_id() end
-  if lv==nil then lv=db.actor:level_vertex_id() end
-  return alife():create(spawn_item, pos, lv, gv)
+  if gv==nil then gv=db_actor:game_vertex_id() end
+  if lv==nil then lv=db_actor:level_vertex_id() end
+  return g_alife:create(spawn_item, pos, lv, gv)
 end
 
 --для спавна патронов используем spawn_ammo_in_inv
 function spawn_item_in_inv(spawn_item,npc)
   if npc==nil then 
-    npc=db.actor 
+    npc=db_actor 
   end
-  return alife():create(spawn_item, 
+  return g_alife:create(spawn_item, 
       npc:position(),
       npc:level_vertex_id(),  
       npc:game_vertex_id(),
@@ -260,7 +240,7 @@ end
 --используем для спавна патронов
 function spawn_ammo_in_inv(spawn_item,number,npc)
   if npc==nil then 
-    npc=db.actor 
+    npc=db_actor 
   end
   if number > 0 then
     return se_respawn.create_ammo(spawn_item, 
@@ -275,7 +255,7 @@ end
 -- удаляем объект из игры
 function remove_item(remove_item)
   if remove_item~=nil then
-    alife():release(alife():object(remove_item:id()), true)
+    g_alife:release(g_alife:object(remove_item:id()), true)
     return true
   end
   return false
@@ -344,10 +324,10 @@ end
 
 --удаляем предмет из инвентаря
 function remove_item_from_inventory(remove_item,npc)
-  if npc==nil then npc=db.actor end
+  if npc==nil then npc=db_actor end
   if remove_item~=nil then
 --      npc:mark_item_dropped(remove_item)
-    alife():release(alife():object(remove_item:id()), true)
+    g_alife:release(g_alife:object(remove_item:id()), true)
     return true
   end
   return false
@@ -371,51 +351,45 @@ function __del_item(npc, item)
         return false
     end
 --    npc:mark_item_dropped(item)
-    alife():release(alife():object(item:id()), true)
+    g_alife:release(g_alife:object(item:id()), true)
 end
 ---------------------------
 
 --проверка запущена ли игра
 function check_game()
-  if level.present() and (db.actor ~= nil) and db.actor:alive() then
+  if level.present() and (db_actor ~= nil) and db_actor:alive() then
     return true
   end
   return false
 end
 
 --записываем переменную
-function save_variable(variable_name, value)
-  if value==nil then
-    amk.mylog("saving nil into "..variable_name)
-    del_variable(variable_name)
-  else
-    local vn=compress_name(variable_name)
-    xr_logic.pstor_store(db.actor, vn, value)
-  end
+function save_variable(vn, val)
+	if not val then
+		actor_pstor[vn] = nil
+		return
+	end
+
+	local tv = type(val)
+	if tv == "string" or tv == "number" or tv == "boolean" then
+		actor_pstor[vn] = val
+	else
+		abort("amk.save_variable(): unregistered type '%s' encountered (corrupted save?)", tv)
+	end
 end
 
 --загружаем переменную
-function load_variable(variable_name, value_if_not_found)
-  local vn=compress_name(variable_name)
-  return xr_logic.pstor_retrieve(db.actor, vn, value_if_not_found)
+function load_variable(vn, def, del)
+	local var = actor_pstor[vn]
+	if not var then return def end
+
+	if del then actor_pstor[vn] = nil end
+	return var
 end
 
 --удаляем переменную
-function del_variable(variable_name)
-  local vn=compress_name(variable_name)
-  if db.storage[db.actor:id()].pstor[vn] then
-    db.storage[db.actor:id()].pstor[vn] = nil
-  end
-end
-
--- таблица компрессии имён
-local compress_table={
-}
-local checked=false
-
--- Преобразует имя переменной в короткое
-function compress_name(name)
-  return name
+function del_variable(vn)
+	actor_pstor[vn] = nil
 end
 
 --определяем находится ли ГГ в определенной зоне
@@ -475,200 +449,26 @@ end
 
 --инвентарное название объекта
 function get_inv_name(section)
-  return system_ini():r_string(section,"inv_name")
+	return read_line(section, "inv_name")
 end
 
--- Внимание! Строки в структуре не должны содержать символов с кодами 0-31.
 function pack_array_to_string(array)
-  return string.char(1)..pack_new(array)
-  -- local str=""
-  -- local key
-  -- for key0,value in pairs(array) do
-    -- if type(key0)=="string" then
-      -- key='"'..key0..'"'
-    -- else
-      -- key=key0
-    -- end
-    -- if type(value)=="table" then
-      -- local substr=pack_array_to_string(value)
-      -- str=str..key.."=>{"..substr.."}|"
-    -- elseif type(value)=="customdata" or type(value)=="function" then
-      -- mylog("Custom data and function isn't supported")
-    -- elseif type(value)=="boolean" or type(value)=="number" then
-      -- str=str..key.."=>"..tostring(value).."|"
-    -- else
-      -- str=str..key..'=>"'..value..'"|'
-    -- end
-  -- end
-  -- return str
+	return table_to_string(array)
 end
 
 function unpack_array_from_string(str)
-  if str==nil or str=="" then return {} end
-  if string.sub(str,1,1)~=string.char(1) then
-    -- Старый формат упаковки
-    return _parse(str)
-  else
-    -- новый формат упаковки тэгирован символом c кодом 1.
-    return parse_new(string.sub(str,2,-1))
-  end
+	return string_to_table(str)
 end
 
-function _assign(tbl,key,val)
-  local key0=string.match(key,'"(.*)"')
-  if key0 then
-    tbl[key0]=val
-  else
-    tbl[key+0]=val
-  end
-end
-
-local pack_type_num=1
-local pack_type_string=2
-local pack_type_bool=3
-local pack_type_table=4
-local pack_val_endtable=5
-
---[[
- Новый формат упаковки: 
- table ::= subtable
- subtable ::= keytype key valuetype ( value | subtable 0x5 )
- keytype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
- valuetype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
-]]
-function pack_new(tbl)
-  local ret=""
-  for k,v in pairs(tbl) do
-    if type(k)=="number" then
-      ret=ret..string.char(pack_type_num)..k
-    elseif type(k)=="string" then
-      ret=ret..string.char(pack_type_string)..k
-    else
-      abort("unsupported key type "..type(k))
-    end
-    if type(v)=="number" then
-      ret=ret..string.char(pack_type_num)..v
-    elseif type(v)=="string" then
-      ret=ret..string.char(pack_type_string)..v
-    elseif type(v)=="boolean" then
-      ret=ret..string.char(pack_type_bool)..v
-    elseif type(v)=="table" then
-      ret=ret..string.char(pack_type_table)..pack_new(v)..string.char(pack_val_endtable)
-    end
-  end
-  return ret
-end
-
-function parse_new(str,idx)
-  local ret={}
-  idx=idx or 1
-  while true do
-    local key,value
-    if idx>string.len(str) then
-      return ret,idx
-    end
-    vtype,idx=get_byte(str,idx)
-    if vtype==pack_type_num then
-      key,idx=get_num(str,idx)
-    elseif vtype==pack_type_string then
-      key,idx=get_string(str,idx)
-    elseif vtype==pack_val_endtable then
-      return ret,idx
-    else
-      abort("unsupported key type "..tostring(vtype))
-    end
-    vtype,idx=get_byte(str,idx)
-    if vtype==pack_type_num then
-      value,idx=get_num(str,idx)
-    elseif vtype==pack_type_string then
-      value,idx=get_string(str,idx)
-    elseif vtype==pack_type_bool then
-      value,idx=get_bool(str,idx)
-    elseif vtype==pack_type_table then
-      value,idx=parse_new(str,idx)
-    else
-      abort("unsupported key type "..tostring(vtype))
-    end
-    ret[key]=value
-  end
-end
-
-function get_byte(str,idx)
-  return string.byte(string.sub(str,idx,idx)),idx+1
-end
-
-function get_string(str,idx)
-  local idx1=string.len(str)+1
-  for i=idx,string.len(str),1 do
-    if string.byte(string.sub(str,i,i))<32 then
-      idx1=i
-      break
-    end
-  end
-  return string.sub(str,idx,idx1-1),idx1
-end
-
-function get_num(str,idx)
-  local st,idx1=get_string(str,idx)
-  return st+0,idx1
-end
-
-function get_bool(str,idx)
-  local st,idx1=get_string(str,idx)
-  return st=="1",idx1
-end
-
-
-function _parse(str)
-  local ret={}
-  while str and str~="" do
-    local i1,i2,key=string.find(str,'(.-)=>')
-    str=string.sub(str,i2+1)
-    i1,i2,val=string.find(str,'"(.-)"|')
-    if val and i1==1 then
-      -- строка
-      _assign(ret,key,val)
-    else
-      i1,i2,val=string.find(str,'(%b{})|')
-      if val and i1==1 then
-        -- таблица
-        _assign(ret,key,_parse(string.sub(val,2,-2)))
-      else
-        i1,i2,val=string.find(str,'(.-)|')
-        -- число или булево значение
-        if val=="true" then
-          _assign(ret,key,true)
-        elseif val=="false" then
-          _assign(ret,key,false)
-        else
-          _assign(ret,key,val+0)
-        end
-      end
-    end
-    str=string.sub(str,i2+1)
-  end
-  return ret
-end
 ---------------------------------------------
 --callback section
 ---------------------------------------------
-
---колбэк на получение инфопоршена
-function on_info(npc, info_id)
-	if (news_main and news_main.on_info) then
-		news_main.on_info(info_id)
-	end
-end
 
 --колбэк на взятие предмета в инвентарь ГГ
 function on_item_take(obj)
 gps_habar.on_item_take(obj) -- Idler ++--
     escape_dialog.have_a_art()
-flamethrower.have_a_fire_kolobok()
-flamethrower.have_a_trubki()
-flamethrower.have_a_manometr()
-flamethrower.have_a_vodko()
-flamethrower.have_a_gorelka()
+	flamethrower.on_item()
 skunk.nano_bronik_on_take(obj)
 	
   remove_spot_from_map(obj:id(),"red_location")
@@ -691,11 +491,7 @@ gps_habar.on_item_drop(obj) --idler++--
   --!!! alcohol modification by Terrapack
   amk_alcohol.drink_vodka(obj)
   --
-flamethrower.have_a_fire_kolobok()
-flamethrower.have_a_trubki()
-flamethrower.have_a_manometr()
-flamethrower.have_a_vodko()
-flamethrower.have_a_gorelka()
+	flamethrower.on_item()
 end
 
 --колбэк на апдейт ГГ (удобно для проверки условий, так как вызывается постоянно, нельзя перегружать, а то будут лаги)
@@ -722,91 +518,46 @@ function on_actor_upade(delta)
   amk_alcohol.check_alcohol()
 	oau_watchdog=92
   amk_mod.on_blowout_hit_actor()
-	oau_watchdog=91
-  if amk_target then amk_target.update() end
+
   --
-  for k,v in pairs(convert_npc) do
-    local obj=level.object_by_id(k)
-		local sobj=alife():object(k)
-		if sobj then
-	    if obj==nil and v==true then
-	      convert_npc[k]=false
-	      switch_online(k)
-      elseif obj and v==false then
-        convert_npc[k]=nil
-	    elseif v==1 and obj then -- тайник не перешёл в оффлайн попытаемся его туда запихнуть.
-       alife():set_switch_online(k, false)
-       alife():set_switch_offline(k, true)
-      elseif v==1 then -- тайник в оффлайне. выталкиваем.
-	      convert_npc[k]=nil
-	      switch_online(k)      
-			else
---				convert_npc[k]=nil
+	local sim = g_alife
+	local obj
+	for k,v in pairs(convert_npc) do
+		if sim:object(k) then
+			obj=level.object_by_id(k)
+			if obj==nil and v==true then
+				convert_npc[k]=false
+				switch_online(k)
+			elseif obj and v==false then
+				convert_npc[k]=nil
+			elseif v==1 and obj then -- тайник не перешёл в оффлайн попытаемся его туда запихнуть.
+				sim:set_switch_online(k, false)
+				sim:set_switch_offline(k, true)
+			elseif v==1 then -- тайник в оффлайне. выталкиваем.
+				convert_npc[k]=nil
+				switch_online(k)
 			end
 		else
 			convert_npc[k]=nil
-    end
-  end
-	oau_watchdog=89
-	
-	if (amk_offline_alife) then
-      amk_offline_alife.update()
-    end
-	oau_watchdog=88
-	if (amk_corpses) then
-		for a=1, 3 do
-			amk_corpses.update()
 		end
 	end
-	
-	amk_anoms.update()
+
+	oau_watchdog=89
+	amk_offline_alife.update()
+
+	if db_actor then
+		oau_watchdog=86
+		skunk.nano_update()
+
+		oau_watchdog=85
+		wawka.update()
+	end
+
+	oau_watchdog=84
+	gps_habar.update_gps_state() --idler++--
+
 	oau_watchdog=0
 	oau_reason=""
-
-skunk.nano_bronik()
-skunk.nano_bronik_bad()
-skunk.nano_bronik_good()
-skunk.nano_bronik_default()
-skunk.nano_bronik_static()
-skunk.nano_bronik_kat_eye()
-skunk.nano_bronik_psy()
-skunk.nano_bronik_blackwhite()
-skunk.nano_bronik_bast()
-skunk.nano_bronik_plus()
-skunk.nano_bronik_badplus()
-skunk.nano_bronik_goodplus()
-skunk.nano_bronik_defaultplus()
-skunk.nano_bronik_staticplus()
-skunk.nano_bronik_kat_eyeplus()
-skunk.nano_bronik_psyplus()
-skunk.nano_bronik_blackwhiteplus()
-skunk.nano_bronik_bastplus()
-skunk.nano_health()
-skunk.nano_health_bad()
-skunk.nano_health_good()
-skunk.nano_health_default()
-skunk.nano_health_static()
-skunk.nano_health_kat_eye()
-skunk.nano_health_psy()
-skunk.nano_health_blackwhite()
-skunk.nano_health_bast()
-skunk.nano_health_plus()
-skunk.nano_health_badplus()
-skunk.nano_health_goodplus()
-skunk.nano_health_defaultplus()
-skunk.nano_health_staticplus()
-skunk.nano_health_kat_eyeplus()
-skunk.nano_health_psyplus()
-skunk.nano_health_blackwhiteplus()
-skunk.nano_health_bastplus()
-wawka.check_bes_dead()
-wawka.check_krysyk_dead()
-wawka.check_tolik_dead()
-wawka.check_maks_dead()
-wawka.check_yurik_dead()
-wawka.check_sms_bioradar()
-wawka.check_sms_awm()
-gps_habar.on_actor_upade(delta) --idler++--
 end
 
 --колбэк на создание непися (точнее на его переход в онлайн), использует следующую за ним функцию для выбора действия
@@ -850,7 +601,7 @@ function on_npc_go_offline(npc)
   end
 	if amk_offline_alife then
 		if check_game()==true then
-		local sobj = alife():object(npc:id())
+		local sobj = g_alife:object(npc:id())
 		if sobj then
 			amk_offline_alife.process_trade(sobj)
 		end
@@ -868,7 +619,7 @@ end
 
 --колбэк на юзание объекта
 function on_use(victim, who)
-  if db.actor and who and who:id()==db.actor:id() then
+  if db_actor and who and who:id()==db_actor_id then
     mod_call("check_usable_item",victim)
   end
 end
@@ -886,14 +637,14 @@ end
 
 function on_npc_hit(obj, amount, local_direction, who, bone_index)
 	mod_call("firebated", obj, amount, local_direction, who, bone_index)
-	if db.actor and who and who:id()==db.actor:id() and amount>0 then
+	if db_actor and who and who:id()==db_actor_id and amount>0 then
 		mod_call("calc_adrenaline","actor_hit_enemy",obj,"npc")
 	end
 end
 
 function on_monster_hit(obj, amount, local_direction, who, bone_index)
 	mod_call("firebated", obj, amount, local_direction, who, bone_index)
-	if db.actor and who and who:id()==db.actor:id() and amount>0 then
+	if db_actor and who and who:id()==db_actor_id and amount>0 then
 		mod_call("calc_adrenaline","actor_hit_enemy",obj,"monster")
 	end
 end
@@ -902,7 +653,7 @@ function on_ph_obj_hit(obj, amount, local_direction, who, bone_index)
 end
 
 -- проверка на видимость производится раз в секунду
-function enemy_see_actor(obj,typ) 
+function enemy_see_actor(obj,typ)
 	mod_call("calc_adrenaline","enemy_see_actor",obj,typ)
 end
 function actor_see_enemy(obj,typ) 
@@ -916,14 +667,11 @@ end
 
 --загружаем все переменные, которые нужно, вызывается загрузке игры, автоматически; вручную не вызывать
 function on_game_load()
-	amk.mylog("on_game_load begin")
-	amk.mylog("object 2972 is "..((alife():object(2972) and alife():object(2972):name()) or "") )
-	amk.mylog("object 2975 is "..((alife():object(2975) and alife():object(2975):name()) or "") )
-
-  if db.storage[db.actor:id()].pstor == nil then
-    db.storage[db.actor:id()].pstor = {}
+  if db.storage[db_actor_id].pstor == nil then
+    db.storage[db_actor_id].pstor = {}
   end
-  
+	actor_pstor = db.storage[db_actor_id].pstor
+
   npc_spawner=unpack_array_from_string(load_variable("x_npc_spawner","") )
 
   mod_call("first_run")
@@ -933,12 +681,10 @@ function on_game_load()
   mod_call("check_spawn")
 --  local str=string
   if has_alife_info("val_actor_has_borov_key") and not has_alife_info("val_borov_dead") then
-    db.actor:give_info_portion("val_borov_dead")
+    db_actor:give_info_portion("val_borov_dead")
   end
 -----------
 	gps_habar.on_game_load() --idler++--
-
-	amk.mylog("on_game_load end")
 end
 
 --записываем все переменные, которые нужно, вызывается присохранении игры, автоматически; вручную не вызывать
@@ -946,10 +692,22 @@ function on_game_save()
   
 end
 
--- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db.actor недоступен!
+-- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db_actor недоступен!
 function on_game_start()
   mod_call("on_game_start")
 	ver = get_ver()
+	getStartTime()
+end
+
+function getStartTime()
+  local strTime = system_ini():r_string("alife", "start_time")
+  local t = str_explode(":", strTime, true)
+  local d = str_explode(".",  system_ini():r_string("alife", "start_date"), true)
+  StartTime = game.CTime()
+  StartTime:set(d[3], d[2], 1, 0, 0, 0, 0)
+  local temp = game.CTime()
+  temp:setHMS(24,0,0)
+  StartTime = StartTime - temp
 end
 
 --------------------- user function section---------------
@@ -978,31 +736,22 @@ function update_table(name,id,val)
   return tbl
 end
 
-function sixbit(char) local byte = string.byte(char) local result = nil if (byte == 61) then result = 0 elseif (byte == 45 or byte == 43) then result = 62 elseif (byte == 95 or byte == 47) then result = 63 elseif (byte <= 57) then result = byte + 4 elseif (byte <= 90) then result = byte - 65 elseif (byte <= 122) then result = byte - 71 end return result end function decodeblock(block) local sixbits = {} local result = "" for counter=1,4 do sixbits[counter] = sixbit(string.sub(block,counter,counter)) end result = string.char(sixbits[1]*4 + math.floor(sixbits[2] / 16)) if (string.sub(block,3,3) ~= "=") then result = result .. string.char((sixbits[2] % 16)*16 + math.floor(sixbits[3] / 4)) end if (string.sub(block,4,4) ~= "=") then result = result .. string.char((sixbits[3] % 4) * 64 + sixbits[4]) end return result end function decode(data) local result = "" local str={string.byte("CheckForCheat",1,1000)} local strl=table.getn(str) for c=1,string.len(data),4 do result=result..decodeblock(string.sub(data,c,c+3)) end local result1="" for c=1,string.len(result),1 do local sl=string.byte(string.sub(result,c)) sl=bit_xor(sl,str[1+(c-1)%strl]) result1 = result1 .. string.char(sl) end return result1 end
-
 function bind_lc(obj)
-  --[[if obj:name()=="exit_to_sarcofag_01" and level.name()=="l12_stancia" and amk.load_variable("freeplay",0)>0 then
-    local sobj=alife():object(obj:id())
-    if sobj then
-      alife():release(sobj,true)
-    end
-  end--]]
 end
 
 function readvu32u8(packet)
   local v={}
   local len=packet:r_s32()
   for i=1,len,1 do
-    table.insert(v,packet:r_u8())
+		v[#v + 1] = packet:r_u8()
   end
   return v
 end
 
 function readvu8u8(packet)
   local v={}
-  local len=8
-  for i=1,len,1 do
-    table.insert(v,packet:r_u8())
+  for i=1,8,1 do
+		v[#v + 1] = packet:r_u8()
   end
   return v
 end
@@ -1011,13 +760,13 @@ function readvu32u16(packet)
   local v={}
   local len=packet:r_s32()
   for i=1,len,1 do
-    table.insert(v,packet:r_u16())
+		v[#v + 1] = packet:r_u16()
   end
   return v
 end
 
 function writevu32u8(pk,v)
-  local len=table.getn(v)
+  local len=#v
   pk:w_s32(len)
   for i=1,len,1 do
     pk:w_u8(v[i])
@@ -1025,15 +774,13 @@ function writevu32u8(pk,v)
 end
 
 function writevu8u8(pk,v)
-  local len=8 --table.getn(v)
-  --pk:w_u8(len)
-  for i=1,len,1 do
+  for i=1,8,1 do
     pk:w_u8(v[i])
   end
 end
 
 function writevu32u16(pk,v)
-  local len=table.getn(v)
+  local len=#v
   pk:w_s32(len)
   for i=1,len,1 do
     pk:w_u16(v[i])
@@ -1283,22 +1030,6 @@ function fill_se_monster_packet(ret,stpk,updpk)
   end  
 end
 
-function dump_table(tbl)
-  for k,v in pairs(tbl) do
-    if type(v)=="table" then
-      get_console():execute("load ~~~ "..tostring(k).." => ")
-      dump_table(v)
-    else
-      str="load ~~~ "..tostring(k).." => "..tostring(v)
-      if string.len(str)>200 then
-        str=string.sub(str,1,200)
-      end
-      get_console():execute(str)
-    end
-  end
-  get_console():execute("flush")
-end
-
 -- серверный объект на входе
 function read_stalker_params(sobj)
   local stpk=net_packet()
@@ -1432,19 +1163,19 @@ end
 function parse_custom_data(str)
 	local t={}
 	if str then
-		for section, section_data in string.gfind(str,"%s*%[([^%]]*)%]%s*([^%[%z]*)%s*") do
+		for section, section_data in string_gfind(str,"%s*%[([^%]]*)%]%s*([^%[%z]*)%s*") do
 			section = trim(section)
 			t[section]={}
-			for line in string.gfind(trim(section_data), "([^\n]*)\n*") do
-				if string.find(line,"=")~=nil then
-					for k, v in string.gfind(line, "([^=]-)%s*=%s*(.*)") do
+			for line in string_gfind(trim(section_data), "([^\n]*)\n*") do
+				if string_find(line,"=")~=nil then
+					for k, v in string_gfind(line, "([^=]-)%s*=%s*(.*)") do
 						k = trim(k)
 						if k~=nil and k~='' and v~=nil then 
 							t[section][k]=trim(v) 
 						end
 					end
 				else
-					for k, v in string.gfind(line, "(.*)") do
+					for k, v in string_gfind(line, "(.*)") do
 						k = trim(k)
 						if k~=nil and k~='' then
 							t[section][k]="<<no_value>>" 
@@ -1458,7 +1189,7 @@ function parse_custom_data(str)
 end
 
 function trim (s)
-	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
+	return string_trim(s)
 end
 
 function gen_custom_data(tbl)
@@ -1536,7 +1267,7 @@ end
 function point_in_poly (pts, x,y)
 	local cnt,k,j
 	local ret = false
-	cnt = table.getn(pts)
+	cnt = #pts
 	j = cnt
 	for k = 1,cnt do
 		if ((pts[k].y <=y) and (y < pts[j].y)) or ((pts[j].y <=y) and (y < pts[k].y)) then
@@ -1569,38 +1300,13 @@ function get_breakable_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
 	amk.parse_object_packet(t,stpk,uppk,size)
   amk.parse_visual_packet(t,stpk,uppk,size)
   amk.parse_object_physic_packet(t,stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
   return t
---[[
-	local packet = net_packet()
-	obj:STATE_Write(packet)
-	local t={}
-	t.game_vertex_id = packet:r_u16()
-	t.distance = packet:r_float()
-	t.direct_control = packet:r_s32()
-	t.level_vertex_id = packet:r_s32()
-	t.object_flags = packet:r_s32()
-	t.custom_data = packet:r_stringZ()
-	t.story_id = packet:r_s32()
-	t.spawn_story_id = packet:r_s32()
-	
-	t.visual_name = packet:r_stringZ()
-	t.visual_flags = packet:r_u8()
-	
-	t.health = packet:r_float()
-
-	if packet:r_elapsed() ~= 0 then
-		abort("left=%d", packet:r_elapsed())
-	end
-	return t
-	]]
 end
 
 function set_breakable_data(t,sobj)
@@ -1613,30 +1319,10 @@ function set_breakable_data(t,sobj)
 	
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
   sobj:UPDATE_Read(uppk)
-
-	--[[
-	local packet = net_packet()
-	obj:STATE_Write(packet)
-	packet:w_begin(t.game_vertex_id)
-	packet:w_float(t.distance)
-	packet:w_s32(t.direct_control)
-	packet:w_s32(t.level_vertex_id)
-	packet:w_s32(t.object_flags)
-	packet:w_stringZ(t.custom_data)
-	packet:w_s32(t.story_id)
-	packet:w_s32(t.spawn_story_id)
-	packet:w_stringZ(t.visual_name)
-	packet:w_u8(t.visual_flags)
-	packet:w_float(t.health)
-
-	packet:r_seek(0)
-	obj:STATE_Read(packet, packet:w_tell())
-	]]
 end
 
 function on_REspawn(obj,respawner)
@@ -1714,8 +1400,8 @@ function parse_shape_packet(t,stpk,uppk)
 end
 
 function fill_shape_packet(t,stpk,updpk)
-	stpk:w_u8(table.getn(t.shapes))
-	for i=1,table.getn(t.shapes) do
+	stpk:w_u8(#t.shapes)
+	for i=1,#t.shapes do
 		stpk:w_u8(t.shapes[i].shtype)
 		if t.shapes[i].shtype == 0 then
 			stpk:w_vec3(t.shapes[i].center)
@@ -1744,29 +1430,11 @@ function parse_ini_section_to_array(ini,section)
 end
 
 function str_explode(div,str,clear)
-	local t={}
-	local cpt = string.find (str, div, 1, true)
-	if cpt then
-		repeat
-			if clear then
-				table.insert( t, trim(string.sub(str, 1, cpt-1)) )
-			else
-				table.insert( t, string.sub(str, 1, cpt-1) )
-			end
-			str = string.sub( str, cpt+string.len(div) )
-			cpt = string.find (str, div, 1, true)
-		until cpt==nil
-	end
-	if clear then
-		table.insert(t, trim(str))
-	else
-		table.insert(t, str)
-	end
-	return t
+	return string_explode(str, div, clear)
 end
 
 function quotemeta(str)
-	return (string.gsub(s, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
+	return (string_gsub(s, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
 end
 
 
@@ -1776,15 +1444,6 @@ function add(v1,v2)
 	nv.y=v1.y+v2.y
 	nv.z=v1.z+v2.z
 	return nv
-end
-
-function set_len(v,num)
-	local cl = math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z)
-	cl = num/cl
-	v.x= v.x*cl
-	v.y= v.y*cl
-	v.z= v.z*cl
-	return v
 end
 
 function get_restrictor_data(sobj)
@@ -1894,13 +1553,13 @@ end
 function readvu8uN(packet,n)
   local v={}
   for i=1,n,1 do
-    table.insert(v,packet:r_u8())
+		v[#v + 1] = packet:r_u8()
   end
   return v
 end
 
 function writevu8uN(pk,v)
-  local len=table.getn(v)
+  local len=#v
   --pk:w_u8(len)
   for i=1,len,1 do
     pk:w_u8(v[i])
@@ -2104,6 +1763,41 @@ function get_ver()
 	return ver
 end
 
+function game_milliseconds()
+	if StartTime == nil then
+		getStartTime()
+		if StartTime == nil then
+			return 0
+		end
+	end
+	local gtime = game.get_game_time()
+	local seconds = gtime:diffSec(StartTime)
+	local y,m,d,h,min,sec,ms = gtime:get()
+	return (seconds * 1000 + ms)
+end
+
+function game_seconds()
+	if StartTime == nil then
+		getStartTime()
+		if StartTime == nil then
+			return 0
+		end
+	end
+	return game.get_game_time():diffSec(StartTime)
+end
+
+function game_minutes()
+	return math_floor(game_seconds() / 60)
+end
+
+function game_hours()
+	return math_floor(game_seconds() / 3600)
+end
+
+function game_days()
+	return math_floor(game_seconds() / 86400)
+end
+
 --[[
 copyright © xStream & Red75
 
@@ -2117,5 +1811,3 @@ MMMMMMM    MMMMM    MMMMMM  MMMMMMMMMMMMM  MMMMMMMMMMM     MMMMMMMMMMM    MMMMMM
   MMMMM  MMMMM    MMMMMMMM      MMMMMM      MMMMMMMMMMMMMM MMMMMMMMMMM MMMMMMMMMMMMM MMMMM MMMMM MMMMM
  MMMMM   MMMMMM    MMMMMM       MMMMMM      MMMMMMM MMMMM  MMMMMMMMMM MMMMMMM MMMMMM MMMM   MM   MMMM 
 ]]
-
-

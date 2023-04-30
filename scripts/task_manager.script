@@ -516,6 +516,8 @@ local game_version = -1
 local table_insert = table.insert
 local table_remove = table.remove
 local string_find = string.find
+local string_len = string.len
+local string_sub = string.sub
 local utils_w_CTime = utils.w_CTime
 local utils_r_CTime = utils.r_CTime
 local math_random = math.random
@@ -528,8 +530,8 @@ local hash_to_ct={}
 function stringhash(str)
   local mpl=1
   local hash=0
-  for i=1,string.len(str),1 do
-    local val=string.byte(string.sub(str,i,i))
+  for i=1,string_len(str),1 do
+    local val=string.byte(string_sub(str,i,i))
     hash=hash+mpl*val
     mpl=mpl*2
     if mpl==512 then mpl=1 end
@@ -1766,8 +1768,8 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 						end
 					end
 
-          actor_stats.add_points("quests", desc, 1, task_desc.reward_rank)
-          db_actor:set_character_rank(db_actor:character_rank() + task_desc.reward_rank)
+          actor_stats.add_points("quests", desc, 1, 1)
+          db_actor:set_character_rank(db_actor:character_rank() + 1)
         end
       end
     end 
@@ -1800,8 +1802,8 @@ function CRandomTask:task_reward_storyline(task)
 			end
 		end
 
-    actor_stats.add_points("quests", desc, 1, task_desc.reward_rank)
-    db_actor:set_character_rank(db_actor:character_rank() + task_desc.reward_rank)
+    actor_stats.add_points("quests", desc, 1, 1)
+    db_actor:set_character_rank(db_actor:character_rank() + 1)
   end
 end
 --' Создается диалог актера, в котором будут приниматься задания
@@ -2192,8 +2194,8 @@ function format_reward_text(reward_list)
 			reward_text = reward_text .. string.format("%s",v) .. "x " .. game.translate_string(news_manager.get_inv_name(i)) .. ", "
 		end
 	end
-	if string.len(reward_text) >=2 then
-		reward_text = string.sub (reward_text, 1, string.len(reward_text)-2)
+	if string_len(reward_text) >=2 then
+		reward_text = string_sub (reward_text, 1, string_len(reward_text)-2)
 	end
 	return reward_text
 end]]--

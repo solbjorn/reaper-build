@@ -129,9 +129,6 @@ function generic_scheme_overrides(npc)
 --  gulag_name - имя гулага, если скрипт включается гулагом, а не биндером
 --]]
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name)
-  --printf("DEBUG: enable_scripts: npc:name()=%s", npc:name())
-
-  local npc_id = npc:id()
   local st     = db_storage[npc:id()]
 
   -- если какая-то схема была до этого активна, деактивировать её
@@ -196,19 +193,22 @@ function determine_section_to_activate(npc, ini, section_logic)
     return "nil"
   end
 
-  -- Распарсить строку выбора активной секции с учетом команд, заключенных в %%
-  local active_section_cond = cfg_get_condlist(ini, section_logic, "active", npc)
-  local active_section
-  if not active_section_cond then
-    abort("object '%s': section '%s': unable to find field 'active'", npc:name(), section_logic)
-  else
-    active_section = pick_section_from_condlist(db_actor, npc, active_section_cond.condlist)
-    if not active_section then
-      abort("object '%s': section '%s': section 'active' has no conditionless else clause",
-        npc:name(), section_logic)
-    end
-  end
-  if active_section and db_storage[npc:id()].stype and db_storage[npc:id()].stype<=1 and db_storage[npc:id()].stype~=stypes[utils.get_scheme_by_section(active_section)] then
+	-- Распарсить строку выбора активной секции с учетом команд, заключенных в %%
+	local active_section_cond = cfg_get_condlist(ini, section_logic, "active", npc) or
+				cfg_get_condlist(ini, section_logic, "selective", npc)
+	local active_section
+	if not active_section_cond then
+		abort("object '%s': section '%s': no 'active' or 'selective'", npc:name(), section_logic)
+	else
+		active_section = pick_section_from_condlist(db_actor, npc, active_section_cond.condlist)
+		if not active_section then
+			abort("object '%s': section '%s': field 'active'/'selective' has no conditionless else clause",
+				npc:name(), section_logic)
+		end
+	end
+
+	local npc_id = npc:id()
+  if active_section and db_storage[npc_id].stype and db_storage[npc_id].stype<=1 and db_storage[npc_id].stype~=stypes[utils.get_scheme_by_section(active_section)] then
   -- Блокируем активацию схемы для зверушек в человеческих гулагах. Dirty Hack.
     return "nil"
   else
@@ -223,7 +223,7 @@ function disable_generic_schemes(npc, stype)
   if stype == modules.stype_stalker then
     xr_combat.disable_scheme(npc, "combat")
 	xr_punch_tm.disable_scheme(npc, "punch_tm")
-    if xrs_ai then xrs_ai.disable_schemes(npc, stype) end
+	xrs_ai.disable_schemes(npc, stype)
     xr_use.disable_scheme(npc, "use")
     xr_hit.disable_scheme(npc, "hit")
     xr_meet.disable_scheme(npc, "actor_dialogs")
@@ -243,9 +243,8 @@ end
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В disable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function enable_generic_schemes(ini, npc, stype, section)
-  if stype == modules.stype_stalker then
-
-    if blowout_scheme then blowout_scheme.set_hide(npc,ini,"blowout_scheme",section) end
+	if stype == modules.stype_stalker then
+		blowout_scheme.set_hide(npc, ini, "blowout_scheme", section)
 
     xr_danger.set_danger(npc, ini, "danger", "danger")
 
@@ -290,13 +289,10 @@ function enable_generic_schemes(ini, npc, stype, section)
       xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore", combat_ignore_section)
     end
 
-                if watcher_act then
-                        watcher_act.set_scheme(npc,ini,"watcher_act","watcher_act")
-                end
-				
-  xr_punch_tm.set_scheme(npc, nil, "punch_tm")
-  if xrs_ai then xrs_ai.enable_schemes(ini, npc, stype, section) end
-  elseif stype == modules.stype_mobile then
+		watcher_act.set_scheme(npc, ini, "watcher_act", "watcher_act")
+		xr_punch_tm.set_scheme(npc, nil, "punch_tm")
+		xrs_ai.enable_schemes(ini, npc, stype, section)
+	elseif stype == modules.stype_mobile then
     local combat_section = utils.cfg_get_string(ini, section, "on_combat", npc, false, "")
     if combat_section then
       mob_combat.set_scheme(npc, ini, "mob_combat", combat_section)
@@ -316,19 +312,17 @@ function enable_generic_schemes(ini, npc, stype, section)
     end
 
     mob_panic.set_scheme(npc, ini, "mob_panic")
-
-  elseif stype == modules.stype_item then
+	elseif stype == modules.stype_item then
     local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
     if hit_section then
       ph_on_hit.set_scheme(npc, ini, "ph_on_hit", hit_section)
     end
-
-  elseif stype == modules.stype_heli then
+	elseif stype == modules.stype_heli then
     local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
     if hit_section then
       xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
     end
-  end
+	end
 end
 
 function activate_by_section(npc, ini, section, loading)
@@ -418,7 +412,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
   elseif stype == modules.stype_mobile then
     xr_meet.dialog_manager_reset(npc, stype)
     mob_release(npc)
-    if get_clsid(npc) == clsid_bloodsucker_s then
+    if npc:clsid() == clsid_bloodsucker_s then
       if scheme == "nil" then
         npc:set_manual_invisibility(false)
       else
@@ -432,7 +426,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 			npc:set_callback(callback.use_object, nil)
 		end
     npc:set_nonscript_usable(true)
-    if get_clsid(npc) == clsid_car then
+    if npc:clsid() == clsid_car then
       -- Другие объекты под скрипт не берутся, поэтому для них не надо сбрасывать
       npc:destroy_car()
       mob_release(npc)
@@ -655,7 +649,7 @@ function try_switch_to_another_section(npc, st, actor)
 
 	local switched = false
 	local section = nil
-	for n = 1, #l do -- per Decane
+	for n = 1, #l do
 		local c = l[n]
 		local c_name = c.name
 		-- FIXME: не дублировать тут имена, оставить один on_info, но добавлять несколько его экземпляров в список
@@ -1137,34 +1131,31 @@ local pstor_string = 1
 local pstor_boolean = 2
 
 function pstor_store(obj, varname, val)
-if (obj == nil) then return end
-	local npc_storage = db_storage[obj:id()]
+	local npc_storage = obj and db_storage[obj:id()]
+	if not npc_storage then return end
 
-	if npc_storage.pstor == nil then
-		npc_storage.pstor = {}
+	local obj_pstor = npc_storage.pstor
+	if not obj_pstor then
+		obj_pstor = { }
+		npc_storage.pstor = obj_pstor
 	end
+
 	local tv = type(val) 
 	if tv == "string" or tv == "number" or tv == "boolean" then
-		npc_storage.pstor[varname] = val
+		obj_pstor[varname] = val
 	else
 		abort("xr_logic: pstor_store: unregistered type '%s' encountered (corrupted save?)", tv)
 	end
 end
 
-function pstor_retrieve(obj, varname, defval)
-if (obj == nil) then return nil end
-	local npc_storage = db_storage[obj:id()]
+function pstor_retrieve(obj, varname, defval, del)
+	local obj_pstor = obj and db_storage[obj:id()].pstor
+	local var = obj_pstor and obj_pstor[varname]
 
-	if npc_storage.pstor ~= nil then
-		local val = npc_storage.pstor[varname]
-		if val ~= nil then
-			return val
-		end
-	end
-	if defval ~= nil then
-		return defval
-	end
-	return nil
+	if not var then return defval end
+	if del then obj_pstor[varname] = nil end
+
+	return var
 end
 
 function pstor_save_all(obj, packet, npc_storage)
@@ -1225,29 +1216,10 @@ end
 function save_obj(obj, packet)
 	local st = db_storage[obj:id()]
 
-	if st.ini_filename then
-		packet:w_stringZ(st.ini_filename)
-	else
-		packet:w_stringZ("")
-	end
-
-	if st.section_logic then
-		packet:w_stringZ(st.section_logic)
-	else
-		packet:w_stringZ("")
-	end
-
-	if st.active_section then
-		packet:w_stringZ(st.active_section)
-	else
-		packet:w_stringZ("")
-	end
-
-	if st.gulag_name then
-		packet:w_stringZ(st.gulag_name)
-	else
-		packet:w_stringZ("")
-	end
+	packet:w_stringZ(st.ini_filename or "")
+	packet:w_stringZ(st.section_logic or "")
+	packet:w_stringZ(st.active_section or "")
+	packet:w_stringZ(st.gulag_name or "")
 
 	save_logic(obj, packet, st)
 

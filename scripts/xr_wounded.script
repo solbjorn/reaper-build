@@ -4,6 +4,9 @@
 --  TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
+local string_find = string.find
+local string_sub = string.sub
+
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
@@ -603,10 +606,8 @@ function custom_change(npc)
 				if obj_rank and obj_rank >= smarts_rank_min and obj_rank <= smarts_rank_max then
 					local smart = alife():object(kk)
 					if smart and smart:is_gulag_available() and smart.gulag_working then
-						if string.find(level,string.sub(kk,1,3)) then
+						if string_find(level,string_sub(kk,1,3)) then
 							table.insert(smarts_avail,smart)
-						--else
-							--table.insert(smarts_other,smart)
 						end
 					end
 				end		
@@ -615,23 +616,15 @@ function custom_change(npc)
 	end	
 	wound_id = npc:id()
 	if smarts_avail and npc:alive() then 
-		if table.getn(smarts_avail) > 1 then
+		if #smarts_avail > 1 then
 			table.sort(smarts_avail,max_comp)
 		end
-		if table.getn(smarts_avail) > 0 then
+		if #smarts_avail > 0 then
 			packet_wounded.custom = "[smart_terrains]\n"..smarts_avail[1]:name().." = true"
 			packet_wounded.health = 1
 			packet_wounded.updhealth = 1
 			amk.write_stalker_params(packet_wounded,obj)
 		end
-	--elseif smarts_other then 
-	--	if table.getn(smarts_other) > 1 then
-	--		table.sort(smarts_other,max_comp)
-	--	end
-	--	if table.getn(smarts_other) > 0 then
-	--		packet_wounded.custom = "[smart_terrains]\n"..smarts_other[1]:name().." = true"
-	--		amk.write_stalker_params(packet_wounded,obj)
-	--	end
 	end
 	local unreg_id = obj:smart_terrain_id()    
 	if unreg_id ~= 65535 and npc:alive() then      

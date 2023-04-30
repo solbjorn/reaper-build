@@ -17,7 +17,6 @@ function check_ballast()
   if lost_ballast_id > 0 then
     obj = alife():object(lost_ballast_id)
     if obj then
-      arc.warning("Несанкционированный сброс балласта! Уничтожаем...")
       arc.remove_obj(obj.id)
       
       ballast_num = 0
@@ -28,11 +27,9 @@ function check_ballast()
   
   local t = convert_kg_to_num(current_ballast_weight)
   if (t ~= ballast_num) then
---    arc.info("Несовпадение. Коррекция...",3)
     local a = db.actor
     obj = a:object("arc_ballast")
     if obj then
---      arc.info("Уничтожаем старый...",1)
       arc.remove_obj(obj:id())
     end
     

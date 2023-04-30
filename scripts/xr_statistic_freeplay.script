@@ -15,10 +15,6 @@ local artefact_clsid = {    [clsid.art_bast_artefact] = true,
                             [clsid.artefact] = true,
                             [clsid.artefact_s] = true                      
                     }
-local artefact_exceptions = {
-	bio		= true,
-	bioradar	= true
-}
 local found_artefact_sections = {}
 
 class "freeplay_statistic"
@@ -358,11 +354,12 @@ function freeplay_statistic:check_found_item(obj)
 
     if not (device().precache_frame > 1) then
         actor_stats.add_points("artefacts", "st_pda_pda", 1, 1)
+		db_actor:set_character_rank(db_actor:character_rank() + 1)
     end
 	return
   end
 
-  if artefact_clsid[obj:clsid()] ~= nil and not artefact_exceptions[sect] and found_artefact_sections[sect] ~= true then
+  if artefact_clsid[obj:clsid()] ~= nil and found_artefact_sections[sect] ~= true then
       self:check_found_artefact_count(obj:cost())
       found_artefact_sections[sect] = true
   end

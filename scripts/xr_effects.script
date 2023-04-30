@@ -419,24 +419,42 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 
+function drop_weapon(punch)
+	local actor = db_actor
+	local active_item = actor:active_item()
+	if active_item then
+		local active_sect = active_item:section()
+		if active_sect == "wpn_knife" then
+			if punch and punch == true then
+				actor:move_to_ruck(active_item)
+				actor:move_to_slot(active_item)
+			else
+				actor:drop_item(active_item)
+			end
+		elseif active_sect == "bolt" then
+			actor:move_to_ruck(active_item)
+			actor:move_to_slot(active_item)
+		else
+			actor:drop_item(active_item)
+		end
+	end
+end
+
 -- постпроцесс и влияние удара в морду
 function actor_punch(npc)
-  if db_actor:position():distance_to_sqr(npc:position()) > 4 then
-    return
-  end
+	local actor = db_actor
+	if actor:position():distance_to_sqr(npc:position()) > 4 then
+		return
+	end
 
-  local active_item = db_actor:active_item()
-  if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-    db_actor:drop_item(active_item)
-  end
-  
-  set_inactivate_input_time(punch_recovery_time)
-  local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
-  snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	drop_weapon(true)
+	set_inactivate_input_time(punch_recovery_time)
+	local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
+	snd_obj:play_no_feedback(actor, sound_object.s2d, 0, vector(), 1.0)
 
-  level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")    
-  level.add_pp_effector("amk_shoot.ppe", 2011, false)
-  amk_offline_alife.clear_be_enemy(npc:id())
+	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")    
+	level.add_pp_effector("amk_shoot.ppe", 2011, false)
+	amk_offline_alife.clear_be_enemy(npc:id())
 end
 
 -- Принудительное усыпание игрока на радаре.
@@ -1029,9 +1047,9 @@ function bar_arena_teleport ( actor, npc)
 
   for k,v in pairs(spawn_items) do
     alife():create(v, 
-            db_actor:position(),
-            db_actor:level_vertex_id(), 
-            db_actor:game_vertex_id(), 
+            actor:position(),
+            actor:level_vertex_id(), 
+            actor:game_vertex_id(), 
             db_actor_id)
   end 
   

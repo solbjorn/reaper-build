@@ -103,18 +103,18 @@ ignore_types = corpse
 id = mil_cook_common1,mil_cook_common2,mil_cook_common3,mil_cook_common4,mil_cook_common5,mil_cook_common6,mil_cook_drink_for_rg6_1,mil_cook_drink_for_rg6_2,mil_cook_drink_for_rg6_3,mil_cook_drink_question_about_rg6_1,mil_cook_drink_question_about_rg6_2,mil_cook_drink_question_about_rg6_3
 
 
------------------------------------------------------------
-pl:убираем состояние раненого для снайпера
------------------------------------------------------------
+;-----------------------------------------------------------
+;pl:убираем состояние раненого для снайпера
+;-----------------------------------------------------------
 [wounded_ignore@mil_sniper]
 hp_state        = 0|wounded_heavy@help_heavy
 hp_state_see    = 0|wounded_heavy@help_heavy
 hp_victim       = 0|nil
 hp_fight        = 0|false
 hp_cover        = 0|false 
--------------------------
+;-------------------------
 ;Снайпер на первой вышке (на него задание дает Череп)
--------------------------
+;-------------------------
 
 [logic@mil_freedom_sniper1]
 active = camper1@mil_freedom_sniper1
@@ -135,9 +135,9 @@ radius = 20
 combat_ignore_cond = {-mil_sniper_get_job}
 wounded = wounded_ignore@mil_sniper
 
--------------------------
+;-------------------------
 ;Снайпер на второй вышке (средняя, в центре базы) (mil_sniper2)
--------------------------
+;-------------------------
 [logic@mil_freedom_sniper2]
 active = camper1@mil_freedom_sniper2
 on_combat = combat@mil_freedom_sniper2
@@ -173,9 +173,9 @@ ignore_types = corpse
 
 
 
--------------------------
+;-------------------------
 ;Снайпер на третьей вышке (справа от пролома в заборе) (mil_sniper1)
--------------------------
+;-------------------------
 
 [logic@mil_freedom_sniper5]
 active = camper1@mil_freedom_sniper5
@@ -205,9 +205,9 @@ on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper5
 wounded = wounded_ignore@mil_sniper
 
 
--------------------------
+;-------------------------
 ;Снайпер на пятой вышке (возле шлагбаума) (mil_sniper3)
--------------------------
+;-------------------------
 [logic@mil_freedom_sniper3]
 active = walker1@mil_freedom_sniper3
 on_combat = combat@mil_freedom_sniper3
@@ -238,9 +238,9 @@ wounded = wounded_ignore@mil_sniper
 ignore_distance = 0
 ignore_types = corpse
 
--------------------------
+;-------------------------
 ;Снайпер на четвертой вышке (возле центрального здания)
--------------------------
+;-------------------------
 [logic@mil_freedom_sniper4]
 active = camper1@mil_freedom_sniper4
 on_combat = combat@mil_freedom_sniper4
@@ -303,10 +303,24 @@ on_combat = combat
 [camper@mil_freedom_aguard]
 path_walk = armory_walk_warn
 path_look = armory_look_warn
-;on_info = {!is_day} kamp1@mil_freedom_aguard
+on_info = {+mil_leader_attach_community} camper2@mil_freedom_aguard
 meet = meet@mil_freedom_aguard
 danger = danger_condition@mil_freedom_aguard
 radius = 1
+
+[camper2@mil_freedom_aguard]
+path_walk = armory_walk_warn
+path_look = armory_look_warn
+on_info = {+mil_arsenal_inside} walker2@mil_freedom_aguard
+meet = meet_normal@mil_freedom_aguard
+danger = danger_condition@mil_freedom_aguard
+radius = 1
+
+[walker2@mil_freedom_aguard]
+path_walk = zoneguard_walk_warn2
+path_look = zoneguard_look_warn2
+danger = danger_condition@mil_freedom_aguard
+meet = no_meet
 
 [meet@mil_freedom_aguard]
 meet_dialog = mil_guard_arsenal_dialog
@@ -314,6 +328,15 @@ use = true
 use_wpn = false
 meet_state = 2|backoff@threat_back
 meet_state_wpn = 2|backoff@threat_back
+victim = 5|actor
+victim_wpn = 5|actor
+
+[meet_normal@mil_freedom_aguard]
+meet_dialog = mil_guard_arsenal_dialog
+use = true
+use_wpn = false
+meet_state = 4|ward|6|ward@talk_hello
+meet_state_wpn = 4|ward
 victim = 5|actor
 victim_wpn = 5|actor
 

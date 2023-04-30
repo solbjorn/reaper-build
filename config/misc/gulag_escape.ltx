@@ -364,7 +364,7 @@ on_death = death@fanat
 [walker@esc_lager_fanat]
 path_walk = wolf_walk
 path_look = wolf_look
-meet = meet@wolf
+meet = meet@fanat
 on_actor_dist_le = 7 | {-escape_lager_spawn_killers -escape_lager_killers_die} remark@esc_fanat_need_help
 danger = danger_condition@shustryi
 
@@ -373,21 +373,30 @@ anim = guard
 target = actor
 snd = esc_fanat_dialog
 on_signal = sound_end| remark@esc_lager_fanat_wait
-meet = no_meet
+meet = meet@fanat
 abuse = false
 danger = danger_condition@shustryi
 
 [remark@esc_lager_fanat_wait]
 anim = guard
 on_info = {+escape_lager_spawn_killers} walker@esc_lager_fanat
-meet = meet@wolf
+meet = meet@fanat
 target = actor
 danger = danger_condition@shustryi
+
+[meet@fanat]
+meet_state		= 3|guard@wait
+meet_state_wpn	= 3|guard@wait
+victim		= 3|actor
+victim_wpn		= 3|actor
+use			= true
+use_wpn		= true
+syndata		= guard@wait
 
 ;Шустрый
 
 [logic@esc_lager_shustryi]
-active = camper@esc_lager_prisoner
+selective = {+tutorial_wounded_give_info} sleeper4@esc_lager, camper@esc_lager_prisoner
 combat_ignore = combat_ignore
 
 [camper@esc_lager_prisoner]
@@ -395,8 +404,8 @@ path_walk = prisoner_walk
 path_look = prisoner_look
 combat_ignore_cond = always
 def_state_campering = prisoner
-on_info = {=esc_bandits_die} remark@esc_lager_help
-on_info2 = {+tutorial_wounded_give_info} sleeper4@esc_lager
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+on_info2 = {=esc_bandits_die} remark@esc_lager_help
 meet = no_meet
 danger = danger_condition@shustryi
 
@@ -420,7 +429,6 @@ combat_ignore_cond = always
 danger = danger_condition@shustryi
 on_timer = 10000| remark@esc_lager_help
 on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
-
 
 [remark@esc_lager_prisoner]
 anim = wait
@@ -529,6 +537,7 @@ active = kamp1@esc_lager
 center_point  = camp_center
 path_walk = camp_center_task
 soundgroup = esc_lager
+avoid_pos = 5
 meet = meet@lager
 
 
@@ -757,14 +766,14 @@ path_walk = wolf_walk
 anim = guard
 snd = esc_fanat_ready
 on_signal = sound_end| walker@esc_lager_defend12
-meet = meet@wolf
+meet = meet@fanat
 danger = danger_condition@shustryi
 
 [walker@esc_lager_defend12]
 path_walk = defend12_walk
 path_look = defend12_look
 combat_ignore_cond = {-esc_open_lager_fire}
-meet = meet@wolf
+meet = meet@fanat
 danger = danger_condition@shustryi
 
 
@@ -809,6 +818,7 @@ on_info = %+esc_open_lager_fire +esc_open_killer_fire%
 [logic@esc_fabrika_bandit_walker1]
 active = walker1@esc_fabrika_bandit
 combat_ignore = combat_ignore
+danger = danger_condition@esc_fabrika_bandit
 
 [walker1@esc_fabrika_bandit]
 path_walk = day_walk1
@@ -819,10 +829,13 @@ def_state_campering = threat
 def_state_campering_fire = threat_fire
 combat_ignore_cond = {=check_fighting(004)}
 
+[danger_condition@esc_fabrika_bandit]
+ignore_distance = 70
 
 [logic@esc_fabrika_bandit_walker2]
 active = walker2@esc_fabrika_bandit
 combat_ignore = combat_ignore
+danger = danger_condition@esc_fabrika_bandit
 
 [walker2@esc_fabrika_bandit]
 path_walk = day_walk2
@@ -833,6 +846,7 @@ combat_ignore_cond = {=check_fighting(004)}
 [logic@esc_fabrika_bandit_walker3]
 active = walker3@esc_fabrika_bandit
 combat_ignore = combat_ignore
+danger = danger_condition@esc_fabrika_bandit
 
 [walker3@esc_fabrika_bandit]
 path_walk = day_walk3
@@ -857,6 +871,7 @@ combat_ignore_cond = {=check_fighting(004)}
 [logic@esc_fabrika_bandit_walker4]
 active = walker4@esc_fabrika_bandit
 combat_ignore = combat_ignore
+danger = danger_condition@esc_fabrika_bandit
 
 [walker4@esc_fabrika_bandit]
 path_walk = day_walk4
@@ -883,6 +898,7 @@ on_info = {-esc_prison} walker4@esc_fabrika_bandit
 [logic@esc_fabrika_bandit_kamp]
 active = kamp@esc_fabrika_bandit
 combat_ignore = combat_ignore
+danger = danger_condition@esc_fabrika_bandit
 
 [kamp@esc_fabrika_bandit]
 center_point = camp_center
@@ -1761,7 +1777,7 @@ on_info = %+esc_petruha_friend_die%
 [walker@esc_assault1]
 path_walk = walk_wait1
 path_look = look_wait1
-on_info = {+esc_bandits_start} walker@esc_assault1_wait
+on_info = {+esc_bandits_start -esc_report_send} walker@esc_assault1_wait
 danger = danger_condition@esc_assault
 meet = meet@neutral
 
@@ -1792,7 +1808,7 @@ combat_ignore = combat_ignore
 path_walk = walk_wait2
 path_look = look_wait2
 danger = danger_condition@esc_assault
-on_info = {+esc_bandits_start} walker@esc_assault2_wait
+on_info = {+esc_bandits_start -esc_report_send} walker@esc_assault2_wait
 meet = meet@neutral
 
 [walker@esc_assault2_wait]
@@ -1823,7 +1839,7 @@ on_info = %+esc_assault_start +esc_petruha_die%
 [walker1@esc_assault3]
 path_walk = escape_btr_path1
 path_look = escape_btr_look1
-on_actor_dist_le_nvis = 10| remark@call_esc_assault3
+on_actor_dist_le_nvis = 10| {+escape_factory_assault_say_hello} remark@talk_esc_assault, remark@call_esc_assault3
 meet = no_meet
 danger = danger_condition@esc_assault
 wounded = wounded@petruha
@@ -1840,7 +1856,7 @@ on_info = {+esc_bandits_start} remark@kamp_esc_assault3 %=smart_terrain_force_up
 [remark@talk_esc_assault]
 anim = guard
 target = actor
-on_info = {+esc_bandits_start} remark@kamp_esc_assault3 %=smart_terrain_force_update(esc_assault)%
+on_info = {-esc_report_send +esc_bandits_start} remark@kamp_esc_assault3 %=smart_terrain_force_update(esc_assault)%
 meet = meet@attacker
 wounded = wounded@petruha
 
@@ -1966,14 +1982,19 @@ tips = tip_petruha_report
 danger = danger_condition@esc_assault
 
 [logic@esc_assault_home_leader]
-active = remark@esc_assault_home
+active = walker@esc_assault_home
 on_death = death@esc_assault3
+
+[walker@esc_assault_home]
+path_walk = escape_factory_return_path
+on_info = {+esc_report_send} kamp@esc_assault_home_leader
+on_info2 = {-esc_report_send} remark@esc_assault_home
 
 [remark@esc_assault_home]
 path_walk = escape_factory_return_path
 anim = guard_rac
 snd = esc_petruha_raport
-on_signal = sound_end| kamp@esc_assault_home_leader
+on_signal = sound_end| kamp@esc_assault_home_leader %+esc_report_send%
 meet = no_meet
 tips = tip_petruha_report
 wounded = wounded@petruha
@@ -2014,6 +2035,7 @@ active = kamp@esc_stalker_camp_provodnik
 
 [kamp@esc_stalker_camp_provodnik]
 center_point = camp_point
+avoid_pos=15
 path_walk = camp_point_task
 meet = meet@neutral
 
@@ -2028,7 +2050,9 @@ path_walk = esc_wounded_fox_walk
 path_look = esc_wounded_fox_look
 wounded = wounded@esc_stalker_fox
 meet = meet@esc_stalker_fox_2
-on_info = {+escape_fox_heal} remark@esc_stalker_fox
+danger = danger_condition@shustryi
+on_info = {+escape_fox_heal -escape_stalker_done} remark@esc_stalker_fox
+on_info2 = {+escape_stalker_dog_die} kamp@esc_stalker_fox
 on_actor_in_zone = esc_ambush_out_restrictor| remark@esc_stalker_fox %=hit_npc(esc_stalker_camp_camp_point:bip01_spine1:1000:0)%
 
 [remark@esc_stalker_fox]
@@ -2036,6 +2060,7 @@ anim = guard
 target = actor
 meet = meet@esc_stalker_fox_2
 on_info = {+escape_stalker_done !_used} camper@esc_stalker_fox
+danger = danger_condition@fox
 
 
 [camper@esc_stalker_fox]
@@ -2049,6 +2074,7 @@ snd = esc_fox_thanks
 anim = guard
 target = actor
 on_signal = sound_end|kamp@esc_stalker_fox
+on_timer = 5000|kamp@esc_stalker_fox
 meet = no_meet
 danger = danger_condition@fox
 
@@ -2102,7 +2128,7 @@ active = kamp@esc_stalker_camp1
 
 [kamp@esc_stalker_camp1]
 center_point = camp_point
-
+avoid_pos=15
 
 [logic@esc_stalker_camp2]
 active = kamp@esc_stalker_camp2

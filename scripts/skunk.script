@@ -1111,4 +1111,51 @@ function nano_health_s()
 end		
 					
 
+-------------------------------------------------------------------------------
 
+local nano_outs = {
+	["nano_outfit"]				= nano_bronik,
+	["nano_outfit_bad"]			= nano_bronik_bad,
+	["nano_outfit_good"]			= nano_bronik_good,
+	["nano_outfit_default"]			= nano_bronik_default,
+	["nano_outfit_static"]			= nano_bronik_static,
+	["nano_outfit_kat_eye"]			= nano_bronik_kat_eye,
+	["nano_outfit_psy"]			= nano_bronik_psy,
+	["nano_outfit_blackwhite"]		= nano_bronik_blackwhite,
+	["nano_outfit_bast"]			= nano_bronik_bast,
+	["nano_outfit_plus"]			= nano_bronik_plus,
+	["nano_outfit_badplus"]			= nano_bronik_badplus,
+	["nano_outfit_goodplus"]		= nano_bronik_goodplus,
+	["nano_outfit_defaultplus"]		= nano_bronik_defaultplus,
+	["nano_outfit_staticplus"]		= nano_bronik_staticplus,
+	["nano_outfit_kat_eyeplus"]		= nano_bronik_kat_eyeplus,
+	["nano_outfit_psyplus"]			= nano_bronik_psyplus,
+	["nano_outfit_blackwhiteplus"]		= nano_bronik_blackwhiteplus,
+	["nano_outfit_bastplus"]		= nano_bronik_bastplus,
+
+	["nano_outfit_addh"]			= nano_health,
+	["nano_outfit_addh_bad"]		= nano_health_bad,
+	["nano_outfit_addh_good"]		= nano_health_good,
+	["nano_outfit_addh_default"]		= nano_health_default,
+	["nano_outfit_addh_static"]		= nano_health_static,
+	["nano_outfit_addh_kat_eye"]		= nano_health_kat_eye,
+	["nano_outfit_addh_psy"]		= nano_health_psy,
+	["nano_outfit_addh_blackwhite"]		= nano_health_blackwhite,
+	["nano_outfit_addh_bast"]		= nano_health_bast,
+	["nano_outfit_addh_plus"]		= nano_health_plus,
+	["nano_outfit_addh_badplus"]		= nano_health_badplus,
+	["nano_outfit_addh_goodplus"]		= nano_health_goodplus,
+	["nano_outfit_addh_defaultplus"]	= nano_health_defaultplus,
+	["nano_outfit_addh_staticplus"]		= nano_health_staticplus,
+	["nano_outfit_addh_kat_eyeplus"]	= nano_health_kat_eyeplus,
+	["nano_outfit_addh_psyplus"]		= nano_health_psyplus,
+	["nano_outfit_addh_blackwhiteplus"]	= nano_health_blackwhiteplus,
+	["nano_outfit_addh_bastplus"]		= nano_health_bastplus
+}
+
+function nano_update()
+	local out = db_actor:item_in_slot(6)
+	local func = out and nano_outs[out:section()]
+
+	if func then func() end
+end

@@ -164,11 +164,6 @@ end
 --' DIALOG ALLOWED
 --'---------------------------------------------------------------------------------
 function dialog_allowed(object, victim, id)
-	if id ~= nil then
---		printf("*DIALOGS*: dialog_allowed: %s", id)
-	else
---		printf("*DIALOGS*: dialog_allowed: nil")
-	end
 	if db.storage[victim:id()].actor_dialogs ~= nil then
 		for k,v in pairs(db.storage[victim:id()].actor_dialogs) do
 			if v == id then return true end
@@ -177,11 +172,6 @@ function dialog_allowed(object, victim, id)
 	return false
 end
 function dialog_not_disable(object, victim, id)
-	if id ~= nil then
---		printf("*DIALOGS*: dialog_disable:%s", id)
-	else
---		printf("*DIALOGS*: dialog_disable:nil")
-	end
 	if db.storage[victim:id()].actor_disable ~= nil then
 		for k,v in pairs(db.storage[victim:id()].actor_disable) do
 			if v == id then return false end
@@ -244,14 +234,12 @@ function actor_not_in_dolg(actor, npc)
 	return not actor_in_dolg(actor, npc)
 end
 function actor_set_dolg(actor, npc)
-	printf("ACTOR NOW IN [DOLG] COMMUNITY")
 	if db.actor then
 		db.actor:set_character_community("actor_dolg", 0, 0)
 	end
 	return true
 end
 function actor_clear_community(actor, npc)
-	printf("ACTOR NOW IN [NEUTRAL] COMMUNITY")
 	if db.actor then
 		db.actor:set_character_community("actor", 0, 0)
 	end

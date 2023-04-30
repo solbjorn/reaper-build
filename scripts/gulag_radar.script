@@ -1,0 +1,1122 @@
+function load_job(sj, gname, type, squad, groups)
+	local t
+----------------------------------------------------------------------------
+	if type == "freedom_vs_duty" then
+		t = { section = "logic@rad_svoboda", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) 
+								return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+--------------------------------------------------------------------
+		t = { section = "logic@rad_svoboda1", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg1", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_svoboda2", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg2", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+		t = { section = "logic@rad_svoboda3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+		t = { section = "logic@rad_svoboda4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+		t = { section = "logic@rad_svoboda5", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Svoboda_master"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_dolg5", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_Dolg_master"
+						end
+		}
+		sj[#sj+1] = t
+		return true
+	end
+
+	--' Radar antena
+	if type == "rad_antena" then
+		for i = 1, 5 do
+			t = { section = "logic@rad_antenna_patrol_wagon"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 3 do
+			t = { section = "logic@rad_antenna_patrol_gates"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 2 do
+			t = { section = "logic@rad_antenna_patrol_hole"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 1 do
+			t = { section = "logic@rad_antenna_patrol_kamper"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end	
+		for i = 1, 6 do
+			t = { section = "logic@rad_antenna_patrol_guard_wagon"..i,
+				idle = 0,
+				prior = 5, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 3 do
+			t = { section = "logic@rad_antenna_patrol_guard_gates"..i,
+				idle = 0,
+				prior = 5, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 2 do
+			t = { section = "logic@rad_antenna_patrol_guard_hole"..i,
+				idle = 0,
+				prior = 5, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "rad_wagon_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_after_tramplin_ambush" then
+		for i = 1, 4 do
+			t = { section = "logic@rad_after_tramplin_ambush_stalker"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_before_tramplin_ambush" then
+		for i = 1, 5 do
+			t = { section = "logic@rad_before_tramplin_ambush_stalker"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_after_valley" then
+		for i = 1, 4 do
+			t = { section = "logic@rad_after_valley_stalker"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_far_road_btr_ambush" then
+		for i = 1, 5 do
+			t = { section = "logic@rad_far_road_btr_ambush_stalker"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_far_road_ambush" then
+		for i = 1, 5 do
+			t = { section = "logic@rad_far_road_ambush_stalker"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_pseudodogs" then
+		for i = 1, 6 do
+			t = { section = "logic@rad_pseudodogs_dog"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_bloodsucker" then
+		for i = 1, 1 do
+			t = { section = "logic@rad_bloodsucker_suck"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_snork1" then
+		for i = 1, 6 do
+			t = { section = "logic@rad_snork1_"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+
+	if type == "rad_snork2" then
+		for i = 1, 10 do
+			t = { section = "logic@rad_snork2_"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+-------------------------------------------------------------------------------
+	if type == "rad_gig" then
+		for i = 1, 1 do
+			t = { section = "logic@rad_gig"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+
+	if type == "rad_zombied1" then
+		for i = 1, 4 do
+			t = { section = "logic@rad_zombied1"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "rad_snorks_space_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+
+	if type == "rad_zombied2" then
+		for i = 1, 7 do
+			t = { section = "logic@rad_zombied2"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "rad_snorks_space_restrictor", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------			
+	if type == "rad_entrance" then
+		t = { section = "logic@rad_entrance_binocular0", 
+			idle = 0,
+			prior = 6, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.name == "rad_entrance_stalker_monolith3"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_entrance_binocular1", 
+			idle = 0,
+			prior = 6, state = {1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.name == "rad_entrance_stalker_monolith3"
+						end
+		}
+		sj[#sj+1] = t	
+		for i = 1,4 do
+			t = { section = "logic@rad_entrance_kamp", 
+				idle = 0,
+				prior = 5, state = {0,2}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		t = { section = "logic@rad_entrance_walker1", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.name ~= "rad_entrance_stalker_monolith3"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_entrance_walker2", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.name ~= "rad_entrance_stalker_monolith3"
+						end
+		}
+		sj[#sj+1] = t
+
+		t = { section = "logic@rad_entrance_walker3", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.name ~= "rad_entrance_stalker_monolith3"
+						end
+		}
+		sj[#sj+1] = t
+		return true
+	end
+----------------------------------------------------------------------------
+	if type == "rad_valley" then
+		for i = 1,3 do
+			t = { section = "logic@rad_valley_kamp", 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1,3 do
+			t = { section = "logic@rad_valley_walk"..i, 
+				idle = 0,
+				prior = 5, state = {1}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_antenna_specnaz" then
+		for i = 1, 8 do
+			t = { section = "logic@rad_antenna_specnaz"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_mil_entrance" then
+		for i = 1, 3 do
+			t = { section = "logic@rad_mil_entrance"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_antenna_monolith" then
+		for i = 1, 8 do
+			t = { section = "logic@rad_antenna_monolith"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_antenna_camper" then
+		for i = 1, 3 do
+			t = { section = "logic@rad_antenna_camper"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "rad_rest_stop", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_prip_road" then
+		for i = 1, 5 do
+			t = { section = "logic@rad_prip_road"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 2 do
+			t = { section = "logic@2rad_prip_road"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+	if type == "rad_prip_teleport" then
+		for i = 1, 4 do
+			t = { section = "logic@rad_prip_teleport"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		for i = 1, 2 do
+			t = { section = "logic@2rad_prip_teleport"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+
+			t = { section = "logic@3rad_prip_teleport"..i , 
+				idle = 0,
+				prior = 5, state = {0}, squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+---------------------------------------------------------------------
+
+end
+
+function load_states(gname, type)
+	if type == "freedom_vs_duty" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "rad_antena" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			if gulag.state == 1 then
+				if game.get_game_time():diffSec( gulag.stateBegin ) < 72000 then
+					return 1
+				end
+			end
+
+			local alarm = false
+				
+			for k, v in pairs(gulag.Object) do
+				if v ~= true and v:best_enemy() ~= nil and v:best_enemy():id() == db_actor_id then
+					alarm = true
+					break
+				end
+			end
+
+			if alarm then
+				actor:give_info_portion( "rad_alarm" )
+				return 1
+			else
+				actor:disable_info_portion( "rad_alarm" )
+			end
+			return 0
+		end
+	end
+
+	if type == "rad_entrance" then
+--- 0 все сидят, один стоит
+--- 1 все стоят
+--- 2 все сидят
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			elseif gulag.state == 0 and game.get_game_time():diffSec( gulag.stateBegin ) > 600 then
+				return 1
+			elseif gulag.state == 1 and game.get_game_time():diffSec( gulag.stateBegin ) > 900 then
+				return 2
+			elseif gulag.state == 2 and game.get_game_time():diffSec( gulag.stateBegin ) > 600 then
+				return 0
+			else
+				return gulag.state
+			end
+
+		end
+	end
+
+	if type == "rad_valley" then
+--- 0 все сидят
+--- 1 все стоят
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			elseif gulag.state == 0 and game.get_game_time():diffSec( gulag.stateBegin ) > 600 then
+				return 1
+			elseif gulag.state == 1 and game.get_game_time():diffSec( gulag.stateBegin ) > 1200 then
+				return 0
+			else
+				return gulag.state
+			end
+
+		end
+	end
+
+	return function(gulag)
+		return 0
+	end
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	if type == "rad_antena" then
+		return load_ltx_antenna_patrol()
+	end
+	if type == "rad_after_tramplin_ambush" then
+		return load_ltx_after_tramplin_ambush()
+	end
+	if type == "rad_before_tramplin_ambush" then
+		return load_ltx_before_tramplin_ambush()
+	end
+	if type == "rad_far_road_ambush" then
+		return load_ltx_far_road_ambush()
+	end
+	if type == "rad_far_road_btr_ambush" then
+		return load_ltx_far_road_btr_ambush()
+	end
+	if type == "rad_after_valley" then
+		return load_ltx_after_valley_ambush()
+	end
+	if type == "rad_pseudodogs" then
+		return load_ltx_pseudodogs()
+	end
+	if type == "rad_gig" then
+		return load_ltx_gig()
+	end
+	if type == "rad_bloodsucker" then
+		return load_ltx_bloodsucker()
+	end
+	if type == "rad_snork1" then
+		return load_ltx_snork1()
+	end
+	if type == "rad_snork2" then
+		return load_ltx_snork2()
+	end
+
+	if type == "rad_zombied1" then
+		return load_ltx_zombied1()
+	end
+	if type == "rad_zombied2" then
+		return load_ltx_zombied2()
+	end
+	if type == "rad_antenna_specnaz" then
+		return load_ltx_antenna_specnaz()
+	end
+	if type == "rad_mil_entrance" then
+		return load_ltx_rad_mil_entrance()
+	end
+	if type == "rad_antenna_monolith" then
+		return load_ltx_antenna_monolith()
+	end
+
+	if type == "rad_antenna_camper" then
+		return load_ltx_antenna_camper()
+	end
+	if type == "rad_prip_road" then
+		return load_ltx_rad_prip_road()
+	end
+	if type == "rad_prip_teleport" then
+		return load_ltx_rad_prip_teleport()
+	end
+	return nil
+end
+-------------------------------------------------------------------------
+function load_ltx_antenna_camper()
+	local res = ""
+	local res_t
+	for i = 1, 3 do
+		res_t = {
+			"[logic@rad_antenna_camper",i,"]\nactive = walker@1rad_antenna_camper",
+			i,"\non_combat = combat@rad_antenna_camper\ncombat_ignore = combat_ignore@rad_antenna_camper\non_hit=hit_death@rad_antenna_camper\non_death=hit_death@rad_antenna_camper\n[walker@1rad_antenna_camper",
+			i,"]\npath_walk = ",i,"_walk\npath_look = ",
+			i,"_look\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ncombat_ignore_cond = always\non_info = {+rad_start_ambush_in_antenna_tunnel} walker@2rad_antenna_camper",
+			i," \non_actor_in_zone = rad_trig1_mil_vs_mon_0000 | walker@2rad_antenna_camper",
+			i,"\ndanger=danger_condition@rad_antenna_camper1\n[walker@2rad_antenna_camper",
+			i,"]\npath_walk = ",i,"_walk\npath_look = ",i,"_look\ndanger=danger_condition@rad_antenna_camper2\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	res_t = {"[hit_death@rad_antenna_camper]\non_info = %+rad_start_ambush_in_antenna_tunnel% \n",
+		"[combat@rad_antenna_camper]\ncombat_type = monolith\n",
+		"[danger_condition@rad_antenna_camper1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 3\n",
+		"[danger_condition@rad_antenna_camper2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_antenna_camper]\n" }
+	res = res .. table.concat(res_t)
+
+	return res
+end
+-------------------------------------------------------------------------
+function load_ltx_far_road_ambush()
+	local res = ""
+	local res_t
+	for i = 1, 5 do
+		res_t = {
+			"[logic@rad_far_road_ambush_stalker",i,"]\nactive = walker@rad_far_road_ambush1_stalker",
+			i,"\non_combat = combat@rad_far_road_ambush\ncombat_ignore = combat_ignore@rad_far_road_ambush\non_hit=hit_death@rad_far_road_ambush\non_death=hit_death@rad_far_road_ambush\n[walker@rad_far_road_ambush1_stalker",
+			i,"]\npath_walk = walker",i,"_walk\npath_look = walker",
+			i,"_look\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ncombat_ignore_cond = {=fighting_actor -rad_start_far_road_ambush}\non_info = {+rad_start_far_road_ambush} walker@rad_far_road_ambush2_stalker",
+			i,"\ndanger=danger_condition@rad_far_road_ambush1\n[walker@rad_far_road_ambush2_stalker",
+			i,"]\npath_walk = walker",i,"_walk\npath_look = walker",i,"_look\ndanger=danger_condition@rad_far_road_ambush2\n" }
+		res = res .. table.concat(res_t)
+	end
+	res_t = {
+		"[hit_death@rad_far_road_ambush]\non_info = %+rad_start_far_road_ambush% \n",
+		"[combat@rad_far_road_ambush]\ncombat_type = monolith\n",
+		"[danger_condition@rad_far_road_ambush1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 5\n",
+		"[danger_condition@rad_far_road_ambush2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_far_road_ambush]\n" }
+	res = res .. table.concat(res_t)
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_far_road_btr_ambush()
+	local res = ""
+	local res_t
+	for i = 1, 5 do
+		res_t = {
+			"[logic@rad_far_road_btr_ambush_stalker",i,"]\nactive = walker@rad_far_road_btr_ambush1_stalker",
+			i,"\non_combat = combat@rad_far_road_btr_ambush\ncombat_ignore = combat_ignore@rad_far_road_btr_ambush\non_hit=hit_death@rad_far_road_btr_ambush\non_death=hit_death@rad_far_road_btr_ambush\n[walker@rad_far_road_btr_ambush1_stalker",
+			i,"]\npath_walk = walker",i,"_walk\npath_look = walker",
+			i,"_look\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ndanger=danger_condition@rad_far_road_btr_ambush1\ncombat_ignore_cond = {=fighting_actor -rad_start_far_road_btr_ambush}\non_info = {+rad_start_far_road_btr_ambush} walker@rad_far_road_btr_ambush2_stalker",
+			i,"\n[walker@rad_far_road_btr_ambush2_stalker",i,"]\npath_walk = walker",i,"_walk\npath_look = walker",i,"_look\ndanger=danger_condition@rad_far_road_btr_ambush2\n" }
+		res = res .. table.concat(res_t)
+	end
+	res_t = {
+		"[hit_death@rad_far_road_btr_ambush]\non_info = %+rad_start_far_road_btr_ambush% \n",
+		"[combat@rad_far_road_btr_ambush]\ncombat_type = monolith\n",
+		"[danger_condition@rad_far_road_btr_ambush1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 5\n",
+		"[danger_condition@rad_far_road_btr_ambush2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_far_road_btr_ambush]\n" }
+	res = res .. table.concat(res_t)
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_after_tramplin_ambush()
+	local res = ""
+	local res_t
+	for i = 1, 4 do
+		res_t = {
+			"[logic@rad_after_tramplin_ambush_stalker",i,"]\nactive = walker@rad_after_tramplin_ambush1_stalker",
+			i,"\non_combat = combat@rad_after_tramplin_ambush\ncombat_ignore = combat_ignore@rad_after_tramplin_ambush\non_hit=hit_death@rad_after_tramplin_ambush\non_death=hit_death@rad_after_tramplin_ambush\n[walker@rad_after_tramplin_ambush1_stalker",
+			i,"]\npath_walk = walker",i,"_walk\npath_look = walker",
+			i,"_look\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ncombat_ignore_cond = {=fighting_actor -rad_start_ambush_after_tramplin}\non_info = {+rad_start_ambush_after_tramplin} walker@rad_after_tramplin_ambush2_stalker",
+			i,"\ndanger=danger_condition@rad_after_tramplin_ambush1\n[walker@rad_after_tramplin_ambush2_stalker",
+			i,"]\npath_walk = walker",i,"_walk\npath_look = walker",
+			i,"_look\ndanger=danger_condition@rad_after_tramplin_ambush2\n" }
+		res = res .. table.concat(res_t)
+	end
+	res_t = {
+		"[hit_death@rad_after_tramplin_ambush]\non_info = %+rad_start_ambush_after_tramplin% \n",
+		"[combat@rad_after_tramplin_ambush]\ncombat_type = monolith\n",
+		"[danger_condition@rad_after_tramplin_ambush1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 5\n",
+		"[danger_condition@rad_after_tramplin_ambush2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_after_tramplin_ambush]\n" }
+	res = res .. table.concat(res_t)
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_before_tramplin_ambush()
+	local res = ""
+	local res_t
+	for i = 1, 5 do
+		res_t = {
+			"[logic@rad_before_tramplin_ambush_stalker",i,"]\nactive = walker@rad_before_tramplin_ambush1_stalker",
+			i,"\non_combat = combat@rad_before_tramplin_ambush\ncombat_ignore = combat_ignore@rad_before_tramplin_ambush\non_hit=hit_death@rad_before_tramplin_ambush\non_death=hit_death@rad_before_tramplin_ambush\n[walker@rad_before_tramplin_ambush1_stalker",
+			i,"]\npath_walk = walk",i,"\npath_look = look",
+			i,"\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ncombat_ignore_cond = {=fighting_actor -rad_start_ambush_before_tramplin}\non_info = {+rad_start_ambush_before_tramplin} walker@rad_before_tramplin_ambush2_stalker",
+			i, "\ndanger=danger_condition@rad_before_tramplin_ambush1\n[walker@rad_before_tramplin_ambush2_stalker",
+			i,"]\npath_walk = walk",i,"\npath_look = look",i,"\ndanger=danger_condition@rad_before_tramplin_ambush2\n" }
+		res = res .. table.concat(res_t)
+	end
+	res_t = {
+		"[hit_death@rad_before_tramplin_ambush]\non_info = %+rad_start_ambush_before_tramplin% \n",
+		"[combat@rad_before_tramplin_ambush]\ncombat_type = monolith\n",
+		"[danger_condition@rad_before_tramplin_ambush1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 5\n",
+		"[danger_condition@rad_before_tramplin_ambush2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_before_tramplin_ambush]\n" }
+	res = res .. table.concat(res_t)
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_after_valley_ambush()
+	local res = ""
+	local res_t
+	for i = 1, 4 do
+		res_t = {
+			"[logic@rad_after_valley_stalker",i,"]\nactive = walker@rad_after_valley1_stalker",
+			i,"\non_combat = combat@rad_after_valley\ncombat_ignore = combat_ignore@rad_after_valley\non_hit=hit_death@rad_after_valley\non_death=hit_death@rad_after_valley\n[walker@rad_after_valley1_stalker",
+			i,"]\npath_walk = walk",i,"\npath_look = look",
+			i,"\ndef_state_moving1 = sprint\ndef_state_moving2 = sprint\ncombat_ignore_cond = {=fighting_actor -rad_start_ambush_after_valley}\non_info = {+rad_start_ambush_after_valley} walker@rad_after_valley2_stalker",
+			i,"\ndanger=danger_condition@rad_after_valley1\n[walker@rad_after_valley2_stalker",
+			i,"]\npath_walk = walk",i,"\npath_look = look",	i,"\ndanger=danger_condition@rad_after_valley2\n" }
+		res = res .. table.concat(res_t)
+	end
+	res_t = {
+		"[hit_death@rad_after_valley]\non_info = %+rad_start_ambush_after_valley% \n",
+		"[combat@rad_after_valley]\ncombat_type = monolith\n",
+		"[danger_condition@rad_after_valley1]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\nignore_distance = 5\n",
+		"[danger_condition@rad_after_valley2]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n",
+		"[combat_ignore@rad_after_valley]\n" }
+	res = res .. table.concat(res_t)
+	return res
+end
+-----------mob_campers---------------------------------------------------------------
+function load_ltx_pseudodogs()
+	local res = ""
+	local res_t
+	for i = 1, 6 do
+		res_t = {
+			"[logic@rad_pseudodogs_dog",i,"]\nactive = mob_home@rad_pseudodogs_dog",
+			i,"\n[mob_home@rad_pseudodogs_dog",i,"]\npath_home = home",
+			i,"\nnpc_friendly = true\npath_look = look",i,"\n" }
+		res = res .. table.concat(res_t)
+	end
+	return res
+end
+
+function load_ltx_bloodsucker()
+	local res_t = {
+		"[logic@rad_bloodsucker_suck1]\nactive = mob_home@rad_bloodsucker_suck1\n",
+		"[mob_home@rad_bloodsucker_suck1]\npath_home = home1\nnpc_friendly = true\n",
+		"path_look = look1\nhome_min_radius = 45\nhome_max_radius = 60\n" }
+	return table.concat(res_t)
+end
+
+function load_ltx_gig() 
+	return "[logic@rad_gig1]\nactive = mob_home@rad_gig1\n[mob_home@rad_gig1]\npath_home = home1\ntime_change_point = 30000\nnpc_friendly = true\npath_look = look1\n"
+end
+
+function load_ltx_snork1()
+	local res = ""
+	local res_t
+
+	for i = 1, 2 do
+		res_t = {
+			"[logic@rad_snork1_",i,"]\nactive = mob_home@rad_snork1",
+			i,"\n[mob_home@rad_snork1",i,"]\npath_home = home",i,"\nnpc_friendly = true\npath_look = look",
+			i,"\non_info = {+rad_start_snork1_jumping} mob_jump@rad_snork1",i,"\n[mob_jump@rad_snork1",
+			i,"]\npath_jump = look",i,"\nph_jump_factor =1.5\noffset = 0, 0, 0\non_signal = jumped | mob_home@2rad_snork1",
+			i," %=bar_arena_hit%\n[mob_home@2rad_snork1",i,"]\npath_home = home",
+			i,"\nnpc_friendly = true\npath_look = look",i,"\non_timer =  120000| mob_home@rad_snork1",
+			i," %-rad_start_snork1_jumping%\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	for i = 3, 4 do
+		res_t = {
+			"[logic@rad_snork1_",i,"]\nactive = mob_home@rad_snork1" ,
+			i,"\n[mob_home@rad_snork1",i,"]\npath_home = home",i,"\nnpc_friendly = true\npath_look = look",
+			i,"\non_info =  {+rad_start_snork1_jumping2} mob_jump@rad_snork1",
+			i,"\n[mob_jump@rad_snork1",i,"]\npath_jump = look",
+			i,"\nph_jump_factor =1.5\noffset = 0, 0, 0\non_signal = jumped | mob_home@2rad_snork1",
+			i," %=bar_arena_hit%\n[mob_home@2rad_snork1",i,"]\npath_home = home",i,"\nnpc_friendly = true\npath_look = look",
+			i,"\non_timer =  120000| mob_home@rad_snork1",i," %-rad_start_snork1_jumping2%\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	for i = 5, 11 do
+		res_t = {
+			"[logic@rad_snork1_",i,"]\nactive = mob_home@rad_snork1",i,"\n[mob_home@rad_snork1",
+			i,"]\npath_home = home",i,"\nnpc_friendly = true\npath_look = look",i,"\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	return res
+end
+
+function load_ltx_snork2()
+	local res = ""
+	local res_t
+	for i = 1, 10 do
+		res_t = {
+			"[logic@rad_snork2_",i,"]\nactive = mob_home@rad_snork2",i,"\n[mob_home@rad_snork2",
+			i,"]\npath_home = home",i,"\nnpc_friendly = true\npath_look = look",i,"\n" }
+		res = res .. table.concat(res_t)
+	end
+	return res
+end
+
+function load_ltx_zombied1()
+    local res = ""
+	local res_t
+	for i = 1, 4 do
+		res_t = {
+			"[logic@rad_zombied1",i,"]\nactive = walker@rad_zombied1",i,"\n[walker@rad_zombied1",
+			i,"]\nnpc_friendly = true\npath_walk = walk\n" }
+		res = res .. table.concat(res_t)
+	end
+	return res
+end
+
+function load_ltx_zombied2()
+	local res = ""
+	local res_t
+	for i = 1, 7 do
+		res_t = {
+			"[logic@rad_zombied2",i,"]\nactive = walker@rad_zombied2",i,"\n[walker@rad_zombied2",
+			i,"]\nnpc_friendly = true\npath_walk = walk\n" }
+		res = res .. table.concat(res_t)
+	end
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_antenna_patrol()
+	local res = ""
+	local res_t
+----------------------------state1 - normal
+	for i = 1, 5 do
+		res_t = {
+			"[logic@rad_antenna_patrol_wagon",i,"]\nactive = walker@rad_antenna_patrol_wagon",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_wagon",
+			i,"]\npath_walk = wagon_walk",i,"\npath_look = wagon_look",
+			i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+
+
+	for i = 1, 3 do
+		res_t = {
+			"[logic@rad_antenna_patrol_gates",i,"]\nactive = walker@rad_antenna_patrol_gates",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_gates",
+			i,"]\npath_walk = gates_walk",i,"\npath_look = gates_look",i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+	for i = 1, 2 do
+		res_t = {
+			"[logic@rad_antenna_patrol_hole",i,"]\nactive = walker@rad_antenna_patrol_hole",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_hole",
+			i,"]\npath_walk = hole_walk",i,"\npath_look = hole_look",i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	-- for i = 1, 1 do
+		res_t = {
+			"[logic@rad_antenna_patrol_kamper1]\nactive = kamp@rad_antenna_patrol_kamper1\n",
+			"combat_ignore = combat_ignore@rad_antenna_patrol\n[kamp@rad_antenna_patrol_kamper1]\n",
+			"center_point = kamp\ndanger=danger_condition@rad_antenna_patrol\n",
+		-- res = res .. table.concat(res_t)
+	-- end
+			"[danger_condition@rad_antenna_patrol]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n" }
+	res = res .. table.concat(res_t)
+
+-------------state2 - danger
+	for i = 1, 6 do
+		res_t = {
+			"[logic@rad_antenna_patrol_guard_wagon",i,"]\nactive = walker@rad_antenna_patrol_guard_wagon",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_guard_wagon",
+			i,"]\npath_walk = wagon_guard_walk",i,"\npath_look = wagon_guard_look",
+			i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	for i = 1, 3 do
+		res_t = {
+			"[logic@rad_antenna_patrol_guard_gates",i,"]\nactive = walker@rad_antenna_patrol_guard_gates",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_guard_gates",
+			i,"]\npath_walk = gates_guard_walk",i,"\npath_look = gates_guard_look",
+			i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	for i = 1, 2 do
+		res_t = {
+			"[logic@rad_antenna_patrol_guard_hole",i,"]\nactive = walker@rad_antenna_patrol_guard_hole",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_patrol\n[walker@rad_antenna_patrol_guard_hole",
+			i,"]\npath_walk = hole_guard_walk",i,"\npath_look = hole_guard_look",
+			i,"\ndanger=danger_condition@rad_antenna_patrol\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	res = res ..
+		"[walker@death]\npath_walk = death\ndanger = danger_condition@death\n[danger_condition@death]\nignore_distance = 0\n[combat_ignore@rad_antenna_patrol]\n"
+	return res
+end	
+
+--------------------------------------------------------------------------
+function load_ltx_antenna_specnaz()
+	local res = ""
+	local res_t
+	for i = 1, 8 do
+		res_t = {
+			"[logic@rad_antenna_specnaz",i,"]\nactive = walker@pre_rad_antenna_specnaz",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_specnaz\n"..
+			"[walker@pre_rad_antenna_specnaz",
+			i,"]\npath_walk = start_walk_000",i,"\npath_look = start_look_000",
+			i,"\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\n",
+			"combat_ignore_cond = always\non_info = {+rad_pre_start_monolith_vs_military} walker@fight_rad_antenna_specnaz",
+			i,"\n[walker@fight_rad_antenna_specnaz",i,"]\npath_walk = start_walk",i,"\npath_look = start_look",
+			i,"\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\n",
+			"combat_ignore_cond = always\non_info = {+rad_start_monolith_vs_military} walker@rad_antenna_specnaz",
+			i,"\n[walker@rad_antenna_specnaz",
+			i,"]\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\npath_walk = guard_walk_000",
+			i,"\npath_look = guard_look_000",i,"\n" }
+		res = res .. table.concat(res_t)
+	end
+	res = res .. "[combat_ignore@rad_antenna_specnaz]\n"
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_antenna_monolith()
+	local res = ""
+	local res_t
+	for i = 1, 8 do
+		res_t = {
+			"[logic@rad_antenna_monolith",i,"]\nactive = walker@pre_rad_antenna_monolith",
+			i,"\ncombat_ignore = combat_ignore@rad_antenna_monolith\non_hit = hit@rad_antenna_monolith\n[walker@pre_rad_antenna_monolith",
+			i,"]\npath_walk = start_walk",
+			i,"\npath_look = start_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\n",
+			"combat_ignore_cond = always\non_info = {+rad_pre_start_monolith_vs_military} walker@assault_rad_antenna_monolith",
+			i,"\n[walker@assault_rad_antenna_monolith",i,"]\npath_walk = assault_walk",
+			i,"\npath_look = assault_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\ncombat_ignore_cond = always\n",
+			"on_info = {+rad_start_monolith_vs_military} kamp@rad_antenna_monolith\n" }
+		res = res .. table.concat(res_t)
+	end
+
+	res = res .. "[combat_ignore@rad_antenna_monolith]\n[hit@rad_antenna_monolith]\non_info = {=hit_by_actor} kamp@rad_antenna_monolith\n[kamp@rad_antenna_monolith]\ncenter_point = kamp\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndef_state_moving3 = assault\nradius = 4\n"
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_rad_prip_road()
+	local res = ""
+	local res_t
+	for i = 1, 2 do
+		res_t = {
+			"[logic@rad_prip_road",i,"]\nactive = walker@rad_prip_road",
+			i,"\non_combat = combat@rad_prip_road\n[walker@rad_prip_road",i,"]\npath_walk = patroler",
+			i,"_walk\npath_look = guard_look\ndanger=danger_condition@rad_prip_road\n[logic@2rad_prip_road",
+			i,"]\nactive = walker@2rad_prip_road",i,"\non_combat = combat@rad_prip_road\n[walker@2rad_prip_road",
+			i,"]\npath_walk = guard",i,"_walk\npath_look = guard_look\ndanger=danger_condition@rad_prip_road\n" }
+		res = res .. table.concat(res_t)
+	end
+	for i = 3, 5 do
+		res_t = {
+			"[logic@rad_prip_road",i,"]\nactive = kamp@rad_prip_road\non_combat = combat@rad_prip_road\n" }
+		res = res .. table.concat(res_t)
+	end
+	res = res .. "[kamp@rad_prip_road]\ncenter_point = kamp_center\nradius = 4\ndanger=danger_condition@rad_prip_road\n[combat@rad_prip_road]\ncombat_type = monolith\n[danger_condition@rad_prip_road]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n"
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_rad_prip_teleport()
+	local res = ""
+	local res_t
+	for i = 1, 2 do
+		res_t = {
+			"[logic@rad_prip_teleport",i,"]\nactive = walker@rad_prip_teleport",
+			i,"\non_combat = combat@rad_prip_teleport\n[walker@rad_prip_teleport",i,"]\npath_walk = patrol_walk",
+			i,"\npath_look = patrol_look\ndanger=danger_condition@rad_prip_teleport\n[logic@2rad_prip_teleport",
+			i,"]\nactive = walker@2rad_prip_teleport",
+			i,"\non_combat = combat@rad_prip_teleport\n[walker@2rad_prip_teleport",
+			i,"]\npath_walk = guard",i,"_walk\npath_look = guard",
+			i,"_look\ndanger=danger_condition@rad_prip_teleport\n[logic@3rad_prip_teleport",
+			i,"]\nactive = walker@3rad_prip_teleport",
+			i,"\non_combat = combat@rad_prip_teleport\ncombat_ignore=combat_ignore@rad_prip_teleport\n[walker@3rad_prip_teleport",
+			i,"]\npath_walk = cache_quard",i,"_walk\npath_look = cache_quard",
+			i,"_look\ndanger=danger_condition@rad_prip_teleport\non_hit = hit@rad_prip_teleport\n" }
+		res = res .. table.concat(res_t)
+	end
+	for i = 3, 4 do
+		res_t = {
+			"[logic@rad_prip_teleport",i,"]\nactive = kamp@rad_prip_teleport\non_combat = combat@rad_prip_teleport\n" }
+		res = res .. table.concat(res_t)
+	end
+	res = res .. "[kamp@rad_prip_teleport]\ncenter_point = kamp_center\nradius = 4\ndanger=danger_condition@rad_prip_teleport\n[combat@rad_prip_teleport]\ncombat_type = monolith\n[danger_condition@rad_prip_teleport]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n[combat_ignore@rad_prip_teleport]\n[hit@rad_prip_teleport]\ncombat_ignore_cond = false \n"
+
+	return res
+end
+--------------------------------------------------------------------------
+function load_ltx_rad_mil_entrance()
+	local res = ""
+	local res_t
+
+	for i = 1, 3 do
+		res_t = {
+			"[logic@rad_mil_entrance",i,"]\nactive = kamp@rad_mil_entrance\n" }
+		res = res .. table.concat(res_t)
+	end
+	res = res .. "[kamp@rad_mil_entrance]\ncenter_point = kamp_center\nradius = 4\ndanger=danger_condition@rad_mil_entrance\n[danger_condition@rad_mil_entrance]\ndanger_expiration_time = 60000\ndanger_inertion_time = 90000\n"
+	return res
+end
+--------------------------------------------------------------------------
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	if	gulag_type == "rad_antena"					or 
+		gulag_type == "rad_entrance"				or
+		gulag_type == "rad_antenna_monolith"		or
+		gulag_type == "rad_valley"					or
+		gulag_type == "rad_after_valley"			or
+		gulag_type == "rad_after_tramplin_ambush"	or
+		gulag_type == "rad_far_road_ambush"			or 
+		gulag_type == "rad_far_road_btr_ambush"		or 
+		gulag_type == "rad_prip_road"				or 
+		gulag_type == "rad_prip_teleport"			or 
+		gulag_type == "rad_antenna_camper" then
+			return npc_community == "monolith"
+	end
+
+	if gulag_type == "rad_zombied1" or gulag_type == "rad_zombied2" or gulag_type == "rad_before_tramplin_ambush" then
+		return npc_community == "zombied"
+	end	
+
+	if gulag_type == "freedom_vs_duty" then
+		return se_obj:profile_name() == "rad_Svoboda_master" or se_obj:profile_name() == "rad_Dolg_master"
+	end
+
+	if gulag_type == "rad_antenna_specnaz"	or
+		gulag_type == "rad_mil_entrance"	then
+		return npc_community == "military"
+	end
+
+	return false
+end
+
+function checkMonster( npc_community, gulag_type )
+
+
+	if gulag_type == "rad_gig" then
+		return npc_community == "pseudo_gigant"
+	end
+
+	if gulag_type == "rad_pseudodogs" then
+		return npc_community == "pseudodog"
+	end
+
+	if gulag_type == "rad_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+
+	if gulag_type == "rad_snork1" or gulag_type == "rad_snork2" then
+		return npc_community == "snork"
+	end
+
+	
+	return false
+end

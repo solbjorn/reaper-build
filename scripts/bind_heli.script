@@ -62,9 +62,6 @@ end
 function heli_binder:update( delta )
 	object_binder.update( self, delta )
 
---	printf( "heli_binder update" )
---	printf( "%d", self.object:level_vertex_light( db.actor:level_vertex_id() ) )
-
 	if not self.initialized then
 		self.initialized = true
 		xr_logic.initialize_obj( self.object, self.st, self.loaded, db_actor, modules.stype_heli )
@@ -115,7 +112,6 @@ end
 function heli_binder:load( packet )
 	self.loaded = true
 
-	--printf("generic_object_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load( self, packet )
 
 	xr_logic.load_obj( self.object, packet )
@@ -125,8 +121,6 @@ end
 
 function heli_binder:check_health()
 	local heli = self.heliObject
-
---	printf( "heli health: %d", heli:GetfHealth() )
 
 	if not heli.m_dead then
 		local health = get_heli_health( self.heliObject, self.st )
@@ -148,16 +142,14 @@ end
 ------------------------------ callbacks ---------------------------------
 function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 	local enemy        = level.object_by_id( enemy_id )
-	local enemy_cls_id = get_clsid( enemy )
+	if enemy then
+		local enemy_cls_id = enemy:clsid()
 
-	-- если обидчик актёр или сталкер, то сделать его своим врагом
-	if enemy_cls_id == clsid.actor or enemy_cls_id == clsid.script_stalker then
---		if not self.st.combat.enemy_id then
---			self.st.combat.enemy_id = enemy_id
---		end
-
-		if self.st.hit then
-			xr_logic.issue_event( self.object, self.st.hit, "hit_callback", self.object, power, nil, enemy, nil )
+		-- если обидчик актёр или сталкер, то сделать его своим врагом
+		if enemy_cls_id == clsid_actor or enemy_cls_id == clsid_script_stalker then
+			if self.st.hit then
+				xr_logic.issue_event( self.object, self.st.hit, "hit_callback", self.object, power, nil, enemy, nil )
+			end
 		end
 	end
 

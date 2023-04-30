@@ -364,7 +364,10 @@ function is_creature_day(obj, day_night_switch)
 end
 --------------------
 function select_logic(obj)
-	local is_underground = levels_types[alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())]
+	local is_underground = 1
+	if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
+		is_underground = levels_types[alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())]
+	end
 	local day_night_switch,check_distance
 	if is_underground==0 then
 		day_night_switch = true

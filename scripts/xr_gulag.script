@@ -143,6 +143,7 @@ function gulag:initialize()
 		self.calculateStates = gulag_script_obj.load_states(self.name, self.type)
 	else
 		abort("ERROR: unrecognized type '%s' for gulag %s", self.type, self.name)
+		return
 	end
 
 	local ini = self.smrttrn:spawn_ini()
@@ -151,9 +152,22 @@ function gulag:initialize()
 		sect = "gulag1"
 	end
 
-	self.state_switch_0 = xr_logic.parse_condlist_q(utils.cfg_get_string(ini, sect, "switch_0", self.smrttrn, false, "", ""))
-	self.state_switch_1 = xr_logic.parse_condlist_q(utils.cfg_get_string(ini, sect, "switch_1", self.smrttrn, false, "", ""))
+	local function get_field_string(field)
+		return (ini:line_exist(sect, field) and ini:r_string(sect, field)) or nil
+	end
 
+	local condlist = get_field_string("switch_0")
+	if condlist then
+		self.state_switch_0 = xr_logic.parse_condlist_q( condlist )
+	else
+		self.state_switch_0 = nil
+	end
+	condlist = get_field_string("switch_1")
+	if condlist then
+		self.state_switch_1 = xr_logic.parse_condlist_q( condlist )
+	else
+		self.state_switch_1 = nil
+	end
 	self.JobLoaded = nil
 end
 
@@ -187,8 +201,10 @@ function gulag:prepare_jobs()
 
 	for obj_id, jobN in pairs( self.ObjectJob ) do
 		job        = self.Job[jobN]
-		job.object = obj_id
-		self.ObjectJobPathName[obj_id] = job.path_name
+		if job ~= nil then
+			job.object = obj_id
+			self.ObjectJobPathName[obj_id] = job.path_name
+		end
 	end
 end
 
@@ -225,15 +241,51 @@ function gulag:job_exists_in_state_0( job )
 	return false
 end
 
+local utils_parse_params = utils.parse_params
+function gulag_cfg_get_condlist(ini, section, field)
+  local str = ini:r_string(section, field)
+  if not str then
+    return nil
+  end
+
+  local par = utils_parse_params(str)
+  if not par[1] then
+    return nil
+  end
+
+	local t = {
+		name		= field,
+		condlist	= xr_logic.parse_condlist_q(par[1])
+	}
+
+  return t
+end
+
+local sf = string.format
 -- получить имя пути места работы
 function gulag:get_job_path_name( job )
 	local section = job.section
+	local active_section
 
-	if not self.ltx:line_exist( section, "active" ) then
-		abort( "gulag: ltx=%s  no 'active' in section %s", self.ltx_name, section )
+	if self.ltx:line_exist( section, "active" ) then
+		active_section = self.ltx:r_string( section, "active" )
+	elseif self.ltx:line_exist( section, "selective" ) then
+		local active_section_cond = gulag_cfg_get_condlist(self.ltx, section, "selective")
+		if not active_section_cond then
+			abort("xr_gulag: job '%s': unable to find section(s) for 'selective'",section)
+			return nil
+		else
+			active_section = xr_logic.pick_section_from_condlist(db_actor, npc, active_section_cond.condlist)
+			if not active_section then
+				abort("xr_gulag: job section '%s': section 'selective' has no conditionless else clause", section)
+				return nil
+			end
+		end
+	else
+		abort( "gulag: ltx=%s  no 'active' or 'selective' in section %s", self.ltx_name, section )
+		return nil
 	end
 
-	local active_section = self.ltx:r_string( section, "active" )
 	local path_field
 
 	for i, v in ipairs( path_fields ) do
@@ -245,18 +297,19 @@ function gulag:get_job_path_name( job )
 
 	if not path_field then
 		abort( "gulag: ltx=%s, there is no path in section %s", self.ltx_name, active_section )
+		return
 	end
 
+	local path_name = sf("%s_%s", self.name, self.ltx:r_string(active_section, path_field))
 	if path_field == "center_point" then --' TODO убрать затык
-		local path_name = self.name .. "_" .. self.ltx:r_string( active_section, path_field )
-
-		if level.patrol_path_exists( path_name .. "_task" ) then
-			return path_name .. "_task"
+		local path_name_task = sf("%s_task", path_name)
+		if level.patrol_path_exists( path_name_task ) then
+			return path_name_task
 		else
 			return path_name
 		end
 	else
-		return self.name .. "_" .. self.ltx:r_string( active_section, path_field )
+		return path_name
 	end
 end
 
@@ -390,7 +443,7 @@ function gulag:object_setup_online( obj_id, obj, need_setup_logic, need_setup_re
 		end
 
 		if need_setup_restrictors then
-			self:set_restrictions(obj, job.out_rest, job.in_rest)
+			self:set_restrictions( obj, job.out_rest, job.in_rest, job.info_rest )
 		end
 	end
 end
@@ -901,7 +954,7 @@ function gulag:beginJob( obj_id )
 	if self.Object[obj_id] ~= true then
 		local obj = self.Object[obj_id]
 
-		self:set_restrictions(obj, job.out_rest, job.in_rest)
+		self:set_restrictions( obj, job.out_rest, job.in_rest, job.info_rest )
 		self:setup_logic( obj, job.section )
 	end
 
@@ -928,7 +981,7 @@ end
 
 -- установить объекту рестрикторы в онлайне.
 -- obj - game_object
-function gulag:set_restrictions(obj, r_out, r_in)
+function gulag:set_restrictions(obj, r_out, r_in, r_info)
 	-- узнать, какие рестрикторы уже были назначены этим гулагом
 	local restr = self.restrictors[obj:id()]
 
@@ -973,12 +1026,17 @@ function gulag:set_restrictions(obj, r_out, r_in)
 	if change_r_in ~= "" or change_r_out ~= "" then
 		obj:add_restrictions( change_r_out, change_r_in )
 	end
+
+	-- информационный рестриктор
+	db.info_restr[obj:id()] = r_info
 end
 
 -- убрать записи о том, что смарт устанавливал объекту рестрикторы.
 -- obj - game_object
 function gulag:clear_restrictors_info( obj_id )
 	self.restrictors[obj_id] = nil
+
+	db.info_restr[obj_id] = nil
 end
 
 -- получить работу, которую занимает объект
@@ -1009,7 +1067,7 @@ function gulag:free_obj( obj_id )
 
 		if self.Object_begin_job[obj_id] == true then
 			if self.Object[obj_id] ~= true then
-				self:set_restrictions(self.Object[obj_id], "", "")
+				self:set_restrictions(self.Object[obj_id], "", "", nil)
 			end
 			self.population_comed = self.population_comed - 1
 		end
@@ -1279,7 +1337,23 @@ end
 -- если вне, то информация будет запрещена
 -- функция кеширует game_object рестриктора
 function is_info_restricted( obj_id, info_pos )
-	return false
+	local r = db.info_restr[obj_id]
+
+	if r == nil then
+		return false
+	end
+
+	if type(r) == "string" then
+		r = db.zone_by_name[r]
+
+		if r == nil then
+			return false
+		end
+
+		db.info_restr[obj_id] = r
+	end
+
+	return not r:inside( info_pos )
 end
 
 -----------------------------------------------------------------------------------------------------------------

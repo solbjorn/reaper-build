@@ -1,0 +1,164 @@
+-- Расширения базовых библиотек Lua и движка
+
+local string_byte = string.byte
+local string_char = string.char
+local string_gfind = string.gfind
+local string_len = string.len
+local string_match = string.match
+local string_sub = string.sub
+
+-- table
+
+--[[ Упаковка таблицы в строку, ex amk.pack_array_to_string. Строки в структуре не должны содержать символов с кодами 0-31.
+	Формат упаковки:
+	table ::= subtable
+	subtable ::= keytype key valuetype ( value | subtable 0x5 )
+	keytype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
+	valuetype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
+]]
+table.to_string = function(t)
+	local type_num = 1
+	local type_string = 2
+	local type_bool = 3
+	local type_table = 4
+	local type_endtable = 5
+	local tk, tv
+	local ret = ""
+	
+	for k,v in pairs(t) do
+		tk = type(k)
+		tv = type(v)
+		
+		if tk == "number" then
+			ret = ret..string_char(type_num)..k
+		elseif tk == "string" then
+			ret = ret..string_char(type_string)..k
+		else
+			abort("table.to_string: unsupported key type "..tk)
+		end
+		
+		if tv == "number" then
+			ret = ret..string_char(type_num)..v
+		elseif tv == "string" then
+			ret = ret..string_char(type_string)..v
+		elseif tv == "boolean" then
+			ret = ret..string_char(type_bool)..(v and "1" or "0")
+		elseif tv == "table" then
+			ret = ret..string_char(type_table)..table_to_string(v)..string_char(type_endtable)
+		else
+			abort("table.to_string: unsupported value type "..tv)
+		end
+	end
+	
+	return ret
+end
+local table_to_string = table.to_string
+
+-- string
+
+-- Удаление начальных и конечных пробелов
+string.trim = function(str)
+	--out of bugged scripts code!
+	if not str then
+		return ""
+	end
+
+	--return str:match("^%s*(.-)%s*$")
+	--more quickly (~30%)
+	local from = string_match(str, "^%s*()")
+	return from > #str and "" or string_match(str, ".*%S", from)
+end
+local string_trim = string.trim
+
+-- Разбирает cтроку в таблицу по разделителю
+-- {"substring1", "substring2", ...}
+-- clear = true - обрезать пробелы
+string.explode = function(str, div, clear)
+	local t = {}
+	if clear==nil then
+		clear=true
+	end
+	for s in string_gfind(str, "([^"..div.."]+)") do
+		if clear then
+			t[#t + 1] = string_trim(s)
+		else
+			t[#t + 1] = s
+		end
+	end
+	return t
+end
+
+-- Распаковка строки в таблицу, ex amk.unpack_array_from_string.
+string.to_table = function(s, idx)
+	if s == nil or s == "" then return {} end
+
+	local type_num = 1
+	local type_string = 2
+	local type_bool = 3
+	local type_table = 4
+	local type_endtable = 5
+	local key,value
+	local tk, tv
+	local ret = {}
+	idx = idx or 1
+
+	while true do
+		if idx > string_len(s) then
+			return ret, idx
+		end
+		
+		tk, idx = get_byte(s, idx)
+		if tk == type_num then
+			key, idx = get_num(s, idx)
+		elseif tk == type_string then
+			key, idx = get_string(s, idx)
+		elseif tk == type_endtable then
+			return ret, idx
+		else
+			abort("string.to_table: unsupported key type "..tk)
+		end
+		
+		tv, idx = get_byte(s, idx)
+		if tv == type_num then
+			value, idx = get_num(s, idx)
+		elseif tv == type_string then
+			value, idx = get_string(s, idx)
+		elseif tv == type_bool then
+			value, idx = get_bool(s, idx)
+		elseif tv == type_table then
+			value, idx = string_to_table(s, idx)
+		else
+			abort("string.to_table: unsupported value type "..tv)
+		end
+		
+		ret[key] = value
+	end
+end
+local string_to_table = string.to_table
+
+-- Вспомогательные функции
+
+function get_byte(str,idx)
+  return string_byte(string_sub(str,idx,idx)),idx+1
+end
+
+function get_string(str,idx)
+  local idx1=string_len(str)+1
+  for i=idx,string_len(str),1 do
+    if string_byte(string_sub(str,i,i))<32 then
+      idx1=i
+      break
+    end
+  end
+  return string_sub(str,idx,idx1-1),idx1
+end
+
+function get_num(str,idx)
+  local st,idx1=get_string(str,idx)
+  return st+0,idx1
+end
+
+function get_bool(str,idx)
+  local st,idx1=get_string(str,idx)
+  return st=="1",idx1
+end

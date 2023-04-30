@@ -1,3 +1,7 @@
+local amk_hideouts_hide = amk_hideouts.hide
+local math_random=math.random
+local table_sort=table.sort
+
 local anom_prefix = "amk_zone_"
  local anom_suffixes={ _weak=20, _average=50, _strong=30 }
  local exclusive_chance = 5
@@ -102,15 +106,18 @@ end
  function collect_info()
  local lname=level.name() on_anoms_per_level={}
  local on_anoms,off_anoms=0,0 
+	local sim = alife()
+	local sobj
+
 	for i=0,65534 do
-	local sobj = alife():object(i)
+		sobj = sim:object(i)
 		if sobj then
-			if (sobj:clsid()>172 and sobj:clsid()<180) or sobj:clsid()==clsid.zone_electra_s then
-			local map = alife():level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+			if is_anomaly(sobj) then
+			local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 				if not check_exclusion(sobj,map) then
 				local status=get_anomaly_status(sobj)
 					if status=="" or status=="del" then 
-					alife():release(sobj,true) 
+					sim:release(sobj,true) 
 					elseif status=="on" then
 						if on_anoms_per_level[map]==nil then on_anoms_per_level[map]={}
 						end 
@@ -142,7 +149,7 @@ end
  local lname=level.name()
  local v=level_anoms[lname]
  if v then
- local cnt, mxx = 0,math.random(v[1],v[2]) while cnt<mxx do
+ local cnt, mxx = 0,math_random(v[1],v[2]) while cnt<mxx do
  if generate_anomaly(status) then cnt = cnt+1
  end end
  end 
@@ -152,7 +159,7 @@ end
  local lname=level.name() for k,v in pairs(anti_spawn_zones) do
  if pos:distance_to(v[1])<=v[2] then return false
  end end
- local hides=amk_hideouts.hide[lname]
+ local hides=amk_hideouts_hide[lname]
  local tmp
  if hides then for i,o in ipairs(hides) do
  if o.zone then for j,v in ipairs(o.zone) do
@@ -168,7 +175,7 @@ end
 	return nil 
 	end
  local gvn,gvx,lvx = game_vertexes[lname][1], game_vertexes[lname][2], level_vertexes[lname]
- local new_lv=math.random(1,lvx)
+ local new_lv=math_random(1,lvx)
  local pos = level.vertex_position(new_lv)
 	if not check_coordinates(pos) then 
 	return false 
@@ -192,7 +199,7 @@ local levelname = {
 	generate_test(lname)
 	local v=level_arts[lname]
 		if v then
-		local cnt, mxx = 0,math.random(v[1],v[2]) 
+		local cnt, mxx = 0,math_random(v[1],v[2]) 
 			while cnt<mxx do
 				if generate_art(lname) then 
 				cnt = cnt+1
@@ -205,7 +212,7 @@ function generate_test(lname)
 	return nil 
 	end
  local gvn,gvx,lvx = game_vertexes[lname][1], game_vertexes[lname][2], level_vertexes[lname]
- local new_lv=math.random(1,lvx)
+ local new_lv=math_random(1,lvx)
  local pos = level.vertex_position(new_lv)
  local new_gv = 0
  local min_dist = 100000 
@@ -229,7 +236,7 @@ end
 		return false
 		end 
 	end
-	local hides=amk_hideouts.hide[lname]
+	local hides=amk_hideouts_hide[lname]
 	local tmp
 	if hides then 
 		for i,o in ipairs(hides) do
@@ -253,7 +260,7 @@ function generate_art(lname)
 	return nil 
 	end
  local gvn,gvx,lvx = game_vertexes[lname][1], game_vertexes[lname][2], level_vertexes[lname]
- local new_lv=math.random(1,lvx)
+ local new_lv=math_random(1,lvx)
  local pos = level.vertex_position(new_lv)
 	if not check_coordinates_arts(pos,lname) then 
 	return false 
@@ -270,7 +277,7 @@ function generate_art(lname)
  return spawn_rand_arts(pos,new_gv,new_lv,lname) 
 end
  function spawn_rand_arts(pos,gv,lv,lname)
-	local rnd=math.random()*100 
+	local rnd=math_random()*100 
 	for k,v in pairs(level_arts[lname][3]) do
 		if rnd<=v then section=arts_sections[k] break
 		end 
@@ -296,12 +303,12 @@ end
  local lname=level.name()
  local shapes,shape1={},{}
  local section section = "zone_ice"
- if exclusive_chance>math.random()*100 then shape1={shtype=0,radius=4,center={0,0,0}} else
- local rnd=math.random()*100
+ if exclusive_chance>math_random()*100 then shape1={shtype=0,radius=4,center={0,0,0}} else
+ local rnd=math_random()*100
  local suffix='' for k,v in pairs(anom_suffixes) do
  if rnd<=v then suffix=k break
  end rnd=rnd-v
- end rnd=math.random()*100 for k,v in pairs(level_anoms[lname][4]) do
+ end rnd=math_random()*100 for k,v in pairs(level_anoms[lname][4]) do
  if rnd<=v then section=anoms_sections[k] break
  end rnd=rnd-v
  end shape1=section[2] section=anom_prefix..section[1]..suffix
@@ -328,8 +335,8 @@ end
  function set_online_anomaly_status(obj_id,status)
  local obj = level.object_by_id(obj_id)
  if obj then
- if status=="off" or status=="del" then obj:disable_anomaly() amk_anoms.remove_anomaly(obj_id) amk_anoms.restrictor_deleted(obj_id,obj:name()) else obj:enable_anomaly()
- local sobj=alife():object(obj_id) amk_anoms.add_anomaly(obj_id,sobj.position,sobj.radius)
+ if status=="off" or status=="del" then obj:disable_anomaly() remove_anomaly(obj_id) restrictor_deleted(obj_id,obj:name()) else obj:enable_anomaly()
+ local sobj=g_alife:object(obj_id) add_anomaly(obj_id,sobj.position,sobj.radius)
  end end end
 
  function get_anomaly_status(sobj)
@@ -340,15 +347,15 @@ end
  end return cd.dyn_anom.status
  end blow_out_turn_off_anomalies=false
 
- function update()
- if initialized==false then return
- end end
+ function turn_off_all()
+	local sim = alife()
+	local sobj
 
- function turn_off_all() for i=0,65534 do
- local sobj = alife():object(i)
+ for i=0,65534 do
+ sobj = sim:object(i)
  if sobj then
- if (sobj:clsid()>172 and sobj:clsid()<180) or sobj:clsid()==clsid.zone_electra_s then
- local map = alife():level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+ if is_anomaly(sobj) then
+ local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
  if not check_exclusion(sobj,map) then
  local status=get_anomaly_status(sobj)
  if status=="on" then set_anomaly_status(sobj,"del")
@@ -358,11 +365,15 @@ end
 
  function pre_blow_off() turn_off_all() end
 
- function after_blow_on() for i=0,65534 do
- local sobj = alife():object(i)
+ function after_blow_on()
+	local sim = alife()
+	local sobj
+
+ for i=0,65534 do
+ sobj = sim:object(i)
  if sobj then
- if (sobj:clsid()>172 and sobj:clsid()<180) or sobj:clsid()==clsid.zone_electra_s then
- local map = alife():level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+ if is_anomaly(sobj) then
+ local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
  if not check_exclusion(sobj,map) then
  local status=get_anomaly_status(sobj)
  if status=="off" then set_anomaly_status(sobj,"on")
@@ -420,6 +431,9 @@ end
  local max_dynamic_restrictors_count=40
 
  function syncronize(npc)
+	local sim = alife()
+	local sobj
+
  local nid=npc:id()
  local cnt=0
  local anoms,actual=init_if_needed(nid)
@@ -427,10 +441,10 @@ end
  if cnt>max_dynamic_restrictors_count then
  local disttbl={} for id in pairs(anoms) do
  local dist=0
- local sobj=alife():object(id)
+ sobj=sim:object(id)
  if sobj then dist=npc:position():distance_to_sqr(sobj.position) else dist=1000000
  end table.insert(disttbl,{id=id,dist=dist})
- end table.sort(disttbl,function (a,b) return a.dist>b.dist end) for i=1,cnt-max_dynamic_restrictors_count do anoms[disttbl[i].id]=nil
+ end table_sort(disttbl,function (a,b) return a.dist>b.dist end) for i=1,cnt-max_dynamic_restrictors_count do anoms[disttbl[i].id]=nil
  end end
  local add,rem="",""
  local first=true for id,name in pairs(actual) do
@@ -463,13 +477,13 @@ end
  local status=get_anomaly_status(sobj)
  if status=="del" or status=="off" then
  if status=="del" then
- end self.object:disable_anomaly() else amk_anoms.add_anomaly(sobj.id,sobj.position,sobj.radius)
+ end self.object:disable_anomaly() else add_anomaly(sobj.id,sobj.position,sobj.radius)
  end return true end
 
- function anom_binder:net_destroy() amk_anoms.remove_anomaly(self.object:id()) object_binder.net_destroy(self) end
+ function anom_binder:net_destroy() remove_anomaly(self.object:id()) object_binder.net_destroy(self) end
  local anom_list={}
 
- function get_radius_for_section(section) return system_ini():r_float(section,"effective_radius") end
+ function get_radius_for_section(section) return read_line(section,"effective_radius") end
 
  function add_anomaly(id,pos,radius)
  if anom_list==nil then anom_list={}

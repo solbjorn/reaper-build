@@ -222,7 +222,6 @@ function se_smart_terrain:fill_npc_info( obj, npc_info )
   if npc_info.profile_name then
     npc_info.is_sniper = string.find( npc_info.profile_name, "sniper" ) ~= nil
   end
-  npc_info.is_sniper_name = string.find( npc_info.name, "sniper" ) ~= nil
 
   local t               = obj.smart_terrain_conditions
   if t then
@@ -388,7 +387,7 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 
         --' Проверка что смарттеррейн и НПС находятся в одном кластере уровней (чтобы не ходили через БАР)
         local smart_level_group = self:get_level_name()
-		if obj.m_game_vertex_id == 65535 then
+		if not game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 			return false
 		end
         local npc_level_group = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())

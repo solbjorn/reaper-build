@@ -1,4 +1,3 @@
-
 local nagrad = {
   level_1 = {
   "ammo_flame_2",
@@ -48,6 +47,8 @@ local nagrad = {
  }
 }
 
+local amk_utils_inventory_search = amk_utils.inventory_search
+
 --20 ÁÓÒÛËÎÊ ÂÎÄÊÈ
 function prines_vodku(first_speaker, second_speaker)
 	local actor, trader
@@ -58,14 +59,8 @@ function prines_vodku(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local vodka = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="vodka" then vodka=vodka+1 end end, nil)
-    if vodka>=20 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("vodka", 20)
 end
 function otdal_vodku(first_speaker, second_speaker)
 	local item = ""
@@ -92,14 +87,8 @@ function malo_vodki(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local vodka = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="vodka" then vodka=vodka+1 end end, nil)
-    if vodka>=10 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("vodka", 10)
 end
 function otdal_malo_vodki(first_speaker, second_speaker)
 	local item = ""
@@ -134,14 +123,8 @@ function prines_art(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local art = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="banderos_art" then art=art+1 end end, nil)
-    if art>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("banderos_art", 3)
 end
 --îòäà¸ì àğòû Ñàõàğó
 function otdat_art(first_speaker, second_speaker)
@@ -222,14 +205,8 @@ function have_pda_svoboda(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local svoboda_pda = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="device_freedom_pda" then svoboda_pda=svoboda_pda+1 end end, nil)
-    if svoboda_pda>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("device_freedom_pda", 3)
 end
 --îòäà¸ì ÊÏÊ è ïîëó÷àåì íàãğàäó
 function out_pda_svoboda(first_speaker, second_speaker)
@@ -283,14 +260,8 @@ function have_pda_dolg(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local dolg_pda = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="device_dolg_pda" then dolg_pda=dolg_pda+1 end end, nil)
-    if dolg_pda>=3 then
-        return true
-	else
-        return false
-	end
+
+	return amk_utils_inventory_search("device_dolg_pda", 3)
 end
 function out_pda_dolg(first_speaker, second_speaker)
 	local item = ""

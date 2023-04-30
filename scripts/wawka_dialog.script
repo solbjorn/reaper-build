@@ -74,15 +74,8 @@ function na_hunters_toz(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local hunters_toz = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="hunters_toz" then
-		hunters_toz=hunters_toz+1 end end, nil)
-    if hunters_toz>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("hunters_toz") or false
 end
 function vzyal_hunters_toz(first_speaker, second_speaker)
 	local item = ""
@@ -95,7 +88,7 @@ function vzyal_hunters_toz(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "hunters_toz", "out", 1)
     flamethrower.relocate_n_items_section(actor, item , "in", count)
 end
@@ -108,15 +101,8 @@ function na_p38_sk1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_p38_sk1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_p38_sk1" then         
-        wpn_p38_sk1 = wpn_p38_sk1+1 end end, nil)
-    if wpn_p38_sk1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_p38_sk1") or false
 end
 function vzyal_p38_sk1(first_speaker, second_speaker)
 	local item = ""
@@ -129,7 +115,7 @@ function vzyal_p38_sk1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_5[math.random(table.getn(nagrad.level_5))]
+	item = nagrad.level_5[math.random(#nagrad.level_5)]
 	flamethrower.relocate_n_items_section(trader, "wpn_p38_sk1", "out", 1)
     flamethrower.relocate_n_items_section(actor, item , "in", count)
 end
@@ -142,15 +128,8 @@ function na_ppsh(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_ppsh41_sk2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_ppsh41_sk2" then         
-        wpn_ppsh41_sk2 = wpn_ppsh41_sk2+1 end end, nil)
-    if wpn_ppsh41_sk2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_ppsh41_sk2") or false
 end
 function vzyal_ppsh(first_speaker, second_speaker)
 	local item = ""
@@ -163,7 +142,7 @@ function vzyal_ppsh(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_5[math.random(table.getn(nagrad.level_5))]
+	item = nagrad.level_5[math.random(#nagrad.level_5)]
 	flamethrower.relocate_n_items_section(trader, "wpn_ppsh41_sk2", "out", 1)
     flamethrower.relocate_n_items_section(actor, item , "in", count)
 end
@@ -176,15 +155,8 @@ function na_mosinka(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_m1891_30 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_m1891_30" then         
-        wpn_m1891_30 = wpn_m1891_30+1 end end, nil)
-    if wpn_m1891_30>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_m1891_30") or false
 end
 function vzyal_mosinka(first_speaker, second_speaker)
 	local item = ""
@@ -197,7 +169,7 @@ function vzyal_mosinka(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_5[math.random(table.getn(nagrad.level_5))]
+	item = nagrad.level_5[math.random(#nagrad.level_5)]
 	flamethrower.relocate_n_items_section(trader, "wpn_m1891_30", "out", 1)
     flamethrower.relocate_n_items_section(actor, item , "in", count)
 end
@@ -210,15 +182,8 @@ function na_mosinka_optika(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_m1891_30_scope = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_m1891_30_scope" then
-		wpn_m1891_30_scope=wpn_m1891_30_scope+1 end end, nil)
-    if wpn_m1891_30_scope>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_m1891_30_scope") or false
 end
 function vzyal_mosinka_optika(first_speaker, second_speaker)
 	local item = ""
@@ -231,7 +196,7 @@ function vzyal_mosinka_optika(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_5[math.random(table.getn(nagrad.level_5))]
+	item = nagrad.level_5[math.random(#nagrad.level_5)]
 	flamethrower.relocate_n_items_section(trader, "wpn_m1891_30_scope", "out", 1)
     flamethrower.relocate_n_items_section(actor, item , "in", count)
 end
@@ -244,15 +209,8 @@ function na_ak74_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_ak74_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_ak74_m1" then
-		wpn_ak74_m1=wpn_ak74_m1+1 end end, nil)
-    if wpn_ak74_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_ak74_m1") or false
 end
 function vzyal_ak74_m1(first_speaker, second_speaker)
 	local item = ""
@@ -264,7 +222,7 @@ function vzyal_ak74_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_ak74_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -277,15 +235,8 @@ function na_abakan_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_abakan_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_abakan_m1" then
-		wpn_abakan_m1=wpn_abakan_m1+1 end end, nil)
-    if wpn_abakan_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_abakan_m1") or false
 end
 function vzyal_abakan_m1(first_speaker, second_speaker)
 	local item = ""
@@ -297,7 +248,7 @@ function vzyal_abakan_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_abakan_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -310,15 +261,8 @@ function na_fort_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_fort_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_fort_m1" then
-		wpn_fort_m1=wpn_fort_m1+1 end end, nil)
-    if wpn_fort_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_fort_m1") or false
 end
 function vzyal_fort_m1(first_speaker, second_speaker)
 	local item = ""
@@ -330,7 +274,7 @@ function vzyal_fort_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	item = nagrad.level_1[math.random(#nagrad.level_1)]
 	flamethrower.relocate_n_items_section(trader, "wpn_fort_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -343,15 +287,8 @@ function na_mp5_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_mp5_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_mp5_m1" then
-		wpn_mp5_m1=wpn_mp5_m1+1 end end, nil)
-    if wpn_mp5_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_mp5_m1") or false
 end
 function vzyal_mp5_m1(first_speaker, second_speaker)
 	local item = ""
@@ -363,7 +300,7 @@ function vzyal_mp5_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	item = nagrad.level_1[math.random(#nagrad.level_1)]
 	flamethrower.relocate_n_items_section(trader, "wpn_mp5_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -376,15 +313,8 @@ function na_groza_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_groza_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_groza_m1" then
-		wpn_groza_m1=wpn_groza_m1+1 end end, nil)
-    if wpn_groza_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_groza_m1") or false
 end
 function vzyal_groza_m1(first_speaker, second_speaker)
 	local item = ""
@@ -396,7 +326,7 @@ function vzyal_groza_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_groza_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -409,15 +339,8 @@ function na_spas12_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_spas12_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_spas12_m1" then
-		wpn_spas12_m1=wpn_spas12_m1+1 end end, nil)
-    if wpn_spas12_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_spas12_m1") or false
 end
 function vzyal_spas12_m1(first_speaker, second_speaker)
 	local item = ""
@@ -429,7 +352,7 @@ function vzyal_spas12_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_spas12_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -442,15 +365,8 @@ function na_winchester_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_winchester_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_winchester_m1" then
-		wpn_winchester_m1=wpn_winchester_m1+1 end end, nil)
-    if wpn_winchester_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_winchester_m1") or false
 end
 function vzyal_winchester_m1(first_speaker, second_speaker)
 	local item = ""
@@ -462,7 +378,7 @@ function vzyal_winchester_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_winchester_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -475,15 +391,8 @@ function na_l85_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_l85_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_l85_m1" then
-		wpn_l85_m1=wpn_l85_m1+1 end end, nil)
-    if wpn_l85_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_l85_m1") or false
 end
 function vzyal_l85_m1(first_speaker, second_speaker)
 	local item = ""
@@ -495,7 +404,7 @@ function vzyal_l85_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_l85_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -508,15 +417,8 @@ function na_lr300_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_lr300_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_lr300_m1" then
-		wpn_lr300_m1=wpn_lr300_m1+1 end end, nil)
-    if wpn_lr300_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_lr300_m1") or false
 end
 function vzyal_lr300_m1(first_speaker, second_speaker)
 	local item = ""
@@ -528,7 +430,7 @@ function vzyal_lr300_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_lr300_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -541,15 +443,8 @@ function na_svd_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_svd_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_svd_m1" then
-		wpn_svd_m1=wpn_svd_m1+1 end end, nil)
-    if wpn_svd_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_svd_m1") or false
 end
 function vzyal_svd_m1(first_speaker, second_speaker)
 	local item = ""
@@ -561,7 +456,7 @@ function vzyal_svd_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_svd_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -574,15 +469,8 @@ function na_sig_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_sig_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_sig_m1" then
-		wpn_sig_m1=wpn_sig_m1+1 end end, nil)
-    if wpn_sig_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_sig_m1") or false
 end
 function vzyal_sig_m1(first_speaker, second_speaker)
 	local item = ""
@@ -594,7 +482,7 @@ function vzyal_sig_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_sig_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -607,15 +495,8 @@ function na_eagle_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_eagle_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_eagle_m1" then
-		wpn_eagle_m1=wpn_eagle_m1+1 end end, nil)
-    if wpn_eagle_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_eagle_m1") or false
 end
 function vzyal_eagle_m1(first_speaker, second_speaker)
 	local item = ""
@@ -627,7 +508,7 @@ function vzyal_eagle_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_eagle_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -640,15 +521,8 @@ function na_colt_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_colt_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_colt_m1" then
-		wpn_colt_m1=wpn_colt_m1+1 end end, nil)
-    if wpn_colt_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_colt_m1") or false
 end
 function vzyal_colt_m1(first_speaker, second_speaker)
 	local item = ""
@@ -660,7 +534,7 @@ function vzyal_colt_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_colt_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -673,15 +547,8 @@ function na_val_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_val_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_val_m1" then
-		wpn_val_m1=wpn_val_m1+1 end end, nil)
-    if wpn_val_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_val_m1") or false
 end
 function vzyal_val_m1(first_speaker, second_speaker)
 	local item = ""
@@ -693,7 +560,7 @@ function vzyal_val_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_val_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -706,15 +573,8 @@ function na_mp5_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_mp5_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_mp5_m2" then
-		wpn_mp5_m2=wpn_mp5_m2+1 end end, nil)
-    if wpn_mp5_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_mp5_m2") or false
 end
 function vzyal_mp5_m2(first_speaker, second_speaker)
 	local item = ""
@@ -726,7 +586,7 @@ function vzyal_mp5_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	item = nagrad.level_1[math.random(#nagrad.level_1)]
 	flamethrower.relocate_n_items_section(trader, "wpn_mp5_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -739,15 +599,8 @@ function na_abakan_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_abakan_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_abakan_m2" then
-		wpn_abakan_m2=wpn_abakan_m2+1 end end, nil)
-    if wpn_abakan_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_abakan_m2") or false
 end
 function vzyal_abakan_m2(first_speaker, second_speaker)
 	local item = ""
@@ -759,7 +612,7 @@ function vzyal_abakan_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_abakan_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -772,15 +625,8 @@ function na_l85_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_l85_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_l85_m2" then
-		wpn_l85_m2=wpn_l85_m2+1 end end, nil)
-    if wpn_l85_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_l85_m2") or false
 end
 function vzyal_l85_m2(first_speaker, second_speaker)
 	local item = ""
@@ -792,7 +638,7 @@ function vzyal_l85_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_l85_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -805,15 +651,8 @@ function na_ak74u_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_ak74u_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_ak74u_m1" then
-		wpn_ak74u_m1=wpn_ak74u_m1+1 end end, nil)
-    if wpn_ak74u_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_ak74u_m1") or false
 end
 function vzyal_ak74u_m1(first_speaker, second_speaker)
 	local item = ""
@@ -825,7 +664,7 @@ function vzyal_ak74u_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_ak74u_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -838,15 +677,8 @@ function na_sig_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_sig_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_sig_m2" then
-		wpn_sig_m2=wpn_sig_m2+1 end end, nil)
-    if wpn_sig_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_sig_m2") or false
 end
 function vzyal_sig_m2(first_speaker, second_speaker)
 	local item = ""
@@ -858,7 +690,7 @@ function vzyal_sig_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_sig_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -871,15 +703,8 @@ function na_g36_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_g36_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_g36_m1" then
-		wpn_g36_m1=wpn_g36_m1+1 end end, nil)
-    if wpn_g36_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_g36_m1") or false
 end
 function vzyal_g36_m1(first_speaker, second_speaker)
 	local item = ""
@@ -891,7 +716,7 @@ function vzyal_g36_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_g36_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -904,15 +729,8 @@ function na_svu_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_svu_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_svu_m1" then
-		wpn_svu_m1=wpn_svu_m1+1 end end, nil)
-    if wpn_svu_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_svu_m1") or false
 end
 function vzyal_svu_m1(first_speaker, second_speaker)
 	local item = ""
@@ -924,7 +742,7 @@ function vzyal_svu_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_svu_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -937,15 +755,8 @@ function na_beretta_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_beretta_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_beretta_m1" then
-		wpn_beretta_m1=wpn_beretta_m1+1 end end, nil)
-    if wpn_beretta_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_beretta_m1") or false
 end
 function vzyal_beretta_m1(first_speaker, second_speaker)
 	local item = ""
@@ -957,7 +768,7 @@ function vzyal_beretta_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_beretta_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -970,15 +781,8 @@ function na_vintorez_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_vintorez_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_vintorez_m1" then
-		wpn_vintorez_m1=wpn_vintorez_m1+1 end end, nil)
-    if wpn_vintorez_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_vintorez_m1") or false
 end
 function vzyal_vintorez_m1(first_speaker, second_speaker)
 	local item = ""
@@ -990,7 +794,7 @@ function vzyal_vintorez_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_vintorez_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1003,15 +807,8 @@ function na_groza_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_groza_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_groza_m2" then
-		wpn_groza_m2=wpn_groza_m2+1 end end, nil)
-    if wpn_groza_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_groza_m2") or false
 end
 function vzyal_groza_m2(first_speaker, second_speaker)
 	local item = ""
@@ -1023,7 +820,7 @@ function vzyal_groza_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_groza_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1036,15 +833,8 @@ function na_rg6_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_rg6_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_rg6_m1" then
-		wpn_rg6_m1=wpn_rg6_m1+1 end end, nil)
-    if wpn_rg6_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_rg6_m1") or false
 end
 function vzyal_rg6_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1056,7 +846,7 @@ function vzyal_rg6_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_rg6_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1069,15 +859,8 @@ function na_walter_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_walther_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_walther_m1" then
-		wpn_walther_m1=wpn_walther_m1+1 end end, nil)
-    if wpn_walther_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_walther_m1") or false
 end
 function vzyal_walter_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1089,7 +872,7 @@ function vzyal_walter_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	item = nagrad.level_1[math.random(#nagrad.level_1)]
 	flamethrower.relocate_n_items_section(trader, "wpn_walther_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1102,15 +885,8 @@ function na_pm_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_pm_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_pm_m1" then
-		wpn_pm_m1=wpn_pm_m1+1 end end, nil)
-    if wpn_pm_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_pm_m1") or false
 end
 function vzyal_pm_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1122,7 +898,7 @@ function vzyal_pm_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+	item = nagrad.level_1[math.random(#nagrad.level_1)]
 	flamethrower.relocate_n_items_section(trader, "wpn_pm_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1135,15 +911,8 @@ function na_bizon_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_bizon_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_bizon_m1" then
-		wpn_bizon_m1=wpn_bizon_m1+1 end end, nil)
-    if wpn_bizon_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_bizon_m1") or false
 end
 function vzyal_bizon_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1155,7 +924,7 @@ function vzyal_bizon_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_bizon_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1168,15 +937,8 @@ function na_lr300_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_lr300_m2 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_lr300_m2" then
-		wpn_lr300_m2=wpn_lr300_m2+1 end end, nil)
-    if wpn_lr300_m2>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_lr300_m2") or false
 end
 function vzyal_lr300_m2(first_speaker, second_speaker)
 	local item = ""
@@ -1188,7 +950,7 @@ function vzyal_lr300_m2(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_lr300_m2", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1201,15 +963,8 @@ function na_ak47_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_ak47_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_ak47_m1" then
-		wpn_ak47_m1=wpn_ak47_m1+1 end end, nil)
-    if wpn_ak47_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_ak47_m1") or false
 end
 function vzyal_ak47_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1221,7 +976,7 @@ function vzyal_ak47_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+	item = nagrad.level_2[math.random(#nagrad.level_2)]
 	flamethrower.relocate_n_items_section(trader, "wpn_ak47_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1234,15 +989,8 @@ function na_darkgauss(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_dark_gauss = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_dark_gauss" then
-		wpn_dark_gauss=wpn_dark_gauss+1 end end, nil)
-    if wpn_dark_gauss>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_dark_gauss") or false
 end
 function vzyal_darkgauss(first_speaker, second_speaker)
 	local item = ""
@@ -1254,7 +1002,7 @@ function vzyal_darkgauss(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_dark_gauss", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1267,15 +1015,8 @@ function na_apb_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_apb_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_apb_m1" then
-		wpn_apb_m1=wpn_apb_m1+1 end end, nil)
-    if wpn_apb_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_apb_m1") or false
 end
 function vzyal_apb_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1287,7 +1028,7 @@ function vzyal_apb_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+	item = nagrad.level_3[math.random(#nagrad.level_3)]
 	flamethrower.relocate_n_items_section(trader, "wpn_apb_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
@@ -1300,15 +1041,8 @@ function na_rpk74_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	
-	local wpn_rpk74_m1 = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()=="wpn_rpk74_m1" then
-		wpn_rpk74_m1=wpn_rpk74_m1+1 end end, nil)
-    if wpn_rpk74_m1>=1 then
-        return true
-	else
-        return false
-	end
+
+	return actor:object("wpn_rpk74_m1") or false
 end
 function vzyal_rpk74_m1(first_speaker, second_speaker)
 	local item = ""
@@ -1320,11 +1054,10 @@ function vzyal_rpk74_m1(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+	item = nagrad.level_4[math.random(#nagrad.level_4)]
 	flamethrower.relocate_n_items_section(trader, "wpn_rpk74_m1", "out", 1)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
-
 
 -- Проверка
 

@@ -120,10 +120,8 @@ local news_headers = {
 }
 ---------------------------------------------------------------------------------------------------
 function pda_news(group, name)
-	local header = news_headers[group]
-	if header then
-		send_tip(game.translate_string(group).."/"..game.translate_string(name), header, nil, 5, "encyclopedia", "pda_news")
-	end
+	local header = news_headers[group] or game.translate_string("st_news_diary")
+	send_tip(game.translate_string(group).."/"..game.translate_string(name), header, nil, 5, "encyclopedia", "pda_news")
 end
 --[[-----------------------------------------------------------------------------------------------
  * Restore torch on corpses

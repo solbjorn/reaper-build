@@ -6,7 +6,6 @@ prefetch("sa_init")
 
 db_actor = nil
 db_actor_id = 0
-g_alife = nil
 
 local string_gfind = string.gfind
 
@@ -23,6 +22,15 @@ function load_scheme(filename, scheme, stype)
 	if not _G[filename] then
 		abort("[ERROR]: Scheme file %s.script is not valid!", tostring(filename))
 	end
+end
+
+g_alife = nil
+
+prefetch("lua_ext")
+
+-- Âìåñòî has_alife_info, alife():has_info, db.actor:has_info
+function has_info(i)
+	return g_alife:has_info(0, i)
 end
 
 ----------------------------------------------------------------------
@@ -168,6 +176,7 @@ function init_clsids()
 	clsid_script_trader = clsid.script_trader
 
 	clsid_wpn_ammo = clsid.wpn_ammo
+	clsid_car = clsid.car
 	clsid_equ_stalker_s = clsid.equ_stalker_s
 	clsid_wpn_grenade_f1 = clsid.wpn_grenade_f1
 	clsid_wpn_grenade_fake = clsid.wpn_grenade_fake
@@ -180,15 +189,22 @@ function init_clsids()
 	clsid_bloodsucker_s = clsid.bloodsucker_s
 	clsid_snork_s = clsid.snork_s
 	clsid_zombie_s = clsid.zombie_s
-	clsid_rat_s = clsid.rat_s
 
 	clsid_wpn_ak74_s = clsid.wpn_ak74_s
 	clsid_wpn_bm16_s = clsid.wpn_bm16_s
 	clsid_wpn_walther_s = clsid.wpn_walther_s
+
+	clsid_zone_bfuzz_s = clsid.zone_bfuzz_s
+	clsid_zone_zharka_s = clsid.zone_zharka_s
 end
 
 function get_clsid(npc)
 	return npc and npc:clsid()
+end
+
+function is_anomaly(obj, id)
+	id = id or (obj and obj:clsid()) or 0
+	return id >= clsid_zone_bfuzz_s and id <= clsid_zone_zharka_s
 end
 
 -- ¯à®¢¥àï¥â ®àã¦¨¥ «¨ íâ® (¯¥à¥¤ ¢ âì game_object)
@@ -261,7 +277,7 @@ end
 --// ßâëÿåòñÿ ëè îbj ìîíñòðîì
 function is_object_monster(obj)
 	local otype = (obj and obj:clsid()) or 0
-	return (otype >= clsid_bloodsucker_s and otype <= clsid_zombie_s) or otype == clsid_rat_s or otype == clsid_crow
+	return (otype >= clsid_bloodsucker_s and otype <= clsid_zombie_s) or otype == clsid_crow
 end
 
 --¢®§¢à é ¥â ¯à®¨§¢®«ì­ãî â®çªã ¯ãâ¨ ã ª®â®à®© ãáâ ­®¢«¥­ ¡¨â
@@ -363,7 +379,7 @@ end
 -------------------------------------------------------------------------------------------
 function IsMonster (object, class_id)
 	local id = class_id or (object and object:clsid()) or 0
-	return (id >= clsid_bloodsucker_s and id <= clsid_zombie_s) or id == clsid_rat_s
+	return id >= clsid_bloodsucker_s and id <= clsid_zombie_s
 end
 -------------------------------------------------------------------------------------------
 function IsStalker (object, class_id)
@@ -415,12 +431,6 @@ end
 
 --' Óñòàëîñòü
 function on_actor_critical_power()
-	if not alife():has_info(0, "encyclopedy_tutorial_weakness") then
-		if alife():has_info(0, "esc_trader_newbie") then
-			game.start_tutorial("part_11_weakness")
-		end
-		db_actor:give_info_portion("encyclopedy_tutorial_weakness")
-	end
 end
 
 function on_actor_critical_max_power()
@@ -428,12 +438,6 @@ end
 
 --' Êðîâîòå÷åíèå
 function on_actor_bleeding()
-	if not alife():has_info(0, "encyclopedy_tutorial_wound") then
-		if alife():has_info(0, "esc_trader_newbie") then
-			game.start_tutorial("part_8_wound")
-		end
-		db_actor:give_info_portion("encyclopedy_tutorial_wound")
-	end
 end
 
 function on_actor_satiety()
@@ -441,22 +445,10 @@ end
 
 --' Ðàäèàöèÿ
 function on_actor_radiation()
-	if not alife():has_info(0, "encyclopedy_tutorial_radiation") then
-		if alife():has_info(0, "esc_trader_newbie") then
-			game.start_tutorial("part_6_radiation")
-		end
-		db_actor:give_info_portion("encyclopedy_tutorial_radiation")
-	end
 end
 
 --' Çàêëèíèëî îðóæèå
 function on_actor_weapon_jammed()
-	if not alife():has_info(0, "encyclopedy_tutorial_weapon") then
-		if alife():has_info(0, "esc_trader_newbie") then
-			game.start_tutorial("part_9_weapon")
-		end
-		db_actor:give_info_portion("encyclopedy_tutorial_weapon")
-	end
 end
 
 --' íå ìîæåò õîäèòü èççà âåñà
@@ -491,7 +483,6 @@ function start_game_callback()
 
   --AMK UTILS--
   amk.on_game_start(obj)
-  amk_utils.start_game()
   --AMK UTILS--
 end
 

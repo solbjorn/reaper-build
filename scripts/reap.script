@@ -21,12 +21,22 @@ _G.timer_types = {
  * Callbacks
 --]]---------------------------------------------------------------------------
 
+local next_update_200 = -1
+
 function net_spawn()
 	set_timer_tick()
 end
 
 function update()
 	update_timers()
+
+	local time_ = time_global()
+
+	if next_update_200 < time_ then
+		next_update_200 = time_ + 200
+
+		safe_place()
+	end
 end
 
 function save(packet)
@@ -50,10 +60,13 @@ function item_slot(obj)
 end
 
 --[[---------------------------------------------------------------------------
- * Hit effectors
+ * HUD
 --]]---------------------------------------------------------------------------
 
 local gg_kick = read_line("gg_kick", "enabled") > 0
+
+local hud = get_hud()
+local sleep_cs = nil
 
 function hit_effectors(mob_type, obj, amount)
 	if gg_kick ~= true or amount <= 0.05 or not db_actor:alive() then
@@ -75,6 +88,22 @@ function hit_effectors(mob_type, obj, amount)
 		local active_item = db_actor:active_item()
 		if active_item and active_item:is_weapon() then
 			db_actor:drop_item(active_item)
+		end
+	end
+end
+
+function safe_place()
+	local need_hit, khit = amk_mod.blowout_khit()
+
+	if khit < 0.5 then
+		if not sleep_cs then
+			hud:AddCustomStatic("sleep_static", true)
+			sleep_cs = hud:GetCustomStatic("sleep_static")
+		end
+	else
+		if sleep_cs then
+			hud:RemoveCustomStatic("sleep_static")
+			sleep_cs = nil
 		end
 	end
 end

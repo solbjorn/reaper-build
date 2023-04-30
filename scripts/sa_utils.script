@@ -11,6 +11,14 @@ _G.pressed_keys = {}
 --[[-----------------------------------------------------------------------------------------------
  * Object data
 --]]-----------------------------------------------------------------------------------------------
+function _G.get_weapon_data(obj, param)
+	if obj and param then
+		if param == "ammo_type" then
+			return obj:get_wpn_int(nil, 1444)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
 function _G.get_ammo_data(obj, param)
 	if obj and param then
 		if param == "box_size" then
@@ -65,13 +73,19 @@ end
 ---------------------------------------------------------------------------------------------------
 local indoors = { }
 ---------------------------------------------------------------------------------------------------
-function level.indoor()
-	if level.present() == false then return false end
+function level.indoor(lname)
+	if not lname then
+		if level.present() then
+			lname = level.name()
+		else
+			return false
+		end
+	end
 
-	local ind = indoors[level.name()]
+	local ind = indoors[lname]
 	if ind == nil then
-		ind = read_line(level.name(), "indoor", "bool", game_ini())
-		indoors[level.name()] = ind
+		ind = read_line(lname, "indoor", "bool", game_ini(), false)
+		indoors[lname] = ind
 	end
 
 	return ind

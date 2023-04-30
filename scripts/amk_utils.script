@@ -11,7 +11,7 @@ Version:  1.1.0.5
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 -- *			                         Menu 					                 *
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-RestrictionStock = 1   --Ограничения на вместимость инвентаря
+local RestrictionStock = 1   --Ограничения на вместимость инвентаря
 
 
 
@@ -21,56 +21,9 @@ RestrictionStock = 1   --Ограничения на вместимость инвентаря
 -- *			                         Callback 					                 *
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
---Callback на старт игры
-function start_game()
-end
-
---Callback на апдейт монстров (работает постоянно)
-function monster_update(delta)
-end
-
---Callback на смерть монстров
-function monster_death(victim, who)
-end
-
---Callback на хит монстра
-function monster_hit(obj, amount, local_direction, who, bone_index)
-end
-
---Callback юзания обьекта
-function physics_use(obj, who)
-end
-
---Callback на хит обьекта
-function physics_hit(obj, amount, local_direction, who, bone_index)
-end
-
---Callback на "смерть" обьекта
-function physics_death(victim, who)
-end
-
---Callback на инфопоршен
-function actor_info(npc, info_id)
-end
-
---Callback на заход на уровень
-function actor_level_border_enter(npc, info_id)
-end
-
---Callback на выход с уровня
-function actor_level_border_exit(npc, info_id)
-end
-
---Callback на полученияе артикла
-function actor_article(npc, group, name)
-end
-
---Callback на взятия предмета в инвентарь гг из ящика
-function actor_item_from_box(box, item)
-end
-
 --Callback на взятие предмета в инвентарь гг
 function actor_item_take(obj)
+	inventory_update(obj, 1)
 	if obj ~= nil and RestrictionStock ~= nil then
 		restriction_stock.restriction_of_stock(obj,0)
 	end
@@ -78,33 +31,53 @@ end
 
 --Callback на потерю предмета из инвенаря гг
 function actor_item_drop(obj)
+	inventory_update(obj, -1)
 	if obj ~= nil and RestrictionStock ~= nil then
 		restriction_stock.restriction_of_stock(obj,1)
 	end
 end
 
---Callback на получение тасков
-function actor_task(_task, _objective, _state)
-end
-
---Callback на апдейт актора  (работает постоянно)
-function actor_update(delta)
-end
-
-
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 -- *			                         Inventory					       *
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+--Кеш текущего состояния инвентаря ГГ (только предметы проверяемые функцией inventory_search, их обычно немного)
+--Структура: [секция_предмета] = количество_в_инвентаре
+local InventoryState = {}
+
 --Проверка на количество предметов в инвентаре гг
-function inventory_search(itemS, n)
-	local  actor = db.actor
-	local  count = 0
-	actor:iterate_inventory(function (dummy, item) if item:section()== itemS then count=count+1 end end, nil)
-	if count >= n then
-		return true
-	else
-		return false
+function inventory_count(iItemSection)
+	--Взятие из кеша текущего состояния инвентаря:
+	local vCount = InventoryState[iItemSection]
+	--Загрузка текущего состояния инвентаря в кеш:
+	if vCount == nil then
+		vCount = 0
+		db.actor:iterate_inventory(function (dummy, vItem)
+				if vItem:section() == iItemSection then
+					vCount = vCount + 1 
+				end 
+			end, nil)
+		InventoryState[iItemSection] = vCount
+	end
+	--Выдача результата проверки:
+	return vCount
+end
+
+function inventory_search(iItemSection, iNeededCount)
+	if iNeededCount == 1 then return db_actor:object(iItemSection) or false end
+	return inventory_count(iItemSection) >= iNeededCount
+end
+
+--Обработчик появления или исчезновения предмета в инвентаре (нужно обновить кеш):
+function inventory_update(iObject, iCountDelta)
+	if iObject == nil then return end
+	local vItemSection = iObject:section()
+	--Взятие из кеша текущего состояния инвентаря:
+	local vCount = InventoryState[vItemSection]
+	--Обновление текущего состояния инвентаря в кеше:
+	if vCount ~= nil then
+		vCount = vCount + iCountDelta
+		InventoryState[vItemSection] = vCount
 	end
 end
 
@@ -204,17 +177,3 @@ function relocate_n_items_section(victim, section, Type, count)
 		news_manager.relocate_item(db.actor, Type, section)
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-

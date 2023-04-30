@@ -3,6 +3,10 @@
 local min_fuel = 150
 local max_fuel = 300
 
+local amk_utils_inventory_count = amk_utils.inventory_count
+local amk_utils_inventory_search = amk_utils.inventory_search
+local math_random = math.random
+
 function remove_spot()
  local sobj=alife():story_object(481516)
  if sobj then
@@ -37,15 +41,7 @@ function good_bye(first_speaker, second_speaker)
 end
 
 function have_n_items(section,number)
-    local actor = db.actor
-    if actor then
-      local cnt=0
-      actor:iterate_inventory(function (dummy, item)
-       if item:section()==section then cnt=cnt+1 end
-      end, nil)
-    return cnt>=number
-  end
-  return false
+	return amk_utils_inventory_search(section, number)
 end
 
 function have_10_vodka()
@@ -199,11 +195,7 @@ function have_a_vodko()
     local actor = db.actor
     if actor ~= nil and actor:has_info("flamethrower_quest_start")
     then
-      local cnt_vodka=0
-      actor:iterate_inventory(function (dummy, item)
-      if item:section()=="vodka" then cnt_vodka=cnt_vodka+1 end
-      end, nil)
-		if cnt_vodka>=10 then
+		if amk_utils_inventory_search("vodka", 10) then
             actor:give_info_portion("flamethrower_quest_vodka")
 		else
             actor:disable_info_portion("flamethrower_quest_vodka")
@@ -298,13 +290,13 @@ end
 
 
 function start_work(first_speaker, second_speaker)
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	amk.save_variable("flame_start", gtime)
 	clear_parts(first_speaker, second_speaker)
 end
 
 function is_ready(first_speaker, second_speaker)
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	local ftime = amk.load_variable("flame_start", gtime)
 	if (gtime - ftime) >= 60*24 then
 		return true
@@ -314,7 +306,7 @@ function is_ready(first_speaker, second_speaker)
 end
 
 function not_ready(first_speaker, second_speaker)
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	local ftime = amk.load_variable("flame_start", gtime)
 	if (gtime - ftime) >= 60*24 then
 		return false
@@ -339,7 +331,7 @@ function start_reload(first_speaker, second_speaker)
 	dialogs.relocate_money(trader, 2000, "out")
 	dialogs.relocate_item_section(trader, "vodka", "out")	
 	dialogs.relocate_item_section(trader, "wpn_flame", "out")	
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	amk.save_variable("flame_reload", gtime + 30)
 	calc_reload(first_speaker, second_speaker)
 	clear_flame(actor)
@@ -357,14 +349,14 @@ function start_find_and_reload(first_speaker, second_speaker)
 	dialogs.relocate_money(trader, 30000, "out")
 	dialogs.relocate_item_section(trader, "vodka", "out")	
 	dialogs.relocate_item_section(trader, "wpn_flame", "out")	
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
-	amk.save_variable("flame_reload", gtime + math.random(12, 24) * 60)
+	local gtime = amk.game_minutes()
+	amk.save_variable("flame_reload", gtime + math_random(12, 24) * 60)
 	amk.save_variable("flame_reload_count", min_fuel)
 	clear_flame(actor)
 end
 
 function is_reload_ready(first_speaker, second_speaker)
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	local ftime = amk.load_variable("flame_reload", 0)
 	if gtime >= ftime then
 		return true
@@ -374,7 +366,7 @@ function is_reload_ready(first_speaker, second_speaker)
 end
 
 function is_reload_not_ready(first_speaker, second_speaker)
-	local gtime = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()  --time in game minutes
+	local gtime = amk.game_minutes()
 	local ftime = amk.load_variable("flame_reload", 0)
 	if gtime <= ftime then
 		return true
@@ -435,10 +427,8 @@ function calc_reload(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 			if have_a_ballon() and have_a_kanistra() then
-			local cnt_kanistra=0
-			local cnt_ballon=0
-		actor:iterate_inventory(function (dummy, item) if item:section()=="amk_kanistra" then cnt_kanistra=cnt_kanistra+1 end end, nil)
-		actor:iterate_inventory(function (dummy, item) if item:section()=="amk_ballon" then cnt_ballon=cnt_ballon+1 end end, nil)
+			local cnt_kanistra=amk_utils_inventory_count("amk_kanistra")
+			local cnt_ballon=amk_utils_inventory_count("amk_ballon")
 			local mm = math.min(cnt_kanistra, cnt_ballon)
 			if mm == 1 then
 			dialogs.relocate_item_section(trader, "amk_kanistra", "out")
@@ -495,4 +485,14 @@ function set_ammo(first_speaker, second_speaker)
 		end
 	end
 	amk.del_variable("flame_reload_count")
+end
+
+-------------------------------------------------------------------------------
+
+function on_item()
+	have_a_fire_kolobok()
+	have_a_trubki()
+	have_a_manometr()
+	have_a_vodko()
+	have_a_gorelka()
 end

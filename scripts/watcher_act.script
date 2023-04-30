@@ -32,9 +32,10 @@ local disabled_objects={}
 local corpse_checked={} -- true - has loot, false - hasn't loot, nil - not checked
 
 function checkCorpse(obj)
+    local obj_id = obj:id()
 	if (IsStalker(obj) or IsMonster(obj)) and obj:alive()==false then
-		if corpse_checked[obj:id()]~=nil then
-			return corpse_checked[obj:id()]
+		if corpse_checked[obj_id]~=nil then
+			return corpse_checked[obj_id]
 		end
 		local cnt=0
 		obj:iterate_inventory(function (dummy, item)
@@ -42,8 +43,8 @@ function checkCorpse(obj)
           cnt=cnt+1
         end
 			end, nil)
-		corpse_checked[obj:id()]=cnt>0
-		return corpse_checked[obj:id()]
+		corpse_checked[obj_id]=cnt>0
+		return corpse_checked[obj_id]
 	end
 	return false
 end

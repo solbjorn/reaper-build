@@ -5,11 +5,13 @@
 -----------------------------------------------------------------------------------
 local particles={}
 
+local amk_particle_amk_particle = amk_particle.amk_particle
 local callback_hit = callback.hit
 local callback_death = callback.death
 local callback_use_object = callback.use_object
 local callback_patrol_path_in_point = callback.patrol_path_in_point
- 
+local table_insert = table.insert
+
 function bind(obj)
 	local new_binder = generic_object_binder(obj)
 	obj:bind_object(new_binder)
@@ -24,6 +26,7 @@ function generic_object_binder:__init(obj) super(obj)
 	self.last_update = 0
 	self.particles = {}
 	self.is_trader = obj:clsid() == clsid_script_trader
+	self.death_recorded = false
 end 
 
 function generic_object_binder:reload(section)
@@ -50,38 +53,41 @@ end
 function generic_object_binder:update(delta)
 	object_binder.update(self, delta)
 
-		if particles[self.object:id()] and table.getn(particles[self.object:id()])>0 then
-			for kk,vv in pairs(particles[self.object:id()]) do
-				table.insert(self.particles,amk_particle.amk_particle(vv))
-				table.remove(particles[self.object:id()],kk)
-			end
+	local obj_id = self.object:id()
+	if particles[obj_id] and #particles[obj_id] > 0 then
+		for kk,vv in pairs(particles[obj_id]) do
+			table_insert(self.particles,amk_particle_amk_particle(vv))
+			table.remove(particles[obj_id],kk)
 		end
-		
-		if table.getn(self.particles)>0 then
-			for kk,vv in pairs(self.particles) do
-				if vv:is_finished() then
-					self.particles[kk]=nil
-				else
-					vv:update(delta)
-					if vv.give_dmg and vv.target then
-						if vv:get_pos():distance_to(vv.target:bone_position("bip01_spine"))<1 then
-							local h = hit()
-							h.impulse = 0
-							h.draftsman = vv.target
-							h.direction = vv.dir
-							h:bone("bip01_spine") 
-							h.power = math.random(10,50)/100
-							h.type = hit.strike 
-							vv.target:hit(h)
-							h.power = math.random(10,50)/100
-							h.type = hit.chemical_burn
-							vv.target:hit(h)
-							vv:stop()
-						end
+	end
+	
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			if vv:is_finished() then
+				self.particles[kk]=nil
+			else
+				vv:update(delta)
+				if vv.give_dmg and vv.target then
+					if vv:get_pos():distance_to(vv.target:bone_position("bip01_spine"))<1 then
+						local h = hit()
+						h.impulse = 0
+						h.draftsman = vv.target
+						h.direction = vv.dir
+						h:bone("bip01_spine") -- чтобы учитывалась броня
+						h.power = math.random(10,50)/100
+						h.type = hit.strike --chemical_burn
+						vv.target:hit(h)
+						h.power = math.random(10,50)/100
+						h.type = hit.chemical_burn
+						vv.target:hit(h)
+						vv:stop()
 					end
 				end
 			end
 		end
+	end
+
+	if self.death_recorded then return end
 
 	-- Апдейт торговли
 	if self.is_trader then
@@ -96,6 +102,7 @@ function generic_object_binder:update(delta)
 		end
 	else
 		self.object:set_tip_text_default()
+		self.death_recorded = true
 	end
 
     self:anomaly_evade()
@@ -104,7 +111,6 @@ function generic_object_binder:update(delta)
 	local is_fake = string.find(act_scheme, "mob_fake_death") or false
 	
 	if self.chtime<time_global() then
-	
 		self.chtime=time_global()+2000
 		if self.object:clsid()==clsid.controller_s and self.object:alive() then
 			amk.mylog("zombifying")
@@ -131,7 +137,7 @@ function generic_object_binder:update(delta)
 		end
 
 -- TAG Кровосос при атаке при приближении менее чем на 7м с 20% вероятностью выбивает оружие (кроме ножа) из рук ГГ.
-            if (self.object:clsid()==clsid.dog_s or self.object:clsid()==clsid.bloodsucker_s) and self.object:alive() and self.object.health>0.05 then
+            if (self.object:clsid()==clsid.dog_s or self.object:clsid()==clsid_bloodsucker_s) and self.object:alive() and self.object.health>0.05 then
 		    local npc=self.object:get_enemy()
 		    if npc then
 			if npc:id()==db_actor_id and db_actor:see(self.object) and self.object:see(db_actor) and math.random()<0.2 then
@@ -196,18 +202,13 @@ function generic_object_binder:update(delta)
 	elseif self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
 	end
-	
-	
-	--AMK UTILS--
-	amk_utils.monster_update(delta)
-	--AMK UTILS--
-	
+
 	sa_callbacks.monster_update(self.object)
 end
 
 function generic_object_binder:anomaly_evade()
 	local npc=self.object
-	if npc:story_id()==29 then return end 
+	if npc:story_id()==29 then return end -- учебная плоть блин
 	if not self.prev_pos then
 		self.prev_pos=vector():set(0,-100,0)
 	end
@@ -224,10 +225,7 @@ function generic_object_binder:anomaly_evade()
 end
 
 function generic_object_binder:extrapolate_callback()
-	if (self.object == nil) then
-		return false
-	end
-	if self.object:get_script() == false then
+	if not self.object or self.object:get_script() == false then
 		return false
 	end
 
@@ -244,21 +242,29 @@ function generic_object_binder:death_callback(victim, who)
 	if (self.object == nil) then
 		return
 	end
+
 	if who:id() == db_actor_id then
 		xr_statistic.addKillCount(self.object)
 		xr_statistic_freeplay.get_freeplay_statistic():check_monster_killed_count(self.object)
+		
+		-------------------------------------------------------------
 		if arc_main then
 			arc_main.on_monster_kill(victim,who)
 		end
+		-----------------------------------------------------------
 	end
+
 	if self.st.mob_death then
 		xr_logic.issue_event(self.object, self.st.mob_death, "death_callback", victim, who)
 	end
+
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
+
 	smart_terrain.on_death( self.object:id() )
-	
+
+	--' Наносим небольшой импульс вперед.
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
@@ -290,8 +296,8 @@ function generic_object_binder:death_callback(victim, who)
 	
 	--AMK UTILS--
 	amk.on_death(victim, who)
-	amk_utils.monster_death(victim, who)
 	--AMK UTILS--
+
 	smart_monster_parts.death_spawn(victim)
 end
 
@@ -315,12 +321,14 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 		h.direction = vector():set(0,-1,0)
 		obj:hit(h)    
 	end
+
+  -- added by xStream for AMK miniSDK
 	amk.on_monster_hit(obj, amount, local_direction, who, bone_index)
+  -- end of addition
 
 -- TAG коррекция э-химеры
 	if obj:section()=="electro_chimera" and time_global()>(self.charge_time or 0) then
-
-	amk_particle.amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
+	amk_particle_amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
 
 	local dist = db_actor:position():distance_to(obj:bone_position("bip01_spine"))
         local tag_weather = amk.load_variable("dynweather","?")                        
@@ -373,8 +381,6 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
         if hitobj and _g.IsStalker(hitobj) and hitobj:id() ~= db_actor_id then
            dist = hitobj:position():distance_to(self.object:bone_position("bip01_spine"))
            if dist<20 then
---              hit_sound = string.format("characters_voice\\human_01\\military\\fight\\hit\\hit_%d",math.random(1,5))                                         
---              amk_particle.amk_particle({particle="damage_fx\\body_sparks00",pos=hitobj:bone_position("bip01_spine"),sound=hit_sound})
                 local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
                 if  rnd>3 then rnd=rnd+2 end
                 local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd))
@@ -415,10 +421,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
         end -- next blast  
     end -- "electro_chimera"
 --TAG : end
-	
-	--AMK UTILS--
-	amk_utils.monster_hit(obj, amount, local_direction, who, bone_index)
-	--AMK UTILS--
+
 	smart_monster_parts.main_check(obj, amount, local_direction, who, bone_index)
 end
 
@@ -428,7 +431,11 @@ function generic_object_binder:net_spawn(sobject)
 	end
 
 	db.add_obj(self.object)
+	-- регистрация в схеме биорадара
+	biodetector.add_obj(self.object)
+
 	xr_gulag.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded )
+
 	amk.on_net_spawn(self.object)
 
 	local particle_param = utils.cfg_get_string(system_ini(), self.object:section(), "bones_particles", null, false, false, nil)
@@ -442,11 +449,12 @@ function generic_object_binder:net_spawn(sobject)
 			end
 		end
 	end
+
 	return true
 end
 
 function generic_object_binder:net_destroy()
-	if table.getn(self.particles)>0 then
+	if #self.particles > 0 then
 		for kk,vv in pairs(self.particles) do
 			if not vv:is_finished() then
 				vv:stop()
@@ -455,6 +463,7 @@ function generic_object_binder:net_destroy()
 		end
 	end
 	amk.on_monster_go_offline(self.object)
+
 	self.object:set_callback(callback_death,				nil)
 	self.object:set_callback(callback_patrol_path_in_point, nil)
 	self.object:set_callback(callback_hit,					nil)
@@ -468,16 +477,19 @@ function generic_object_binder:net_destroy()
 	db.del_obj(self.object)
 	db.storage[self.object:id()] = nil
 
+	-- отрегистрация в схеме биорадара
+	biodetector.remove_obj(self.object)
+
 	-- АМК. Очистка рестрикторов
 	local id=self.object:id()
+
 	object_binder.net_destroy(self)
+
 	local sobj=alife():object(id)
 	if sobj and IsMonster(sobj) then
 		local tbl=amk.read_monster_params(sobj)
 		tbl.crvu32u16u2={}
 		amk.write_monster_params(tbl,sobj)
-	else
-		-- Выход из игры.
 	end	
 end 
 
@@ -487,6 +499,7 @@ end
 
 function generic_object_binder:save(packet)
 	object_binder.save(self, packet)
+
 	xr_logic.save_obj(self.object, packet)
 	if self.is_trader then
 		trade_manager.save(self.object, packet)
@@ -495,10 +508,14 @@ end
 
 function generic_object_binder:load(reader)
 	self.loaded = true
+
 	object_binder.load(self, reader)
+
 	if reader:r_eof() then
-		abort("SAVE FILE IS CORRUPT "..self.object:name())
+		abort("bind_monster.script, generic_object_binder:load(): - SAVE FILE IS CORRUPT")
+		return
 	end
+
 	xr_logic.load_obj(self.object, reader)
 	if self.is_trader then
 		trade_manager.load(self.object, reader)
@@ -506,8 +523,9 @@ function generic_object_binder:load(reader)
 end
 
 function play_particle(obj,params)
-	if not particles[obj:id()] then
-		particles[obj:id()]={}
+	local obj_id = obj:id()
+	if not particles[obj_id] then
+		particles[obj_id] = { }
 	end
-	table.insert(particles[obj:id()],params)
+	table_insert(particles[obj_id], params)
 end

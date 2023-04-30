@@ -3,9 +3,6 @@ Respawner. Схема обновления популяции всего всего всего в симуляции.
 by Stohe (Диденко Руслан)
 --------------------------------------------------------------------------------------------------------------------]]
 
---function printf()
---end
-
 local section_name = "respawn"
 local i,k,v = 0,0,0
 
@@ -419,13 +416,16 @@ function get_respawner_by_parent(parent_id)
 end
 
 function create_ammo(section, position, lvi, gvi, pid, num)
-  local num_in_box = system_ini():r_u32(section, "box_size")
+	local num_in_box = read_line(section, "box_size")
+	local sim = alife()
 
-  while num > num_in_box do
-    alife():create_ammo(section, position, lvi, gvi, pid, num_in_box)
-    num = num - num_in_box
-  end
-  alife():create_ammo(section, position, lvi, gvi, pid, num)
+	while num > num_in_box do
+		sim:create_ammo(section, position, lvi, gvi, pid, num_in_box)
+		num = num - num_in_box
+	end
+	if num > 0 then
+		sim:create_ammo(section, position, lvi, gvi, pid, num)
+	end
 end
 
 local amk_respawner_control={}

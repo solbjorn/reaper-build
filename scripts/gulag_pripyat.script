@@ -123,215 +123,139 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.pri_followers.job = function(sj, gname, type, squad, groups)
+	local table_concat = table.concat
 	local t
-    local i, v, j = 0, 0, 0
-    local ltx = "[meet@ignore_abuse]\n" ..
-                "use             = false\n" ..
-                "use_wpn         = false\n" ..
-                "abuse           = false\n" ..
+	local ltx = "#include \"misc\\gulag_pripyat.ltx\"\n"
 
-                "[wounded@ignore]\n" ..
-                "hp_state        = 0|wounded_heavy@help_heavy\n" ..
-                "hp_state_see    = 0|wounded_heavy@help_heavy\n" ..
-                "hp_victim       = 0|nil\n" ..
-                "hp_fight        = 0|false\n" ..
-                "hp_cover        = 0|false\n" ..
+	local followers = {"leader", "bomber", "nap1", "nap2", "nap3"}
 
-                "#include \"misc\\gulag_pripyat.ltx\"\n"
+	local states_str = {"wait", "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8"}
 
-    -- gulag members
-    local followers = {"leader", "bomber", "nap1", "nap2", "nap3"}
+	local states = {state_wait, state_wave1, state_wave2, state_wave3, state_wave4, state_wave5, state_wave6, state_wave7, state_wave8}
 
-    -- states name
-    local states_str = {"wait", "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8"}
+	local restr = {"",                              "pri_followers_wave1_out_restr", "pri_followers_wave2_out_restr",
+				   "pri_followers_wave3_out_restr", "pri_followers_wave4_out_restr", "pri_followers_wave5_out_restr",
+				   "pri_followers_wave6_out_restr", "pri_followers_wave7_out_restr", "pri_followers_wave7_out_restr"}
 
-    -- states num
-    local states = {state_wait, state_wave1, state_wave2, state_wave3, state_wave4, state_wave5, state_wave6, state_wave7, state_wave8}
+	local prior = {{2, 2, 2, 2, 2, 2, 2, 2, 3}, -- leader
+					{3, 3, 3, 3, 3, 3, 3, 3, 2}, -- bomber
+					{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap1
+					{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap2
+					{1, 1, 1, 1, 1, 1, 1, 1, 1}  -- nap3
+				}
 
-    -- out restrictors for the each state
-    local restr = {"",                              "pri_followers_wave1_out_restr", "pri_followers_wave2_out_restr",
-                   "pri_followers_wave3_out_restr", "pri_followers_wave4_out_restr", "pri_followers_wave5_out_restr",
-                   "pri_followers_wave6_out_restr", "pri_followers_wave7_out_restr", "pri_followers_wave7_out_restr"}
+	local pr, pd
+	for i, v in pairs(followers) do
+		pr = prior[i]
+		for j = 1, 9 do
+			t = { section = table_concat({"logic@pri_followers_", v, "_", states_str[j]}),
+				idle = 0,
+				prior = pr[j], state = { states[j] },
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = restr[j],
+				position_threshold = 100,
+				online = true,
+				idle_after_death = 50,
+				predicate = f_predicate --pd
+			}
+			sj[#sj+1] = t
+		end
+	end
 
-    -- priorities
-    local prior = {{2, 2, 2, 2, 2, 2, 2, 2, 3}, -- leader
-                   {3, 3, 3, 3, 3, 3, 3, 3, 2}, -- bomber
-                   {1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap1
-                   {1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap2
-                   {1, 1, 1, 1, 1, 1, 1, 1, 1}  -- nap3
-                  }
-    local pred = {f_predicate, f_predicate, f_predicate, f_predicate, f_predicate}
+	local res_t
+	for i = 1, 3 do
+		-- задаем стандартные этапы
+		for j, v in pairs({1, 2, 4, 5, 6}) do
+			--- NAP: WAVE<j> --------------------------------------------------------------------------------
+			res_t = {
+				"[logic@pri_followers_nap",i,"_wave",
+				v,"]\nactive = walker@pri_followers_nap",i,"_wave",
+				v,"_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-    local pr, pd
-    for i, v in pairs(followers) do
-        pr = prior[i]
-        pd = pred[i]
-        for j = 1, 9 do
-            t = { section = "logic@" .. gname .. "_" .. v .. "_" .. states_str[j],
-                idle = 0,
-                prior = pr[j], state = { states[j] },
-                squad = squad, group = groups[1],
-                in_rest = "", out_rest = restr[j],
-                position_threshold = 100,
-                online = true,
-                idle_after_death = 50,
-                predicate = pd
-            }
-            sj[#sj+1] = t
-        end
-    end
+				"[walker@pri_followers_nap",i,"_wave",
+				v,"_wait]\npath_walk = wave",v,"_stalker",
+				i,"_syn_walk\npath_look = wave",v,"_stalker",
+				i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",i,"_wave",
+				v,"\non_info = {+pri_wave",v,"_start} walker@pri_followers_nap",i,"_wave",
+				v,"\ndanger = danger@ignore\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n",
 
-    for i = 1, 3 do
-        local pref = gname .. "_nap" .. i
+				"[walker@pri_followers_nap",i,"_wave",
+				v,"]\npath_walk = wave",v,"_stalker",
+				i,"_walk\npath_look = wave",v,"_stalker",
+				i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave",v,"_start} %+pri_wave",
+				v,"_start%\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n" } --meet@def
+			ltx = ltx .. table_concat(res_t)
+		end
         
-        -- задаем стандартные этапы
-        for j, v in pairs({1, 2, 4, 5, 6}) do
-                       --- NAP: WAVE<j> --------------------------------------------------------------------------------
-            ltx = ltx.. "[logic@" .. pref .. "_wave" .. v .. "]\n" ..
-                        "active              = walker@" .. pref .. "_wave" .. v .. "_wait\n" ..
-                        "on_hit              = followers_hit\n" ..
-                        "on_death            = followers_death\n" ..
+		-- нестандартные этапы
+		--- NAP: KAMP ----------------------------------------------------------------------------------
+		res_t = {
+			"[logic@pri_followers_nap",
+			i,"_wait]\nactive = remark@pri_followers_nap",
+			i,"_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-                        -- синхронизация в начале этапа
-                        "[walker@" .. pref .. "_wave" .. v .. "_wait]\n" ..
-                        "path_walk           = wave" .. v .. "_stalker" .. i .. "_syn_walk\n" ..
-                        "path_look           = wave" .. v .. "_stalker" .. i .. "_syn_look\n" ..
-                        "def_state_moving1   = assault\n" ..
-                        "def_state_moving2   = assault\n" ..
-                        "team                = followers\n" ..
-                        "on_signal           = syn | walker@" .. pref .. "_wave" .. v .. "\n" ..
-                        "on_info             = {+pri_wave" .. v .. "_start} walker@" .. pref .. "_wave" .. v .. "\n" ..
-                        "danger              = danger@ignore\n" ..
-                        "wounded             = wounded@ignore\n" ..
-						"soundgroup			 = pri_followers_soundgroup\n" ..
-                        "meet                = no_meet\n" .. --meet@def
+			"[remark@pri_followers_nap",
+			i,"_wait]\npath_walk = wait_stalker",
+			i,"_walk\nanim = guard\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\non_info = {+pri_followers_leader_phrase1_end} remark@pri_followers_nap",
+			i,"_wait_na\n",
 
-                        -- бежим
-                        "[walker@" .. pref .. "_wave" .. v .. "]\n" ..
-                        "path_walk           = wave" .. v .. "_stalker" .. i .. "_walk\n" ..
-                        "path_look           = wave" .. v .. "_stalker" .. i .. "_look\n" ..
-                        "def_state_moving1   = assault\n" ..
-                        "def_state_moving2   = assault\n" ..
-                        "on_signal           = arrived | {-pri_wave" .. v .. "_start} %+pri_wave" .. v .. "_start%\n" ..
-                        "wounded             = wounded@ignore\n" ..
-						"soundgroup			 = pri_followers_soundgroup\n" ..
-                        "meet                = no_meet\n" --meet@def
-        end
-        
-        -- нестандартные этапы
-                    --- NAP: KAMP ----------------------------------------------------------------------------------
-        ltx = ltx.. "[logic@" .. pref .. "_wait]\n" ..
-                    "active              = remark@" .. pref .. "_wait\n" ..
-                    --"combat_ignore       = combat_ignore\n" ..
-                    "on_hit              = followers_hit\n" ..
-                    "on_death            = followers_death\n" ..
+			"[remark@pri_followers_nap",
+			i,"_wait_na]\npath_walk = wait_stalker",
+			i,"_walk\nanim = guard_na\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\n",
 
-                    "[remark@" .. pref .. "_wait]\n" ..
-                    "path_walk           = wait_stalker" .. i .. "_walk\n" ..
-                    "anim                = guard\n" ..
-                    "target              = logic@pri_followers_leader_wait\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-                    "danger              = danger@ignore\n" ..
-                    "on_info             = {+pri_followers_leader_phrase1_end} remark@" .. pref .. "_wait_na\n" ..
+			--- NAP: WAVE3 (БТР) --------------------------------------------------------------------------
+			"[logic@pri_followers_nap",
+			i,"_wave3]\nactive = walker@pri_followers_nap",
+			i,"_wave3_wait\ncombat_ignore = combat_ignore\non_hit = followers_hit\non_death = followers_death\n",
 
-                    "[remark@" .. pref .. "_wait_na]\n" ..
-                    "path_walk           = wait_stalker" .. i .. "_walk\n" ..
-                    "anim                = guard_na\n" ..
-                    "target              = logic@pri_followers_leader_wait\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-                    "danger              = danger@ignore\n" ..
+			"[walker@pri_followers_nap",
+			i,"_wave3_wait]\npath_walk = wave3_stalker",
+			i,"_syn_walk\npath_look = wave3_stalker",
+			i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",
+			i,"_wave3 %+pri_wave3_start%\non_info = {+pri_wave3_start} walker@pri_followers_nap",
+			i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-                    --- NAP: WAVE3 (БТР) --------------------------------------------------------------------------
-                    "[logic@" .. pref .. "_wave3]\n" ..
-                    "active              = walker@" .. pref .. "_wave3_wait\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-                    "on_hit              = followers_hit\n" ..
-                    "on_death            = followers_death\n" ..
+			"[walker@pri_followers_nap",
+			i,"_wave3]\npath_walk = wave3_stalker",
+			i,"_walk\npath_look = wave3_stalker",
+			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_timer = ", 
+			math.random(30, 40), "00 | remark@pri_followers_nap",
+			i,"_wave3_fight\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-                    "[walker@" .. pref .. "_wave3_wait]\n" ..
-                    "path_walk           = wave3_stalker" .. i .. "_syn_walk\n" ..
-                    "path_look           = wave3_stalker" .. i .. "_syn_look\n" ..
-                    "def_state_moving1   = assault\n" ..
-                    "def_state_moving2   = assault\n" ..
-                    "team                = followers\n" ..
-                    "on_signal           = syn | walker@" .. pref .. "_wave3 %+pri_wave3_start%\n" ..
-                    "on_info             = {+pri_wave3_start} walker@" .. pref .. "_wave3\n" ..
-                    "wounded             = wounded@ignore\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-					"soundgroup			 = pri_followers_soundgroup\n" ..
-                    "danger              = danger@ignore\n" ..
-                    "combat_ignore_cond  = {!fighting_actor}\n" ..
+			"[remark@pri_followers_nap",
+			i,"_wave3_fight]\nanim = threat_fire\ntarget = 807\non_timer = ", 
+			math.random(47, 55), "00 | walker@pri_followers_nap",
+			i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-                    "[walker@" .. pref .. "_wave3]\n" ..
-                    "path_walk           = wave3_stalker" .. i .. "_walk\n" ..
-                    "path_look           = wave3_stalker" .. i .. "_look\n" ..
-                    "def_state_moving1   = assault ;sprint\n" ..
-                    "def_state_moving2   = assault ;sprint\n" ..
-                    "on_timer            = " .. math.random(30, 40) .. "00 | remark@" .. pref .. "_wave3_fight\n" .. -- 30
-                    "wounded             = wounded@ignore\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-					"soundgroup			 = pri_followers_soundgroup\n" ..
-                    "danger              = danger@ignore\n" ..
-                    "combat_ignore_cond  = {!fighting_actor}\n" ..
+			--- NAP: WAVE7 (перед подземкой) ---------------------------------------------------------------
+			"[logic@pri_followers_nap",
+			i,"_wave7]\nactive = walker@pri_followers_nap",
+			i,"_wave7_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-                    "[remark@" .. pref .. "_wave3_fight]\n" ..
-                    "anim                = threat_fire\n" ..
-                    "target              = 807\n" ..
-                    "on_timer            = " .. math.random(47, 55) .. "00 | walker@" .. pref .. "_wave3\n" .. -- 50
-                    "wounded             = wounded@ignore\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-                    "danger              = danger@ignore\n" ..
-                    "combat_ignore_cond  = {!fighting_actor}\n" ..
+			"[walker@pri_followers_nap",
+			i,"_wave7_wait]\npath_walk = wave7_stalker",
+			i,"_syn_walk\npath_look = wave7_stalker",
+			i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_info = {+pri_wave7_leader_phrase_end} walker@pri_followers_nap",
+			i,"_wave7\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
 
-                    --- NAP: WAVE7 (перед подземкой) ---------------------------------------------------------------
-                    "[logic@" .. pref .. "_wave7]\n" ..
-                    "active              = walker@" .. pref .. "_wave7_wait\n" ..
-                    --"combat_ignore       = combat_ignore\n" ..
-                    "on_hit              = followers_hit\n" ..
-                    "on_death            = followers_death\n" ..
+			"[walker@pri_followers_nap",
+			i,"_wave7]\npath_walk = wave7_stalker",
+			i,"_walk\npath_look = wave7_stalker",
+			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave7_start} %+pri_wave7_start%\non_info = {-pri_wave7_sound_start =pri_follower_see_ambush} %+pri_wave7_sound_start%\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
 
-                    "[walker@" .. pref .. "_wave7_wait]\n" ..
-                    "path_walk           = wave7_stalker" .. i .. "_syn_walk\n" ..
-                    "path_look           = wave7_stalker" .. i .. "_syn_look\n" ..
-                    "def_state_moving1   = assault\n" ..
-                    "def_state_moving2   = assault\n" ..
-                    "team                = followers\n" ..
-                    "on_info             = {+pri_wave7_leader_phrase_end} walker@" .. pref .. "_wave7\n" ..
-                    "wounded             = wounded@ignore\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-					"soundgroup			 = pri_followers_soundgroup\n" ..
-                    "danger              = danger@ignore\n" ..
+			--- NAP: WAVE8 ------------------------------------------------------------------------------
+			"[logic@pri_followers_nap",
+			i,"_wave8]\nactive = walker@pri_followers_nap",
+			i,"_wave8_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-                    "[walker@" .. pref .. "_wave7]\n" ..
-                    "path_walk           = wave7_stalker" .. i .. "_walk\n" ..
-                    "path_look           = wave7_stalker" .. i .. "_look\n" ..
-                    "def_state_moving1   = assault\n" ..
-                    "def_state_moving2   = assault\n" ..
-                    "on_signal           = arrived | {-pri_wave7_start} %+pri_wave7_start%\n" ..
-                    "on_info			 = {-pri_wave7_sound_start =pri_follower_see_ambush} %+pri_wave7_sound_start%"..
-                    "wounded             = wounded@ignore\n" ..
-                    "meet                = no_meet\n" .. --meet@def
-					"soundgroup			 = pri_followers_soundgroup\n" ..
-                    "danger              = danger@ignore\n" ..
-                    --"combat_ignore_cond  = {-pri_wave7_start}\n" ..
+			"[walker@pri_followers_nap",
+			i,"_wave8_wait]\npath_walk = wave8_stalker",
+			i,"_walk\npath_look = wave8_stalker",
+			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n" } --meet@def
+		ltx = ltx .. table_concat(res_t)
+	end
 
-                    --- NAP: WAVE8 ------------------------------------------------------------------------------
-                    "[logic@" .. pref .. "_wave8]\n" ..
-                    "active              = walker@" .. pref .. "_wave8_wait\n" ..
-                    "on_hit              = followers_hit\n" ..
-                    "on_death            = followers_death\n" ..
-
-                    "[walker@" .. pref .. "_wave8_wait]\n" ..
-                    "path_walk           = wave8_stalker" .. i .. "_walk\n" ..
-                    "path_look           = wave8_stalker" .. i .. "_look\n" ..
-                    "def_state_moving1   = assault\n" ..
-                    "def_state_moving2   = assault\n" ..
-					"wounded             = wounded@ignore\n" ..
-					"soundgroup			 = pri_followers_soundgroup\n" ..
-                    "meet                = no_meet\n" --meet@def
-    end
-
-    gulags.pri_followers.ltx = ltx
+	gulags.pri_followers.ltx = ltx
 end
 
 -- States ----------------------------------------------------------------
@@ -438,9 +362,9 @@ gulags.pri_followers.state = function(gulag)
 			    end
 		    end
 	    end
-	    if actor_leave then
-	        actor:give_info_portion("pri_followers_actor_leave")
-	    end
+		if actor_leave and actor:alive() then
+			actor:give_info_portion("pri_followers_actor_leave")
+		end
 	end
 
     -- переключение состояния гулага через массив функций состояний
@@ -455,44 +379,46 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.pri_ambush7.job = function(sj, gname, type, squad, groups)
+	local table_concat = table.concat
 	local t
-    local i, ltx = 0, ""
-    for i = 1, 7 do
-        --- state 0
-        t = { section = "logic@" .. gname .. "_monolith" .. i .. "_hide", 
-            idle = 0,
-            prior = 1, state = {0}, squad = squad, group = groups[1],
-            in_rest = "", out_rest = gname .. "_out_restr"
-        }
-        sj[#sj+1] = t
-        --- state 1
-        t = { section = "logic@" .. gname .. "_monolith" .. i, 
-            idle = 0,
-            prior = 1, state = {1}, squad = squad, group = groups[1],
-            in_rest = "", out_rest = gname .. "_out_restr"
-        }
-        sj[#sj+1] = t
+	local ltx = ""
+	local res_t
+	for i = 1, 7 do
+		t = { section = table_concat({"logic@pri_ambush7_monolith",i,"_hide"}), 
+			idle = 0,
+			prior = 1, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "pri_ambush7_out_restr"
+		}
+		sj[#sj+1] = t
+		t = { section = table_concat({"logic@pri_ambush7_monolith",i}),
+			idle = 0,
+			prior = 1, state = {1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "pri_ambush7_out_restr"
+		}
+		sj[#sj+1] = t
 
-        ltx = ltx.."[logic@" .. gname .. "_monolith" .. i .. "_hide]\n" ..
-                   "active              = walker@" .. gname .. "_monolith" .. i .. "_hide\n" ..
-                   "combat_ignore       = combat_ignore\n" ..
+		res_t = {
+			"[logic@pri_ambush7_monolith",
+			i,"_hide]\nactive = walker@pri_ambush7_monolith",
+			i,"_hide\ncombat_ignore = combat_ignore\n",
 
-                   "[walker@" .. gname .. "_monolith" .. i .. "_hide]\n" ..
-                   "path_walk           = monolith" .. i .. "_hide_walk\n" ..
-                   "path_look           = monolith" .. i .. "_hide_look\n" ..
-                   "combat_ignore_cond  = always\n" ..
-                   "show_spot           = false\n" ..
+			"[walker@pri_ambush7_monolith",
+			i,"_hide]\npath_walk = monolith",
+			i,"_hide_walk\npath_look = monolith",
+			i,"_hide_look\ncombat_ignore_cond  = always\nshow_spot = false\n",
 
-                   "[logic@" .. gname .. "_monolith" .. i .. "]\n" ..
-                   "active              = walker@" .. gname .. "_monolith" .. i .. "\n" ..
+			"[logic@pri_ambush7_monolith",
+			i,"]\nactive = walker@pri_ambush7_monolith",
+			i,"\n",
 
-                   "[walker@" .. gname .. "_monolith" .. i .. "]\n" ..
-                   "path_walk           = monolith" .. i .. "_walk\n" ..
-                   "path_look           = monolith" .. i .. "_look\n" --..
-                   --"show_spot           = false\n"
-    end
+			"[walker@pri_ambush7_monolith",
+			i,"]\npath_walk = monolith",
+			i,"_walk\npath_look = monolith",
+			i,"_look\n" } --,
+		ltx = ltx .. table_concat(res_t)
+	end
 
-    gulags.pri_ambush7.ltx = ltx
+	gulags.pri_ambush7.ltx = ltx
 end
 
 -- States ----------------------------------------------------------------
@@ -836,32 +762,31 @@ end
 -- Jobs ------------------------------------------------------------------
 gulags.pri_corner.job = function(sj, gname, type, squad, groups)
 	local t
-    local ltx, i = "", 0
+	local ltx = ""
+	local res_t
+	local table_concat = table.concat
 
-    for i = 1, 3 do
-        t = { section = "logic@" .. gname .. "_monolith" .. i , 
-            idle = 0,
-            prior = 1, state = {0}, squad = squad, group = groups[1],
-            in_rest = "", out_rest = ""
-        }
-        sj[#sj+1] = t
+	for i = 1, 3 do
+		t = { section = table_concat({"logic@pri_corner_monolith", i }),
+			idle = 0,
+			prior = 1, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		sj[#sj+1] = t
+		res_t = {
+			"[logic@pri_corner_monolith", 
+			i, "]\nactive = camper@pri_corner_monolith", 
+			i, "_guard\ncombat_ignore = combat_ignore\n",
 
-        ltx = ltx.."[logic@" .. gname .. "_monolith" .. i .. "]\n" ..
-                   "active              = camper@" .. gname .. "_monolith" .. i .. "_guard\n" ..
-                   "combat_ignore       = combat_ignore\n" ..
+			"[camper@pri_corner_monolith", 
+			i, "_guard]\npath_walk = guard_", 
+			i, "_walk\npath_look = guard_", 
+			i, "_look\nradius = 20\non_info = {+pri_corner_start} patrol@pri_corner_monolith_raid\ncombat_ignore_cond = always\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
 
-                   "[camper@" .. gname .. "_monolith" .. i .. "_guard]\n" ..
-                   "path_walk           = guard_" .. i .. "_walk\n" ..
-                   "path_look           = guard_" .. i .. "_look\n" ..
-                   "radius              = 20\n" ..
-                   "on_info             = {+pri_corner_start} patrol@" .. gname .. "_monolith_raid\n" ..
-                   "combat_ignore_cond  = always\n"
-    end
-
-    gulags.pri_corner.ltx = ltx.."[patrol@" .. gname .. "_monolith_raid]\n" ..
-                                 "path_walk = raid_walk\n" ..
-                                 "path_look = raid_look\n" ..
-                                 "on_signal = arrived | %+pri_corner_end%\n" 
+	gulags.pri_corner.ltx = ltx .. 
+		"[patrol@pri_corner_monolith_raid]\npath_walk = raid_walk\npath_look = raid_look\non_signal = arrived | %+pri_corner_end%\n"
 end
 
 
@@ -959,7 +884,9 @@ function m_predicate_e(npc_info)
 end
 
 function m_predicate_s_sniper(npc_info)
-    return npc_info.profile_name == "pri_monolith_specnaz" and npc_info.is_sniper_name == true
+	if npc_info.profile_name ~= "pri_monolith_specnaz" then return false end
+	if npc_info.is_sniper_name == nil then npc_info.is_sniper_name = string.find(npc_info.name, "sniper") ~= nil end
+	return npc_info.is_sniper_name
 end
 
 function m_predicate_e_rpg(npc_info)
@@ -968,318 +895,286 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.pri_monolith.job = function(sj, gname, type, squad, groups)
-    local i, j, v = 0, 0, 0
-    local prior, pred = 0, 0
-    local state1_kamp, state1_restr = 0, 0
-    local ltx = ""
-    local in_r = "" --"pri_snork_nest2_big_restr" --pri_snork_nest1_big_restr
+	local table_concat = table.concat
+	local prior, pred
+	local state1_kamp, state1_restr
+	local in_r = "" --"pri_snork_nest2_big_restr" --pri_snork_nest1_big_restr
+	local res_t = {
+		"[danger@monolith]\nignore_distance_sound = 150\n",
 
-    ltx = "[danger@monolith]\n" ..
-          "ignore_distance_sound = 150\n" ..
+		-- кемп в гостиннице при атаке
+		"[logic@pri_monolith_fight_in_hotel]\nactive = kamp@pri_monolith_fight_in_hotel\ncombat_ignore = combat_ignore\n",
 
-          -- кемп в гостиннице при атаке
-          "[logic@" .. gname .. "_fight_in_hotel]\n" ..
-          "active              = kamp@" .. gname .. "_fight_in_hotel\n" ..
-          "combat_ignore       = combat_ignore\n" ..
+		"[kamp@pri_monolith_fight_in_hotel]\ncenter_point = kamp6\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
 
-          "[kamp@" .. gname .. "_fight_in_hotel]\n" ..
-          "center_point        = kamp6\n" ..
-          "def_state_moving    = assault\n" ..
-          "danger              = danger@monolith\n" ..
-          "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n" ..
+		-- кемп в "Колосе" при атаке
+		"[logic@pri_monolith_fight_in_kolos]\nactive = kamp@pri_monolith_fight_in_kolos\ncombat_ignore = combat_ignore\n",
 
-          -- кемп в "Колосе" при атаке
-          "[logic@" .. gname .. "_fight_in_kolos]\n" ..
-          "active              = kamp@" .. gname .. "_fight_in_kolos\n" ..
-          "combat_ignore       = combat_ignore\n" ..
+		"[kamp@pri_monolith_fight_in_kolos]\ncenter_point = kamp4\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
 
-          "[kamp@" .. gname .. "_fight_in_kolos]\n" ..
-          "center_point        = kamp4\n" ..
-          "def_state_moving    = assault\n" ..
-          "danger              = danger@monolith\n" ..
-          "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
+		"[logic@pri_monolith_leader]\nactive = walker@pri_monolith_leader\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
 
-    -- leader
-    local t = { section = "logic@" .. gname .. "_leader", 
-        idle = 0,
-        prior = 15, state = {0},
-        squad = squad, group = groups[1],
-        in_rest = in_r, out_rest = gname .. "_leader_restr",
-        online = "{+pri_monolith_spawn2}",
-        predicate = m_predicate_l
-    }
+		"[death@pri_monolith_leader]\non_info = %+sar2_death_55%\n",
+
+		"[walker@pri_monolith_leader]\npath_walk = leader_walk\npath_look = leader_look\ndanger = danger@monolith\ncombat_ignore_cond  = {=pri_monolith_combat_ignore}\n",
+
+		"[logic@pri_monolith_leader_attack]\nactive = camper@pri_monolith_leader_attack\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
+
+		"[camper@pri_monolith_leader_attack]\npath_walk = leader_attack_walk\npath_look = leader_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+
+		"[hit@altar_monolith]\non_info = %+pri_monolith_base_attack_altar_zone%\n" }
+
+	local ltx = table_concat(res_t)
+
+	-- leader
+	local t = { section = "logic@pri_monolith_leader", 
+		idle = 0,
+		prior = 15, state = {0},
+		squad = squad, group = groups[1],
+		in_rest = in_r, out_rest = "pri_monolith_leader_restr",
+		online = "{+pri_monolith_spawn2}",
+		predicate = m_predicate_l
+	}
 	sj[#sj+1] = t
 
-    ltx = ltx.. "[logic@" .. gname .. "_leader]\n" ..
-                "active              = walker@" .. gname .. "_leader\n" ..
-                "combat_ignore       = combat_ignore\n" ..
-                "on_death            = death@" .. gname .. "_leader\n" ..
-
-                "[death@" .. gname .. "_leader]\n" ..
-                "on_info             = %+sar2_death_55%\n" ..
-
-                "[walker@" .. gname .. "_leader]\n" ..
-                "path_walk           = leader_walk\n" ..
-                "path_look           = leader_look\n" ..
-                "danger              = danger@monolith\n" ..
-                "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
-
-    t = { section = "logic@" .. gname .. "_leader_attack",
-        idle = 0,
-        prior = 15, state = {1},
-        squad = squad, group = groups[1],
-        in_rest = in_r, out_rest = gname .. "_leader_restr",
-        online = "{+pri_monolith_spawn2}",
-        predicate = m_predicate_l
-    }
+	t = { section = "logic@pri_monolith_leader_attack",
+		idle = 0,
+		prior = 15, state = {1},
+		squad = squad, group = groups[1],
+		in_rest = in_r, out_rest = "pri_monolith_leader_restr",
+		online = "{+pri_monolith_spawn2}",
+		predicate = m_predicate_l
+	}
 	sj[#sj+1] = t
 
-    ltx = ltx.. "[logic@" .. gname .. "_leader_attack]\n" ..
-                "active              = camper@" .. gname .. "_leader_attack\n" ..
-                "combat_ignore       = combat_ignore\n" ..
-                "on_death            = death@" .. gname .. "_leader\n" ..
-
-                "[camper@" .. gname .. "_leader_attack]\n" ..
-                "path_walk           = leader_attack_walk\n" ..
-                "path_look           = leader_attack_look\n" ..
-                "danger              = danger@monolith\n" ..
-                "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
-
-    -- walkers (одиночные патрули вокруг базы)
-    prior = {8, 7, 8, 12, 12, 7}
-    --'state1_restr = {"", "_kolos_restr", "_base_restr", "", "", "_hotel_restr"}
+	-- walkers (одиночные патрули вокруг базы)
+	prior = {8, 7, 8, 12, 12, 7}
 	state1_restr = {"", "_kolos_restr", "_base_restr", "", "", ""}
-    local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
+	local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
 	for i, v in pairs({1, 3, 4, 5, 6, 8}) do
-        --- state: main
-        t = { section = "logic@" .. gname .. "_patrol" .. v, 
-            idle = 0,
-            prior = prior[i], state = {0},
-            squad = squad, group = groups[6],
-            in_rest = in_r, out_rest = "",
-            online = "{+pri_monolith_spawn1}",
-            predicate = pred_pl[i]
-        }
-		sj[#sj+1] = t
-        ltx = ltx.. "[logic@" .. gname .. "_patrol" .. v .. "]\n" ..
-                    "active              = walker@" .. gname .. "_patrol" .. v .. "\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-
-                    "[walker@" .. gname .. "_patrol" .. v .. "]\n" ..
-                    "path_walk           = patrol" .. v .. "_walk\n" ..
-                    "path_look           = patrol" .. v .. "_look\n" ..
-                    "danger              = danger@monolith\n" ..
-                    "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
-
-        t = { section = "logic@" .. gname .. "_patrol" .. v .. "_attack",
-            idle = 0,
-            prior = prior[i], state = {1},
-            squad = squad, group = groups[6],
-            in_rest = "", out_rest = gname .. state1_restr[i],
-            online = "{+pri_monolith_spawn1}",
-            predicate = m_predicate_s
-        }
+		t = { section = table_concat({"logic@pri_monolith_patrol", v}), 
+			idle = 0,
+			prior = prior[i], state = {0},
+			squad = squad, group = groups[6],
+			in_rest = in_r, out_rest = "",
+			online = "{+pri_monolith_spawn1}",
+			predicate = pred_pl[i]
+		}
 		sj[#sj+1] = t
 
-        ltx = ltx.. "[logic@" .. gname .. "_patrol" .. v .. "_attack]\n" ..
-                    "active              = camper@" .. gname .. "_patrol" .. v .. "_attack\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
+		t = { section = table_concat({"logic@pri_monolith_patrol", v, "_attack"}),
+			idle = 0,
+			prior = prior[i], state = {1},
+			squad = squad, group = groups[6],
+			-- in_rest = "", out_rest = table_concat({gname, state1_restr[i]}),
+			in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
+			online = "{+pri_monolith_spawn1}",
+			predicate = m_predicate_s
+		}
+		sj[#sj+1] = t
 
-                    "[camper@" .. gname .. "_patrol" .. v .. "_attack]\n" ..
-                    "path_walk           = patrol" .. v .. "_attack_walk\n" ..
-                    "path_look           = patrol" .. v .. "_attack_look\n" ..
-                    "danger              = danger@monolith\n" ..
-                    "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
-    end
+		res_t = {
+			"[logic@pri_monolith_patrol", 
+			v, "]\nactive = walker@pri_monolith_patrol", 
+			v, "\ncombat_ignore = combat_ignore\n",
 
-    -- followers (парные патрули перед базой)
-    prior = {8, 8, 8, 8}
-    state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
-    --'state1_restr = {"_kolos_restr",    "_hotel_restr"}
+			"[walker@pri_monolith_patrol", 
+			v, "]\npath_walk = patrol", 
+			v, "_walk\npath_look = patrol", 
+			v, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+
+			"[logic@pri_monolith_patrol", 
+			v, "_attack]\nactive = camper@pri_monolith_patrol", 
+			v, "_attack\ncombat_ignore = combat_ignore\n",
+
+			"[camper@pri_monolith_patrol", 
+			v, "_attack]\npath_walk = patrol", 
+			v, "_attack_walk\npath_look = patrol", 
+			v, "_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
+
+	-- followers (парные патрули перед базой)
+	prior = {8, 8, 8, 8}
+	state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
 	state1_restr = {"_kolos_restr",    ""}
-    for i, v in pairs({7, 10}) do
-        for j = 1, 2 do
-            --- state: main
-            t = { section = "logic@" .. gname .. "_group_patrol" .. i, 
-                idle = 0,
-                prior = prior[i + 2 * (j - 1)], state = {0},
-                squad = squad, group = groups[7],
-                in_rest = in_r, out_rest = "",
-                online = "{+pri_monolith_spawn1}",
-                predicate = m_predicate_s
-            }
+	for i, v in pairs({7, 10}) do
+		for j = 1, 2 do
+			t = { section = table_concat({"logic@pri_monolith_group_patrol", i}), 
+				idle = 0,
+				prior = prior[i + 2 * (j - 1)], state = {0},
+				squad = squad, group = groups[7],
+				in_rest = in_r, out_rest = "",
+				online = "{+pri_monolith_spawn1}",
+				predicate = m_predicate_s
+			}
 			sj[#sj+1] = t
 
-            t = { section = "logic@" .. gname .. state1_kamp[i], 
-                idle = 0,
-                prior = prior[i + 2 * (j - 1)], state = {1},
-                squad = squad, group = groups[7],
-                in_rest = "", out_rest = gname .. state1_restr[i],
-                online = "{+pri_monolith_spawn1}",
-                predicate = m_predicate_s
-            }
+			t = { section = "logic@pri_monolith"..state1_kamp[i], 
+				idle = 0,
+				prior = prior[i + 2 * (j - 1)], state = {1},
+				squad = squad, group = groups[7],
+				-- in_rest = "", out_rest = table_concat({gname, state1_restr[i]}),
+				in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
+				online = "{+pri_monolith_spawn1}",
+				predicate = m_predicate_s
+			}
 			sj[#sj+1] = t
-        end
-        ltx = ltx.. "[logic@" .. gname .. "_group_patrol" .. i .. "]\n" ..
-                    "active              = patrol@" .. gname .. "_group_patrol" .. i .. "\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-                    
-                    "[patrol@" .. gname .. "_group_patrol" .. i .. "]\n" ..
-                    "path_walk           = patrol" .. v .. "_walk\n" ..
-                    "path_look           = patrol" .. v .. "_look\n" ..
-                    "formation           = line\n" ..
-                    "danger              = danger@monolith\n" ..
-                    "soundgroup          = " .. gname .."_group_patrol" .. i .. "_sg\n" ..
-                    "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
-    end
+		end
+		res_t = {
+			"[logic@pri_monolith_group_patrol", 
+			i, "]\nactive = patrol@pri_monolith_group_patrol", 
+			i, "\ncombat_ignore = combat_ignore\n",
+			
+			"[patrol@pri_monolith_group_patrol", 
+			i, "]\npath_walk = patrol", 
+			v, "_walk\npath_look = patrol", 
+			v, "_look\nformation = line\ndanger = danger@monolith\nsoundgroup = pri_monolith_group_patrol", 
+			i, "_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
 
-    -- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
-    local id = {11, 12, 14}
-    pred = {m_predicate_s, m_predicate_s_sniper, m_predicate_s}
+	-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
+	local id = {11, 12, 14}
+	pred = {m_predicate_s, m_predicate_s_sniper, m_predicate_s}
 	local prior_arr = {14, 16, 14}
-    for i, v in pairs({"rpg", "svd", "machine_gun"}) do
-        --- state: main
-        t = { section = "logic@" .. gname .. "_stalker_" .. v, 
-            idle = 0,
-            prior = prior_arr[i], state = {0,1},
-            squad = squad, group = groups[8],
-            in_rest = in_r, out_rest = "",
-            online = "{+pri_monolith_spawn1}",
-            predicate = pred[i]
-        }
+	for i, v in pairs({"rpg", "svd", "machine_gun"}) do
+		t = { section = table_concat({"logic@pri_monolith_stalker_", v}), 
+			idle = 0,
+			prior = prior_arr[i], state = {0,1},
+			squad = squad, group = groups[8],
+			in_rest = in_r, out_rest = "",
+			online = "{+pri_monolith_spawn1}",
+			predicate = pred[i]
+		}
 		sj[#sj+1] = t
-        ltx = ltx.. "[logic@" .. gname .. "_stalker_" .. v .. "]\n" ..
-                    "active              = camper@" .. gname .. "_stalker_" .. v .. "\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-                    
-                    "[camper@" .. gname .. "_stalker_" .. v .. "]\n" ..
-                    "path_walk                   = patrol" .. id[i] .. "_walk\n" ..
-                    "path_look                   = patrol" .. id[i] .. "_look\n" ..
-                    --"no_retreat                  = true\n" ..
-                    "sniper                      = true\n" ..
-                    "radius                      = 20\n" ..
-                    "def_state_campering         = threat\n" ..
-                    "def_state_campering_fire    = threat_fire\n" ..
-                    "danger                      = danger@monolith\n" ..
-                    "soundgroup                  = " .. gname .."_rpg_svd_sg\n" ..
-                    "combat_ignore_cond          = {=pri_monolith_combat_ignore}\n"
-    end
 
-    -- prayers (молящиеся вокруг алтаря)
-    for i, v in pairs({14, 14, 14, 13, 8, 8}) do
-        t = { section = "logic@" .. gname .. "_prayer" .. i, 
-            idle = 0,
-            prior = v, state = {0,1},
-            squad = squad, group = groups[1],
-            in_rest = in_r, out_rest = "pri_monolith_base_altar_restr",
-            online = "{+pri_monolith_spawn2}",
-            predicate = m_predicate_r
-        }
+		res_t = {
+			"[logic@pri_monolith_stalker_", 
+			v, "]\nactive = camper@pri_monolith_stalker_", 
+			v, "\ncombat_ignore = combat_ignore\n",
+
+			"[camper@pri_monolith_stalker_", 
+			v, "]\npath_walk = patrol", 
+			id[i], "_walk\npath_look = patrol", 
+			id[i], "_look\nsniper = true\nradius = 20\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\ndanger = danger@monolith\nsoundgroup = pri_monolith_rpg_svd_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
+
+	-- prayers (молящиеся вокруг алтаря)
+	for i, v in pairs({14, 14, 14, 13, 8, 8}) do
+		t = { section = table_concat({"logic@pri_monolith_prayer", i}),  
+			idle = 0,
+			prior = v, state = {0,1},
+			squad = squad, group = groups[1],
+			in_rest = in_r, out_rest = "pri_monolith_base_altar_restr",
+			online = "{+pri_monolith_spawn2}",
+			predicate = m_predicate_r
+		}
 		sj[#sj+1] = t
-        ltx = ltx.. "[logic@" .. gname .. "_prayer" .. i .. "]\n" ..
-                    "active              = walker@" .. gname .. "_prayer" .. i .. "\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-					"on_hit				 = hit@altar_monolith\n" ..
-					"on_death			 = hit@altar_monolith\n" ..
 
-                    "[walker@" .. gname .. "_prayer" .. i .. "]\n" ..
-                    "path_walk           = prayer" .. i .. "_walk\n" ..
-                    "path_look           = prayer_look" .. math.random(1, 2) .. "\n" ..
-                    "danger              = danger@monolith\n" ..
-                    "combat_ignore_cond  = {-pri_monolith_base_attack_altar_zone}\n"
-    end
+		res_t = {
+			"[logic@pri_monolith_prayer", 
+			i, "]\nactive = walker@pri_monolith_prayer", 
+			i, "\ncombat_ignore = combat_ignore\non_hit = hit@altar_monolith\non_death = hit@altar_monolith\n",
 
-    -- kamps
-    prior = {{11, 11, 11, 7}, {10, 10, 10, 7}, {11, 11, 11}, {9, 9, 9}, {13, 13, 7}}
-    pred = {{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
-            {m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
-            {m_predicate_e, m_predicate_e, m_predicate_e},
-            {m_predicate_s, m_predicate_s, m_predicate_s},
-            {m_predicate_e, m_predicate_all, m_predicate_all}}
-    online_cond  = {"{+pri_monolith_spawn2}", "{+pri_monolith_spawn2}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn2}"}
-    state1_restr = {"_base_restr", "_base_restr", "", "_kolos_restr", "_base_restr"}
-    local pr, pd
-    for i, v in pairs({4, 4, 3, 3, 3}) do
-        pr = prior[i]
-        pd = pred[i]
-        for j = 1, v do
-            --- state: main
-            t = { section = "logic@" .. gname .. "_kamp" .. i .. "_soldier", 
-                idle = 0,
-                prior = pr[j], state = {0},
-                squad = squad, group = groups[i],
-                in_rest = in_r, out_rest = "",
-                online = online_cond[i],
-                predicate = pd[j]
-            }
+			"[walker@pri_monolith_prayer", 
+			i, "]\npath_walk = prayer", 
+			i, "_walk\npath_look = prayer_look", 
+			math.random(1, 2), 
+			"\ndanger = danger@monolith\ncombat_ignore_cond = {-pri_monolith_base_attack_altar_zone}\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
+
+	-- kamps
+	prior = {{11, 11, 11, 7}, {10, 10, 10, 7}, {11, 11, 11}, {9, 9, 9}, {13, 13, 7}}
+	pred = {{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
+			{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
+			{m_predicate_e, m_predicate_e, m_predicate_e},
+			{m_predicate_s, m_predicate_s, m_predicate_s},
+			{m_predicate_e, m_predicate_all, m_predicate_all}}
+	online_cond  = {"{+pri_monolith_spawn2}", "{+pri_monolith_spawn2}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn2}"}
+	state1_restr = {"_base_restr", "_base_restr", "", "_kolos_restr", "_base_restr"}
+	local pr, pd
+	for i, v in pairs({4, 4, 3, 3, 3}) do
+		pr = prior[i]
+		pd = pred[i]
+		for j = 1, v do
+			t = { section = table_concat({"logic@pri_monolith_kamp", i, "_soldier"}), 
+				idle = 0,
+				prior = pr[j], state = {0},
+				squad = squad, group = groups[i],
+				in_rest = in_r, out_rest = "",
+				online = online_cond[i],
+				predicate = pd[j]
+			}
 			sj[#sj+1] = t
 
-            t = { section = "logic@" .. gname .. "_kamp" .. i .. "_attack" .. j,
-                idle = 0,
-                prior = pr[j], state = {1},
-                squad = squad, group = groups[i],
-                in_rest = "", out_rest = gname .. state1_restr[i],
-                online = online_cond[i],
-                predicate = pd[j]
-            }
+			t = { section = table_concat({"logic@pri_monolith_kamp", i, "_attack", j}),
+				idle = 0,
+				prior = pr[j], state = {1},
+				squad = squad, group = groups[i],
+				in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
+				online = online_cond[i],
+				predicate = pd[j]
+			}
 			sj[#sj+1] = t
-            ltx = ltx.. "[logic@" .. gname .. "_kamp" .. i .. "_attack" .. j .. "]\n" ..
-                        "active              = camper@" .. gname .. "_kamp" .. i .. "_attack" .. j .. "\n" ..
-                        "combat_ignore       = combat_ignore\n" ..
 
-                        "[camper@" .. gname .. "_kamp" .. i .. "_attack" .. j .. "]\n" ..
-                        "path_walk           = kamp" .. i .. "_attack" .. j .. "_walk\n" ..
-                        "path_look           = kamp" .. i .. "_attack" .. j .. "_look\n" ..
-                        "danger              = danger@monolith\n" ..
-                        "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
+			res_t = {
+				"[logic@pri_monolith_kamp", i, "_attack", 
+				j, "]\nactive = camper@pri_monolith_kamp", i, "_attack", 
+				j, "\ncombat_ignore = combat_ignore\n",
+
+				"[camper@pri_monolith_kamp", i, "_attack", 
+				j, "]\npath_walk = kamp", i, "_attack", 
+				j, "_walk\npath_look = kamp", i, "_attack", 
+				j, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+			ltx = ltx .. table_concat(res_t)
         end
-        ltx = ltx.. "[logic@" .. gname .. "_kamp" .. i .. "_soldier]\n" ..
-                    "active              = kamp@" .. gname .. "_kamp" .. i .. "_soldier\n" ..
-                    "combat_ignore       = combat_ignore\n" ..
-                       
-                    "[kamp@" .. gname .. "_kamp" .. i .. "_soldier]\n" ..
-                    "center_point        = kamp" .. i .. "\n" ..
-                    "danger               = danger@monolith\n" ..
-                    "def_state_moving    = run\n" ..
-                    "soundgroup          = " .. gname .."_kamp" .. i .. "\n" ..
-                    "combat_ignore_cond  = {=pri_monolith_combat_ignore}\n"
+		res_t = {
+			"[logic@pri_monolith_kamp", 
+			i, "_soldier]\nactive = kamp@pri_monolith_kamp", 
+			i, "_soldier\ncombat_ignore = combat_ignore\n",
+
+			"[kamp@pri_monolith_kamp", 
+			i, "_soldier]\ncenter_point = kamp", 
+			i, "\ndanger = danger@monolith\ndef_state_moving = run\nsoundgroup = pri_monolith_kamp", 
+			i, "\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+		ltx = ltx .. table_concat(res_t)
     end
 
-    -- snipers (снайперы на большом балконе главной базы)
-    for i = 1, 2 do
-        t = { section = "logic@" .. gname .. "_sniper" .. i, 
-            idle = 0,
-            prior = 16, state = {0,1},
-            squad = squad, group = groups[9],
-            in_rest = in_r, out_rest = "",
-            online = "{+pri_monolith_spawn1}",
-            predicate = m_predicate_s_sniper
-        }
+	-- snipers (снайперы на большом балконе главной базы)
+	for i = 1, 2 do
+		t = { section =  table_concat({"logic@pri_monolith_sniper", i}), 
+			idle = 0,
+			prior = 16, state = {0,1},
+			squad = squad, group = groups[9],
+			in_rest = in_r, out_rest = "",
+			online = "{+pri_monolith_spawn1}",
+			predicate = m_predicate_s_sniper
+		}
 		sj[#sj+1] = t
-        ltx = ltx.. "[logic@" .. gname .. "_sniper" .. i .. "]\n" ..
-                    "active          = camper@" .. gname .. "_sniper" .. i .. "_wait\n" ..
-                    "combat_ignore   = combat_ignore\n" ..
 
-                    "[camper@" .. gname .. "_sniper" .. i .. "_wait]\n" ..
-                    "path_walk                  = balcony_sniper" .. i .. "_walk\n" ..
-                    "path_look                  = balcony_sniper" .. i .. "_look\n" ..
-                    "def_state_moving           = assault\n" ..
-                    "def_state_campering        = threat\n" ..
-                    "def_state_campering_fire   = threat_fire\n" ..
-                    "sniper                     = true\n" ..
-                    ";no_retreat                = true\n" ..
-                    "radius                     = 0\n" ..
-                    "on_info                    = {+" .. gname .. "_snipers_free} walker@" .. gname .. "_sniper" .. i .. "_free\n" ..
-                    "combat_ignore_cond         = {=pri_monolith_combat_ignore}\n" ..
+		res_t = {
+			"[logic@pri_monolith_sniper", 
+			i, "]\nactive= camper@pri_monolith_sniper", 
+			i, "_wait\ncombat_ignore= combat_ignore\n",
 
-                    "[walker@" .. gname .. "_sniper" .. i .. "_free]\n" ..
-                    "path_walk                  = balcony_sniper" .. i .. "_free_walk\n" ..
-                    "path_look                  = balcony_sniper" .. i .. "_free_look\n" ..
-                    "on_info                    = {-" .. gname .. "_snipers_free} camper@" .. gname .. "_sniper" .. i .. "_wait\n" ..
-                    "combat_ignore_cond         = {=pri_monolith_combat_ignore}\n"
-    end
+			"[camper@pri_monolith_sniper", 
+			i, "_wait]\npath_walk = balcony_sniper", 
+			i, "_walk\npath_look = balcony_sniper", 
+			i, "_look\ndef_state_moving = assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\nsniper = true\nradius = 0\non_info = {+pri_monolith_snipers_free} walker@pri_monolith_sniper", 
+			i, "_free\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\ndanger = danger@monolith\n",
 
-    gulags.pri_monolith.ltx = ltx
+			"[walker@pri_monolith_sniper", 
+			i, "_free]\npath_walk = balcony_sniper", 
+			i, "_free_walk\npath_look = balcony_sniper", 
+			i, "_free_look\non_info = {-pri_monolith_snipers_free} camper@pri_monolith_sniper", 
+			i, "_wait\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+		ltx = ltx .. table_concat(res_t)
+	end
+
+	gulags.pri_monolith.ltx = ltx
 end
 
 -- States ----------------------------------------------------------------
@@ -1292,8 +1187,8 @@ gulags.pri_monolith.state = function(gulag)
             if v ~= true then
                 local enemy = v:best_enemy()
                 if enemy ~= nil then
-                    local enemy_type = get_clsid(enemy)
-                    if enemy_type == clsid.actor or enemy_type == clsid.script_stalker then
+                    local enemy_type = enemy:clsid()
+                    if enemy_type == clsid_actor or enemy_type == clsid_script_stalker then
                         db_actor:give_info_portion("pri_monolith_base_attacked")
                         return 1
                     end
@@ -1312,37 +1207,34 @@ end
 --------------------------------------------------------------------------
 -- Jobs ------------------------------------------------------------------
 gulags.pri_stadium.job = function(sj, gname, type, squad, groups)
-	local t
-    local i, ltx = 1, ""
-    -- Проверяем наличие снайперов в лагере.
-    while level.patrol_path_exists(gname .. "_sniper_" .. i .. "_walk") do
-        -- Необходимо вычитать количество работ из названия точки пути.
-        local way_name = gname .. "_sniper_" .. i .. "_walk"
+	local table_concat = table.concat
+	local res_t, t
+	local i, ltx = 1, ""
+	local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+	-- Проверяем наличие снайперов в лагере.
+	while level.patrol_path_exists(way_name) do
+		-- Необходимо вычитать количество работ из названия точки пути.
 
-        -- добавляем должность
-        t = { section = "logic@" .. way_name,
-            idle = 0,
-            prior = 1, state = {0}, squad = squad, group = groups[1],
-            in_rest = "", out_rest = "pri_stadium_snipers_restr",
-            online = "{+pri_stadium_scene_start}",
-            predicate = m_predicate_e_rpg
-        }
-        sj[#sj+1] = t
+		-- добавляем должность
+		t = { section = table_concat({"logic@", way_name}),
+			idle = 0,
+			prior = 1, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "pri_stadium_snipers_restr",
+			online = "{+pri_stadium_scene_start}",
+			predicate = m_predicate_e_rpg
+		}
+		sj[#sj+1] = t
 
-        -- добавляем описание должности в лтх.
-        ltx = ltx.."[logic@" .. way_name .. "]\n" ..
-                   "active = camper@" .. way_name .. "\n" ..
-                   "combat_ignore = combat_ignore\n" ..
+		-- добавляем описание должности в лтх.
+		res_t = {
+			"[logic@", way_name, "]\nactive = camper@", way_name, "\ncombat_ignore = combat_ignore\n",
 
-                   "[camper@" .. way_name .. "]\n" ..
-                   "path_walk                   = sniper_" .. i .. "_walk\n" ..
-                   "path_look                   = sniper_look\n" ..
-                   "def_state_campering         = threat\n" ..
-                   "def_state_campering_fire    = threat_sniper_fire\n" ..
-                   "sniper                      = true\n" ..
-                   "combat_ignore_cond          = {=enemy_gulag(pri_stadium_lair)}\n"
-        i = i + 1
-    end
+			"[camper@", way_name, "]\npath_walk = sniper_", 
+			i, "_walk\npath_look = sniper_look\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\ncombat_ignore_cond = {=enemy_gulag(pri_stadium_lair)}\n" }
+		ltx = ltx .. table_concat(res_t)
+		i = i + 1
+		way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+	end
 
     gulags.pri_stadium.ltx = ltx
 end

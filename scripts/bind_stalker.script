@@ -44,6 +44,8 @@ function actor_binder:net_spawn(data)
   end
 
   db.add_actor(self.object)
+	_z.on_add_actor(self.object)
+
 	if self.actor_detector.init_time ~= -1 then
 		self.actor_detector:actor_enter()
 	end
@@ -61,13 +63,16 @@ function actor_binder:net_spawn(data)
 	sa_callbacks.actor_net_spawn()
 
   -- added by xStream for AMK miniSDK
-  if xrs_ai then 
   xrs_ai.actor_net_spawn(self)
-  end
   amk.on_game_load(obj)
+	sak.out_teleport()
   sak.add_tail()
   braad_test.false_info()
   -- end of addition
+
+	-- регистрация в схеме биорадара
+	biodetector.add_obj(self.object)
+
   return true
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -80,6 +85,9 @@ function actor_binder:net_destroy()
     actor_stats.remove_from_ranking(self.object:id())
   end
   db.del_actor(self.object)
+
+	-- отрегистрация в схеме биорадара
+	biodetector.remove_obj(self.object)
 
     sr_light.clean_up ()
 
@@ -156,7 +164,6 @@ function actor_binder:take_item_from_box(box, item)
 
 	--AMK UTILS--
 	amk.on_item_take_from_box(box,item)
-	amk_utils.actor_item_from_box(box, item)
 	--AMK UTILS--
 
 	--' Необходимо уменьшить счетчик в респавнере
@@ -168,20 +175,10 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:level_border_enter(npc, info_id)
   self.actor_detector:actor_enter()
-  
-  --AMK UTILS--
-  amk_utils.actor_level_border_enter(npc, info_id)
-  --AMK UTILS--
-  
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:level_border_exit(npc, info_id)
   self.actor_detector:actor_exit()
-  
-   --AMK UTILS--
-   amk_utils.actor_level_border_exit(npc, info_id)
-   --AMK UTILS--
-   
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
@@ -189,11 +186,7 @@ function actor_binder:info_callback(npc, info_id)
   level_tasks.proceed()
   -- Отметки на карте
   level_tasks.process_info_portion(info_id)
-  
-  --AMK UTILS--
-  amk.on_info(npc,info_id)
-  amk_utils.actor_info(npc, info_id)
-  --AMK UTILS--
+
   inventory.on_inventory_info(info_id)
 
 	sa_callbacks.info(info_id)
@@ -207,11 +200,6 @@ function actor_binder:article_callback(npc, group, name)
   else
     news_manager.send_encyclopedy(group, "encyclopedy")
   end
-
-  --AMK UTILS--
-  amk.on_info(npc,info_id)
-  amk_utils.actor_article(npc, group, name)
-  --AMK UTILS--
 
 	sa_main.pda_news(group, name)
 end
@@ -327,11 +315,6 @@ function actor_binder:task_callback(_task, _objective, _state)
       news_manager.send_task(db_actor, "update", _task, _objective)
     end
   end
-  
-  --AMK UTILS--
-  amk_utils.actor_task(_task, _objective, _state)
-  --AMK UTILS--
-  
 end
 ----------------------------------------------------------------------------------------------------------------------
 local object_binder_update = object_binder.update
@@ -345,7 +328,7 @@ function actor_binder:update(delta)
   end
   object_binder_update(self, delta)
 
-  local time = time_global()
+	local time_ = time_global()
 
   -- $DreamMod  апдейт схемы сна
   if sleep_manager.is_sleep_active() and xr_conditions.actor_dead() then
@@ -376,11 +359,11 @@ function actor_binder:update(delta)
   end 
 
   -- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
-  if self.next_restrictors_update_time < time then
+	if self.next_restrictors_update_time < time_ then
     bind_restrictor.actor_update(delta)
   -- Апдейтим наш телепорт
 	bind_mteleport.actor_update(delta)
-    self.next_restrictors_update_time = time + 200
+		self.next_restrictors_update_time = time_ + 200
 
 		-- апдейт схемы детектора
 		self.actor_detector:update()
@@ -466,10 +449,9 @@ function actor_binder:update(delta)
   
   --AMK UTILS--
   amk.on_actor_upade(delta)
-  amk_utils.actor_update(delta)
   amk_offline_alife.actor_update(delta)
   --AMK UTILS--
-  sak.out_teleport() 
+	arc_main.actor_update()
   sak.nepis_umer()
   braad_test.dead_npc()
   
@@ -487,16 +469,16 @@ function actor_binder:update(delta)
     else
       wnd:SetTextST(game.translate_string("amk_warn_attention"))
     end
-  elseif self.wt and self.wt<time_global() then
+  elseif self.wt and self.wt<time_ then
     self.wt=nil
     if get_hud():GetCustomStatic("hud_save_warning") then
       get_hud():RemoveCustomStatic("hud_save_warning")
     end
   end
-	if xrs_ai then xrs_ai.actor_update(delta)
-	end
+
+	xrs_ai.actor_update(delta)
   -- end of addition
-  if biodetector then biodetector.update() end
+	biodetector.update()
 
 	sa_callbacks.actor_update(delta)
 end
@@ -581,6 +563,7 @@ function actor_binder:load(reader)
 
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT")
+		return
 	end
 
 	local stored_input_time = reader:r_bool()

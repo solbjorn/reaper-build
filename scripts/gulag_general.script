@@ -5,7 +5,7 @@ function load_job(sj, gname, type, squad, groups, st)
 
 	ltx = "[meet@generic_lager_guard]\n"..
 		  "meet_state		= 10|wait@wait\n"..
-		  "meet_state_wpn	= 10|backoff@threat_weap\n"..
+		  "meet_state_wpn	= 4|backoff@threat_weap\n"..
 		  "victim			= 10|actor\n"..
 		  "victim_wpn		= 10|actor\n"..
 		  "use				= true\n"..
@@ -384,7 +384,7 @@ function load_states(gname, type)
 				if gulag.population_comed == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_1) ~= nil then
+				if gulag.state_switch_1 and xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_1) ~= nil then
 					return 1
 				end
 				return 0
@@ -395,10 +395,13 @@ function load_states(gname, type)
 				if not db.zone_by_name[gulag.name] then
 					return 1
 				end
-				if gulag.population_comed == 0 then
+				if not gulag.pop_valid then
+					return 1
+				end
+				if gulag:get_population_comed() == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_0) ~= nil then
+				if gulag.state_switch_0 and xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_0) ~= nil then
 					return 0
 				end
 				return 1
@@ -409,17 +412,18 @@ function load_states(gname, type)
 			if gulag.state == 0 then
 				if gulag.population_comed == 0 then
 					return 0
-				end
-
-				if xr_logic.pick_section_from_condlist(db_actor, gulag.object, gulag.state_switch_1) ~= nil then
+				elseif gulag.state_switch_1 and xr_logic.pick_section_from_condlist(db_actor, gulag.Object, gulag.state_switch_1) ~= nil then
 					return 1
 				end
 				return 0
 			elseif gulag.state == 1 then
-				if gulag.population_comed == 0 then
+				if not gulag.pop_valid then
+					return 1
+				end
+				if gulag:get_population_comed() == 0 then
 					return 0
 				end
-				if xr_logic.pick_section_from_condlist(db_actor, gulag.object, gulag.state_switch_0) ~= nil then
+				if gulag.state_switch_0 and xr_logic.pick_section_from_condlist(db_actor, gulag.Object, gulag.state_switch_0) ~= nil then
 					return 0
 				end
 				return 1

@@ -12,20 +12,6 @@ local cparm={
 -- Текущее состояние детектора
 local targets={} -- отображаемые цели и соответствующие hud объекты
 
-local scantime=0
--- Обновляет прицельные метки
-function update()
-  if amk.is_debug then
-    create_restore_hud_items()
-    -- сейчас массив targets инициализирован
-    if scantime<time_global() then
-      scantime=time_global()+1000
-      scan_targets() -- пересканировать всю живность и возможно обновить targets
-    end
-    track_targets() -- переместить метки целей и, возможно, выбрать другую цель
-  end
-end
-
 local distupdtime=0
 
 function threat_comp(i1,i2) -- возвращает true если i1 опаснее i2
