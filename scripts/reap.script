@@ -25,10 +25,16 @@ local next_update_200 = -1
 
 function net_spawn()
 	set_timer_tick()
+	bolt_ending.net_spawn()
+end
+
+function net_destroy()
+	bolt_ending.net_destroy()
 end
 
 function update()
 	update_timers()
+	bolt_ending.update()
 
 	local time_ = time_global()
 
@@ -39,16 +45,25 @@ function update()
 	end
 end
 
-function save(packet)
-	save_timers(packet)
+function item_take(obj)
+	bolt_ending.on_item_take(obj)
 end
 
-function load(reader)
-	load_timers(reader)
+function item_drop(obj)
+	bolt_ending.on_item_drop(obj)
+end
+
+function item_drop_from_belt(obj)
+	bolt_ending.on_item_drop_from_belt(obj, true)
 end
 
 function item_belt(obj)
 	inventory.on_item_belt(obj)
+	bolt_ending.on_item_belt(obj)
+end
+
+function item_move_from_belt(obj)
+	bolt_ending.on_item_drop_from_belt(obj)
 end
 
 function item_ruck(obj)
@@ -59,6 +74,18 @@ function item_slot(obj)
 	inventory.on_item_slot(obj)
 end
 
+function new_game()
+	bolt_ending.del_bolt()
+end
+
+function save(packet)
+	save_timers(packet)
+end
+
+function load(reader)
+	load_timers(reader)
+end
+
 --[[---------------------------------------------------------------------------
  * HUD
 --]]---------------------------------------------------------------------------
@@ -67,6 +94,26 @@ local gg_kick = read_line("gg_kick", "enabled") > 0
 
 local hud = get_hud()
 local sleep_cs = nil
+
+function drop_weapon(punch)
+	local actor = db_actor
+	local active_item = actor:active_item()
+	if active_item then
+		local active_sect = active_item:section()
+		if active_sect == "wpn_knife" then
+			if punch and punch == true then
+				actor:move_to_ruck(active_item)
+				actor:move_to_slot(active_item)
+			else
+				actor:drop_item(active_item)
+			end
+		elseif active_sect == "bolt" then
+			bolt_ending.drop_bolt()
+		else
+			actor:drop_item(active_item)
+		end
+	end
+end
 
 function hit_effectors(mob_type, obj, amount)
 	if gg_kick ~= true or amount <= 0.05 or not db_actor:alive() then
@@ -85,10 +132,7 @@ function hit_effectors(mob_type, obj, amount)
 	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
 
 	if math.random() < (amount / 2) then
-		local active_item = db_actor:active_item()
-		if active_item and active_item:is_weapon() then
-			db_actor:drop_item(active_item)
-		end
+		drop_weapon()
 	end
 end
 

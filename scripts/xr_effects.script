@@ -419,27 +419,6 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 
-function drop_weapon(punch)
-	local actor = db_actor
-	local active_item = actor:active_item()
-	if active_item then
-		local active_sect = active_item:section()
-		if active_sect == "wpn_knife" then
-			if punch and punch == true then
-				actor:move_to_ruck(active_item)
-				actor:move_to_slot(active_item)
-			else
-				actor:drop_item(active_item)
-			end
-		elseif active_sect == "bolt" then
-			actor:move_to_ruck(active_item)
-			actor:move_to_slot(active_item)
-		else
-			actor:drop_item(active_item)
-		end
-	end
-end
-
 -- постпроцесс и влияние удара в морду
 function actor_punch(npc)
 	local actor = db_actor
@@ -447,7 +426,7 @@ function actor_punch(npc)
 		return
 	end
 
-	drop_weapon(true)
+	reap.drop_weapon(true)
 	set_inactivate_input_time(punch_recovery_time)
 	local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
 	snd_obj:play_no_feedback(actor, sound_object.s2d, 0, vector(), 1.0)

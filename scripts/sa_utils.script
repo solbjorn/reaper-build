@@ -145,6 +145,12 @@ function _G.level_name_by_game_vertex(game_vertex_id)
 	end
 end
 ---------------------------------------------------------------------------------------------------
+function _G.random_position(center, radius)
+	center.x = center.x + math.random(-radius, radius)
+	center.z = center.z + math.random(-radius, radius)
+	return center
+end
+---------------------------------------------------------------------------------------------------
 function _G.get_item_place(obj, npc)
 	if not npc then
 		npc = db_actor

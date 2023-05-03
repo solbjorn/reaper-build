@@ -1,0 +1,74 @@
+-- Биндер болтов
+-- Автор: Charsi
+
+local t = {} -- таблица зарегистрированных кинутых болтов
+
+function init(obj)
+	obj:bind_object(BBolt(obj))
+end
+
+class "BBolt" (object_binder)
+
+function BBolt:__init(obj) super(obj)
+	self.object=obj
+end 
+
+function BBolt:reload(section)
+	object_binder.reload(self, section)
+end
+
+function BBolt:reinit()
+	object_binder.reinit(self)
+	self.object:set_callback(callback.use_object, self.use_callback, self)
+end
+
+function BBolt:update(delta)
+	if not t[self.object:id()] then
+		local ps=self.object:get_physics_shell()
+		if ps then
+            local curr_vel=vector()
+            ps:get_angular_vel(curr_vel)
+            local current_velocity = vector()
+            ps:get_linear_vel(current_velocity)
+            if curr_vel:magnitude()>1 or current_velocity:magnitude()>15 then t[self.object:id()]=true bolt_ending.remove_bolt() end
+        end
+	end
+	object_binder.update(self, delta)
+end
+
+function BBolt:net_spawn(data)
+	if self.object:position():distance_to(db.actor:position())>2 then self.object:bind_object(nil) end
+	return object_binder.net_spawn(self, data)
+end
+
+function OnSpawnFBolt(iId, gObj)
+	local parent = alife():object(iId).parent_id or 65535
+	if parent == 65535 then
+		local h = hit()
+		h.draftsman = db_actor
+		h.type = hit.strike
+		h.direction = vector():set(1, 0, 0)
+		h.power = 1
+		h.impulse = 0.4
+		gObj:hit(h)
+	end
+end
+
+function BBolt:net_destroy()
+	if t[self.object:id()] then
+		local sobj = alife():create("fake_bolt", self.object:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id())
+		level.client_spawn_manager():add(sobj.id, 0, OnSpawnFBolt)
+		t[self.object:id()]=nil
+	end
+	object_binder.net_destroy(self)
+end
+
+function BBolt:use_callback(obj, who)
+	amk.spawn_item_in_inv("fake_bolt")
+	db.actor:drop_item_and_teleport(self.object,vector():set(0,0,0))
+	self.object:bind_object(nil)
+end 
+
+function BBolt:net_save_relevant()
+	return true
+end

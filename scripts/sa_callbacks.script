@@ -23,6 +23,10 @@ function actor_net_spawn()
 	reap.net_spawn()
 end
 ---------------------------------------------------------------------------------------------------
+function actor_net_destroy()
+	reap.net_destroy()
+end
+---------------------------------------------------------------------------------------------------
 local last_mob_type
 local last_health
 ---------------------------------------------------------------------------------------------------
@@ -39,6 +43,7 @@ function actor_death(victim, who)
 end
 ---------------------------------------------------------------------------------------------------
 function item_take(obj)
+	reap.item_take(obj)
 	if device().precache_frame == 0 then
 		sa_inventory_items_mgr.artefacts_statistic(obj)
 	end
@@ -47,10 +52,12 @@ end
 local belt_obj_by_id = {}
 ---------------------------------------------------------------------------------------------------
 function item_drop(obj)
+	reap.item_drop(obj)
+
 	if belt_obj_by_id[obj:id()] then
 		item_drop_from_belt(obj)
+		belt_obj_by_id[obj:id()] = nil
 	end
-	belt_obj_by_id[obj:id()] = nil
 end
 ---------------------------------------------------------------------------------------------------
 function item_drop_from_inventory(obj)
@@ -58,6 +65,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function item_drop_from_belt(obj)
 	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
+	reap.item_drop_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_belt(obj)
@@ -66,7 +74,12 @@ function item_belt(obj)
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_belt(obj)
+
 	belt_obj_by_id[obj:id()] = obj
+end
+---------------------------------------------------------------------------------------------------
+function item_move_from_belt(obj)
+	reap.item_move_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_ruck(obj)
@@ -75,12 +88,20 @@ function item_ruck(obj)
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_ruck(obj)
-	belt_obj_by_id[obj:id()] = nil
+
+	if belt_obj_by_id[obj:id()] then
+		item_move_from_belt(obj)
+		belt_obj_by_id[obj:id()] = nil
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function item_slot(obj)
 	reap.item_slot(obj)
-	belt_obj_by_id[obj:id()] = nil
+
+	if belt_obj_by_id[obj:id()] then
+		item_move_from_belt(obj)
+		belt_obj_by_id[obj:id()] = nil
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function info(info_id)
@@ -106,6 +127,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function new_game()
 	start_timer("psy_blowout_timer", "sa_main.yantar_psy_blowout()", "real", 0, math.random(5, 7))
+	reap.new_game()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_save(packet)

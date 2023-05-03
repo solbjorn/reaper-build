@@ -1,0 +1,160 @@
+-----------------------[[Заканчивающиеся болты]]-----------------------------------
+-- Автор: Charsi
+-- Дата: 17/08/2010 - 26/04/2011
+-----------------------------------------------------------------------------------
+
+local bolt_cnt = 0
+local hud, st
+local game_start = true
+
+function on_item_take(obj)
+	local sect = obj:section()
+	if sect == "fake_bolt" then
+		if amk.load_variable("b_dr") then
+			amk.save_variable("b_dr", false)
+			amk.spawn_item_in_inv("bolt")
+			g_alife:release(g_alife:object(obj:id()), true)
+		end
+		game_start = false
+	elseif sect == "bolt" then
+		if game_start and amk.load_variable("b_dr") then
+			-- выкидываем только движковый стартовый
+			reap.start_timer("bolt_ending.del_bolt()", 100, timer_types.real)
+		end
+		amk.save_variable("b_dr", false)
+		game_start = false
+	end
+end
+
+function on_item_drop(obj)
+	if obj:section() == "bolt" then
+		amk.save_variable("b_dr", true)
+	end
+end
+
+function bolt_to_belt(id, obj)
+	db_actor:move_to_belt(obj)
+end
+
+function on_item_belt(obj)
+	local sect = obj:section()
+	if sect == "fake_bolt" then
+		local actor = db_actor
+		local sim = g_alife
+
+		sim:release(sim:object(obj:id()), true)
+		local sobj = sim:create_ammo("bolt_box", actor:position(), actor:level_vertex_id(),
+					     actor:game_vertex_id(), db_actor_id, 1)
+		level.client_spawn_manager():add(sobj.id, 0, bolt_to_belt)
+	elseif sect == "bolt_box" then
+		local size = get_ammo_data(obj, "box_size")
+		bolt_cnt = bolt_cnt + size
+
+		if not db_actor:object("bolt") and amk.load_variable("b_dr") then
+			amk.spawn_item_in_inv("bolt")
+			use_one(obj, size)
+		end
+	end
+end
+
+function fake_bolt_drop(id, obj)
+	db_actor:drop_item(obj)
+end
+
+function on_item_drop_from_belt(obj, drop)
+	if obj:section() ~= "bolt_box" then return end
+	local sobj = g_alife:object(obj:id())
+	if not sobj then return end
+
+	local num = get_ammo_data(obj, "box_size")
+	g_alife:release(sobj, true)
+	bolt_cnt = bolt_cnt - num
+
+	for i = 1, num do
+		sobj = amk.spawn_item_in_inv("fake_bolt")
+		if drop and sobj then
+			level.client_spawn_manager():add(sobj.id, 0, fake_bolt_drop)
+		end
+	end
+end
+
+function update()
+	if db_actor:active_slot() == 5 and not level.main_input_receiver() then
+		if st then st:SetText("1/" .. bolt_cnt) else show_static() end
+	elseif st then 
+		remove_static()
+	end
+end
+
+function remove_static()
+	hud:RemoveDialogToRender(st)
+	st = nil
+end
+
+function show_static()
+	st=CUIStatic()
+	st:Init("ui\\ui_icon_equipment", 23,708, 42, 42)	-- координаты где рисовать
+
+	local ini=system_ini() local sect="bolt_box"
+	local x=ini:r_u32(sect, "inv_grid_x")*50
+	local y=ini:r_u32(sect, "inv_grid_y")*50
+	local width=ini:r_u32(sect, "inv_grid_width")*50
+	local height=ini:r_u32(sect, "inv_grid_height")*50
+	st:SetOriginalRect(x,y,width,height)
+	st:SetStretchTexture(true)
+
+	st:SetFont(GetFontGraffiti22Russian())
+	st:SetTextAlign(CGameFont.alCenter)
+	st:SetTextColor(130,238,255,255)
+	st:SetTextY(4)
+	st:SetTextX(69)
+
+	if not hud then hud = get_hud() end
+	hud:AddDialogToRender(st)
+end
+
+function use_one(box, left)
+	if left > 1 then
+		set_ammo_data(box, "box_size", left - 1)
+	else
+		g_alife:release(g_alife:object(box:id()), true)
+	end
+	bolt_cnt = bolt_cnt - 1
+end
+
+function remove_bolt()
+	local box, left = nil, 20
+
+	if inventory.belt["bolt_box"] then
+		for id, obj in pairs(inventory.belt_id) do
+			if obj:section() == "bolt_box" then
+				local size = get_ammo_data(obj, "box_size")
+				if size < left then
+					box = obj
+					left = size
+				end
+			end
+		end
+	end
+
+	if box then use_one(box, left) else del_bolt() end
+end
+
+function del_bolt()
+	db.actor:drop_item_and_teleport(db.actor:object("bolt"),vector():set(0,0,0))
+end
+
+function drop_bolt()
+	local actor = db_actor
+	del_bolt()
+	g_alife:create("fake_bolt", random_position(actor:position(), 1),
+		       actor:level_vertex_id(), actor:game_vertex_id())
+end
+
+function net_spawn()
+	amk.spawn_item_in_inv("bolt_fix")
+end
+
+function net_destroy()
+	if st then remove_static() end
+end
