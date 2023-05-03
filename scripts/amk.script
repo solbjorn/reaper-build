@@ -365,7 +365,7 @@ end
 
 --записываем переменную
 function save_variable(vn, val)
-	if not val then
+	if val == nil then
 		actor_pstor[vn] = nil
 		return
 	end
@@ -381,7 +381,7 @@ end
 --загружаем переменную
 function load_variable(vn, def, del)
 	local var = actor_pstor[vn]
-	if not var then return def end
+	if var == nil then return def end
 
 	if del then actor_pstor[vn] = nil end
 	return var

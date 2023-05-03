@@ -1140,7 +1140,7 @@ function pstor_store(obj, varname, val)
 		npc_storage.pstor = obj_pstor
 	end
 
-	local tv = type(val) 
+	local tv = type(val)
 	if tv == "string" or tv == "number" or tv == "boolean" then
 		obj_pstor[varname] = val
 	else
@@ -1152,7 +1152,7 @@ function pstor_retrieve(obj, varname, defval, del)
 	local obj_pstor = obj and db_storage[obj:id()].pstor
 	local var = obj_pstor and obj_pstor[varname]
 
-	if not var then return defval end
+	if var == nil then return defval end
 	if del then obj_pstor[varname] = nil end
 
 	return var
