@@ -20,7 +20,7 @@ monster_classes = {
 }
 
 function addKillCount(npc)
-	local props, sect = npc and getNpcType(npc) or nil, nil
+	local props, sect = getNpcType(npc)
 	if props and sect then
 		actor_stats.add_points(props, sect, 1, 1)
 		db_actor:set_character_rank(db_actor:character_rank() + 1)
@@ -44,7 +44,7 @@ for k, v in pairs(comms) do
 end
 
 function getNpcType(npc)
-	if not npc then return nil end
+	if not npc then return nil, nil end
 	if IsStalker(npc) then
 		local community = comms[npc:character_community()] or "neutral"
 		local rank = ranks.get_obj_rank_name(npc)
