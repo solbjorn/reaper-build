@@ -90,7 +90,7 @@ function repack_ammo()
 			)
 			for i, v in ipairs(ammo) do
 				if total_size == 0 then
-					g_alife:release(v, true)
+					g_alife:release(g_alife:object(v:id()), true)
 				elseif total_size >= box_size then
 					set_ammo_data(v, "box_size", box_size)
 					total_size = total_size - box_size
