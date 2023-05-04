@@ -100,9 +100,13 @@ function transfer_medkit(first_speaker, second_speaker)
 		first_speaker:change_character_reputation(-10)
 		xr_wounded.help_wounded(second_speaker)
 	end
-
-	--xr_wounded.help_wounded(second_speaker)
-
+	if second_speaker:alive() then
+		if second_speaker:is_talk_enabled() == true then
+			if second_speaker:active_sound_count() == 0 then
+				xr_sound.set_sound_play(second_speaker, "help_thanx")
+			end
+		end
+	end
 end
 function transfer_bandage(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "bandage", "out")
