@@ -498,8 +498,19 @@ local story_by_parent = {
   green    = 9613
 }
 
+local icon_task_by_type = {
+	eliminate_lager = "ui_iconsTotal_eliminate_lager",
+	eliminate_lair = "ui_iconsTotal_mutant",
+	defend_lager = "ui_iconsTotal_defend_lager",
+	kill_stalker = "ui_iconsTotal_kill_stalker",
+	artefact = "ui_iconsTotal_artefact",
+	monster_part = "ui_iconsTotal_monster_part",
+	find_item = "ui_iconsTotal_find_item"
+}
+
 local return_task_by_type = {
   eliminate_lager = "return_for_reward",
+	eliminate_lair = "return_for_reward",
   defend_lager = "return_for_reward",
   kill_stalker = "return_for_reward",
   artefact = "return_for_reward_bring",
@@ -1285,6 +1296,10 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
     objective:set_map_hint(task_desc.text)
     objective:set_map_location("eliminate_lager_location")
     objective:set_object_id(task_desc.selected_target)
+	elseif task_desc.type == "eliminate_lair" then
+		objective:set_map_hint(task_desc.text)
+		objective:set_map_location("eliminate_lair_location")
+		objective:set_object_id(task_desc.selected_target)
   elseif task_desc.type == "defend_lager" then
     objective:set_map_hint(task_desc.text)
     objective:set_map_location("defend_lager_location")
@@ -1389,6 +1404,12 @@ function CRandomTask:task_complete(p1, p2)
         self.task_info[self.active_task_by_type[p1]].status = "completed"
         return true
       end
+		elseif string_find(p1, "eliminate_lair") ~= nil then
+			local oo = alife():object(sel_task.selected_target)
+			if oo and oo.gulag:get_population_comed() == 0 then
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
     elseif string_find(p1, "defend_lager") ~= nil then
       --'  вест выполнен потому что рейд прекратилс€
       if xr_gulag.getGulagState(sel_task.defend_target) == 0 then
@@ -1496,10 +1517,24 @@ function CRandomTask:action_task_show(npc, actor)
   local parent = self:get_parent(npc) 
   for k,v in pairs(self.task_id_by_parent[parent]) do   
     if self:task_avail(actor, npc, nil, nil, self.task_info[v].init_phrase_id, false) then
-      local task_texture, task_rect = get_texture_info("ui_icons_task_"..self.task_info[v].type, "ui_iconsTotal_locations")
-      db_actor:give_talk_message(game.translate_string(self.task_info[v].name), task_texture, task_rect,"iconed_trade_info")
+      local task_texture, task_rect = get_texture_info(icon_task_by_type[self.task_info[v].type])
+      db_actor:give_talk_message(game.translate_string(self.task_info[v].name).."\\n"..game.translate_string("st_task_time").." "..self:transform_number_to_date(self.task_info[v].time), task_texture, task_rect,"iconed_answer_item")
     end
   end
+end
+--' Ray Twitty aka Shadows: преобразование числа в дату сдачи таска
+function CRandomTask:transform_number_to_date(time)
+	if time ~= nil then
+		local d, h, m = time / 86400, time / 3600, time / 60
+		if d >= 1 then
+			return math.ceil(d).." "..game.translate_string("ui_st_days")
+		elseif h >= 1 then
+			return math.ceil(h).." "..game.translate_string("ui_st_hours")
+		else
+			return math.ceil(m).." "..game.translate_string("ui_st_mins")
+		end
+	end
+	return game.translate_string("ui_st_indefinitely")
 end
 --' ѕроверка доступен ли текущий таск дл€ выдачи
 function CRandomTask:task_avail(actor, npc, p1, p2, p3, calculate)
@@ -1572,6 +1607,20 @@ function CRandomTask:check_task_props(task_id)
     end
     self.task_info[task_id].enabled_props = false
     return
+	elseif self.task_info[task_id].type == "eliminate_lair" then
+		if self.task_info[task_id].target_objects == nil then
+			self.task_info[task_id].enabled_props = false
+			return
+		end
+		for k,v in pairs(self.task_info[task_id].target_objects) do
+			local gulag = alife():object(v).gulag
+			if gulag:get_population_comed() > 0 then
+				self.task_info[task_id].enabled_props = true
+				return 
+			end
+		end
+		self.task_info[task_id].enabled_props = false
+		return
   elseif self.task_info[task_id].type == "defend_lager" then
     if self.task_info[task_id].target_objects == nil then
       self.task_info[task_id].enabled_props = false
@@ -1892,6 +1941,15 @@ function CRandomTask:register_target(obj, obj_clsid)
         table_insert(self.task_info[v].target_objects, obj.id)
       end
     end
+		--' ¬озможно регистрируетс€ цель дл€ квеста "вынести логово"
+		for k,v in pairs(self.task_id_by_type["eliminate_lair"]) do
+			if obj:name() == self.task_info[v].target then
+				if self.task_info[v].target_objects == nil then
+					self.task_info[v].target_objects = {}
+				end
+				table_insert(self.task_info[v].target_objects, obj.id)
+			end
+		end
     --' Ћибо регистрируетс€ цель дл€ квеста "защитить лагерь"
     for k,v in pairs(self.task_id_by_type["defend_lager"]) do
       if obj:name() == self.task_info[v].target then

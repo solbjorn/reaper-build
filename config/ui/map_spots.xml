@@ -18,23 +18,26 @@
 	<combat_pointer x="0" y="0" width="11" height="24" heading="1" alignment="c"> 
 		<texture x="607" y="65" width="11" height="24" r="250" g="0" b="0">ui\ui_hud</texture>
 	</combat_pointer>
+	<find_pointer x="0" y="0" width="11" height="24" heading="1" alignment="c"> 
+		<texture x="607" y="65" width="11" height="24" r="242" g="231" b="11">ui\ui_hud</texture>
+	</find_pointer>
 	
 	<crlc_big>
-		<level_map spot="crlc_big_spot"		pointer="quest_pointer"/>
+		<level_map spot="crlc_big_spot"		pointer="find_pointer"/>
 	</crlc_big>
 	<crlc_big_spot  x="0" y="0" width="15" height="15" alignment="c" scale="1" stretch = "1">
 		<texture x="730" y="456" width="115" height="115">ui\ui_common</texture>
 	</crlc_big_spot>
 
 	<crlc_mdl>
-		<level_map spot="crlc_mdl_spot"		pointer="quest_pointer"/>
+		<level_map spot="crlc_mdl_spot"		pointer="find_pointer"/>
 	</crlc_mdl>
 	<crlc_mdl_spot  x="0" y="0" width="8" height="8" alignment="c" scale="1" stretch = "1">
 		<texture x="858" y="392" width="62" height="62">ui\ui_common</texture>
 	</crlc_mdl_spot>
 	
 	<crlc_small>
-		<level_map spot="crlc_small_spot"	pointer="quest_pointer"/>
+		<level_map spot="crlc_small_spot"	pointer="find_pointer"/>
 	</crlc_small>
 	<crlc_small_spot  x="0" y="0" width="4" height="4" alignment="c" scale="1" stretch = "1">
 		<texture x="633" y="789" width="31" height="31">ui\ui_common</texture>
@@ -148,9 +151,14 @@
 		<texture_above r="255" g="255" b="52">ui_mini_sn_spot_above</texture_above>
 	</habar_clear_mini_spot_w>
 
+	<reward_location>
+		<level_map spot="blue_spot"			pointer="quest_pointer"/>
+		<mini_map spot="blue_mini_spot"		pointer="quest_pointer"/>
+	</reward_location>
+
 	<eliminate_lager_location>
-		<level_map spot="eliminate_lager_spot"		pointer="quest_pointer"/>
-		<mini_map spot="eliminate_lager_spot_mini"	pointer="quest_pointer"/>
+		<level_map spot="eliminate_lager_spot"		pointer="combat_pointer"/>
+		<mini_map spot="eliminate_lager_spot_mini"	pointer="combat_pointer"/>
 	</eliminate_lager_location>
 	<eliminate_lager_spot x="0" y="0" width="32" height="32" stretch="1" alignment="c" xform_anim="map_spot_new_xform" xform_anim_cyclic="0">
 		<texture>ui_mapQuest_camp_destroy</texture>
@@ -160,6 +168,19 @@
 		<texture_below r="0" g="255" b="0">ui_mini_sn_spot_below</texture_below>
 		<texture_above r="0" g="255" b="0">ui_mini_sn_spot_above</texture_above>
 	</eliminate_lager_spot_mini>
+	
+	<eliminate_lair_location>
+		<level_map spot="eliminate_lair_spot"		pointer="combat_pointer"/>
+		<mini_map spot="eliminate_lair_spot_mini"	pointer="combat_pointer"/>
+	</eliminate_lair_location>
+	<eliminate_lair_spot x="0" y="0" width="32" height="32" stretch="1" alignment="c" xform_anim="map_spot_new_xform" xform_anim_cyclic="0">
+		<texture>ui_mapQuest_lair_destroy</texture>
+	</eliminate_lair_spot>
+	<eliminate_lair_spot_mini  x="0" y="0" width="11" height="11" stretch="1" alignment="c" xform_anim="map_spot_new_xform" xform_anim_cyclic="0">
+		<texture>ui_sm_mapQuest_lair_destroy</texture>
+		<texture_below r="0" g="255" b="0">ui_mini_sn_spot_below</texture_below>
+		<texture_above r="0" g="255" b="0">ui_mini_sn_spot_above</texture_above>
+	</eliminate_lair_spot_mini>
 
 	<defend_lager_location>
 		<level_map spot="defend_lager_spot"		pointer="quest_pointer"/>
@@ -188,8 +209,8 @@
 	</artefact_spot_mini>
 
 	<kill_stalker_location>
-		<level_map spot="kill_stalker_spot"		pointer="quest_pointer"/>
-		<mini_map spot="kill_stalker_spot_mini"	pointer="quest_pointer"/>
+		<level_map spot="kill_stalker_spot"		pointer="combat_pointer"/>
+		<mini_map spot="kill_stalker_spot_mini"	pointer="combat_pointer"/>
 	</kill_stalker_location>
 	<kill_stalker_spot  x="0" y="0" width="32" height="32" stretch="1" alignment="c" xform_anim="map_spot_new_xform" xform_anim_cyclic="0">
 		<texture>ui_mapQuest_stalker_destroy</texture>
@@ -214,8 +235,8 @@
 	</monster_part_spot_mini>
 
 	<find_item_location>
-		<level_map spot="find_item_spot"		pointer="quest_pointer"/>
-		<mini_map spot="find_item_spot_mini"	pointer="quest_pointer"/>
+		<level_map spot="find_item_spot"		pointer="find_pointer"/>
+		<mini_map spot="find_item_spot_mini"	pointer="find_pointer"/>
 	</find_item_location>
 	<find_item_spot  x="0" y="0" width="32" height="32" stretch="1" alignment="c" xform_anim="map_spot_new_xform" xform_anim_cyclic="0">
 		<texture>ui_mapQuest_item</texture>
@@ -241,8 +262,8 @@
 	</mini_map_spot_border>
 
 	<user>
-		<level_map spot="user_level_spot" pointer="quest_pointer"></level_map>
-		<mini_map spot="user_mini_spot" pointer="quest_pointer"></mini_map>
+		<level_map spot="user_level_spot" pointer="find_pointer"></level_map>
+		<mini_map spot="user_mini_spot" pointer="find_pointer"></mini_map>
 	</user>
 	<user_level_spot x="0" y="0" width="32" height="32" alignment="c">
 	   <texture x="493" y="968" width="32" height="32">ui\ui_common</texture>
@@ -257,7 +278,7 @@
 		<level_map spot="actor_level_spot"/>
 	</actor_location>
 	
-	<actor_location_p hint="actor">
+	<actor_location_p hint="st_map_actor">
 		<level_map spot="actor_level_spot_p"></level_map>
 	</actor_location_p>
 
@@ -390,197 +411,6 @@
 	<treasure_spot_mini  x="0" y="0" width="15" height="15" alignment="c" stretch="1" scale="1">
 		<texture>ui_sm_mapQuest_gold</texture>
 	</treasure_spot_mini>
-
-
-
-	<alife_combat_fight>
-		<level_map spot="alife_combat_fight_spot" pointer="combat_pointer"/>
-		<mini_map  spot="alife_combat_fight_spot_mini"/>
-	</alife_combat_fight>
-	<alife_combat_fight_spot  x="0" y="0" width="5" height="5" alignment="c" stretch="1" scale="1">
-		<texture>ui_mapQuest_gold</texture>
-	</alife_combat_fight_spot>
-	<alife_combat_fight_spot_mini  x="0" y="0" width="15" height="15" alignment="c" stretch="1" scale="1">
-		<texture>ui_sm_mapQuest_gold</texture>
-	</alife_combat_fight_spot_mini>
-
-	<alife_combat_help>
-		<level_map spot="alife_combat_help_spot" pointer="combat_pointer"/>
-		<mini_map  spot="alife_combat_help_spot_mini"/>
-	</alife_combat_help>
-	<alife_combat_help_spot  x="0" y="0" width="5" height="5" alignment="c" stretch="1" scale="1">
-		<texture>ui_mapQuest_gold</texture>
-	</alife_combat_help_spot>
-	<alife_combat_help_spot_mini  x="0" y="0" width="15" height="15" alignment="c" stretch="1" scale="1">
-		<texture>ui_sm_mapQuest_gold</texture>
-	</alife_combat_help_spot_mini>
-
-	<alife_combat_attack>
-		<level_map spot="alife_combat_attack_spot" pointer="combat_pointer"/>
-		<mini_map  spot="alife_combat_attack_spot_mini"/>
-	</alife_combat_attack>
-	<alife_combat_attack_spot  x="0" y="0" width="5" height="5" alignment="c" stretch="1" scale="1">
-		<texture>ui_mapQuest_gold</texture>
-	</alife_combat_attack_spot>
-	<alife_combat_attack_spot_mini  x="0" y="0" width="15" height="15" alignment="c" stretch="1" scale="1">
-		<texture>ui_sm_mapQuest_gold</texture>
-	</alife_combat_attack_spot_mini>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	<debug_stalker hint="invalid hint">
-		<level_map spot="debug_stalker_spot"/>
-	</debug_stalker>
-
-
-	<debug_stalker_spot width="3" height="3" alignment="c"> 
-		<texture r="50" g="255" b="0">ui_minimap_point</texture>
-	</debug_stalker_spot>
-	
-
-	<alife_presentation_monolith>
-		<level_map spot="alife_presentation_monolith_spot"/>
-	</alife_presentation_monolith>
-	<alife_presentation_monolith_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="0" g="255" b="255">ui_minimap_point</texture>
-	</alife_presentation_monolith_spot>
-
-	<alife_presentation_killer>
-		<level_map spot="alife_presentation_killer_spot"/>
-	</alife_presentation_killer>
-	<alife_presentation_killer_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="0" b="255">ui_minimap_point</texture>
-	</alife_presentation_killer_spot>
-
-	<alife_presentation_ecolog>
-		<level_map spot="alife_presentation_ecolog_spot"/>
-	</alife_presentation_ecolog>
-	<alife_presentation_ecolog_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="128" b="0">ui_minimap_point</texture>
-	</alife_presentation_ecolog_spot>
-
-	<alife_presentation_military>
-		<level_map spot="alife_presentation_military_spot"/>
-	</alife_presentation_military>
-	<alife_presentation_military_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="0" b="0">ui_minimap_point</texture>
-	</alife_presentation_military_spot>
-
-	<alife_presentation_dolg>
-		<level_map spot="alife_presentation_dolg_spot"/>
-	</alife_presentation_dolg>
-	<alife_presentation_dolg_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="0" g="128" b="255">ui_minimap_point</texture>
-	</alife_presentation_dolg_spot>
-
-	<alife_presentation_freedom>
-		<level_map spot="alife_presentation_freedom_spot"/>
-	</alife_presentation_freedom>
-	<alife_presentation_freedom_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="0" g="255" b="0">ui_minimap_point</texture>
-	</alife_presentation_freedom_spot>
-
-	<alife_presentation_bandit>
-		<level_map spot="alife_presentation_bandit_spot"/>
-	</alife_presentation_bandit>
-	<alife_presentation_bandit_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="128" b="128">ui_minimap_point</texture>
-	</alife_presentation_bandit_spot>
-
-	<alife_presentation_stalker>
-		<level_map spot="alife_presentation_stalker_spot"/>
-	</alife_presentation_stalker>
-	<alife_presentation_stalker_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="128" g="0" b="255" >ui_minimap_point</texture>
-	</alife_presentation_stalker_spot>
-
-	<alife_presentation_actor_dolg>
-		<level_map spot="alife_presentation_actor_dolg_spot"/>
-	</alife_presentation_actor_dolg>
-	<alife_presentation_actor_dolg_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="128" g="0" b="255" >ui_minimap_point</texture>
-	</alife_presentation_actor_dolg_spot>
-	
-	<alife_presentation_zombied>
-		<level_map spot="alife_presentation_zombied_spot"/>
-	</alife_presentation_zombied>
-	<alife_presentation_zombied_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="255" b="0" >ui_minimap_point</texture>
-	</alife_presentation_zombied_spot>
-
-	<alife_presentation_trader>
-		<level_map spot="alife_presentation_monstr_spot"/>
-	</alife_presentation_trader>
-	<alife_presentation_arena_enemy>
-		<level_map spot="alife_presentation_monstr_spot"/>
-	</alife_presentation_arena_enemy>
-	<alife_presentation_monstr>
-		<level_map spot="alife_presentation_monstr_spot"/>
-	</alife_presentation_monstr>
-	<alife_presentation_monstr_spot x="0" y="0" width="3" height="3" alignment="c" stretch="1" scale="1"> 
-		<texture r="255" g="255" b="255">ui_minimap_point</texture>
-	</alife_presentation_monstr_spot>
-
-
-
-	<alife_presentation_respawn_on>
-		<level_map spot="alife_presentation_respawn_on_spot"/>
-	</alife_presentation_respawn_on>
-	<alife_presentation_respawn_on_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="525" y="904" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_respawn_on_spot>
-	
-	<alife_presentation_respawn_off>
-		<level_map spot="alife_presentation_respawn_off_spot"/>
-	</alife_presentation_respawn_off>
-	<alife_presentation_respawn_off_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="665" y="853" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_respawn_off_spot>
-
-
-
-	<alife_presentation_smart_on>
-		<level_map spot="alife_presentation_smart_on_spot"/>
-	</alife_presentation_smart_on>
-	<alife_presentation_smart_on_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="525" y="872" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_smart_on_spot>
-	
-	<alife_presentation_smart_off>
-		<level_map spot="alife_presentation_smart_off_spot"/>
-	</alife_presentation_smart_off>
-	<alife_presentation_smart_off_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="493" y="968" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_smart_off_spot>
-
-
-	<alife_presentation_smart_ready>
-		<level_map spot="alife_presentation_smart_ready_spot"/>
-	</alife_presentation_smart_ready>
-	<alife_presentation_smart_ready_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="493" y="968" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_smart_ready_spot>
-
-	<alife_presentation_smart_target>
-		<level_map spot="alife_presentation_smart_target_spot"/>
-	</alife_presentation_smart_target>
-	<alife_presentation_smart_target_spot x="0" y="0" width="10" height="10" alignment="c" stretch="1" scale="1">
-		<texture x="493" y="936" width="32" height="32">ui\ui_common</texture>
-	</alife_presentation_smart_target_spot>
 
 	<grenade_location>
 		<level_map spot="grenade_spot"		pointer="quest_pointer"/>

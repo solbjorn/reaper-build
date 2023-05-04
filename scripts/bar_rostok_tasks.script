@@ -1,0 +1,70 @@
+function proceed()
+    local actor = db.actor
+	-- Bar Rostok
+	-- выдача информации с флешки профессора
+	if not has_alife_info("bar_ecolog_research_normal") and
+		not has_alife_info("bar_ecolog_research_corrupted")
+	then
+		if has_alife_info("bar_rescue_research_corruped") and actor:object("bar_ecolog_flash") then
+			actor:give_info_portion("bar_ecolog_research_corrupted")
+		end
+	end
+end
+
+function process_info_portion(info_id)
+	if  info_id == "bar_dolg_petrenko" then
+		level_tasks.add_location(506, "green_location", "bar_petrenko")
+		return true
+	elseif info_id == "bar_dolg_community_start" then
+		level_tasks.remove_location(506, "green_location", "bar_petrenko")
+		return true
+	end
+	if info_id == "bar_x16_documents_start" then
+		level_tasks.remove_location_safe(112, "gar_spot_swamp_location")
+		level_tasks.remove_location_safe(114, "gar_spot_car_graveyard_location")
+		level_tasks.remove_location_safe(115, "gar_spot_dolg_blokpost_location")
+		level_tasks.remove_location_safe(116, "gar_spot_angar_location")
+		level_tasks.remove_location_safe(117, "gar_spot_bandit_agr_location")
+		level_tasks.remove_location_safe(118, "gar_spot_tunnel_location")
+		level_tasks.remove_location_safe(119, "gar_spot_dogs_forest_location")
+		level_tasks.remove_location_safe(120, "gar_spot_trash1_location")
+		level_tasks.remove_location_safe(121, "gar_spot_trash2_location")
+		level_tasks.remove_location_safe(122, "gar_spot_trash3_location")
+		return true
+	end
+	return false
+end
+
+function has_hunter_rifle(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("hunters_toz") ~= nil
+	end
+	return false
+end
+
+function has_lucky_pda(task, objective)
+	return db.actor:object("bar_lucky_pda") ~= nil
+end
+
+function has_tiran_pda(task, objective)
+	return db.actor:object("bar_tiran_pda") ~= nil
+end
+
+function has_x16_documents(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("lab_x16_documents") ~= nil
+	end
+	return false
+end
+
+function has_professor_research(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("bar_ecolog_flash") ~= nil
+	end	
+	return false
+end
+
+function has_dolg_arhive_documents(task, objective)
+	return db.actor:object("dolg_arhive_documents") ~= nil
+end
+
