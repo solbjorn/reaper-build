@@ -936,6 +936,43 @@ auto_attach				= false
 
 ; Окончание описания детекторов
 
+[sigaret]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "food and drugs\sigaret"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = weapons\sigaret\sigaret.ogf
+cost					= 0
+inv_name				= "sigaret"
+inv_name_short			= "sigaret"
+inv_weight				= 0.05
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 11
+inv_grid_y				= 9
+
+attach_angle_offset		= 9.0, 0.0, 0.0
+attach_position_offset	= 0.025, -0.02, 0.01
+attach_bone_name		= bip01_r_finger11
+auto_attach				= false
+
+
+
+; eatable item
+eat_health = 0.05
+eat_satiety = 0.2
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= 4
+animation_slot		= 4
+
+;hud item
+hud = wpn_sigaret_hud
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;	OTHERS
@@ -953,6 +990,20 @@ anim_hide			= vodka_4
 anim_play			= vodka_5
 anim_prepare		= vodka_5
 anim_eat			= vodka_3
+
+[wpn_sigaret_hud]:identity_immunities
+fire_point               = 0.0, 0.0, 0.06
+fire_bone                = bip01_head
+orientation              = 0, 0, 0
+position                 = 0, 0, 0
+visual                   = weapons\sigaret\sigaret_hud.ogf
+
+anim_idle			= kurit_2
+anim_show			= kurit_1
+anim_hide			= kurit_4
+anim_play			= kurit_5
+anim_prepare		= kurit_5
+anim_eat			= kurit_3
 
 [testsak_l01_escape]:bandage
 $spawn 			= "zones\testsak_l01_escape"
