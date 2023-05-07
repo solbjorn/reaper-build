@@ -74,6 +74,16 @@ function item_slot(obj)
 	inventory.on_item_slot(obj)
 end
 
+function take_item_from_box(box, item)
+	if box:section() == "m_inventory_box" and box:is_inv_box_empty() then
+		local sim = g_alife
+		level.start_stop_menu(level.main_input_receiver(), true)
+		sim:create("treasure_item", box:position(), db_actor:level_vertex_id(),
+			   db_actor:game_vertex_id())
+		sim:release(sim:object(box:id()))
+	end
+end
+
 function new_game()
 	bolt_ending.del_bolt()
 end
