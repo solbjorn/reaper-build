@@ -32,10 +32,8 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder_q(npc, storage)
- 	local new_action = mob_combat(npc, storage)
-	storage.action = new_action
-	
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	storage.action = mob_combat(npc, storage)
+	storage.actions[storage.action] = true
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
@@ -50,4 +48,3 @@ function disable_scheme(npc, scheme)
 		st.enabled = false
 	end
 end
-

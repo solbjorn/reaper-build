@@ -260,6 +260,7 @@ end
 function action_wait:net_destroy(npc)
 	kamps[self.a.center_point]:removeNpc(npc)
 end
+
 --added by xStream--
 --Идет к бездыханному товарищу
 class "action_go_to_deadman" (action_base)
@@ -530,6 +531,7 @@ function CKampManager:getDestVertex(npc_id, radius)
 	local npc_kamp_pos = self.npc[npc_id] and self.npc[npc_id].position_id
 	if npc_kamp_pos == nil then
 		abort("get dest Vertex: npc [%s] not camp member or has no position", npc_id)
+		return nil
 	end
 	return level.vertex_in_direction(self.center, pv[npc_kamp_pos], radius)
 end
@@ -673,7 +675,7 @@ function CKampManager:proceedRole(npc, director)
 	return state, sound
 end
 
-local particle_smoke = particles_object("weapons\\generic_sigarets")
+local particle_smoke
 
 function CKampManager:updateNpc(npc)
 	-- Просим лагерь выбрать текущее состояние. Менять состояние лагеря
@@ -719,8 +721,10 @@ function CKampManager:updateNpc(npc)
 		substate = 1
 		xr_kamp.kamp_stalkers[npc_id] = false
 	elseif state == "eat_sigaret" then
-		local sigaret = npc:object("sigaret")
-		particle_smoke:play_at_pos(sigaret:position())
+		if not particle_smoke then
+			particle_smoke = particles_object("weapons\\generic_sigarets")
+		end
+		particle_smoke:play_at_pos((npc:object("sigaret")):position())
 	elseif state == "declarate" then
 		if camp_npc.new == true then
 			if sound == "pre_joke" then
@@ -1010,8 +1014,8 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_prop_on_position_true)
 	action:add_effect 		(wp_prop_kamp_end_true)
 	manager:add_action (operator_wait, action)
-	xr_logic.subscribe_action_for_events(object, storage, action)
-	
+	storage.actions[ action ] = true
+
 	action = this.action_go_position ("action_go_kamp", storage)
 	action:add_precondition		(wp_stalker_ids_property_alive_true)
 	action:add_precondition		(wp_stalker_ids_property_danger_false)

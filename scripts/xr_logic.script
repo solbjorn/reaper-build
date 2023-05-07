@@ -156,10 +156,12 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
     end
   end
 
-  -- Поскольку в момент активации схемы могли работать ранее установленные общие схемы, нужно их все отключить:
-  disable_generic_schemes(npc, stype)
-  -- Включаем все общие схемы (раненный, коллбек на попадание и т.д.):
-  enable_generic_schemes(actual_ini, npc, stype, section_logic)
+	if stype < modules.stype_restrictor then
+		-- Поскольку в момент активации схемы могли работать ранее установленные общие схемы, нужно их все отключить:
+		disable_generic_schemes(npc, stype)
+		-- Включаем все общие схемы (раненный, коллбек на попадание и т.д.):
+		enable_generic_schemes(actual_ini, npc, stype, section_logic)
+	end
 
   -- Инициализация торговли
   if stype == modules.stype_stalker or
@@ -243,99 +245,113 @@ end
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В disable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function enable_generic_schemes(ini, npc, stype, section)
-	if stype == modules.stype_stalker then
-		blowout_scheme.set_hide(npc, ini, "blowout_scheme", section)
-
-    xr_danger.set_danger(npc, ini, "danger", "danger")
-
-    local combat_section = utils.cfg_get_string(ini, section, "on_combat", npc, false, "")
-    xr_combat.set_combat_checker(npc, ini, "combat", combat_section)
-
-    local use_section = utils.cfg_get_string(ini, section, "on_use", npc, false, "")
-    if use_section then
-      xr_use.set_use_checker(npc, ini, "use", use_section)
-    end
-    local info_section = utils.cfg_get_string(ini, section, "info", npc, false, "")
-    if info_section then
-      stalker_generic.set_npc_info(npc, ini, "info", info_section)
-    end
-
-    local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
-    if hit_section then
-      xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
-    end
-
-    local actor_dialogs_section = utils.cfg_get_string (ini, section, "actor_dialogs", npc, false, "")
-    if actor_dialogs_section then
-      xr_meet.set_actor_dialogs(npc, ini, "actor_dialogs", actor_dialogs_section)
-    end
-
-    local wounded_section = utils.cfg_get_string (ini, section, "wounded", npc, false, "")
-    xr_wounded.set_wounded (npc, ini, "wounded", wounded_section)
-
-    xr_abuse.set_abuse(npc, ini, "abuse", section)
-
-    local meet_section = utils.cfg_get_string (ini, section, "meet", npc, false, "")
-    xr_meet.set_meet (npc, ini, "meet", meet_section)
-
-    local death_section = utils.cfg_get_string (ini, section, "on_death", npc, false, "")
-    xr_death.set_death (npc, ini, "death", death_section)
-
-    local heli_hunter_section = utils.cfg_get_string(ini, section, "heli_hunter", npc, false, "")
-    xr_heli_hunter.set_scheme(npc, ini, "heli_hunter", heli_hunter_section)
-
-    local combat_ignore_section = utils.cfg_get_string(ini, section, "combat_ignore", npc, false, "")
-    if combat_ignore_section then
-      xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore", combat_ignore_section)
-    end
-
-		watcher_act.set_scheme(npc, ini, "watcher_act", "watcher_act")
-		xr_punch_tm.set_scheme(npc, nil, "punch_tm")
-		xrs_ai.enable_schemes(ini, npc, stype, section)
-	elseif stype == modules.stype_mobile then
-    local combat_section = utils.cfg_get_string(ini, section, "on_combat", npc, false, "")
-    if combat_section then
-      mob_combat.set_scheme(npc, ini, "mob_combat", combat_section)
-    end
-
-    local death_section = utils.cfg_get_string(ini, section, "on_death", npc, false, "")
-    mob_death.set_scheme(npc, ini, "mob_death", death_section)
-
-    local trade_section = utils.cfg_get_string(ini, section, "on_trade", npc, false, "")
-    if trade_section then
-      mob_trade.set_scheme(npc, ini, "mob_trade", trade_section)
-    end
-
-    local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
-    if hit_section then
-      xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
-    end
-
-    mob_panic.set_scheme(npc, ini, "mob_panic")
-	elseif stype == modules.stype_item then
-    local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
-    if hit_section then
-      ph_on_hit.set_scheme(npc, ini, "ph_on_hit", hit_section)
-    end
-	elseif stype == modules.stype_heli then
-    local hit_section = utils.cfg_get_string(ini, section, "on_hit", npc, false, "")
-    if hit_section then
-      xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
-    end
+	local function get_field_string(field)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or nil
 	end
+	local field_value
+	if not section or not ini:section_exist(section) then
+		if stype == modules.stype_stalker then
+			blowout_scheme.set_hide(npc, ini, "blowout_scheme", section)
+
+			assign_storage_and_bind(npc, ini, "danger", "danger")
+			xr_combat.set_combat_checker(npc, ini, "combat", nil)
+			xr_wounded.set_wounded (npc, ini, "wounded", nil)
+			assign_storage_and_bind(npc, ini, "abuse", nil)
+			assign_storage_and_bind(npc, ini, "meet", nil)
+			assign_storage_and_bind(npc, ini, "death", nil)
+			xr_heli_hunter.set_scheme(npc, ini, "heli_hunter", nil)
+
+			watcher_act.set_scheme(npc, ini, "watcher_act", "watcher_act")
+			xr_punch_tm.set_scheme(npc, nil, "punch_tm")
+			xrs_ai.enable_schemes(ini, npc, stype, section)
+		elseif stype == modules.stype_mobile then
+			mob_death.set_scheme(npc, ini, "mob_death", nil)
+		end
+	else
+		if stype == modules.stype_stalker then
+			blowout_scheme.set_hide(npc, ini, "blowout_scheme", section)
+
+			assign_storage_and_bind(npc, ini, "danger", "danger")
+			xr_combat.set_combat_checker(npc, ini, "combat", get_field_string("on_combat"))
+
+			field_value = get_field_string("on_use")
+			if field_value then
+				xr_use.set_use_checker(npc, ini, "use", field_value)
+			end
+
+			field_value = get_field_string("info")
+			if field_value then
+				stalker_generic.set_npc_info(npc, ini, "info", field_value)
+			end
+
+			field_value = get_field_string("on_hit")
+			if field_value then
+				xr_hit.set_hit_checker(npc, ini, "hit", field_value)
+			end
+
+			field_value = get_field_string("actor_dialogs")
+			if field_value then
+				xr_meet.set_actor_dialogs(npc, ini, "actor_dialogs", field_value)
+			end
+
+			xr_wounded.set_wounded (npc, ini, "wounded", get_field_string("wounded"))
+			assign_storage_and_bind(npc, ini, "abuse", section)
+			assign_storage_and_bind(npc, ini, "meet", get_field_string("meet"))
+			assign_storage_and_bind(npc, ini, "death", get_field_string("on_death"))
+			xr_heli_hunter.set_scheme(npc, ini, "heli_hunter", get_field_string("heli_hunter"))
+
+			field_value = get_field_string("combat_ignore")
+			if field_value then
+				xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore", field_value)
+			end
+
+			watcher_act.set_scheme(npc, ini, "watcher_act", "watcher_act")
+			xr_punch_tm.set_scheme(npc, nil, "punch_tm")
+			xrs_ai.enable_schemes(ini, npc, stype, section)
+		elseif stype == modules.stype_mobile then
+			field_value = get_field_string("on_combat")
+			if field_value then
+				mob_combat.set_scheme(npc, ini, "mob_combat", field_value)
+			end
+
+			mob_death.set_scheme(npc, ini, "mob_death", get_field_string("on_death"))
+
+			field_value = get_field_string("on_trade")
+			if field_value then
+				mob_trade.set_scheme(npc, ini, "mob_trade", field_value)
+			end
+
+			field_value = get_field_string("on_hit")
+			if field_value then
+				xr_hit.set_hit_checker(npc, ini, "hit", field_value)
+			end
+		elseif stype == modules.stype_item then
+			field_value = get_field_string("on_hit")
+			if field_value then
+				ph_on_hit.set_scheme(npc, ini, "ph_on_hit", field_value)
+			end
+		elseif stype == modules.stype_heli then
+			field_value = get_field_string("on_hit")
+			if field_value then
+				xr_hit.set_hit_checker(npc, ini, "hit", field_value)
+			end
+		end
+	end -- if not section or not section exists
 end
 
 function activate_by_section(npc, ini, section, loading)
-  if loading == nil then
-    abort("xr_logic: activate_by_section: loading field is nil, true or false expected")
-  end
+	if loading == nil then
+		abort("xr_logic: activate_by_section: loading field is nil, true or false expected")
+		return
+	end
 
-  local npc_storage = db_storage[npc:id()]
-  if npc_storage.active_section then
-    abort("xr_logic: activate_by_section: while processing section '%s': character '%s': trying to " ..
-      "activate more than one schemes at once (section '%s' is active)",
-      section, npc:name(), npc_storage.active_section)
-  end
+	local npc_storage = db_storage[npc:id()]
+	if npc_storage.active_section then
+		abort("xr_logic: activate_by_section: while processing section '%s': character '%s': trying to " ..
+			"activate more than one schemes at once (section '%s' is active)",
+			section, npc:name(), npc_storage.active_section)
+		return
+	end
 
   if not loading then
     npc_storage.activation_time = time_global()
@@ -362,11 +378,11 @@ function activate_by_section(npc, ini, section, loading)
 			return
 		end
 
-    -- Загрузить оверрайды:
-    npc_storage.overrides = cfg_get_overrides(ini, section, npc)
-
-    -- Сбросить общие схемы:
-    reset_generic_schemes_on_scheme_switch(npc, scheme, section)
+		local stype = npc_storage.stype
+		if stype < modules.stype_heli then
+			-- Сбросить общие схемы:
+			reset_generic_schemes_on_scheme_switch(npc, scheme, section)
+		end
 
     -- schemes[scheme] даст имя файла (модуля), в котором реализована схема
     -- _G[] даст указатель на неймспейс (таблицу) этого модуля
@@ -374,9 +390,14 @@ function activate_by_section(npc, ini, section, loading)
     npc_storage.active_section = section
     npc_storage.active_scheme = scheme
 
-    if npc_storage.stype == modules.stype_stalker then
-      -- чтобы избежать дальнейшего движения по пути при установке рестрикторов
-      utils.send_to_nearest_accessible_vertex(npc, npc:level_vertex_id())
+		if stype == modules.stype_stalker then
+			npc_storage.overrides = cfg_get_overrides(ini, section, npc)
+			-- чтобы избежать дальнейшего движения по пути при установке рестрикторов
+			local lvid = npc:level_vertex_id()
+			if not npc:accessible(lvid) then
+				lvid = npc:accessible_nearest( level.vertex_position(lvid), vector() )
+			end
+			npc:set_dest_level_vertex_id(lvid)
 
       issue_event(npc, npc_storage[scheme], "activate_scheme", loading, npc)
     else
@@ -403,15 +424,13 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 
   if stype == modules.stype_stalker then
     xr_meet.reset_meet(npc, scheme, st, section)
-    xr_abuse.reset_abuse(npc, scheme, st, section)
     xr_wounded.reset_wounded(npc, scheme, st, section)
     xr_death.reset_death(npc, scheme, st, section)
     xr_danger.reset_danger(npc, scheme, st, section)
-    stalker_generic.reset_threshold(npc, scheme, st, section)
-    stalker_generic.reset_show_spot(npc, scheme, st, section)
+		stalker_generic.reset_threshold_and_show_spot(npc, scheme, st, section)
   elseif stype == modules.stype_mobile then
-    xr_meet.dialog_manager_reset(npc, stype)
-    mob_release(npc)
+		if npc.is_trader then npc:restore_default_start_dialog() end
+		if npc:get_script() then npc:script(false, script_name()) end
     if npc:clsid() == clsid_bloodsucker_s then
       if scheme == "nil" then
         npc:set_manual_invisibility(false)
@@ -420,7 +439,12 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
       end
     end
 
-    mob_panic.reset_panic(npc, scheme, st, section)
+		local panic_threshold = (st.ini:line_exist(section, "panic") and st.ini:r_float(section, "panic")) or nil
+		if panic_threshold then
+			npc:set_custom_panic_threshold(panic_threshold)
+		else 
+			npc:set_default_panic_threshold()
+		end
   elseif stype == modules.stype_item then
 		if st.ph_door == nil and st.ph_button == nil then
 			npc:set_callback(callback.use_object, nil)
@@ -429,7 +453,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
     if npc:clsid() == clsid_car then
       -- Другие объекты под скрипт не берутся, поэтому для них не надо сбрасывать
       npc:destroy_car()
-      mob_release(npc)
+			if npc:get_script() then npc:script(false, script_name()) end
     end
   end
 end
@@ -449,12 +473,7 @@ function assign_storage_and_bind(npc, ini, scheme, section)
 		npc_storage[scheme] = st
 
     -- Схема стартует впервые - прибиндить
-
-		if _G[schemes[scheme]].add_to_binder_q then
-			_G[schemes[scheme]].add_to_binder_q(npc, st)
-		else
-			_G[schemes[scheme]].add_to_binder(npc, ini, scheme, section, st)
-		end
+		_G[schemes[scheme]].add_to_binder_q(npc, st)
   else
     st = npc_storage[scheme]
 		st.scheme = scheme
@@ -463,14 +482,6 @@ function assign_storage_and_bind(npc, ini, scheme, section)
   end
 
   return st
-end
-
-function subscribe_action_for_events(npc, storage, new_action)
-  if not storage.actions then
-    storage.actions = {}
-  end
-
-  storage.actions[new_action] = true
 end
 
 function unsubscribe_action_from_events(npc, storage, new_action)
@@ -566,24 +577,18 @@ function pick_section_from_condlist(actor, npc, condlist)
 				for inum = 1, num_infop_set do
 					infop = cond.infop_set[inum]
 					if infop.func then
-						local func = nil
+						local func
 						local module, fname = string_match(infop.func, "(.+)[.](.+)")
 						if not fname then
 							func = xr_effects[infop.func]
 						else
-							if _G[module] and _G[module][fname] then
-								func = _G[module][fname]
-							end
+							func = _G[module] and _G[module][fname]
 						end
 						if not func then
 							abort("object '%s': pick_section_from_condlist: function '%s' is " ..
 								"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
 						end
-						if infop.params then
-							func(actor, npc, infop.params)
-						else
-							func(actor, npc)
-						end
+						func(actor, npc, infop.params)
 					elseif infop.required then
 						if not has_alife_info(infop.name) then
 							db_actor:give_info_portion(infop.name)
@@ -612,7 +617,6 @@ function switch_to_section(npc, st, section)
 	if section == nil or section == "" then
 		return false
 	end
-	if section == "sr_aes_deadzone" and has_alife_info("strelok_pda_have") then return false end
 	local npc_storage = db_storage[npc:id()]
 	local active_section = npc_storage.active_section
   if active_section == section then
@@ -795,10 +799,6 @@ end
 --   1 = { infop_check = { 1 = {"infop1" = true} }, infop_set = { 1 = {"infop2" = false } }, section = "section1" },
 --   2 = { infop_check = { 1 = {"infop3" = true}, 2 = {"infop4" = false} }, infop_set = {}, section = "section2" },
 -- }
-function parse_condlist(npc, section, field, src)
-	return parse_condlist_q(src)
-end
-
 function parse_condlist_q(src)
 	local lst = {}
 

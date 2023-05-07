@@ -142,22 +142,31 @@ end
 
 
 function add_to_binder_q(npc, storage)
-  local new_action = snd_source (npc, storage)
-  -- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
-  xr_logic.subscribe_action_for_events(npc, storage, new_action)
-  
+	storage.actions[ snd_source(npc, storage) ] = true
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
-  local st    = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-  st.logic    = xr_logic.cfg_get_switch_conditions(ini, section, npc)
-  st.theme    = utils.cfg_get_string(ini, section, "snd", npc, false, "")
-  st.looped   = utils.cfg_get_bool (ini, section, "looped", npc, false, false)
-  st.random   = utils.cfg_get_bool (ini, section, "random", npc, false, true)
-  st.pause_min = utils.cfg_get_number (ini, section, "min_idle", npc, false, 0)
-  st.pause_max = utils.cfg_get_number (ini, section, "max_idle", npc, false, 0)
-  st.no_hit   = utils.cfg_get_bool (ini, section, "no_hit", npc, false, true)
-  if st.pause_max < st.pause_min then
+	local function get_field_bool(field, default)
+		if ini:line_exist(section, field) then return ini:r_bool(section, field) end
+		return default or false
+	end
+	local function get_field_number(field, default)
+		return (ini:line_exist(section, field) and ini:r_float(section, field)) or default
+	end
+	local st    = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic    = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	if section and ini:section_exist(section) then
+		st.theme    = (ini:line_exist(section, "snd") and ini:r_string(section, "snd")) or nil
+		st.looped   = get_field_bool("looped", false)
+		st.random   = get_field_bool("random", true)
+		st.pause_min = get_field_number("min_idle", 0)
+		st.pause_max = get_field_number("max_idle", 0)
+		st.no_hit   = get_field_bool("no_hit", true)
+	else
+		abort("ph_sound.set_scheme: missing valid section - object: %s, scheme: %s, section %s", npc, scheme, tostring(section))
+		return
+	end
+	if st.pause_max < st.pause_min then
 		abort("ph_sound.set_scheme: invalid time range (pause_max<pause_min) - object: %s, scheme: %s, section %s", npc, scheme, tostring(section))
-    end     
+	end
 end

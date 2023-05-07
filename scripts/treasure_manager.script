@@ -256,6 +256,7 @@ function CTreasure:__init()
 	--' Итерируемся по всем настройкам фраз
 	if not self_ini:section_exist("list") then
 		abort("There is no section [list] in treasure_manager.ltx")
+		return
 	end
 	local n = self_ini:line_count("list")
 	local result, id, value
@@ -673,6 +674,7 @@ function CTreasure:dialog(npc)
 			then
 				if tonumber(treasure_prob) == 100 then
 					self:give_treasure(k)
+					return
 				else
 					avail[#avail + 1] = {k = k, prob = treasure_prob}
 					tr_sum = tr_sum + treasure_prob

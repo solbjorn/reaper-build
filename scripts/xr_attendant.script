@@ -1,0 +1,401 @@
+----------------------------------------------------------------------
+--	created:	2005/02/09
+--	created:	9:2:2005   18:50
+--	filename: 	x:\gamedata\scripts\xr_attendant.script
+--	file path:	x:\gamedata\scripts
+--	file base:	xr_attendant
+--	file ext:	script
+--	author:		“ундук ¬ладимир aka Sidorovich
+--	
+--	purpose:	схема сопровождающего.
+----------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+-- Ёвалуатор ожидани€ лидера
+class "evaluator_leader" (property_evaluator)
+--------
+function evaluator_leader:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.time = 0
+end
+--------
+function evaluator_leader:evaluate ()
+    -- Ћидер уже есть
+    if self.st.leader_id ~= nil then return true end
+
+    -- ≈сли задан story id лидера, то будем его щупать. 
+    -- ¬ результате должны получить его id
+    if self.st.leader ~= nil then 
+       local sim = alife ()
+       if sim then
+          local se_obj = sim:story_object (tonumber(self.st.leader))
+          if se_obj then
+             if level.object_by_id(se_obj.id) ~= nil then
+                self.st.leader_id = se_obj.id
+                return true
+             end
+          end
+       end
+       return false
+    end         
+    abort ("Don't use followers as patrol soldier in gulag system. Use XR_PATROL scheme")
+end
+-----------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------
+-- Ёвалуатор следовани€ за лидером
+class "evaluator_follow" (property_evaluator)
+--------
+function evaluator_follow:__init (name, storage) super (nil, name)
+    self.st = storage
+end
+--------
+function evaluator_follow:evaluate ()
+	return self.st.section == db.storage[self.object:id()].active_section
+end
+-----------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+-- Ёкшен ожидани€ лидера
+class "action_wait" (action_base)
+--------
+function action_wait:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.was_reset  = false
+    self:reset_scheme()
+end
+--------
+function action_wait:initialize ()
+    action_base.initialize (self)
+end
+--------
+function action_wait:execute ()
+    action_base.execute (self)
+
+	if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+		return
+	end
+
+	if not self.was_reset then
+		self:reset_scheme ()
+	end
+
+end
+--------
+function action_wait:finalize ()
+    action_base.finalize (self)
+end
+--------
+function action_wait:reset_scheme ()
+    self.was_reset = true
+end
+--------
+function action_wait:activate_scheme ()
+    self.was_reset = false
+end
+-----------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------
+-- Ёкшен движени€ за лидером
+class "action_follow" (action_base)
+--------
+function action_follow:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.was_reset  = false
+end
+--------
+function action_follow:initialize ()
+    action_base.initialize (self)
+    self:reset_scheme ()
+end
+--------
+function action_follow:execute ()
+    action_base.execute (self)
+    
+    if not self.was_reset then
+       self:reset_scheme()
+    end
+    
+    if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+       self.st.leader_id = nil
+       return 
+    end
+    
+    -- FIXME !!! 
+    -- проверим, а жив ли еще старшќй.
+    local leader = level.object_by_id(self.st.leader_id)
+    if leader == nil then
+       self:free ()
+       return 
+    end
+       
+    if self.st.stub_for_corpse == false then
+       if leader == nil or leader:alive () == false then
+          self.st.signals["leader_dead"] = true
+          --self:free ()
+          return 
+       end 
+    end   
+    
+    -- проверим нахождение нас в списке
+    self:check_list ()
+    
+    if self.st.leader_section == nil then
+       self.st.leader_section = db.storage[self.st.leader_id].active_section
+    end
+           
+    if db.storage[self.st.leader_id].active_section ~= self.st.leader_section then
+       self.st.signals["leader_section_changed"] = true 
+       self:free ()
+       return
+    end    
+    
+    
+    --получим целевую точку, дистанцию до нее и позицию.
+    local vid, vdist, vpos = self:calculate_position ()
+    if self.state == 0 then
+       if vdist > 1 then 
+          self.object:set_dest_level_vertex_id (vid)
+          self.object:set_desired_position (vpos)
+          local dir
+          if self.st.stub_for_corpse == true then 
+             local pos = leader:position ()
+             local cen = leader:center ()
+             dir = cen:sub (pos)
+             dir:normalize ()
+          else
+             dir = leader:direction ()
+          end   
+          self.object:set_desired_direction (dir)
+          self.object:set_detail_path_type (move.line)
+          self.object:set_path_type (game_object.level_path)
+          if vdist > 20 then
+             state_mgr.set_state (self.object, self.st.animation_sprint)
+          elseif vdist < 3 then
+             state_mgr.set_state (self.object, self.st.animation_move)
+          elseif vdist > 5 then
+             state_mgr.set_state (self.object, self.st.animation_run)
+          end   
+       else
+          self.state = 1
+       end        
+    else
+       if vdist > 3 then 
+          self.state = 0
+       else
+          -- FIXME (remove stub for corpse)
+          if self.st.stub_for_corpse == true then
+             if leader == nil or leader:alive () == false then
+                self.st.signals["leader_dead"] = true
+                --self:free ()
+                return 
+             end 
+          end   
+       
+          if xr_meet.is_meet (leader) == true then
+             state_mgr.set_state (self.object, self.st.state_if_leader_in_meet, nil, nil, db_actor)
+          else   
+             state_mgr.set_state (self.object, "idle")
+          end  
+       end   
+    end    
+        
+end
+--------
+function action_follow:finalize ()
+    action_base.finalize (self)
+    if self.index ~= nil then
+       self.index = nil
+    end   
+end
+--------
+function action_follow:calculate_position ()
+	-- получим от лидера ноду и направление
+	local leader = level.object_by_id(self.st.leader_id)
+	local l_vid = leader:level_vertex_id ()
+	local l_dir = leader:direction ()
+	-- а также количество народу.
+	local size = #db.storage[self.st.leader_id].followers
+
+	local dir = vector ():set (0, 0, 0)
+	local dist = self.st.distance
+	-- если идем цепью, то одно, если обычным образом, то другое
+	if self.st.formation == true then
+		dir = vector_rotate_y (l_dir, 90.0)
+		dir.y = 0
+		dir:normalize ()
+		local half = size / 2
+		if bit_and (self.index, 1) == 1 then
+			dir.x = -dir.x
+			dir.z = -dir.z
+		end
+		dist = self.st.distance * half
+	else
+		if size == 1 then
+				dir = vector_rotate_y (l_dir, 179.0)
+		else
+				dir = vector_rotate_y (l_dir, 90.0 + (180 / (size + 1)) * self.index)
+		end
+	end
+
+	if self.object:accessible (l_vid) == false then
+		l_vid = self.object:level_vertex_id ()
+		if self.object:accessible (l_vid) == false then
+			l_vid = self.object:nearest_accessible_position ()
+		else
+			l_dir = level.vertex_position (l_vid)
+			return l_vid, l_dir:distance_to (self.object:position ()), l_dir
+		end
+	end
+
+	local need_id = self.object:vertex_in_direction (l_vid, dir, dist)
+	if need_id == -1 then
+		need_id = l_vid
+	else
+		if self.object:accessible (need_id) == false then
+			abort ("FOLLOWER %s, ACCESSIBLE VERTEX ID ERROR !!!", self.object:name ())
+		end
+	end
+
+	if self.object:accessible (need_id) == false then
+		need_id = leader:level_vertex_id ()
+		if self.object:accessible (need_id) == false then
+			need_id = self.object:nearest_accessible_position ()
+		end
+	end
+
+	l_dir = level.vertex_position (need_id)
+	return need_id, l_dir:distance_to (self.object:position ()), l_dir
+end
+--------
+function action_follow:check_list ()
+	-- возьмем хранилище лидера
+	local storage = db.storage[self.st.leader_id]
+	-- и наш айдишник
+	local id = self.object:id ()
+	-- если у лидера нет таблицы сопровождающих, то создадим ее
+	-- и занесем туда себ€ любимого под номером 1
+	if storage.followers == nil then
+		storage.followers = { id }
+		self.index = 1
+		return
+	end
+	-- иначе шаримс€ в таблице и ищем себ€
+	for a = 1, #storage.followers, 1 do
+		if storage.followers[a] == id then
+			self.index = a
+			return
+		end
+	end
+	-- не нашли... добавим.
+	storage.followers[#storage.followers + 1] = id
+	self.index = #storage.followers
+end
+--------
+function action_follow:free ()
+    -- если мы под гулагом, то запросим другую работу, иначе пр€ма€ дорога в logic
+    local gulag = xr_gulag.get_npc_gulag (self.object)
+
+    if gulag ~= nil then
+       if self.st.dont_change_job == false then
+          xr_gulag.resetJob (self.object)
+       end   
+    else
+       xr_logic.try_switch_to_another_section (self.object, self.st, db_actor)
+    end
+end
+--------
+function action_follow:reset_scheme ()
+	self.was_reset = true
+	self.vertex_id = nil
+	self.index = nil
+	self.state = 0 -- 0 - идем, 1 - стоим
+	self.st.signals = {leader_section_changed = false, leader_dead = false}
+end
+--------
+function action_follow:activate_scheme ()
+    self.was_reset = false
+end
+-----------------------------------------------------------------------------------
+
+local prop_attendant_leader = xr_evaluators_id.sidor_attendant_eva + 0
+local prop_attendant_follow = xr_evaluators_id.sidor_attendant_eva + 1
+local operator_attendant_wait = xr_actions_id.sidor_attendant_act + 0
+local operator_attendant_follow = xr_actions_id.sidor_attendant_act + 1
+local xr_actions_id_alife = xr_actions_id.alife
+local stalker_ids_property_alive = stalker_ids.property_alive
+local stalker_ids_property_danger = stalker_ids.property_danger
+local stalker_ids_property_enemy = stalker_ids.property_enemy
+
+function add_to_binder_q(npc, storage)
+	local manager = npc:motivation_action_manager ()
+
+	manager:add_evaluator (prop_attendant_leader, this.evaluator_leader ("attendant_leader", storage))
+	manager:add_evaluator (prop_attendant_follow, this.evaluator_follow ("attendant_follow", storage))
+
+	local action = this.action_wait ("attendant_wait", storage)
+	action:add_precondition		(world_property(stalker_ids_property_alive, true))
+	action:add_precondition		(world_property(stalker_ids_property_enemy, false))
+	action:add_precondition		(world_property(stalker_ids_property_danger, false))
+	action:add_precondition		(world_property(prop_attendant_leader, false))
+	action:add_effect (world_property(prop_attendant_leader, true))
+	manager:add_action (operator_attendant_wait, action)
+	storage.actions[ action ] = true
+
+	action = this.action_follow ("attendant_follow", storage)
+	action:add_precondition		(world_property(stalker_ids_property_alive, true))
+	action:add_precondition		(world_property(stalker_ids_property_enemy, false))
+	action:add_precondition		(world_property(stalker_ids_property_danger, false))
+	action:add_precondition		(world_property(prop_attendant_leader, true))
+	action:add_precondition		(world_property(prop_attendant_follow, true))
+	action:add_effect (world_property(prop_attendant_follow, false))
+	manager:add_action (operator_attendant_follow, action)
+	storage.actions[ action ] = true
+
+	action = manager:action (xr_actions_id_alife)
+	action:add_precondition		(world_property(prop_attendant_follow, false))
+
+end
+
+function set_scheme (npc, ini, scheme, section, gulag_name)
+	local function get_field_string(field, default)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or default
+	end
+	local st = xr_logic.assign_storage_and_bind (npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions (ini, section, npc)
+
+	if section and ini:section_exist(section) then
+		st.leader = get_field_string("leader")
+		st.animation_move = get_field_string("anim_walk", "patrol")
+		st.animation_run = get_field_string("anim_run", "run")
+		st.animation_sprint = get_field_string("anim_sprint", "sprint")
+		st.formation = (ini:line_exist(section, "formation_line") and ini:r_bool(section, "formation_line")) or false
+		st.distance = (ini:line_exist(section, "distance") and ini:r_float(section, "distance")) or nil
+		st.sound_theme = get_field_string("snd", "state")
+		if st.sound_theme == "silent" then st.sound_theme = nil end
+		st.state_if_leader_in_meet = get_field_string("state_if_leader_in_meet", "idle")
+		st.stub_for_corpse = (ini:line_exist(section, "stub_for_corpse") and ini:r_bool(section, "stub_for_corpse")) or false
+		st.dont_change_job = (ini:line_exist(section, "dont_change_job") and ini:r_bool(section, "dont_change_job")) or false
+	else
+		st.leader = nil
+		st.animation_move = "patrol"
+		st.animation_run = "run"
+		st.animation_sprint = "sprint"
+		st.formation = false
+		st.distance = nil
+		st.sound_theme = "state"
+		st.state_if_leader_in_meet = "idle"
+		st.stub_for_corpse = false
+		st.dont_change_job = false
+	end
+	st.leader_section = nil
+	if st.distance == nil then
+		if st.formation == false then
+			st.distance = 1.5
+		else
+			st.distance = 5
+		end
+	end
+end

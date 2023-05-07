@@ -30,17 +30,13 @@ function ar_sleep:death_callback(victim, who)
 end
 -------------------------------------------------------------------------------
 function add_to_binder_q(actor, storage)
-	local new_action = ar_sleep(actor, storage)
-
 	-- Регистрируем все actions, в которых будет вызван метод update()
-	xr_logic.subscribe_action_for_events(actor, storage, new_action)
+	storage.actions[ar_sleep(actor, storage)] = true
 end
 
 function set_scheme(actor, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(actor, ini, scheme, section)
---	st.logic = xr_logic.cfg_get_switch_conditions(actor, section, npc)
 	db.storage[db.actor:id()].active_scheme = "ar_sleep"
---	xr_death.set_death(actor, ini, scheme, death)
 end
 
 function disable_scheme()

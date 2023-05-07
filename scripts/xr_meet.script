@@ -498,11 +498,7 @@ local def_meet = {
 }
 
 ------------
--- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
--- первичную настройку.
-function set_meet(npc, ini, scheme, section)
-	xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-end
+
 -- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
 function reset_meet(npc, scheme, st, section)
 	local ini = st.ini
@@ -610,10 +606,6 @@ function init_meet(npc, ini, section, st, scheme)
   st.meet_set = true
 end
 
-function parse_data(npc,s)
-	return parse_data_q(s)
-end
-
 function parse_data_q(s)
 	local t = {}
 
@@ -649,9 +641,6 @@ function parse_data_q(s)
 		end
 	end
 	return t
-end
-function parse_zone_data(npc,s)
-	return parse_zone_data_q(s)
 end
 
 function parse_zone_data_q(s)
@@ -690,9 +679,6 @@ function parse_zone_data_q(s)
 	end
 
     return t
-end
-function parse_syn_data(npc,s)
-	return parse_syn_data_q(s)
 end
 
 function parse_syn_data_q(s)
@@ -743,22 +729,7 @@ function set_actor_dialogs(npc, ini, name, dialog_section)
 		db.storage[npc:id()].actor_disable = parse_names(actor_disable)
 	end
 end
---' ВНИМАНИЕ: Эта функция вызывается и для сталкеров, и для монстров!
-function dialog_manager_reset(npc, stype)
-  if stype == modules.stype_mobile then
-    --' Смена стартового диалога
-    local overrides = xr_logic.generic_scheme_overrides(npc)
-    if overrides ~= nil then
-      if overrides.meet_dialog then
-        npc:set_start_dialog(overrides.meet_dialog)
-      else
-        npc:restore_default_start_dialog()
-      end
-    else
-      npc:restore_default_start_dialog()
-    end
-  end
-end
+
 function disable_scheme(npc, scheme)
 	local st = db.storage[npc:id()]
 	st.actor_dialogs = nil

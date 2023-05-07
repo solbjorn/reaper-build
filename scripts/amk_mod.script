@@ -2676,16 +2676,12 @@ function spawn_unspawned_respawners()
 				end
 
 				tbl.custom = amk.gen_custom_data({respawn=t})
-				--amk.mylog(tbl.custom)
 				amk.set_spawner_data(tbl, respawner)
-				se_respawn.reinit_spawner_params(respawner:name())
-				--amk.add_spot_on_map(respawner.id,"red_location", v)
-				--amk.mylog("spawned respawn "..respawner.id)
+				se_respawn.reinit_spawner_params(respawner:name(), true)
 			end
 			if flag==false then
 				local o = se_respawn.get_respawner_by_name(v)
 				if o then
-					--amk.mylog("released respawn "..o.id)
 					alife():release(o)
 				end
 			end

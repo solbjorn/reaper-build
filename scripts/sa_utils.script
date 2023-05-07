@@ -35,6 +35,14 @@ function _G.set_ammo_data(obj, param, value)
 	end
 end
 ---------------------------------------------------------------------------------------------------
+function _G.get_inventory_item_data(obj, param)
+	if obj and param then
+		if param == "slot" then
+			return obj:get_inventory_item_int(nil, 156)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
 function _G.set_inventory_item_flag(obj, mask, value)
 	obj:set_inventory_item_int16(132, flags16():assign(obj:get_inventory_item_int16(nil, 132)):set(mask, value):get())
 end

@@ -1,0 +1,519 @@
+----------------------------------------------------------------------------------------------------------------------
+--	Схема патруль. Мужики в патруле
+--	автор: Тундук Владимир aka Sidorovich
+--	TODO: 
+----------------------------------------------------------------------------------------------------------------------
+
+local patrols = {}
+
+local formations = {
+	["line"] = {
+		 { dir = vector ():set (-1, 0, 0), dist = 2 },
+		 { dir = vector ():set (-1, 0, 0), dist = 4 },
+		 { dir = vector ():set (-1, 0, 0), dist = 6 },
+		 { dir = vector ():set (1, 0, 0), dist = 2 },
+		 { dir = vector ():set (1, 0, 0), dist = 4 },
+		 { dir = vector ():set (1, 0, 0), dist = 6 }
+		 },
+
+	["back"] = {
+		 { dir = vector ():set (-0.89442718, 0, -0.44721359), dist = 2.2360680 },
+		 { dir = vector ():set (0.89442718, 0, -0.44721359), dist = 2.2360680 },
+		 { dir = vector ():set (-0.37139067, 0, -0.92847669), dist = 5.3851647 },
+		 { dir = vector ():set (0.37139067, 0, -0.92847669), dist = 5.3851647 },
+		 { dir = vector ():set (-0.55470020, 0, -0.83205032), dist = 3.6055512 },
+		 { dir = vector ():set (0.55470020, 0, -0.83205032), dist = 3.6055512 }
+		 },
+	["around"] = {
+		 { dir = vector ():set (0.44721359, 0, -0.89442718), dist = 2.2360680 },
+		 { dir = vector ():set (-0.44721359, 0, -0.89442718), dist = 2.2360680 },
+		 { dir = vector ():set (1.0000000, 0, 0), dist = 2 },
+		 { dir = vector ():set (-1, 0, 0), dist = 2 },
+		 { dir = vector ():set (0.44721359, 0, 0.89442718), dist = 2.2360680 },
+		 { dir = vector ():set (-0.44721359, 0, 0.89442718), dist = 2.2360680 }
+		 }
+}
+
+
+-----------------------
+class "PatrolManager"
+-----------------------
+function PatrolManager:__init (path_name)
+    self.path_name = path_name
+    self.npc_list = {}
+    self.current_state = "patrol"
+    self.commander_id = -1
+    self.formation = "back"
+    self.commander_lid = -1
+    self.commander_dir = vector ():set (0, 0, 1)
+    patrols[path_name] = self
+    self.npc_count = 0
+end
+-----------------------
+function PatrolManager:add_npc (npc, leader)
+    --'validate npc
+    if npc == nil or npc:alive() == false or self.npc_list[npc:id()] ~= nil then
+       return
+    end
+
+	--' Проверка на то что в патруле не больше 7 сталкеров (иначе будет вылетать дальше)
+	if self.npc_count == 7 then
+		abort("[XR_PATROL] attempt to add more than 7 npc. [%s]", npc:name())
+		return
+	end
+
+    --' if this npc first in command then set him as commander
+    self.npc_list[npc:id ()] = {soldier = npc, dir = vector ():set (1, 0, 0), dist = 0}
+
+    self.npc_count = self.npc_count + 1
+    --' если мужик первый или считается лидером, то установим, как лидера
+    if self.npc_count == 1 or leader == true then
+       self.commander_id = npc:id ()
+    end
+
+    self:reset_positions ()
+end
+-----------------------
+function PatrolManager:remove_npc(npc)
+    if npc == nil then return end
+    if self.npc_list[npc:id()] == nil then
+		return
+	end
+    self.npc_list[npc:id ()] = nil
+    self.npc_count = self.npc_count - 1
+
+    if npc:id () == self.commander_id then
+       self.commander_id = -1
+       self:reset_positions ()
+    end
+end
+-----------------------
+function PatrolManager:reset_positions ()
+    local form_ = formations[self.formation]
+    local index = 1
+    for key, data in pairs(self.npc_list) do
+        --установим командора, если это еще не сделано
+        if self.commander_id == -1 and index == 1 then
+           self.commander_id = data.soldier:id ()
+        end
+        -- пересчитаем позиции
+        if self.commander_id ~= self.npc_list[key].soldier:id () then
+           self.npc_list[key].dir = form_[index].dir
+           self.npc_list[key].dist = form_[index].dist
+	       self.npc_list[key].vertex_id = -1
+           self.npc_list[key].accepted = true
+
+           index = index + 1
+        end
+    end
+end
+-----------------------
+function PatrolManager:set_formation (formation)
+    if formation == nil then
+       abort ("Invalid formation (nil) for PatrolManager[%s]", self.path_name)
+    end
+    if formation ~= "around" and formation ~= "back" and formation ~= "line" then
+       abort ("Invalid formation (%s) for PatrolManager[%s]", formation, self.path_name)
+    end
+    self.formation = formation
+    self:reset_positions ()
+end
+-----------------------
+function PatrolManager:get_commander   (npc)
+    if npc == nil then 
+       abort ("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
+    end
+    
+    --закешируем айдишник непися
+    local npc_id = npc:id ()   
+    --проверка непися на присутсвие в списке
+    if self.npc_list[npc:id ()] == nil then
+       abort ("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.path_name)
+    end
+    --проверка, чтобы командир не вздумал задавать глупых вопросов
+    if npc:id () == self.commander_id then
+       abort ("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name) 
+    end       
+    --получим данные командира
+    local commander = self.npc_list[self.commander_id].soldier
+    if commander == nil then
+       abort ("Patrol commander not present in PatrolManager[%s]", self.path_name)  
+    end   
+    return commander
+end
+-----------------------
+function PatrolManager:get_npc_command (npc)    -- get command for NPC
+    if npc == nil then 
+       abort ("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
+    end
+    
+    --закешируем айдишник непися
+    local npc_id = npc:id ()
+    --проверка непися на присутсвие в списке
+    if self.npc_list[npc_id] == nil then
+       abort ("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.path_name)
+    end
+    --проверка, чтобы командир не вздумал задавать глупых вопросов
+    if npc_id == self.commander_id then
+       abort ("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
+    end
+    --получим данные командира
+    local commander = self.npc_list[self.commander_id].soldier
+    
+    local dir = commander:direction ()
+    
+    local pos = vector ():set (0, 0, 0)
+    local vertex_id = commander:location_on_path (15, pos)
+    --уберем влияние вертикальной составляющей
+    dir.y = 0
+    dir:normalize ()
+    -- получим данные салаги
+    local dir_s = self.npc_list[npc_id].dir
+    local dist_s = self.npc_list[npc_id].dist
+    
+    --расчет позиции для салаги
+    --сначала получим направление
+    local angle = yaw_degree (dir_s, vector ():set (0, 0, 1))
+    local vvv = vector_cross (dir_s, vector ():set (0, 0, 1))
+    if vvv.y < 0 then
+       angle = -angle
+    end    
+    dir_s = vector_rotate_y (dir, angle)
+    -- в зависимости от типа перемещения будем менять целевую аи ноду
+    local d = 2
+
+    --теперь аи ноду относительно командора ордена рыцарей храма
+    local vertex = level.vertex_in_direction (level.vertex_in_direction (vertex_id, dir_s, dist_s), dir, d)
+    self.npc_list[npc_id].vertex_id = vertex
+    
+    -- проверим, а не имеет ли смысла неписю скорректировать свою позицию
+    local need_correct = false
+    local distance = level.vertex_position (vertex):distance_to (level.vertex_position (self.npc_list[npc_id].soldier:level_vertex_id ()))
+    if distance > 5 then
+       need_correct = true 
+    end   
+    
+    return vertex, dir, self.current_state, need_correct
+end
+-----------------------
+function PatrolManager:set_command (npc, command, formation)
+    if npc == nil or npc:alive () == false then
+       abort ("NPC commander possible dead in PatrolManager[%s]", self.path_name)
+    end    
+    if npc:id () ~= self.commander_id then
+       return
+    end   
+    self.current_state = command
+    if self.formation ~= formation then
+       self.formation = formation
+       self:set_formation (formation)
+    end   
+    self.commander_lid = npc:level_vertex_id ()
+    self.commander_dir = npc:direction ()
+    self:update ()
+end
+-----------------------
+function PatrolManager:is_commander (npc_id)
+    return npc_id == self.commander_id    
+end
+-----------------------
+function PatrolManager:is_commander_in_meet ()
+    if self.commander_id == -1 then return false end
+    local npc = self.npc_list[self.commander_id].soldier
+    if npc ~= nil and npc:alive () == true then
+       return xr_meet.is_meet (npc)
+    end
+    return false    
+end
+-----------------------
+function PatrolManager:update ()
+end
+-----------------------
+-----------------------
+
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_patrol_end" (property_evaluator)
+-----------------------
+function evaluator_patrol_end:__init (name, storage) super (nil, name)
+	self.st = storage
+end
+-----------------------
+function evaluator_patrol_end:evaluate()
+	return self.st.section ~= db.storage[self.object:id()].active_section
+end
+-----------------------
+
+
+-----------------------
+class "evaluator_patrol_comm" (property_evaluator)
+-----------------------
+function evaluator_patrol_comm:__init (name, storage) super (nil, name)
+	self.st = storage
+end
+-----------------------
+function evaluator_patrol_comm:evaluate()
+    return patrols[self.st.path_name]:is_commander (self.object:id ())
+end
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+----------------------
+class "action_commander" (action_base)
+----------------------
+function action_commander:__init (npc, action_name, storage) super(nil, action_name)
+	self.st = storage
+	self.move_mgr = db.storage[npc:id()].move_mgr
+	self.was_reset = false
+	self.cur_state = "patrol"
+end
+----------------------
+function action_commander:initialize()
+	action_base.initialize (self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	self:activate_scheme ()
+end
+----------------------
+function action_commander:activate_scheme()
+	self.st.signals = {}
+	if self.st.path_walk_info == nil then
+		self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
+	end
+	if self.st.path_look_info == nil then
+		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
+	end
+	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,
+		self.st.team, self.st.suggested_state, { obj = self, func = self.callback })
+    patrols[self.st.path_walk]:set_command (self.object, self.cur_state, self.st.formation)
+end
+
+----------------------
+function action_commander:execute()
+	action_base.execute(self)
+	self.move_mgr:update()
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+       return
+    end
+    patrols[self.st.path_walk]:set_command (self.object, state_mgr.get_state (self.object), self.st.formation)
+end
+----------------------
+function action_commander:finalize ()
+    if self.object:alive () == true then
+	   patrols[self.st.path_walk]:set_command (self.object, "guard", self.st.formation)
+	   self.move_mgr:finalize()
+	end
+    action_base.finalize(self)
+end
+----------------------
+function action_commander:deactivate(npc)
+	patrols[self.st.path_name]:remove_npc(npc)
+end
+----------------------
+function action_commander:death_callback(npc)
+	patrols[self.st.path_name]:remove_npc(npc)
+end
+----------------------
+function action_commander:net_destroy(npc)
+    self:deactivate(npc)
+end
+----------------------
+function action_commander:callback (mode, number, index)
+    if number == 0 then
+       self.st.formation = "line"
+    elseif number == 1 then
+       self.st.formation = "around"
+    elseif number == 1 then
+       self.st.formation = "back"
+    end
+end
+
+----------------------
+class "action_patrol" (action_base)
+----------------------
+function action_patrol:__init (npc, action_name, storage) super (nil, action_name)
+	self.st = storage
+	self.l_vid = -1
+	self.dist = 0
+	self.dir = vector ():set (0, 0, 1)
+	self.cur_state = "patrol"
+	self.on_point = false
+	self.was_reset = false
+	self.time_to_update = time_global () + 2000
+end
+----------------------
+function action_patrol:initialize()
+	action_base.initialize              (self)
+--	self.object:set_node_evaluator      ()
+--	self.object:set_path_evaluator      ()
+	self.object:set_desired_position    ()
+	self.object:set_desired_direction   ()
+    self.on_point = false
+end
+----------------------
+function action_patrol:activate_scheme()
+	self.st.signals = {}
+end
+----------------------
+function action_patrol:execute()
+	action_base.execute (self)
+
+	if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+       return
+	end
+
+    if self.time_to_update - time_global () > 0 then
+       return
+    end
+
+    self.time_to_update = time_global () + 5000
+
+	self.l_vid, self.dir, self.cur_state, reset = patrols[self.st.path_name]:get_npc_command (self.object)
+
+	if self.l_vid == self.object:level_vertex_id () then
+	   utils.send_to_nearest_accessible_vertex (self.object, level.vertex_in_direction (self.l_vid, self.object:direction (), 1))
+    else
+       self.l_vid = utils.send_to_nearest_accessible_vertex (self.object, self.l_vid)
+	end
+
+	self.object:set_desired_direction (self.dir)
+	self.object:set_path_type (game_object.level_path)
+
+	--перемещаемся по пути
+       if self.st.animation ~= nil and self.st.animation ~= "" then
+          state_mgr.set_state(self.object, self.st.animation)
+       else
+          state_mgr.set_state (self.object, self.cur_state)
+       end
+end
+----------------------
+function action_patrol:finalize ()
+	action_base.finalize (self)
+end
+----------------------
+function action_patrol:death_callback(npc)
+	patrols[self.st.path_name]:remove_npc(npc)
+end
+----------------------
+function action_patrol:deactivate(npc)
+    patrols[self.st.path_name]:remove_npc(npc)
+end
+----------------------
+function action_patrol:net_destroy(npc)
+    self:deactivate (npc)
+end
+----------------------
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+--Patrol binder
+----------------------------------------------------------------------------------------------------------------------
+
+local prop_patrol_end = xr_evaluators_id.sidor_patrol_base + 0
+local prop_patrol_comm = xr_evaluators_id.sidor_patrol_base + 1
+local operator_action_patrol = xr_actions_id.sidor_act_patrol
+local operator_action_commander = xr_actions_id.sidor_act_patrol + 1
+local xr_actions_id_alife = xr_actions_id.alife
+local wp_stalker_ids_property_alive_true = world_property(stalker_ids.property_alive, true)
+local wp_stalker_ids_property_danger_false = world_property(stalker_ids.property_danger, false)
+local wp_stalker_ids_property_enemy_false = world_property(stalker_ids.property_enemy, false)
+local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.property_anomaly, false)
+local wp_prop_patrol_end_true = world_property(prop_patrol_end, true)
+local wp_prop_patrol_end_false = world_property(prop_patrol_end, false)
+local wp_prop_patrol_comm_true = world_property(prop_patrol_comm, true)
+local wp_prop_patrol_comm_false = world_property(prop_patrol_comm, false)
+
+function add_to_binder_q(object, storage)
+	local manager = object:motivation_action_manager ()
+
+	-- Evaluators
+    manager:add_evaluator (prop_patrol_end, this.evaluator_patrol_end ("patrol_end", storage, "patrol_end"))
+    manager:add_evaluator (prop_patrol_comm, this.evaluator_patrol_comm ("patrol_comm", storage, "patrol_comm"))
+
+	-- Actions
+	-- create action for patrol commander
+	local action = this.action_commander (object, "action_commander", storage)
+	action:add_precondition		(wp_stalker_ids_property_alive_true)
+	action:add_precondition		(wp_stalker_ids_property_danger_false)
+	action:add_precondition		(wp_stalker_ids_property_enemy_false)
+	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
+	xr_motivator.addCommonPrecondition (action)
+	action:add_precondition		(wp_prop_patrol_end_false)
+	action:add_precondition		(wp_prop_patrol_comm_true)
+	action:add_effect (wp_prop_patrol_end_true)
+	manager:add_action (operator_action_commander, action)
+	storage.actions[ action ] = true
+
+	action = this.action_patrol (object,"action_patrol", storage)
+	action:add_precondition		(wp_stalker_ids_property_alive_true)
+	action:add_precondition		(wp_stalker_ids_property_danger_false)
+	action:add_precondition		(wp_stalker_ids_property_enemy_false)
+	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition		(wp_prop_patrol_end_false)
+	action:add_precondition		(wp_prop_patrol_comm_false)
+	action:add_effect (wp_prop_patrol_end_true)
+	manager:add_action (operator_action_patrol, action)
+	storage.actions[ action ] = true
+
+	action = manager:action (xr_actions_id_alife)
+	action:add_precondition		(wp_prop_patrol_end_true)
+
+end
+
+-- включение патруля
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local function get_field_string(field)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or nil
+	end
+
+	local st = xr_logic.assign_storage_and_bind (npc, ini, scheme, section)
+
+	st.logic = xr_logic.cfg_get_switch_conditions (ini, section, npc)
+
+	if section and ini:section_exist(section) then
+		if not ini:line_exist(section, "path_walk") then
+			abort("xr_patrol scheme %s, section %s: missing path_walk field", scheme, section)
+			return
+		end
+		if gulag_name and gulag_name ~= "" then
+			gulag_name = gulag_name .. "_"
+			st.path_walk  = gulag_name .. ini:r_string(section, "path_walk")
+			st.path_look  = (ini:line_exist(section, "path_look") and gulag_name .. ini:r_string(section, "path_look")) or nil
+		else
+			st.path_walk  = ini:r_string(section, "path_walk")
+			st.path_look  = get_field_string("path_look")
+		end
+		st.path_name = st.path_walk
+		st.formation = get_field_string("formation")
+		if st.formation == nil then
+			 st.formation = "back"
+		end
+		st.move_type = get_field_string("move_type")
+		if st.move_type == nil then
+			 st.move_type = "patrol"
+		end
+
+		st.suggested_state = {}
+		st.suggested_state.standing = get_field_string("def_state_standing")
+		st.suggested_state.moving1  = get_field_string("def_state_moving1")
+		st.suggested_state.moving2  = get_field_string("def_state_moving2")
+		st.suggested_state.moving3  = get_field_string("def_state_moving3")
+
+		st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
+		st.path_look_info = nil -- не загружены.
+	else 
+			abort("xr_patrol scheme %s has bad or missing section: %s", scheme, tostring(section))
+			return
+	end
+
+	st.commander = (ini:line_exist(section, "commander") and ini:r_bool(section, "commander")) or false
+
+	if patrols[st.path_name] == nil then
+		patrols[st.path_name] = PatrolManager (st.path_name)
+	end
+	patrols[st.path_name]:add_npc (npc, st.commander)
+end

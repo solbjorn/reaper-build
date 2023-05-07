@@ -5,6 +5,7 @@ local item_by_community = {}
 
 --' Зависимости в спауне предметов. Предмет спауниться только если есть хотя бы один из зависимых.
 local item_dependence = {}
+local ammo_types = {}
 
 --' Множители и минимаксы для выпадения вещей в зависимости от уровня
 local count_by_level = {}
@@ -34,6 +35,9 @@ local always_offs_items = {
 	["sigaret"]=true,
 	["energy_drink"]=true
 }
+for k, v in pairs(ammo_section) do
+	always_offs_items[k] = v
+end
 
 local dead_portion_names = {
 	["snip_esc1"]	= true,
@@ -301,6 +305,8 @@ function init_drop_settings()
                 local vvv = parse_names(value)
                 for k,v in pairs(vvv) do
                         item_dependence[id][v] = true
+			if ammo_types[v] == nil then ammo_types[v] = {} end
+			ammo_types[v][id] = true
                 end
         end
 
@@ -364,29 +370,12 @@ function drop_manager:create_release_item()
 	local se_obj = alife():object(self_npc:id())
 	se_obj.death_droped = true
 
-    --' Запускаем итератор на удаление предметов
-    self_npc:iterate_inventory(keep_item, self_npc)
+	local npc_ammo = {}
+	self.ammo = npc_ammo
+	self.cond = weap_conds[self_npc:character_community()] or 60
 
-	local kond = weap_conds[self_npc:character_community()] or 60
-
-    local item_in_slot = self_npc:item_in_slot(1)
-    if item_in_slot then
-		item_in_slot:set_ammo_elapsed(0)
-                --' Тут надо уменьшить кондишн оружия
-                item_in_slot:set_condition((math_random(90-kond)+kond)*item_in_slot:condition()/100)
-    end
-    item_in_slot = self_npc:item_in_slot(2)
-    if item_in_slot then
-		item_in_slot:set_ammo_elapsed(0)
-                --' Тут надо уменьшить кондишн оружия
-                item_in_slot:set_condition((math_random(95-kond)+kond)*item_in_slot:condition()/100)
-    end
-
-	-- оставляем фонарик в слоте
-	item_in_slot = self_npc:item_in_slot(9)
-	if item_in_slot then
-		item_in_slot:set_condition(item_in_slot:condition())
-	end
+	--' Запускаем итератор на удаление предметов
+	self_npc:iterate_inventory(keep_item, self)
 
     --' Проверка на отсутствие спауна лута
     local ini = self_npc:spawn_ini()
@@ -412,7 +401,7 @@ function drop_manager:create_release_item()
 					alife():create(k, npc_pos, npc_lvid, npc_gvid, npc_id)
 				end
 			end
-		elseif check_item_dependence(self_npc, k) then
+		elseif npc_ammo[k] then
 			--' По каждому объекту необходимо получить количество
 			number = math_ceil(math_random(count_by_level[k].min, count_by_level[k].max))
 			--' Необходимо заспавнить нужное количество.
@@ -474,13 +463,9 @@ function drop_manager:create_release_item()
 end
 
 --' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
-function keep_item(npc, item)
-	if not npc or not item then
-		return
-	end
-
-	local item_id = item:id()
-	local sobj = alife():object(item_id)
+function keep_item(dm_obj, item)
+	if not item then return end
+	local sobj = alife():object(item:id())
 	if sobj == nil then return end
 
 	local section = item:section()
@@ -488,26 +473,27 @@ function keep_item(npc, item)
 		return false
 	end
 
-	if always_offs_items[section] or ammo_section[section] then
+	if always_offs_items[section] then
 		alife():release(sobj, true)
 		return false
 	end
-    if always_keep_item[section] == true then
+
+	if always_keep_item[section] or not item:is_weapon() then
 		item:set_condition(item:condition())
-        return true
-    end
-end
+		return true
+	end
 
---' Функция проверяет есть ли хоть один из зависимых объектов у персонажа
-function check_item_dependence(npc, section)
-    for k,v in pairs(item_dependence[section]) do
-        local obj = npc:object(k)
-        if obj ~= nil and npc:marked_dropped(obj) ~= true then
-            return true
-        end
-    end
+	local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
 
-    return false
+	--' Тут надо уменьшить кондишн оружия
+	item:set_condition((math_random(from-dm_obj.cond)+dm_obj.cond)*item:condition()/100)
+	item:set_ammo_elapsed(0)
+
+	for k, v in pairs(ammo_types[section]) do
+		dm_obj.ammo[k] = v
+	end
+
+	return true
 end
 
 init_drop_settings()

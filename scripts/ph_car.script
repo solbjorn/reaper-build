@@ -10,7 +10,7 @@ local pi_2 = math.pi / 3 -- 60 degree
 
 local def_min_delta_per_sec = 0.2
 local def_min_car_explode_time = 1000
-local def_moving_speed = 10
+local def_moving_speed = 20
 local def_arriving_dist = 1.0
 local def_not_rotating_angle = 0.4
 local def_min_fire_time = 0
@@ -18,7 +18,7 @@ local def_update_time = 1.6
 local def_fire_range = 50
 
 local def_max_fc_upd_num = 1000 -- default maximum fastcall updates num
-local def_arriving_koef = 3 --70
+local def_arriving_koef = 20
 
 local delay_after_ignition = 500
 
@@ -73,10 +73,7 @@ function action_car:reset_scheme(loading)
 	action(self.object, object("right_light", self.headlights), cond(cond.time_end, time_infinite))
 
     self.usable = self.st.usable
-    
-    --if self.usable ~= nil then
-	--    self.car_holder = self.object.get_current_holder() --engaged()
-	--else
+
     if self.usable == nil then
 	    self.car:SetExplodeTime(0) -- (-1)
 
@@ -101,19 +98,16 @@ function action_car:reset_scheme(loading)
 		    self.state_moving = state_none
 	    end
 
-	    --xr_logic.mob_capture(self.object, true)
 	    self.st.signals = {}
 
 	    self.fc_upd_num = 0 -- fastcall updates num
-	    self.fc_upd_avg = 10 -- average time of the fastcall updates (in millisecond)
+	    self.fc_upd_avg = 10 -- average time of the fastcall updates (in milliseconds)
 	    self.fc_last_upd_tm = -1 -- fastcall last update time
 
 	    self.last_pos = nil
 	    self.last_pos_time = 0
     	
 	    self.state_delaying = false
-
-	    --self.state_moving = state_none
 
         self.target_walk_pt = -1
 	    -- path_walk
@@ -126,13 +120,11 @@ function action_car:reset_scheme(loading)
             self:start_car()
 	        self.path_walk_count = self.path_walk:count()
 
-	        --if not self.path_walk_info then
 		    self.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
 	        if not self.path_walk_info then
 		        abort("object '%s': path_walk ('%s'): unable to obtain path_walk_info from path",
 			        self.object:name(), self.st.path_walk)
 	        end
-	        --end
 
 	        self.arrival_signalled = false
 	        self.target_dist = -1
@@ -168,11 +160,6 @@ function action_car:reset_scheme(loading)
 	    self.on_target_nvis = nil
 
 	    if self.hasWeapon then
-	        --if loading then
-		    --    self.state_cannon = xr_logic.pstor_retrieve(self.object, "state_cannon")
-		    --    self.state_shooting = xr_logic.pstor_retrieve(self.object, "state_shooting")
-	        --end
-	        
 	        self:set_shooting(self.state_shooting)
 
 	        local n = 0
@@ -323,7 +310,7 @@ function action_car:at_target_walkpoint()
     local curVel = self.car:CurrentVel():magnitude()
 	local dist = self.object:position():distance_to(self.path_walk:point(self.target_walk_pt))
 
-	local arrived = false --2000 * dist < def_arriving_koef * self.fc_upd_avg * (curVel + self.speed)
+	local arrived = false
 	
 	if self.fc_upd_avg < 100 then
 		arrived = 2000 * dist < def_arriving_koef * self.fc_upd_avg * (curVel + self.speed)
@@ -354,8 +341,6 @@ function action_car:at_target_walkpoint()
 end
 
 function action_car:go_to_walkpoint(pt)
-	--action(self.object, object("left_light", object.activate), cond(cond.time_end, 1000))
-	--action(self.object, object("right_light", object.activate), cond(cond.time_end, 1000))
 	if self.state_delaying then
 	    if time_global() - self.delay_time_start >= delay_after_ignition then
 	        self.state_delaying = false
@@ -385,10 +370,8 @@ function action_car:go_to_walkpoint(pt)
 		if self.state_moving ~= state_moving_fwd and accel ~= move.none then
 	   		xr_logic.mob_capture(self.object, true)
 			action(self.object,
-				move(accel, self.speed), --move.on + 
-				--object("right_light", self.headlights),
-				--object("left_light", self.headlights),
-				cond(cond.time_end, time_infinite)) --self.fc_upd_avg))
+				move(accel, self.speed),
+				cond(cond.time_end, time_infinite))
 			self.state_moving = state_moving_fwd
 		end
 	else
@@ -400,20 +383,16 @@ function action_car:go_to_walkpoint(pt)
 			if self.state_moving ~= state_moving_rot_left then 
 				xr_logic.mob_capture(self.object, true)
 				action(self.object,
-					move(accel + move.left, self.speed), --move.on + 
-					--object("right_light", self.headlights),
-					--object("left_light", self.headlights),
-					cond(cond.time_end, time_infinite)) --self.fc_upd_avg))
+					move(accel + move.left, self.speed),
+					cond(cond.time_end, time_infinite))
 				self.state_moving = state_moving_rot_left
 			end
 		else
 			if self.state_moving ~= state_moving_rot_right then
 				xr_logic.mob_capture(self.object, true)
 				action(self.object,
-					move(accel + move.right, self.speed), --move.on + 
-					--object("right_light", self.headlights),
-					--object("left_light", self.headlights),
-					cond(cond.time_end, time_infinite)) --self.fc_upd_avg))
+					move(accel + move.right, self.speed),
+					cond(cond.time_end, time_infinite))
 				self.state_moving = state_moving_rot_right
 			end
 		end
@@ -474,7 +453,6 @@ function action_car:walk_arrival_callback(index)
 
 	local sig = self.path_walk_info[index]["sig"]
 	if sig then
-		--self.st.signals[sig] = true
 		self:set_signal(sig)
 	end
 
@@ -514,7 +492,6 @@ function action_car:walk_arrival_callback(index)
 	    if self:at_target_walkpoint() then
 		    self:walk_arrival_callback(self.target_walk_pt)
         else
-            --self.target_dist = -1
 	        self:go_to_walkpoint(self.target_walk_pt)
 	    end
 	else
@@ -750,6 +727,8 @@ function action_car:fastcall()
 		return true
 	end
 	
+	if self.destroyed then return true end
+
 	if self.usable ~= nil then
 	    local cu = xr_logic.pick_section_from_condlist(db_actor, self.object, self.usable.condlist)
 	    local u = (cu == "true" or cu == "")
@@ -859,9 +838,7 @@ function action_car:fast_update()
 			local diff = self.last_pos:distance_to(cur_pos)
 			if diff < self.min_delta_per_sec then
                 self:stop_car()
-				--self:car_explode()
 				self.state_moving = state_moving_end
-				--return false
 			else
 			    self.last_pos = cur_pos
 			end
@@ -875,7 +852,7 @@ function action_car:fast_update()
 	    if self.target_walk_pt >= 0 then
 	        if self:at_target_walkpoint() then
 	            -- если нет флага ожидани€ стрельбы или мы уже отстрел€лись или пошли в цикле обратно
-	            if not self.fire_wait or self.state_cannon == state_cannon_stop then --self.fire_rot_dir == -1 then
+	            if not self.fire_wait or self.state_cannon == state_cannon_stop then
 		                -- ѕрибыли, выбрать новую точку
 		                self:walk_arrival_callback(self.target_walk_pt)
 		                -- мен€ем точки отстрела
@@ -955,7 +932,6 @@ function action_car:fast_update()
 		        if self.state_shooting ~= state_none then
 		            self.state_shooting = state_none
 		            self:set_shooting(self.state_shooting)
-		            --self:set_signal("fire_end")
 		        end
 
 	            if self.fire_track_target then
@@ -989,7 +965,6 @@ function action_car:car_explode()
 end
 
 function action_car:net_destroy()
-	--self:destroy_car()
 	if self.object and xr_logic.mob_captured(self.object) then
 	    xr_logic.mob_release(self.object)
 	    if self.st.on_death_info ~= nil then
@@ -1037,10 +1012,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder_q(npc, storage)
-	local new_action = action_car(npc, storage)
-
-	-- «арегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	storage.actions[action_car(npc, storage)] = true
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)

@@ -29,6 +29,8 @@ local levels_types={
 	l12u_sarcofag=1
 }
 
+--------------------
+
 local spawn_list = {}
 
 function check_spawn(s_object)
@@ -60,6 +62,7 @@ function check_spawn(s_object)
 	return false
 end
 
+--------------------
 class "se_monster" (cse_alife_monster_base)
 --------------------
 function se_monster:__init (section) super (section)
@@ -148,43 +151,33 @@ function se_monster:can_switch_offline ()
 end
 --------------------
 function se_monster:can_switch_online ()
---	if true then return true end
-	local rpt=false
---	if string.find(self:name(),"factory_m_snork") then rpt=true end
-	
 	if need_be_online[self.id]~=nil then
 		local r=need_be_online[self.id]
 		need_be_online[self.id]=nil
-		if rpt then amk.mylog(self:name().." need_be_online "..tostring(r)) end
 		return save_state(self, r)
 	end
 
 	local r=self:get_job_online()
 	if r ~= nil then
-		if rpt then amk.mylog(self:name().." get_job_online "..tostring(r)) end
 		return save_state(self, r)
 	end
 
---'	self:get_ini()
 	local day_night_switch,check_distance = select_logic(self)
 
 	if self.online == false then
 	-- если игрока нет, то в оффлайн
         if db_actor == nil or db_actor:alive () == false then
-					if rpt then amk.mylog(self:name().." off no actor false ") end
 					return save_state(self, false) 
 				end
 				
 				-- Если в custom_data зверушки есть cond в секции [spawner], то это условие должно иметь приоритет.
 				local chk_spawner=check_spawn(self)
 				if chk_spawner~=nil then
-					if rpt then amk.mylog(self:name().." off check spawn "..tostring(chk_spawner)) end
 					return save_state(self, chk_spawner)
 				end
 				
 				--если "ночь"  - остаемся в офф
 				if not is_creature_day(self, day_night_switch) then
-					if rpt then amk.mylog(self:name().." off not creature's day false") end
 					return save_state(self, false)
 				end
 				
@@ -192,24 +185,20 @@ function se_monster:can_switch_online ()
 				if check_distance == true then
 					-- проверим дистанцию до игрока. если меньше требуемой, то офф
 					if not amk_offline_alife.sobj_is_far(self, self.min_distance) then
-						if rpt then amk.mylog(self:name().." off distance false") end
 						return save_state(self, false)
 					end
 				end
 				
         --все проверки прошли - финал
-			if rpt then amk.mylog(self:name().." off standard") end
 	    return save_state( self, cse_alife_monster_base.can_switch_online (self) )
     else
         if db_actor == nil or db_actor:alive () == false then
-					if rpt then amk.mylog(self:name().." on no actor true") end
 					return save_state(self, true)
 				end
 								
 				-- Если в custom_data зверушки есть cond в секции [spawner], то это условие должно иметь приоритет.
 				local chk_spawner=check_spawn(self)
 				if chk_spawner~=nil then
-					if rpt then amk.mylog(self:name().." off check spawn "..tostring(chk_spawner)) end
 					return save_state(self, chk_spawner)
 				end
 
@@ -219,12 +208,10 @@ function se_monster:can_switch_online ()
 						local obj = level.object_by_id(self.id)
 						--если "ночь" и ГГ не видит - уходим в офф, иначе остаемся в онлайне
 						local r=is_creature_day(self, day_night_switch) or (obj~=nil and db_actor:see(obj))
-						if rpt then amk.mylog(self:name().." on day see "..tostring(r)) end
 						return save_state(self, r)
 					end
         end
 				
-				if rpt then amk.mylog(self:name().." on standard") end
         return save_state(self, cse_alife_monster_base.can_switch_online (self))
     end
 end
@@ -292,7 +279,7 @@ function se_monster:on_register()
 
 	--' Нарисовать мапспот с собой
 	if self:alive() then
-		local community, rank = sim_statistic.getNpcType(self)
+		local community = xr_statistic.monster_classes[self:clsid()]
 		if community=="controller" and has_alife_info("have_kontroler_spot")  then
 		level.map_add_object_spot(self.id, "kontroler_spot", "контроллер")
 		elseif community=="bloodsucker" and has_alife_info("have_bloodsucker_spot")  then
@@ -307,7 +294,7 @@ function se_monster:on_unregister()
 	cse_alife_monster_base.on_unregister( self )
 
 	--' Убрать мапспот с собой
-	local community, rank = sim_statistic.getNpcType(self)
+	local community = xr_statistic.monster_classes[self:clsid()]
 	if community=="controller" then
 		level.map_remove_object_spot(self.id, "kontroler_spot")
 	elseif community=="bloodsucker" then
@@ -323,7 +310,7 @@ function se_monster:on_death(killer)
 	cse_alife_monster_base.on_death(self, killer)
 
 	--' Убрать мапспот с собой
-	local community, rank = sim_statistic.getNpcType(self)
+	local community = xr_statistic.monster_classes[self:clsid()]
 	if community=="controller" then
 		level.map_remove_object_spot(self.id, "kontroler_spot")
 	elseif community=="bloodsucker" then

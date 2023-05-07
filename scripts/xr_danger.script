@@ -117,7 +117,7 @@ function evaluator_danger:evaluate()
 	local bd_obj = best_danger:object()
 	npc_storage.enemy = bd_obj
 	if bd_obj ~= nil then
-	    local overrides = xr_logic.generic_scheme_overrides(self_obj)
+		local overrides = npc_storage.overrides
 	    if overrides and
 	    overrides.combat_ignore and
 	    npc_storage.active_scheme ~= nil and
@@ -174,8 +174,6 @@ function evaluator_danger:evaluate()
 		self.danger_time = best_danger:time()
 		return true
 	end
-
-	return false
 end
 
 
@@ -211,6 +209,7 @@ function reset_danger(npc, scheme, st, section)
 	end
 
 	st_danger.ignore_types = {}
+	if npc:character_community() == "zombied" then st_danger.ignore_types["grenade"] = true end
 
 	if section and st_ini:section_exist(section) then
 		local t = parse_names((st_ini:line_exist(section, "danger") and st_ini:r_string(section, "danger")) or "")

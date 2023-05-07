@@ -49,7 +49,10 @@ function checkCorpse(obj)
 	return false
 end
 
-local valuable_clsid={
+local valuable_clsid
+
+function init_valuable_clsid()
+	valuable_clsid = {
     [clsid.art_bast_artefact]=true,
     [clsid.art_black_drops]=true,
     [clsid.art_dummy]=true,
@@ -106,7 +109,8 @@ local valuable_clsid={
     [clsid.wpn_walther_s]=true,
     [clsid.wpn_wmagaz]=true,
     [clsid.wpn_wmaggl]=true
-}
+	}
+end
 
 local obj_owner={}
 
@@ -134,6 +138,8 @@ function isValuable(npc, obj)
   if sec=="amk_metka" then
     return false,false
   end
+
+	if not valuable_clsid then init_valuable_clsid() end
 	if valuable_clsid[obj:clsid()] then
 		return true, false
 	end

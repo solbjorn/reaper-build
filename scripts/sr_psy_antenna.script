@@ -51,6 +51,7 @@ function PsyAntenna:update_psy_hit(dt)
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("cs_psy_danger")
 	if self.hit_intensity > 0.01 then
+		sa_main.radar_psy_zone()
 		if custom_static == nil then
 			custom_static = hud:AddCustomStatic("cs_psy_danger", true)
 			custom_static:wnd():SetTextST("st_psy_danger")
@@ -64,7 +65,6 @@ function PsyAntenna:update_psy_hit(dt)
 		self.hit_time					= time_global()
 
 		local power						= self.hit_amplitude*self.hit_intensity
---		printf("HIT: power = %s", tostring(power))
 		if power > 0.01 then
 			local psy_hit 				= hit()
 			psy_hit.power 				= power
@@ -248,7 +248,6 @@ function action_psy_antenna:switch_state( actor )
 	end
 end
 function action_psy_antenna:zone_enter()
---'	printf("[psy_antenna] zone_enter")
 	self.state = state_inside
 
 	psy_antenna.sound_intensity_base = psy_antenna.sound_intensity_base + self.st.intensity
@@ -271,7 +270,6 @@ function action_psy_antenna:zone_enter()
 	psy_antenna.postprocess[postproc].intensity_base = psy_antenna.postprocess[postproc].intensity_base + self.st.intensity
 end
 function action_psy_antenna:zone_leave()
---'		printf("[psy_antenna] zone_leave. hit_intensity=%s", tostring(psy_antenna.hit_intensity))
 	self.state = state_outside
 
 	psy_antenna.sound_intensity_base = psy_antenna.sound_intensity_base - self.st.intensity
@@ -311,6 +309,7 @@ function load(p)
 	if b then
 		if psy_antenna then
 			abort("sr_psy_antenna.psy_antenna already exists!")
+			return
 		end
 
 		psy_antenna = PsyAntenna()
@@ -326,21 +325,25 @@ function add_to_binder_q(npc, storage)
 		psy_antenna:construct()
 	end
 
-	local new_action = action_psy_antenna(npc, storage)
-
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	storage.actions[ action_psy_antenna( npc, storage ) ] = true
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
+	local function get_field_number(field, default)
+		return (ini:line_exist(section, field) and ini:r_float(section, field)) or default or 0
+	end
+
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 
-	st.intensity     = utils.cfg_get_number(ini, section, "eff_intensity", npc, true) * 0.01
-	st.postprocess	 = utils.cfg_get_string(ini, section, "postprocess", npc, false, "", "psy_antenna.ppe")
-	
-	st.hit_intensity = utils.cfg_get_number(ini, section, "hit_intensity", npc, true) * 0.01
-	st.phantom_prob  = utils.cfg_get_number(ini, section, "phantom_prob",  npc, false, 0) * 0.01
-	
-	st.mute_sound_threshold   = utils.cfg_get_number(ini, section, "mute_sound_threshold",  npc, false, 0)
+	if ini:section_exist(section) then
+		st.intensity     = get_field_number("eff_intensity") * 0.01
+		st.postprocess   = (ini:line_exist(section, "postprocess") and ini:r_string(section, "postprocess")) or "psy_antenna.ppe"
+
+		st.hit_intensity = get_field_number("hit_intensity") * 0.01
+		st.phantom_prob  = get_field_number("phantom_prob", 0) * 0.01
+
+		st.mute_sound_threshold   = get_field_number("mute_sound_threshold", 0)
+	end
 end

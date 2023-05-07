@@ -1,0 +1,351 @@
+----------------------------------------------------------------------------------------------------
+-- Mob walker
+----------------------------------------------------------------------------------------------------
+-- –азработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- »сходный скрипт (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+----------------------------------------------------------------------------------------------------
+
+local default_wait_time = 5000 -- врем€ в ms, или nil дл€ anim_end condition
+local default_anim_standing = anim.stand_idle
+
+local state_moving = 0
+local state_standing = 1
+
+local look_direction = look.direction
+
+function set_state(obj, state)
+	if not state then
+		return
+	end
+	
+	if get_clsid(obj) == clsid_bloodsucker_s then
+		if state == "invis" then
+			obj:set_invisible(true)
+			return
+		elseif state == "vis" then
+			obj:set_invisible(false)
+			return
+		end
+	end
+
+	abort("mob_walker.set_state: object '%s': unknown state '%s' requested", obj:name(), state)
+end
+
+function issue_combat_event(obj)
+	local st = db.storage[obj:id()]
+	if st.mob_combat then
+		xr_logic.issue_event(obj, st.mob_combat, "combat_callback")
+	end
+end
+
+function alife_control(obj, mode)
+	-- ћертвые монстры сразу отпускаютс€ под alife
+	if not obj:alive() then
+		xr_logic.mob_release(obj)
+		return true
+	end
+
+	-- ћонстры, у которых есть враг - также должны работать в alife
+	local enemy = obj:get_enemy()
+	if enemy then
+		if not mode.braindead and
+			 not mode.friendly and
+			 (not mode.actor_friendly or enemy:id () ~= db_actor_id) and
+			 (not mode.npc_friendly or enemy:id() == db_actor_id) then
+			issue_combat_event(obj)
+			xr_logic.mob_release(obj)
+			return true
+		end
+	end
+
+	-- ќтпускать в alife монстров, которых обстрел€ли
+	local h = obj:get_monster_hit_info()
+	if h.who and h.time ~= 0 then
+		if mode.braindead then
+			-- Braindead монстры не уход€т из под скрипта даже если их обстрел€ть
+			return false
+		end
+		if h.who:id() == db_actor_id and mode.actor_friendly then
+			-- ≈сли хот€ бы раз был атакован actor-ом, то больше не дружественен к нему
+			mode.actor_friendly = false
+		end
+		issue_combat_event(obj)
+		xr_logic.mob_release(obj)
+		return true
+	end
+
+	-- ќстальные монстры работают под схемой
+	return false
+end
+
+-------------------------------------------
+
+class "mob_walker"
+
+function mob_walker:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function mob_walker:reset_scheme()
+	set_state(self.object, self.st.state)
+
+	self.st.signals = {}
+
+	xr_logic.mob_capture(self.object, not self.st.no_reset)
+
+	self.patrol_walk = patrol(self.st.path_walk)
+	if not self.patrol_walk then
+		abort("object '%s': unable to find path_walk '%s' on the map",
+			self.object:name(), self.st.path_walk)
+	end
+	
+	if self.st.path_look then
+		self.patrol_look = patrol(self.st.path_look)
+		if not self.patrol_look then
+			abort("object '%s': unable to find path_look '%s' on the map",
+				self.object:name(), self.st.path_look)
+		end
+	else
+		self.patrol_look = nil
+	end
+
+	if self.st.path_walk_info == nil then
+		self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
+		self.path_walk_info = self.st.path_walk_info
+	end
+	if self.st.path_look_info == nil then
+		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
+		self.path_look_info = self.st.path_look_info
+	end
+
+	self.state = state_moving
+	
+	self.crouch = false
+	self.running = true
+	self.cur_anim_set = default_anim_standing
+	self.pt_wait_time = default_wait_time -- сколько ждать в точке, где играем анимацию 
+
+	self.scheduled_snd = nil
+
+	self.last_index = nil
+	self.last_look_index = nil
+	
+	action(self.object, move(move.run_fwd, patrol(self.st.path_walk, patrol.next, patrol.continue)),
+		cond(cond.move_end))
+end
+
+function mob_walker:update(delta)
+	if alife_control(self.object, self.st.alife_mode) then
+		return
+	end
+	
+	-- ћонстр после выхода из alife может уже быть не под скриптом, поэтому вз€ть оп€ть под скрипт
+	if not xr_logic.mob_captured(self.object) then
+		self:reset_scheme()
+		return
+	end
+
+	if self:arrived_to_first_waypoint() then
+		if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+			return
+		end
+	end
+
+	if self.state == state_standing then
+		if not self.object:action() then
+			local patrol_walk_count = self.patrol_walk:count()
+			if patrol_walk_count == 1 and utils.stalker_at_waypoint(self.object, self.patrol_walk, 0) then
+				self.state = state_moving
+				self:waypoint_callback(self.object, nil, self.last_index)
+			else
+				self.last_look_index = nil
+				self.state = state_moving
+				self:update_movement_state() -- идти дальше
+			end
+		end
+	end
+end
+
+function mob_walker:arrived_to_first_waypoint()
+	return self.last_index ~= nil
+end
+
+function mob_walker:waypoint_callback(obj, action_type, index)
+	if index == -1 or index == nil then
+		return
+	end
+
+	self.last_index = index
+
+	local this_path_walk_info = self.path_walk_info[index]
+	if this_path_walk_info["s"] then
+		self.scheduled_snd = suggested_snd
+	end
+
+	if this_path_walk_info["c"] == "true" then
+		self.crouch = true
+	else
+		self.crouch = false
+	end
+
+	if this_path_walk_info["r"] == "true" then
+		self.running = true
+	else
+		self.running = false
+	end
+
+	local sig = this_path_walk_info["sig"]
+	if sig then
+		-- HACK, fixme:
+		local storage = db.storage[self.object:id()]
+		local scheme = storage.active_scheme
+		local signals = storage[scheme].signals
+		signals[sig] = true
+	end
+	
+	local beh = this_path_walk_info["b"]
+	if beh then
+		set_state(self.object, beh)
+	else
+		set_state(self.object, self.st.state)
+	end
+	
+	local search_for = self.path_walk_info[index].flags
+	if search_for:get() == 0 then
+		-- TODO: запретить одноточечные пути без соответствующего path_look по аналогии с move_mgr
+		self:update_movement_state() -- идти дальше
+		return
+	end
+
+	local pt_chosen_idx = move_mgr.choose_look_point(self.patrol_look, self.path_look_info, search_for)
+	if pt_chosen_idx then
+		local suggested_wait_time = self.path_look_info[pt_chosen_idx]["t"]
+		if suggested_wait_time then
+			self.pt_wait_time = tonumber(suggested_wait_time)
+		else
+			local patrol_walk_count = self.patrol_walk:count()
+			if patrol_walk_count == 1 and utils.stalker_at_waypoint(self.object, self.patrol_walk, 0) then
+				self.pt_wait_time = time_infinite
+			else
+				self.pt_wait_time = default_wait_time
+			end
+		end
+
+		local suggested_anim_set = self.path_look_info[pt_chosen_idx]["a"]
+		if suggested_anim_set then
+			if suggested_anim_set == "nil" then
+				suggested_anim_set = nil
+				self.cur_anim_set = default_anim_standing
+			else
+				self.cur_anim_set = anim[suggested_anim_set]
+			end
+		else
+			self.cur_anim_set = default_anim_standing
+		end
+
+		if pt_chosen_idx ~= self.last_look_index then -- если уже смотрели туда - не поворачиватьс€
+			self:look_at_waypoint(pt_chosen_idx) -- поворачиваемс€
+		end
+		self.state = state_standing
+		self:update_standing_state()
+
+		-- —разу же стартовать update, не ждать execute. “огда, если мы уже смотрим
+		-- в нужную сторону - не будет паузы в несколько миллисекунд на поворот.
+		self:update(true)
+	else
+		abort("mob_walker: object '%s': path_walk '%s', index %s: cannot find corresponding point(s) on path_look '%s'",
+			self.object:name(), tostring(self.path_walk), tostring(index), tostring(self.path_look))
+	end
+end
+
+function mob_walker:update_movement_state()
+	xr_logic.mob_capture(self.object, true)
+	
+	local m
+	if self.running then
+		m = move.run_fwd
+	elseif self.crouch then
+		m = move.steal
+	else
+		m = move.walk_fwd
+	end
+
+	if self.scheduled_snd then
+		action(self.object, move(m, patrol(self.st.path_walk, patrol.next, patrol.continue)),
+			sound(sound[self.scheduled_snd]), cond(cond.move_end))
+		self.scheduled_snd = nil
+	else
+		action(self.object, move(m, patrol(self.st.path_walk, patrol.next, patrol.continue)), cond(cond.move_end))
+	end
+end
+
+function mob_walker:update_standing_state()
+	if self.scheduled_snd then
+		action(self.object, anim(self.cur_anim_set, 0),
+			sound(sound[self.scheduled_snd]), cond(cond.time_end, self.pt_wait_time))
+		self.scheduled_snd = nil
+	else
+		action(self.object, anim(self.cur_anim_set, 0), cond(cond.time_end, self.pt_wait_time))
+	end
+end
+
+function mob_walker:look_at_waypoint(pt)
+	if not self.patrol_look then
+		return
+	end
+
+	local look_pt = vector():set(self.patrol_look:point(pt)):sub(self.object:position())
+
+	xr_logic.mob_capture(self.object, true)
+	action(self.object, look(look_direction, look_pt), cond(cond.look_end))
+	
+	self.last_look_index = pt
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder_q(npc, storage)
+	-- «арегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	storage.actions[ mob_walker(npc, storage) ] = true
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local function get_field_string(field)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or nil
+	end
+	local function get_field_bool(field, default)
+		if ini:line_exist(section, field) then return ini:r_bool(section, field) end
+		return default or false
+	end
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	if section and ini:section_exist(section) then
+		if not ini:line_exist(section, "path_walk") then
+			abort("mob_walker scheme %s, section %s: no path_walk field", scheme, section)
+			return
+		end
+		if gulag_name and gulag_name ~= "" then
+			gulag_name = gulag_name .. "_"
+			st.path_walk = gulag_name .. ini:r_string(section, "path_walk")
+			st.path_look = (ini:line_exist(section, "path_look") and gulag_name .. ini:r_string(section, "path_look")) or nil
+		else
+			st.path_walk = ini:r_string(section, "path_walk")
+			st.path_look = get_field_string("path_look")
+		end
+		st.alife_mode = {
+			actor_friendly  = get_field_bool("actor_friendly", false),
+			npc_friendly    = get_field_bool("npc_friendly", false),
+			friendly        = get_field_bool("friendly", false),
+			braindead       = get_field_bool("braindead", false)
+		}
+		st.state = get_field_string("state")
+	else 
+			abort("mob_walker scheme %s has bad or missing section: %s", scheme, tostring(section))
+			return
+	end
+
+	st.path_walk_info = nil -- Ѕудут инициализированы в reset(), сейчас пути могут быть еще
+	st.path_look_info = nil -- не загружены.
+end

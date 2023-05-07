@@ -122,10 +122,8 @@ end
 -- ADD_TO_BINDER
 ----------------------------------------------------------------------------------------------------
 function add_to_binder_q(npc, storage)
-	local new_action = mob_home(npc, storage)
-
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	storage.actions[ mob_home(npc, storage) ] = true
 end
 
 ----------------------------------------------------------------------------------------------------

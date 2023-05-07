@@ -163,7 +163,9 @@ function actor_binder:take_item_from_box(box, item)
     return
   end
 
-  treasure_manager.take_item_from_box(box, story_id)
+	if story_id >= 5000 then
+		treasure_manager.take_item_from_box(box, story_id)
+	end
 
 	--AMK UTILS--
 	amk.on_item_take_from_box(box,item)
@@ -421,7 +423,7 @@ function actor_binder:update(delta)
 		end
 
 		self.in_rad_zone = true
-	elseif self.object.radiation < 0.3 and self.in_rad_zone == true then
+	elseif self.in_rad_zone == true and self.object.radiation < 0.3 then
 		self.in_rad_zone = false
 	end
 
@@ -489,14 +491,12 @@ end
 function actor_binder:save(packet)
   local pk1=fake_net_packet.fake_net_packet()
   self:save_old(pk1)
-  amk.mylog("Packet size is "..pk1:w_tell())
   if pk1:w_tell()>7500 then
     self.warning=true
     self.critical=1
     self.wt=time_global()+60000
     amk.emergency_cleanup()
     self:save_old(packet)
-    amk.mylog("Actor packet size is "..packet:w_tell().."!")
     amk.emergency_restore()
   elseif pk1:w_tell()>6000 then
     self.warning=true

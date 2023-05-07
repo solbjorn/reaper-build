@@ -1,0 +1,519 @@
+----------------------------------------------------------------------------------------------------------------------
+--	Менеджер изменения состояния тела
+--	автор: Диденко Руслан (Stohe)
+--	TODO:
+----------------------------------------------------------------------------------------------------------------------
+
+local property_list = {
+	["end"]                     = 1,
+	locked                      = 2,
+
+	weapon                      = 11,
+	weapon_locked               = 12,
+	weapon_strapped             = 13,
+	weapon_strapped_now         = 14,
+	weapon_unstrapped           = 15,
+	weapon_unstrapped_now       = 16,
+	weapon_none                 = 17,
+	weapon_none_now             = 18,
+	weapon_drop                 = 19,
+	weapon_fire                 = 20,
+
+	movement                    = 21,
+	movement_walk               = 22,
+	movement_run                = 23,
+	movement_stand              = 24,
+	movement_stand_now          = 25,
+
+	mental                      = 31,
+	mental_free                 = 32,
+	mental_free_now             = 33,
+	mental_danger               = 34,
+	mental_danger_now           = 35,
+	mental_panic                = 36,
+	mental_panic_now            = 37,
+
+	bodystate                   = 41,
+	bodystate_crouch            = 42,
+	bodystate_standing          = 43,
+	bodystate_crouch_now        = 44,
+	bodystate_standing_now      = 45,
+
+	direction                   = 51,
+	direction_search            = 52,
+	direction_turning           = 53,
+
+	animstate                   = 61,
+	animstate_locked            = 62,
+	animstate_idle              = 63,
+	animstate_idle_now          = 64,
+	animstate_sit               = 65,
+	animstate_sit_now           = 66,
+	animstate_sit_knee          = 67,
+	animstate_sit_knee_now      = 68,
+	animstate_sit_ass           = 69,
+	animstate_sit_ass_now       = 70,
+	animstate_sleep             = 71,
+	animstate_sleep_now         = 72,
+	animstate_wounded           = 73,
+	animstate_wounded_now       = 74,
+	animstate_wounded_heavy     = 75,
+	animstate_wounded_heavy_now = 76,
+	animstate_sit_japan         = 77,
+	animstate_sit_japan_now     = 78,
+	animstate_sit_kurit         = 79,
+	animstate_sit_kurit_now     = 80,
+
+	animation                   = 81,
+	animation_locked            = 82,
+	animation_play              = 83,
+	animation_play_now          = 84,
+	animation_none              = 85,
+	animation_none_now          = 86,
+	animation_reset             = 87
+}
+
+local operator_list = {
+	["end"]                  = 1,
+	locked                   = 2,
+
+	weapon_strapp            = 11,
+	weapon_unstrapp          = 12,
+	weapon_none              = 13,
+	weapon_fire              = 14,
+	weapon_drop              = 15,
+
+	movement                 = 21,
+	movement_walk            = 22,
+	movement_run             = 23,
+	movement_stand           = 24,
+
+	mental_free              = 31,
+	mental_danger            = 32,
+	mental_panic             = 33,
+
+	bodystate_crouch         = 41,
+	bodystate_standing       = 42,
+
+	direction_turn           = 51,
+	direction_search         = 52,
+
+	animstate_wait           = 61,
+	animstate_2sit           = 62,
+	animstate_2sit_knee      = 63,
+	animstate_2sit_ass       = 64,
+	animstate_2wounded       = 65,
+	animstate_2idle          = 66,
+	animstate_2sleep         = 67,
+	animstate_clear_anim     = 68,
+	animstate_2wounded_heavy = 69,
+	animstate_stand_up       = 70,
+
+	animation_start          = 71,
+	animation_stop           = 72,
+	animation_reset          = 73,
+	animation_clear_anim     = 74,
+
+	animstate_2sit_japan     = 75,
+	animstate_2sit_kurit     = 76
+}
+
+--' Сам менеджер
+function goap_graph(st, npc)
+	st.npc = npc
+	st.planner = state_mgr.action_planner()
+	st.planner:setup(npc)
+
+	st.properties = property_list
+	st.operators = operator_list
+
+	st.planner:add_evaluator( 1,                                   state_mgr.eva_state_mgr_end("state_mgr_end", st))
+	st.planner:add_evaluator( 2,                                state_mgr.eva_state_mgr_locked("state_mgr_locked", st))
+
+	st.planner:add_evaluator(11,                         state_mgr_weapon.eva_state_mgr_weapon("state_mgr_weapon", st))
+	st.planner:add_evaluator(12,                  state_mgr_weapon.eva_state_mgr_weapon_locked("state_mgr_weapon_locked", st))
+	st.planner:add_evaluator(13,                state_mgr_weapon.eva_state_mgr_weapon_strapped("state_mgr_weapon_strapped", st))
+	st.planner:add_evaluator(14,            state_mgr_weapon.eva_state_mgr_weapon_strapped_now("state_mgr_weapon_strapped_now", st))
+	st.planner:add_evaluator(15,              state_mgr_weapon.eva_state_mgr_weapon_unstrapped("state_mgr_weapon_unstrapped", st))
+	st.planner:add_evaluator(16,          state_mgr_weapon.eva_state_mgr_weapon_unstrapped_now("state_mgr_weapon_unstrapped_now", st))
+	st.planner:add_evaluator(17,                    state_mgr_weapon.eva_state_mgr_weapon_none("state_mgr_weapon_none", st))
+	st.planner:add_evaluator(18,                state_mgr_weapon.eva_state_mgr_weapon_none_now("state_mgr_weapon_none_now", st))
+	st.planner:add_evaluator(19,                    state_mgr_weapon.eva_state_mgr_weapon_drop("state_mgr_weapon_drop", st))
+	st.planner:add_evaluator(20,                    state_mgr_weapon.eva_state_mgr_weapon_fire("state_mgr_weapon_fire", st))
+
+	st.planner:add_evaluator(21,                     state_mgr_movement.eva_state_mgr_movement("state_mgr_movement", st))
+	st.planner:add_evaluator(22,                state_mgr_movement.eva_state_mgr_movement_walk("state_mgr_movement_walk", st))
+	st.planner:add_evaluator(23,                 state_mgr_movement.eva_state_mgr_movement_run("state_mgr_movement_run", st))
+	st.planner:add_evaluator(24,               state_mgr_movement.eva_state_mgr_movement_stand("state_mgr_movement_stand", st))
+	st.planner:add_evaluator(25,           state_mgr_movement.eva_state_mgr_movement_stand_now("state_mgr_movement_stand_now", st))
+
+	st.planner:add_evaluator(31,                         state_mgr_mental.eva_state_mgr_mental("state_mgr_mental", st))
+	st.planner:add_evaluator(32,                    state_mgr_mental.eva_state_mgr_mental_free("state_mgr_mental_free", st))
+	st.planner:add_evaluator(33,                state_mgr_mental.eva_state_mgr_mental_free_now("state_mgr_mental_free_now", st))
+	st.planner:add_evaluator(34,                  state_mgr_mental.eva_state_mgr_mental_danger("state_mgr_mental_danger", st))
+	st.planner:add_evaluator(35,              state_mgr_mental.eva_state_mgr_mental_danger_now("state_mgr_mental_danger_now", st))
+	st.planner:add_evaluator(36,                   state_mgr_mental.eva_state_mgr_mental_panic("state_mgr_mental_panic", st))
+	st.planner:add_evaluator(37,               state_mgr_mental.eva_state_mgr_mental_panic_now("state_mgr_mental_panic_now", st))
+
+	st.planner:add_evaluator(41,                   state_mgr_bodystate.eva_state_mgr_bodystate("state_mgr_bodystate", st))
+	st.planner:add_evaluator(42,            state_mgr_bodystate.eva_state_mgr_bodystate_crouch("state_mgr_bodystate_crouch", st))
+	st.planner:add_evaluator(43,          state_mgr_bodystate.eva_state_mgr_bodystate_standing("state_mgr_bodystate_standing", st))
+	st.planner:add_evaluator(44,        state_mgr_bodystate.eva_state_mgr_bodystate_crouch_now("state_mgr_bodystate_crouch_now", st))
+	st.planner:add_evaluator(45,      state_mgr_bodystate.eva_state_mgr_bodystate_standing_now("state_mgr_bodystate_standing_now", st))
+
+	st.planner:add_evaluator(51,                   state_mgr_direction.eva_state_mgr_direction("state_mgr_direction", st))
+	st.planner:add_evaluator(52,            state_mgr_direction.eva_state_mgr_direction_search("state_mgr_direction_search", st))
+	st.planner:add_evaluator(53,           state_mgr_direction.eva_state_mgr_direction_turning("state_mgr_direction_turning", st))
+
+	st.animstate = state_mgr_animstate.body_state(npc)
+	st.planner:add_evaluator(61,                   state_mgr_animstate.eva_state_mgr_animstate("state_mgr_animstate", st))
+	st.planner:add_evaluator(62,            state_mgr_animstate.eva_state_mgr_animstate_locked("state_mgr_animstate_busy", st))
+	st.planner:add_evaluator(63,              state_mgr_animstate.eva_state_mgr_animstate_idle("state_mgr_animstate_idle", st))
+	st.planner:add_evaluator(64,          state_mgr_animstate.eva_state_mgr_animstate_idle_now("state_mgr_animstate_idle_now", st))
+	st.planner:add_evaluator(65,               state_mgr_animstate.eva_state_mgr_animstate_sit("state_mgr_animstate_sit", st, st))
+	st.planner:add_evaluator(66,           state_mgr_animstate.eva_state_mgr_animstate_sit_now("state_mgr_animstate_sit_now", st))
+	st.planner:add_evaluator(67,          state_mgr_animstate.eva_state_mgr_animstate_sit_knee("state_mgr_animstate_sit_knee", st, st))
+	st.planner:add_evaluator(68,      state_mgr_animstate.eva_state_mgr_animstate_sit_knee_now("state_mgr_animstate_sit_knee_now", st))
+	st.planner:add_evaluator(69,           state_mgr_animstate.eva_state_mgr_animstate_sit_ass("state_mgr_animstate_sit_ass", st, st))
+	st.planner:add_evaluator(70,       state_mgr_animstate.eva_state_mgr_animstate_sit_ass_now("state_mgr_animstate_sit_ass_now", st))
+	st.planner:add_evaluator(71,             state_mgr_animstate.eva_state_mgr_animstate_sleep("state_mgr_animstate_sleep", st, st))
+	st.planner:add_evaluator(72,         state_mgr_animstate.eva_state_mgr_animstate_sleep_now("state_mgr_animstate_sleep_now", st))
+	st.planner:add_evaluator(73,           state_mgr_animstate.eva_state_mgr_animstate_wounded("state_mgr_animstate_wounded", st))
+	st.planner:add_evaluator(74,       state_mgr_animstate.eva_state_mgr_animstate_wounded_now("state_mgr_animstate_wounded_now", st))
+	st.planner:add_evaluator(75,     state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy("state_mgr_animstate_wounded_heavy", st))
+	st.planner:add_evaluator(76, state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy_now("state_mgr_animstate_wounded_heavy_now", st))
+	st.planner:add_evaluator(77,           state_mgr_animstate.eva_state_mgr_animstate_sit_japan("state_mgr_animstate_sit_japan", st, st))
+	st.planner:add_evaluator(78,       state_mgr_animstate.eva_state_mgr_animstate_sit_japan_now("state_mgr_animstate_sit_japan_now", st))
+	st.planner:add_evaluator(79,           state_mgr_animstate.eva_state_mgr_animstate_sit_kurit("state_mgr_animstate_sit_kurit", st, st))
+	st.planner:add_evaluator(80,       state_mgr_animstate.eva_state_mgr_animstate_sit_kurit_now("state_mgr_animstate_sit_kurit_now", st))
+
+	st.animation = state_mgr_animation.animation(npc, st)
+	st.npc:set_callback(callback.script_animation, st.animation.anim_callback, st.animation)
+	st.planner:add_evaluator(81,                   state_mgr_animation.eva_state_mgr_animation("state_mgr_animation", st))
+	st.planner:add_evaluator(82,            state_mgr_animation.eva_state_mgr_animation_locked("state_mgr_animation_locked", st))
+	st.planner:add_evaluator(83,              state_mgr_animation.eva_state_mgr_animation_play("state_mgr_animation_play", st))
+	st.planner:add_evaluator(84,          state_mgr_animation.eva_state_mgr_animation_play_now("state_mgr_animation_play_now", st))
+	st.planner:add_evaluator(85,              state_mgr_animation.eva_state_mgr_animation_none("state_mgr_animation_none", st))
+	st.planner:add_evaluator(86,          state_mgr_animation.eva_state_mgr_animation_none_now("state_mgr_animation_none_now", st))
+	st.planner:add_evaluator(87,             state_mgr_animation.eva_state_mgr_animation_reset("state_mgr_animation_reset", st))
+
+	--' Actions
+	local action = state_mgr_weapon.act_state_mgr_weapon_unstrapp("state_mgr_weapon_unstrapp", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(15, true)) --weapon_unstrapped
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(11, true)) --weapon
+	st.planner:add_action(12, action)
+
+	action = state_mgr_weapon.act_state_mgr_weapon_strapp("state_mgr_weapon_strapp", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(13, true)) --weapon_strapped
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(11, true)) --weapon
+	st.planner:add_action(11, action)
+
+	action = state_mgr_weapon.act_state_mgr_weapon_none("state_mgr_weapon_none", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(17, true)) --weapon_none
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(11, true)) --weapon
+	st.planner:add_action(13, action)
+
+	action = state_mgr_weapon.act_state_mgr_weapon_drop("state_mgr_weapon_drop", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(19, true)) --weapon_drop
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(11, true)) --weapon
+	st.planner:add_action(15, action)
+
+
+
+	action = state_mgr_movement.act_state_mgr_movement_walk("state_mgr_movement_walk", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(21, false)) --movement
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(22, true)) --movement_walk
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(21, true)) --movement
+	st.planner:add_action(22, action)
+
+	action = state_mgr_movement.act_state_mgr_movement_run("state_mgr_movement_run", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(21, false)) --movement
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(23, true)) --movement_run
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_effect    (world_property(21, true)) --movement
+	st.planner:add_action(23, action)
+
+	action = state_mgr_movement.act_state_mgr_movement_stand("state_mgr_movement_stand", st)
+	action:add_precondition    (world_property(21, false)) --movement
+	action:add_precondition    (world_property(24, true)) --movement_stand
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_effect    (world_property(21, true)) --movement
+	st.planner:add_action(24, action)
+
+
+
+	action = state_mgr_direction.act_state_mgr_direction_turn("state_mgr_direction_turn", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(51, false)) --direction
+	action:add_precondition    (world_property(52, false)) --direction_search
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+    action:add_precondition    (world_property(21, true)) --movement
+	action:add_effect    (world_property(51, true)) --direction
+	st.planner:add_action(51, action)
+
+	action = state_mgr_direction.act_state_mgr_direction_search("state_mgr_direction_search", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(51, false)) --direction
+	action:add_precondition    (world_property(52, true)) --direction_search
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+    action:add_precondition    (world_property(21, true)) --movement
+	action:add_effect    (world_property(51, true)) --direction
+	st.planner:add_action(52, action)
+
+
+
+	action = state_mgr_mental.act_state_mgr_mental_free("state_mgr_mental_free")
+	action:add_precondition    (world_property(31, false)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(32, true)) --mental_free
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(45, true)) --bodystate_standing_now
+	action:add_effect    (world_property(31, true)) --mental
+	st.planner:add_action(31, action)
+
+	action = state_mgr_mental.act_state_mgr_mental_danger("state_mgr_mental_danger")
+	action:add_precondition    (world_property(31, false)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(34, true)) --mental_danger
+	action:add_effect    (world_property(31, true)) --mental
+	action:add_effect    (world_property(35, true)) --mental_danger_now
+	st.planner:add_action(32, action)
+
+	action = state_mgr_mental.act_state_mgr_mental_panic("state_mgr_mental_panic")
+	action:add_precondition    (world_property(31, false)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(64, true)) --animstate_idle_now
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(36, true)) --mental_panic
+	action:add_effect    (world_property(31, true)) --mental
+	st.planner:add_action(33, action)
+
+
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_crouch("state_mgr_bodystate_crouch")
+	action:add_precondition    (world_property(41, false)) --bodystate
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(44, false)) --bodystate_crouch_now
+	action:add_precondition    (world_property(42, true)) --bodystate_crouch
+	action:add_precondition    (world_property(35, true)) --mental_danger_now
+	action:add_effect    (world_property(41, true)) --bodystate
+	st.planner:add_action(41, action)
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_standing("state_mgr_bodystate_standing")
+	action:add_precondition    (world_property(41, false)) --bodystate
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(45, false)) --bodystate_standing_now
+	action:add_precondition    (world_property(43, true)) --bodystate_standing
+	action:add_effect    (world_property(41, true)) --bodystate
+	action:add_effect    (world_property(45, true)) --bodystate_standing_now
+	st.planner:add_action(42, action)
+
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit("state_mgr_animstate_2sit", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(65, true)) --animstate_sit
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(62, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_knee("state_mgr_animstate_2sit_knee", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(67, true)) --animstate_sit_knee
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(63, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_ass("state_mgr_animstate_2sit_ass", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(69, true)) --animstate_sit_ass
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(64, action)
+	
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_japan("state_mgr_animstate_2sit_japan", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(77, true)) -- animstate_sit_japan
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(75, action)
+	
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_kurit("state_mgr_animstate_2sit_kurit", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(79, true)) --animstate_sit_kurit
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(76, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2wounded("state_mgr_animstate_2wounded", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(73, true)) --animstate_wounded
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(65, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2wounded_heavy("state_mgr_animstate_2wounded_heavy", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(75, true)) --animstate_wounded_heavy
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(69, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sleep("state_mgr_animstate_2sleep", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(71, true)) --animstate_sleep
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(67, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2idle("state_mgr_animstate_2idle", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, false)) --animstate
+	action:add_precondition    (world_property(86, true)) --animation_none_now
+	action:add_precondition    (world_property(25, true)) --movement_stand_now
+	action:add_precondition    (world_property(63, true)) --animstate_idle
+	action:add_effect    (world_property(61, true)) --animstate
+	st.planner:add_action(66, action)
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2idle("state_mgr_stand_up", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(64, false)) --animstate_idle_now
+	action:add_effect    (world_property(64, true)) --animstate_idle_now
+	st.planner:add_action(70, action)
+
+
+
+	action = state_mgr_animation.act_state_mgr_animation_start("state_mgr_animation_start", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, true)) --animstate
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(87, false)) --animation_reset
+	action:add_precondition    (world_property(81, false)) --animation
+	action:add_precondition    (world_property(83, true)) --animation_play
+	action:add_effect    (world_property(81, true)) --animation
+	st.planner:add_action(71, action)
+
+	action = state_mgr_animation.act_state_mgr_animation_reset("state_mgr_animation_reset", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, true)) --animstate
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(87, true)) --animation_reset
+	action:add_precondition    (world_property(81, false)) --animation
+	action:add_precondition    (world_property(83, true)) --animation_play
+	action:add_effect    (world_property(81, true)) --animation
+	st.planner:add_action(73, action)
+
+	action = state_mgr_animation.act_state_mgr_animation_stop("state_mgr_animation_stop", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(61, true)) --animstate
+	action:add_precondition    (world_property(81, false)) --animation
+	action:add_precondition    (world_property(85, true)) --animation_none
+	action:add_effect    (world_property(81, true)) --animation
+	st.planner:add_action(72, action)
+
+	action = state_mgr_animation.act_state_mgr_animation_stop("state_mgr_clear_anim", st)
+	action:add_precondition    (world_property( 2, false)) --locked
+	action:add_precondition    (world_property(86, false)) --animation_none_now
+	action:add_effect    (world_property(86, true)) --animation_none_now
+	st.planner:add_action(74, action)
+
+
+	action = state_mgr.act_state_mgr_locked("state_mgr_locked", st)
+	action:add_precondition    (world_property( 2, true)) --locked
+	action:add_effect          (world_property( 1, true)) --end
+	action:add_effect          (world_property( 2, false)) --locked
+	st.planner:add_action( 2, action)
+
+
+	action = state_mgr.act_state_mgr_end("state_mgr_end", st)
+	action:add_precondition    (world_property( 1, false)) --end
+	action:add_precondition    (world_property(11, true)) --weapon
+	action:add_precondition    (world_property(21, true)) --movement
+	action:add_precondition    (world_property(31, true)) --mental
+	action:add_precondition    (world_property(41, true)) --bodystate
+	action:add_precondition    (world_property(51, true)) --direction
+	action:add_precondition    (world_property(61, true)) --animstate
+	action:add_precondition    (world_property(81, true)) --animation
+	action:add_effect          (world_property( 1, true)) --end
+	st.planner:add_action( 1, action)
+
+	local goal = world_state()
+	goal:add_property(world_property( 1, true)) --end
+	st.planner:set_goal_world_state(goal)
+end

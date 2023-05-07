@@ -51,10 +51,6 @@ idle_none = -2
 
 local path_fields = { "path_walk", "path_main", "path_home", "center_point" }
 
-function level_by_type(gp)
-	return level_gulags[gp.type] or level_gulags[gp.type_prefix]
-end
-
 -----------------------------------------------------------------------
 class "gulag"
 
@@ -94,7 +90,7 @@ function gulag:load_jobs()
 	self.Job                  = {} -- работы
 	self.Job_avail_in_state_0 = {}
 
-	local gulag_script_obj = level_by_type(self)
+	local gulag_script_obj = level_gulags[self.type] or level_gulags[self.type_prefix]
 	if gulag_script_obj then
 		gulag_script_obj.load_job(self.Job, self.name, self.type, self.squad, self.groups)
 	end
@@ -138,7 +134,7 @@ function gulag:initialize()
 
 	self:prepare_jobs()
 
-	local gulag_script_obj = level_by_type(self)
+	local gulag_script_obj = level_gulags[self.type] or level_gulags[self.type_prefix]
 	if gulag_script_obj then
 		self.calculateStates = gulag_script_obj.load_states(self.name, self.type)
 	else
@@ -679,7 +675,6 @@ function gulag:distance_to_job_location( obj_id, job )
 	if obj_gv:level_id() == job_gv:level_id() then
 		return obj_pos:distance_to( job.position )
 	else
-		--'return obj_gv:game_point():distance_to( job_gv:game_point() )
 		return 10000
 	end
 end
@@ -878,10 +873,6 @@ function gulag:setup_logic( obj, section )
 	xr_logic.configure_schemes( obj, self.ltx, self.ltx_name, self:get_stype(obj:id()), section, self.name )
 	local sect = xr_logic.determine_section_to_activate(obj, self.ltx, section)
 
-	if utils.get_scheme_by_section( section ) == "nil" then
-		abort( "[smart_terrain %s] section=%s, don't use section 'nil'!", self:name(), sect )
-	end
-
 	xr_logic.activate_by_section( obj, self.ltx, sect, false )
 end
 
@@ -893,13 +884,12 @@ function gulag:setup_squad_and_group( obj_id, job )
 	if self.Object[obj_id] ~= true then
 		local obj = self.Object[obj_id]
 
-		local squad = level_groups[level.name()]
 		if not obj:alive() then
 			self:clear_dead(obj_id) --'Затычка против вылета.
 			return
 		end
 
-		obj:change_team( npc_info.team, squad or npc_info.o_squad, job.group or npc_info.o_group )
+		obj:change_team( npc_info.se_obj:g_team(), level_groups[level.name()], job.group or npc_info.o_group )
 
 		npc_info.squad = obj:squad()
 		npc_info.group = obj:group()
@@ -1250,7 +1240,6 @@ end
 function getGulagPopulation( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
---'	return ( gulag and gulag:get_population() ) or 0
 	return ( gulag and gulag:get_population_comed() ) or 0
 end
 
@@ -1359,7 +1348,7 @@ end
 -----------------------------------------------------------------------------------------------------------------
 
 function checkNpc(npc_community, is_stalker, gulag_params, se_obj)
-	local gulag_script_obj = level_by_type(gulag_params)
+	local gulag_script_obj = level_gulags[gulag_params.type] or level_gulags[gulag_params.type_prefix]
 	if not gulag_script_obj then return false end
 	if is_stalker then
 		return gulag_script_obj.checkStalker(npc_community, gulag_params.type, nil, se_obj)

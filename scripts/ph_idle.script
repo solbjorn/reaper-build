@@ -1,0 +1,65 @@
+----------------------------------------------------------------------------------------------------
+-- Do nothing
+----------------------------------------------------------------------------------------------------
+-- Исходный скрипт: Oleg Hryptul (Haron) haronk@ukr.net
+----------------------------------------------------------------------------------------------------
+
+class "action_idle"
+function action_idle:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+function action_idle:reset_scheme()
+	self.object:set_nonscript_usable(self.st.nonscript_usable)
+end
+function action_idle:update(delta)
+	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+end
+function action_idle:hit_callback(obj, amount, local_direction, who, bone_index)
+	if self.st.hit_on_bone[bone_index] ~= nil then
+		xr_logic.switch_to_section(obj, self.st, xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.hit_on_bone[bone_index].state))
+		return
+	end
+end
+function action_idle:use_callback(obj, actor)
+	if self.st.on_use then
+		if xr_logic.switch_to_section(self.object, self.st,
+		   xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.on_use.condlist)) then
+			return true
+		end
+	end
+end
+function action_idle:deactivate()
+	self.object:set_tip_text("")
+end
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder_q(npc, storage)
+	storage.actions[ action_idle(npc, storage) ] = true
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local function get_field_string(field, default)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or default
+	end
+	local function cfg_get_condlist_sv_for(field)
+		local field_value = (ini:line_exist(section, field) and ini:r_string(section, field)) or nil
+		return field_value and xr_logic.cfg_get_condlist_sv(field, field_value)
+	end
+
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	if section and ini:section_exist(section) then
+		st.hit_on_bone = utils.parse_data_1v(npc, get_field_string("hit_on_bone"))
+		st.nonscript_usable = (ini:line_exist(section, "nonscript_usable") and ini:r_bool(section, "nonscript_usable")) or false
+		st.on_use = cfg_get_condlist_sv_for("on_use")
+		st.tips = get_field_string("tips", "")
+	else
+		st.hit_on_bone = {}
+		st.nonscript_usable = false
+		st.on_use = nil
+		st.tips = ""
+	end
+
+	npc:set_tip_text(st.tips)
+end

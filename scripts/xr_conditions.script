@@ -8,11 +8,8 @@
 -- amk function
 -- ----------------------------------------------------------------------------------------------------
 function time_hours()
-	if level.get_time_hours() >= 5 and level.get_time_hours() <= 22 then
-		return true  -- день
-	else
-		return false -- ночь
-	end
+	local hr = level.get_time_hours()
+	return hr >= 5 and hr <= 22
 end
 
 -- ----------------------------------------------------------------------------------------------------
@@ -113,10 +110,11 @@ function one_obj_in_zone(actor, zone, p)
 
     if obj1 then -- npc is online
 		if p[1] == 402 then
+			local sim = g_alife
 			if jail_door == nil then
 				if has_alife_info("val_prisoner_free") then return false end
 				for idb_ = 0, 65534, 1 do
-					local lobj = g_alife:object(idb_)
+					local lobj = sim:object(idb_)
 					if lobj ~= nil and lobj:name() == "val_prisoner_jail_door" then
 						jail_door = lobj
 						break
@@ -129,14 +127,14 @@ function one_obj_in_zone(actor, zone, p)
 				if not zone:inside(obj_pos) then
 					if has_alife_info("val_prisoner_door_unlocked") then return false end
 					if obj_pos.x > 47.1 and obj_pos.x < 48.3 and obj_pos.z > -54.8 and obj_pos.z < -52.8 then
-						g_alife:set_switch_online(jail_door.id, false)
-						g_alife:set_switch_offline(jail_door.id, true)
+						sim:set_switch_online(jail_door.id, false)
+						sim:set_switch_offline(jail_door.id, true)
 					end
 				end
 			else
 				if obj1:position().z < (jail_door.position.z - 0.3) then
-					g_alife:set_switch_offline(jail_door.id, false)
-					g_alife:set_switch_online(jail_door.id, true)
+					sim:set_switch_offline(jail_door.id, false)
+					sim:set_switch_online(jail_door.id, true)
 				end
 			end
 			return true 
@@ -149,14 +147,14 @@ end
 
 function actor_in_zone(actor, npc, p)
 	local zone = db.zone_by_name[p[1]]
-	return utils.npc_in_zone(db_actor, zone)
+	return actor ~= nil and zone ~= nil and zone:inside(actor:position())
 end
 function actor_out_zone(actor, npc, p)
 	local zone = db.zone_by_name[p[1]]
 	if zone == nil then
 		return false
 	end
-	return not utils.npc_in_zone(db_actor, db.zone_by_name[p[1]])
+	return not (actor ~= nil and zone:inside(actor:position()))
 end
 
 -- true, если здоровье npc <= заданному значению
@@ -741,8 +739,8 @@ end
 
 function gar_bandits_seryi_die()
 	if db_actor then
-		if gulag_population_active(actor, npc, {"gar_seryi_bandits"}) == 0 then
-			return true			
+		if gulag_population_active(db_actor, npc, {"gar_seryi_bandits"}) == 0 then
+			return true
 		else
 			return false
 		end

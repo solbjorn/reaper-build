@@ -422,15 +422,16 @@ function motivator_binder:update(delta)
 		end
 	end
 
-                local wpn = utils.wpn_info_get(self_object)
-                if wpn["ammo"]~=nil then
+	local active_item = self_object:active_item()
+	local ammo = active_item and isWeapon(active_item) and active_item:get_ammo_in_magazine()
+	if ammo ~= nil then
                         local enemy = self_object:best_enemy()
-                        if enemy and enemy:id()==db_actor_id and self_object:see(db_actor) and self.prev_ammo>wpn["ammo"] then
+                        if enemy and enemy:id()==db_actor_id and self_object:see(db_actor) and self.prev_ammo>ammo then
                                 amk.npc_shot_actor(self_object)
                         end
-                end
 
-                self.prev_ammo = wpn["ammo"] or 0
+		self.prev_ammo = ammo
+	end
 
 	--' Апдейт саундменеджера
 	if npc_alive then

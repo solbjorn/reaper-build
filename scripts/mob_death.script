@@ -24,8 +24,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder_q(npc, storage)
- 	local action = mob_death(npc, storage)
- 	xr_logic.subscribe_action_for_events(npc, storage, action) 	
+	storage.actions[ mob_death(npc, storage) ] = true
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)

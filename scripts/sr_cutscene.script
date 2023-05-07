@@ -1,0 +1,164 @@
+----------------------------------------------------------------------------------------------------
+--' Cutscene trigger
+----------------------------------------------------------------------------------------------------
+
+--' локальные переменные
+local state_nowhere = 0 --' схема только что включилась
+local state_inside = 1  --' актер внутри 
+local state_outside = 2 --' актер снаружи
+
+local cutscene_finished
+----------------------------------------------------------------------------------------------------
+
+class "action_cutscene"
+
+----------------------------------------------------------------------------------------------------
+
+--' инициализаци€ объекта класса
+function action_cutscene:__init( obj, storage )
+
+	self.object = obj
+	self.st = storage
+	self.ui_disabled = false
+end
+
+----------------------------------------------------------------------------------------------------
+
+--' инициализаци€ схемы поведени€
+function action_cutscene:reset_scheme()
+
+	self.state = state_nowhere --' еще не€сно, находитс€ ли персонаж в пределах пространственного ограничител€ или нет
+
+    self.st.signals = {} --' обнул€ем сигналы
+
+	self:switch_state(db_actor)
+
+end
+
+----------------------------------------------------------------------------------------------------
+
+--' функци€ обновлени€, вызываема€ конвеером
+function action_cutscene:update( delta )
+
+	--' храним персонажа локально (так быстрее обращатьс€)
+    local actor = db_actor
+
+    if self.ui_disabled then
+        if cutscene_finished == true then
+           if not actor:is_talking() then 
+				xr_effects.enable_ui(actor, nil)
+		   else
+				level.enable_input()	
+		   end
+           self.ui_disabled = false
+           self.st.signals["cameff_end"] = true
+        end
+    end
+	
+    --' собственно наша функци€, осуществл€юща€ вызов начала сцены
+	self:switch_state( actor )
+
+    --' выполн€ем архитектурное требование
+	xr_logic.try_switch_to_another_section( self.object, self.st, actor )
+end
+
+----------------------------------------------------------------------------------------------------
+
+--' функци€, осуществл€юща€ вызов начала сцены когда персонаж входит в пространственный ограничитель
+function action_cutscene:switch_state( actor )
+
+	--' храним состо€ние персонажа локально (так быстрее)
+    local state = self.state
+	
+    --' если снаружи или ешЄ не определились где
+	if state ~= state_inside 
+    then
+        --' то провер€ем на вхождение в пространственный ограничитель
+		if self.object:inside( actor:center() ) 
+        then
+            --' и если внутри то вызываем функцию входа внутрь и выходим из функции
+			self:zone_enter()
+			return
+		end
+	end
+	
+    --' если внутри или ешЄ не определились где
+	if state ~= state_outside
+    then
+        --' то провер€ем на не вхождение в пространственный ограничитель
+		if not self.object:inside( actor:center() ) 
+        then
+            --' и если снаружи то вызываем функцию выхода наружу и выходим из функции
+			self:zone_leave()
+			return
+		end
+	end
+
+end
+
+----------------------------------------------------------------------------------------------------
+
+function action_cutscene:zone_enter()
+
+	self.state = state_inside
+	--' тут нужно запустить сцену
+
+    --' телепорт в выбранную точку
+    xr_effects.teleport_actor(db.actor, nil, {self.st.point, self.st.look})
+    level.add_pp_effector (self.st.pp_effector, 234, false)
+    
+	level.add_cam_effector2(self.st.cam_effector, 123, false, "sr_cutscene.effector_callback")
+    xr_effects.disable_ui(db.actor, nil)
+    self.ui_disabled = true
+	cutscene_finished = false
+  
+
+
+end
+
+----------------------------------------------------------------------------------------------------
+
+function action_cutscene:zone_leave()
+
+	self.state = state_outside
+    --' по идее больше ничего тут делать не надо
+
+end
+
+---------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder_q(npc, storage)
+	storage.actions[ action_cutscene(npc, storage) ] = true
+end
+
+----------------------------------------------------------------------------------------------------
+
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local function get_field_string(field, default)
+		return (ini:line_exist(section, field) and ini:r_string(section, field)) or default
+	end
+
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+
+	if section and ini:section_exist(section) then
+		st.point = get_field_string("point", nil)
+		st.look = get_field_string("look", nil)
+		st.cam_effector = get_field_string("cam_effector", nil)
+		if st.point == nil or st.look == nil or st.cam_effector == nil then
+			abort("sr_cutscene scheme %s, section %s has missing point or look or cam_effector values", scheme, tostring(section))
+			return
+		end
+		st.pp_effector = get_field_string("pp_effector", "blink") .. ".ppe"
+		st.cam_effector = "camera_effects\\" .. st.cam_effector .. ".anm"
+	else 
+		abort("sr_cutscene scheme %s has bad or missing section: %s", scheme, tostring(section))
+		return
+	end
+
+end
+
+----------------------------------------------------------------------------------------------------
+function effector_callback()
+	cutscene_finished = true
+end

@@ -1,0 +1,119 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Проигровка звуков при входе актёра в рестриктор.
+Чугай Александр
+
+Sliding sound support: Jim
+--------------------------------------------------------------------------------------------------------------------]]
+
+local pos_path   = 0
+local pos_obj    = 2
+
+----------------------------------------------------------------------------------------------------
+class "action_sound"
+
+function action_sound:__init( obj, storage )
+	self.object = obj
+	self.st = storage
+
+	self.is_actor_inside = nil
+end
+
+function action_sound:reset_scheme()
+	self.st.signals = {}
+	self.is_actor_inside = false
+	self.snd_obj = nil
+end
+
+function action_sound:update( delta )
+	local actor = db_actor
+
+	-- если мы ещё нигде, то не считать ни входа, ни выхода
+	if self.is_actor_inside == nil then
+		self.is_actor_inside = self.object:inside( actor:position() )
+		return
+	end
+
+	if self.object:inside( actor:position() ) then
+		if not self.is_actor_inside then
+			self:on_enter( actor )
+			self.is_actor_inside = true
+		end
+		if self.snd_obj ~= nil and self.snd_obj:playing () == false then
+			self.st.signals["sound_end"] = true
+		end
+	else
+		if self.is_actor_inside then
+			--self.on_leave( actor )
+			self.is_actor_inside = false
+		end
+	end
+
+	xr_logic.try_switch_to_another_section( self.object, self.st, actor )
+end
+
+
+function action_sound:on_enter( obj )
+	local pos
+
+	if self.st.pos_type == pos_obj then
+		pos = obj:position()
+	else
+		pos = self.st.path:point( math.random( 0, self.st.path:count()-1 ) )
+	end
+
+	local snd_name = self.st.sound_names[math.random(1, #self.st.sound_names)]
+
+	self.snd_obj	= xr_sound.get_safe_sound_object(snd_name)
+	if self.st.play_at_actor == false then
+		 self.snd_obj:play_at_pos( obj, pos, 0 ) --self.st.delay )
+	else
+		 self.snd_obj:play_at_pos( obj, vector ():set (0, 0, 0), 0, sound_object.s2d )
+	end
+	self.st.signals["sound_end"] = false
+end
+
+function action_sound:deactivate ()
+    if self.snd_obj ~= nil and self.snd_obj:playing () == false then
+       self.snd_obj:stop ()
+       self.snd_obj = nil
+    end
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder_q( npc, storage )
+	storage.actions[action_sound(npc, storage)] = true
+end
+
+function set_scheme( obj, ini, scheme, section, gulag_name )
+	local st = xr_logic.assign_storage_and_bind( obj, ini, scheme, section )
+	st.logic = xr_logic.cfg_get_switch_conditions( ini, section, obj )
+
+	st.sound_names = {}
+
+	if ini:line_exist( section, "snd" ) then
+		local t = parse_names( ini:r_string( section, "snd" ) )
+		for i, v in pairs(t) do
+			st.sound_names[#st.sound_names + 1] = v
+		end
+	end
+
+	if #st.sound_names == 0 then
+		abort( "restrictor '%s': no sounds specified in section '%s'", obj:name(), section )
+		return
+	end
+
+	local path = utils.cfg_get_string( ini, section, "position", obj, false, "", nil )
+	if path == nil then
+		st.pos_type = pos_obj
+	else
+		st.pos_type = pos_path
+		st.path = patrol( path )
+	end
+
+	st.play_at_actor = utils.cfg_get_bool (ini, section, "play_at_actor", obj, false)
+	if st.play_at_actor ~= nil and st.play_at_actor == true then
+		 if st.pos_type ~= pos_obj then
+				abort ("Can't define play sound at actor and path !!!")
+		 end
+	end
+end

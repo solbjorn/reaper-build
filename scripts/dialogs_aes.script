@@ -1,0 +1,22 @@
+--' Мы отказываемся вступить в осознание, нас переносит на вторую станцию
+function osoznanie_decline(npc, actor)
+    db.actor:disable_info_portion("oso_init_dialog")
+	npc:stop_talk()
+    actor:stop_talk()
+	xr_effects.enable_ui(db.actor, nil)
+	local point = patrol("con_way_if_reject_to_st2")
+	db.actor:set_actor_position(point:point(0))
+	local dir = point:point(1):sub(point:point(0))
+	db.actor:set_actor_direction(-dir:getH())
+	reap.start_timer("xr_effects.enable_ui(db_actor, nil)", 10, timer_types.real)
+end
+
+--' Мы соглашаемся вступить в осознание, конец игры.
+function osoznanie_agree(npc, actor)
+	db.actor:disable_info_portion("oso_init_dialog")
+	npc:stop_talk()
+    actor:stop_talk()
+	xr_effects.enable_ui(db.actor, nil)	  
+	game.start_tutorial("mov_join_osoznanie")
+	
+end

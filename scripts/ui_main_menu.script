@@ -7,6 +7,20 @@
 -- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
 -- Version:     0.9
 
+local all_good = db and modules and _z and xr_logic
+if not all_good then
+	local broken = "Missing or broken:"
+	if not db then broken = broken .. " db.script" end
+	if not modules then
+		broken = broken .. " modules.script"
+	end
+	if not xr_logic then
+		broken = broken .. " xr_logic.script"
+	end
+	if not _z then broken = broken .. " _z.script" end
+	abort(broken)
+end
+
 class "main_menu" (CUIScriptWnd)
 
 function main_menu:__init() super()
@@ -28,14 +42,24 @@ function main_menu:InitControls()
     xml:InitStatic("background", self)
    -- xml:InitStatic("fire_movie", self)
     self.shniaga = xml:InitMMShniaga("shniaga_wnd",self);
-	
+
 	self.message_box = CUIMessageBoxEx()
-	self:Register(self.message_box, "msg_box")	
-	
-	local _ver		= xml:InitStatic ("static_version",self)
+	self:Register(self.message_box, "msg_box")
+
+	local _ver = xml:InitStatic("static_version",self)
+	local mm = _G.main_menu.get_main_menu()
+	local version = "1.0"
+	if type(mm.GetGSVer) == "function" then
+		version = mm:GetGSVer()
+	end
+	if version < "1.0004" then
+		abort("Game must be patched to at least version 1.0004")
+		return
+	else
+		_ver:SetText("Версия игры - " .. version)
+	end
+
 	local mod_ver 		= xml:InitStatic ("mod_version",self)
-	local mm		= _G.main_menu.get_main_menu()
-	_ver:SetText		("Версия игры - " .. mm:GetGSVer())
 	local amk_title 	= amk_ver.amk_title
 	local amk_version    	= amk_ver.amk_version
 	local sak_title 	= sak_ver.sak_title
@@ -271,32 +295,31 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	local console = get_console()
 	
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE and level.present() and (db_actor ~= nil) and db_actor:alive() then
+		local alive_on_level = level.present() and (db_actor ~= nil) and db_actor:alive()
+		if dik == DIK_keys.DIK_ESCAPE and alive_on_level then
 			console:execute("main_menu off")
 		-- OGSE Team on 
 		-- Система быстрых сохранений игры
-		elseif dik == DIK_keys.DIK_F6 and level.present() and (db.actor ~= nil) and db.actor:alive() then
-				console:execute("main_menu off")
-				console:execute("save " .. "pseudoquicksave")
+		elseif dik == DIK_keys.DIK_F6 and alive_on_level then
+			console:execute("main_menu off")
+			console:execute("save " .. "pseudoquicksave")
 		elseif dik == DIK_keys.DIK_F7 and ui_load_dialog.file_exist("pseudoquicksave.sav") then
-				if (alife() == nil) then
-					console:execute	("disconnect")	
-					console:execute	("start server(" .. "pseudoquicksave" .. "/single/alife/load) client(localhost)")	
-				else
-					console:execute	("load " .. "pseudoquicksave")	
-				end
-		elseif dik == DIK_keys.DIK_F8 then
-			if level.present() and (db.actor ~= nil) and db.actor:alive() then
-				local s_date = ""
-				s_date = AddTextDigit(s_date, level.get_time_days())
-				s_date = s_date .. "_"
-				s_date = AddTextDigit(s_date, level.get_time_hours())
-				s_date = s_date .. "_"
-				s_date = AddTextDigit(s_date, level.get_time_minutes())
-				local s_level = level.name()
-				console:execute("main_menu off")
-				console:execute("save " .. "pqs_" .. s_level .. "_" .. s_date)
+			if (alife() == nil) then
+				console:execute	("disconnect")	
+				console:execute	("start server(" .. "pseudoquicksave" .. "/single/alife/load) client(localhost)")	
+			else
+				console:execute	("load " .. "pseudoquicksave")	
 			end
+		elseif (dik == DIK_keys.DIK_F8 or dik == DIK_keys.DIK_S) and alive_on_level then
+			local s_date = ""
+			s_date = AddTextDigit(s_date, level.get_time_days())
+			s_date = s_date .. "_"
+			s_date = AddTextDigit(s_date, level.get_time_hours())
+			s_date = s_date .. "_"
+			s_date = AddTextDigit(s_date, level.get_time_minutes())
+			local s_level = level.name()
+			console:execute("main_menu off")
+			console:execute("save " .. "pqs_" .. s_level .. "_" .. s_date)
 		-- OGSE Team off
 		elseif dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
@@ -308,7 +331,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 			return false
 		end
 	end
-   
+
 	return true
 end
 

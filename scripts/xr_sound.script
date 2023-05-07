@@ -47,7 +47,7 @@ function get_key(npc)
 	local npc_id = npc:id()
 
 	-- формирование ключа
-	local overrides = xr_logic.generic_scheme_overrides(npc)
+	local overrides = db.storage[npc:id()].overrides
 	if overrides and
 	   overrides.soundgroup 
 	then
@@ -71,7 +71,7 @@ function get_key(npc)
 	end
 	return key
 end
-	
+
 -----------------------------------------------------------------------------------------------------------------------------------
 --	Установка и распарсивание тем в файлы.
 -----------------------------------------------------------------------------------------------------------------------------------
