@@ -512,7 +512,7 @@ function actor_binder:save_old(packet)
 	object_binder.save(self, packet)
 
 	--' Сохраняем уровень сложности
-	packet:w_u8(level.get_game_difficulty() + 160)
+	packet:w_u8(level.get_game_difficulty())
 
 	--' Сохраняем данные об отключенном вводе
 	if self.st.disable_input_time == nil then
@@ -529,7 +529,6 @@ function actor_binder:save_old(packet)
 	treasure_manager.save(packet)
 
 	task_manager.save(packet)
-	self.actor_detector:save(packet)
 
     self.freeplay_stats:save(packet)
 
@@ -541,28 +540,7 @@ function actor_binder:load(reader)
 	object_binder.load(self, reader)
 
 	--' Загружаем уровень сложности
-	local game_difficulty = reader:r_u8()
-        local game_diff = game_difficulty
-
-	local load_treasure_manager = false      
-
-        if game_difficulty >= 160 then           
-		game_difficulty = game_difficulty - 160
-		load_treasure_manager = true           
-
-        else
-	   	if game_difficulty >= 150 then           
-			game_difficulty = game_difficulty - 150
-			load_treasure_manager = true           
-		else                                      
-		  	if game_difficulty >= 128 then           
-				game_difficulty = game_difficulty - 128
-				load_treasure_manager = true           
-			end
-		end                                      
-	end
-
-	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+	get_console():execute("g_game_difficulty "..game_difficulty_by_num[reader:r_u8()])
 
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT")
@@ -579,15 +557,11 @@ function actor_binder:load(reader)
 
 	sr_psy_antenna.load(reader)
 
-	if load_treasure_manager == true then
-		treasure_manager.load(reader)
-	end
-
+	treasure_manager.load(reader)
 
 	task_manager.load(reader)
-	self.actor_detector:load(reader)
 
-        self.freeplay_stats:load(reader, game_diff)
+        self.freeplay_stats:load(reader)
   
   if xr_logic.pstor_retrieve(self.object,"emerg",false) then -- нельзя использовать amk.load_varible(), так как db.actor ещё не определён
     self.warning=true

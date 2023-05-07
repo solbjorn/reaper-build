@@ -54,17 +54,3 @@ function actor_detector:update()
 		db_actor:hit(h)
 	end
 end
-function actor_detector:save(packet)
-	if self.init_time == -1 then
-		packet:w_u8(0)
-	else
-		packet:w_u8(1)
-		utils.w_CTime(packet, self.init_time)
-		utils.w_CTime(packet, self.last_update_time)
-	end	
-end
-function actor_detector:load(packet)
-	local unused = packet:r_u8()
-	
-	self.init_time = -1
-end

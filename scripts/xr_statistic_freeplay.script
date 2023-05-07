@@ -387,13 +387,9 @@ end
 
 --' Загрузка статистики.
 
-function freeplay_statistic:load(reader, game_difficulty)
+function freeplay_statistic:load(reader)
     self.loaded = true
 
-    load_freeplay_stat_old = game_difficulty >= 150 
-    load_freeplay_stat_new = game_difficulty >= 160 
-
-    if load_freeplay_stat_new then	
       local version = reader:r_u16()
 
       self.stalker_killed = reader:r_u32()
@@ -406,20 +402,6 @@ function freeplay_statistic:load(reader, game_difficulty)
       for i=1,n do
         found_artefact_sections[reader:r_stringZ()] = true
       end
-    else
-      if load_freeplay_stat_old then	
-        self.stalker_killed = reader:r_u32()
-        self.secrets_found  = reader:r_u32()
-        self.pda_found      = reader:r_u32()
-        self.monster_killed = reader:r_u32()
-        self.artefact_found = reader:r_u32()
-
-        local n = reader:r_u32()	
-        for i=1,n do
-          local tmp = reader:r_u32()
-        end
-      end
-    end
 end
 
 function freeplay_statistic:give_crap_item()
