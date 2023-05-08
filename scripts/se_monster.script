@@ -2,7 +2,7 @@
 Изменения script_version:
 	4 - сохранение поля job_online
 	5 - сохранение поля was_in_smart_terrain
-	
+
 	modyfied by xStream
 ]]
 
@@ -52,7 +52,7 @@ function check_spawn(s_object)
 				return true
 			else
 				spawn.npc = nil
-				return false 
+				return false
 			end
 		else
 			return nil
@@ -91,7 +91,7 @@ function se_monster:__init (section) super (section)
 
 	self.day_begin=-1
 	self.day_end=-1
-	
+
 	self.state = nil
 end
 --------------------
@@ -99,7 +99,7 @@ function se_monster:get_ini()
 	if not self.ini_initialized then
 		self.ini             = self:spawn_ini ()
 		self.ini_initialized = true
-		
+
 		self.spawner_present = self.ini:section_exist ("spawner")
 
 		if self.ini ~= nil and self.spawner_present == true then
@@ -113,11 +113,11 @@ function se_monster:get_ini()
 				self.day_night_switch = utils.cfg_get_bool(self.ini, "spawner", "day_night_switch", self, false, false)
 			end
 		end
-		
+
 		self.day_begin = utils.cfg_get_number(system_ini(), self:section_name(), "DayTime_Begin", self, false, -1)
 		self.day_end = utils.cfg_get_number(system_ini(), self:section_name(), "DayTime_End", self, false, -1)
-		
-		if self.min_distance==nil then 
+
+		if self.min_distance==nil then
 			local sys = system_ini()
 			if sys ~= nil and sys:line_exist ("alife", "switch_distance") == true then
 				self.min_distance = sys:r_u32 ("alife", "switch_distance") - 50
@@ -130,7 +130,7 @@ function se_monster:get_ini()
 				 self.min_distance = 50
 			end
 		end
-		
+
 	end
 end
 --------------------
@@ -167,20 +167,20 @@ function se_monster:can_switch_online ()
 	if self.online == false then
 	-- если игрока нет, то в оффлайн
         if db_actor == nil or db_actor:alive () == false then
-					return save_state(self, false) 
+					return save_state(self, false)
 				end
-				
+
 				-- Если в custom_data зверушки есть cond в секции [spawner], то это условие должно иметь приоритет.
 				local chk_spawner=check_spawn(self)
 				if chk_spawner~=nil then
 					return save_state(self, chk_spawner)
 				end
-				
+
 				--если "ночь"  - остаемся в офф
 				if not is_creature_day(self, day_night_switch) then
 					return save_state(self, false)
 				end
-				
+
         --если задана дистанция проверки, то проверим.
 				if check_distance == true then
 					-- проверим дистанцию до игрока. если меньше требуемой, то офф
@@ -188,14 +188,14 @@ function se_monster:can_switch_online ()
 						return save_state(self, false)
 					end
 				end
-				
+
         --все проверки прошли - финал
 	    return save_state( self, cse_alife_monster_base.can_switch_online (self) )
     else
         if db_actor == nil or db_actor:alive () == false then
 					return save_state(self, true)
 				end
-								
+
 				-- Если в custom_data зверушки есть cond в секции [spawner], то это условие должно иметь приоритет.
 				local chk_spawner=check_spawn(self)
 				if chk_spawner~=nil then
@@ -211,19 +211,19 @@ function se_monster:can_switch_online ()
 						return save_state(self, r)
 					end
         end
-				
+
         return save_state(self, cse_alife_monster_base.can_switch_online (self))
     end
 end
 --------------------
 function se_monster:STATE_Write(packet)
 	cse_alife_monster_base.STATE_Write (self, packet)
-	
+
 	local st = 0
 	if self.state == true then
 		st=4
 	end
-	
+
 	if self.job_online == true then
 		packet:w_u8(0+st)
 	elseif self.job_online == false then
@@ -243,11 +243,11 @@ function se_monster:STATE_Read(packet, size)
 
 	if self.script_version >= 4 then
 		local t = packet:r_u8()
-		
+
 		local st = math.floor(t/4)*4
 		t=t-st
 		if st==4 then need_be_online[self.id]=true end
-		
+
 		if t == 0 then
 			self.job_online = true
 		elseif t == 1 then

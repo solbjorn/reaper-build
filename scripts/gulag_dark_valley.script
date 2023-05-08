@@ -42,7 +42,7 @@ function load_states(gname, type)
 
     return nil
 end
-        
+
 -- Dynamic ltx -----------------------------------------------------------
 function load_ltx(gname, type)
     local g = gulags[type]
@@ -91,7 +91,6 @@ function checkMonster(npc_community, gulag_type)
 	end
     return false
 end
-
 
 --------------------------------------------------------------------------
 -- Gulags
@@ -243,7 +242,7 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
                --"on_info3            = {+val_escort_captive_enemy}   remark@val_escort_guard_free\n" ..
                "combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}\n" ..
 
-               -- 
+               --
                "[patrol@" .. gname .. "_guard_free]\n" ..
                "path_walk           = guards_leave_walk\n" ..
                "def_state_moving1   = patrol\n" ..
@@ -309,7 +308,6 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
 
     gulags.val_escort.ltx = ltx
 end
-
 
 --------------------------------------------------------------------------
 -- Sacrifice (сцена возле ямы на главной базе бандитов)
@@ -403,7 +401,6 @@ gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
     gulags.val_sacrifice.ltx = ltx
 end
 
-
 --------------------------------------------------------------------------
 -- Prisoner (заключенный за решеткой в подвале на главной базе бандитов)
 --------------------------------------------------------------------------
@@ -447,7 +444,6 @@ gulags.val_prisoner.state = function(gulag)
     return 0
 end
 
-
 --------------------------------------------------------------------------
 -- Sos (раненый на заправке и кровосос)
 --------------------------------------------------------------------------
@@ -475,7 +471,7 @@ gulags.val_sos.job = function(sj, gname, type, squad, groups)
         predicate = sos_predicate_w
     }
     sj[#sj+1] = t
-    
+
     ltx = ltx.."[logic@" .. gname .. "_wounded]\n" ..
                "active        = remark1\n" ..
                "on_death      = death@wounded\n" ..
@@ -570,7 +566,6 @@ gulags.val_sos.job = function(sj, gname, type, squad, groups)
     gulags.val_sos.ltx = ltx
 end
 
-
 --------------------------------------------------------------------------
 -- Robbers (грабители на ферме)
 --------------------------------------------------------------------------
@@ -584,7 +579,7 @@ gulags.val_rob.job = function(sj, gname, type, squad, groups)
                 "use             = true\n" ..
                 "use_wpn         = false\n" ..
                 "abuse           = false\n" ..
-                
+
                 "[meet@" .. gname .. "_warn]\n" ..
                 --"meet_state     = 20| {+val_rob_buying} threat, guard@ {+val_rob_buying} val_rob_guard_jeer\n" .. --, weather
                 "meet_state     = 1| threat@threat_back\n" .. --, weather
@@ -645,24 +640,23 @@ gulags.val_rob.job = function(sj, gname, type, squad, groups)
     gulags.val_rob.ltx = ltx
 end
 
-
 --------------------------------------------------------------------------
 -- Bandits (главная база бандитов)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
-function lb_predicate1(npc_info) 
+function lb_predicate1(npc_info)
     return npc_info.profile_name == "val_bandit_borov"
 end
 
-function lb_predicate_bg(npc_info) 
+function lb_predicate_bg(npc_info)
     return npc_info.profile_name == "val_bandit_bodyguard"
 end
 
-function lb_predicate2(npc_info) 
+function lb_predicate2(npc_info)
     return npc_info.profile_name == "val_bandit_veteran"
 end
 
-function lb_predicate3(npc_info) 
+function lb_predicate3(npc_info)
     return npc_info.profile_name == "val_bandit_general"
 end
 
@@ -899,7 +893,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
                    "[logic@" .. gname .. "_guard_alarm" .. i .. "]\n" ..
                    "active = walker@" .. gname .. "_guard_alarm" .. i .. "\n" ..
                    "combat_ignore = combat_ignore\n" ..
-                   
+
                    "[walker@" .. gname .. "_guard_alarm" .. i .. "]\n" ..
                    "path_walk = guard_alarm_walk" .. i .. "\n" ..
                    "path_look = guard_alarm_look" .. i .. "\n" ..
@@ -939,16 +933,16 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
         ltx = ltx.."[logic@" .. gname .. "_patrol_normal" .. i .. "]\n" ..
                    "active = walker@" .. gname .. "_patrol_normal" .. i .. "\n" ..
                    "combat_ignore = combat_ignore\n" ..
-                    
+
                    "[walker@" .. gname .. "_patrol_normal" .. i .. "]\n" ..
                    "path_walk = patrol_walk" .. i .. "\n" ..
                    "path_look = patrol_look" .. i .. "\n" ..
                    "combat_ignore_cond = " .. combat_ignore ..
-                    
+
                    "[logic@" .. gname .. "_patrol_alarm" .. i .. "]\n" ..
                    "active = walker@" .. gname .. "_patrol_alarm" .. i .. "\n" ..
                    "combat_ignore = combat_ignore\n" ..
-                    
+
                    "[walker@" .. gname .. "_patrol_alarm" .. i .. "]\n" ..
                    "path_walk = patrol_alarm_walk" .. i .. "\n" ..
                    "path_look = patrol_alarm_look" .. i .. "\n" ..
@@ -1049,15 +1043,15 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
         ltx = ltx.."[logic@" .. gname .. "_sleeper_normal" .. i .. "]\n" ..
                    "active = sleeper@" .. gname .. "_sleeper_normal" .. i .. "\n" ..
                    "combat_ignore = combat_ignore\n" ..
-                    
+
                    "[sleeper@" .. gname .. "_sleeper_normal" .. i .. "]\n" ..
                    "path_main = sleeper" .. i .. "\n" ..
                    "combat_ignore_cond = " .. combat_ignore ..
-                    
+
                    "[logic@" .. gname .. "_sleeper_alarm" .. i .. "]\n" ..
                    "active = camper@" .. gname .. "_sleeper_alarm" .. i .. "\n" ..
                    "combat_ignore = combat_ignore\n" ..
-                    
+
                    "[camper@" .. gname .. "_sleeper_alarm" .. i .. "]\n" ..
                    "path_walk = sleeper_alarm_walk" .. i .. "\n" ..
                    "path_look = sleeper_alarm_look" .. i .. "\n" ..
@@ -1103,7 +1097,6 @@ gulags.val_lager_bandits.state = function(gulag)
 	return state_normal
 end
 
-
 --------------------------------------------------------------------------
 -- Offline group (гулаг для держания сталкеров в оффлайне до определенного момента)
 --------------------------------------------------------------------------
@@ -1119,7 +1112,7 @@ gulags.offline_group.job = function(sj, gname, type, squad, groups)
 
     while true do
         local way_name = phdr .. it
-        
+
         if not level.patrol_path_exists(way_name) then
             break
         end
@@ -1161,7 +1154,6 @@ gulags.offline_group.job = function(sj, gname, type, squad, groups)
     gulags.offline_group.ltx = ltx
 end
 
-
 --------------------------------------------------------------------------
 -- Soldiers raid group (аналог general_lager только с дополнительными рестрикторами)
 --------------------------------------------------------------------------
@@ -1174,7 +1166,7 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
 
     ltx = "[danger@ignore_corpse]\n" ..
           "ignore_types = corpse\n"
-          
+
     local idstr = gname .. "_guard"
     while level.patrol_path_exists(idstr .. "_" .. i .. "_walk") do
         -- Необходимо вычитать количество работ из названия точки пути.
@@ -1266,7 +1258,6 @@ gulags.val_soldiers_raid.state = function(gulag)
 	end
 end
 
-
 --------------------------------------------------------------------------
 -- WatchTower (смотровые вышки)
 --------------------------------------------------------------------------
@@ -1355,7 +1346,7 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
         ltx = ltx.."[logic@" .. idstr .. "]\n" ..
                    "active = camper@" .. idstr .. "\n" ..
 
-                   "[camper@" .. idstr .. "]\n" ..                            
+                   "[camper@" .. idstr .. "]\n" ..
                    "path_walk                   = sniper_" .. i .. "_walk\n" ..
                    "path_look                   = sniper_" .. i .. "_look\n" ..
                    "def_state_campering         = threat\n" ..
@@ -1364,12 +1355,12 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
                    "on_actor_dist_le_nvis       = 50 | walker@" .. idstr .. "_free\n" ..
                    "on_timer                    = " .. d_sniper .. "000 | remark@" .. idstr .. "\n" ..
 
-                   "[walker@" .. idstr .. "_free]\n" ..                            
+                   "[walker@" .. idstr .. "_free]\n" ..
                    "path_walk                   = sniper_" .. i .. "_walk\n" ..
                    "path_look                   = sniper_" .. i .. "_look\n" ..
                    "on_actor_dist_ge_nvis       = 60 | camper@" .. idstr .. "\n" ..
 
-                   "[remark@" .. idstr .. "]\n" ..                            
+                   "[remark@" .. idstr .. "]\n" ..
                    "anim                    = guard\n" ..
                    "on_actor_dist_le_nvis   = 50 | walker@" .. idstr .. "_free\n" ..
                    "on_timer                = " .. d_wait .. "000 | camper@" .. idstr .. "\n"

@@ -19,7 +19,6 @@ MaxHealthValue		     = 100			; range [0..200]
 DynamicObjectsCount	 = 32
 smart_terrain_choose_interval	= 00:15:00
 
-
 cform                = skeleton					; collision class
 class                = SM_DOG_S					; AI class
 
@@ -27,7 +26,6 @@ ef_creature_type	 = 6				; option for evaluation functions
 ef_weapon_type		 = 2
 ef_detector_type			 = 1
 panic_threshold		= 0.1
-
 
 script_binding  	= bind_monster.bind
 
@@ -61,15 +59,14 @@ ph_after_death_velocity_factor= 0.75
 ph_skel_shot_up_factor        = 0.25
 ;---------------------------------------------------------------------
 
-
 ;----------------------------------------------------------------------------
 ; Movement::Velocities & Acceleration
 ;----------------------------------------------------------------------------
 ; speed factors			linear | angular_real | angular_path | min |  max
 Velocity_Stand			= 0,		2.0,			2.0,		1,		1
 Velocity_WalkFwdNormal	= 1.45,		3.0,			3.0,		0.2,	1.5
-Velocity_WalkFwdDamaged	= 1.3,		1.0,			1.0,		0.2,	1	
-Velocity_RunFwdNormal	= 7.3,		2.6,			2.6,		0.21,	1	
+Velocity_WalkFwdDamaged	= 1.3,		1.0,			1.0,		0.2,	1
+Velocity_RunFwdNormal	= 7.3,		2.6,			2.6,		0.21,	1
 Velocity_RunFwdDamaged	= 4.5,		1.0,			1.0,		0.18,	1
 Velocity_Drag			= 0.6,		3.0,			3.0,		1,		1
 Velocity_Steal			= 1.5,		3.0,			3.0,		1,		1
@@ -93,8 +90,8 @@ Melee_Rotation_Factor	= 2.6
 ; Jump parameters
 ;--------------------------------------------------------------------------
 jump_factor				= 1.7
-jump_delay				= 4000	;6000	
-jump_min_dist			= 4.5;9.;3.0	;1.5	;4.0 
+jump_delay				= 4000	;6000
+jump_min_dist			= 4.5;9.;3.0	;1.5	;4.0
 jump_max_dist			= 3.0;8.;4.0	;3.0
 jump_max_angle			= 0.5	;1.0	;1.2
 jump_trace_dist			= 1.0
@@ -104,8 +101,8 @@ jump_trace_dist			= 1.0
 ;-------------------------------------------------------------------------
 satiety_v 		= 0.0001				;0.01			;скорость уменьшения сытости со временем
 radiation_v 		= 0.00001		;0.004			;скорость уменьшения радиации
-satiety_power_v 	= 0.005		;0.01			;увеличение силы при уменьшении сытости 
-satiety_health_v 	= 0.005	;0.03			;увеличение здоровья при уменьшении сытости 
+satiety_power_v 	= 0.005		;0.01			;увеличение силы при уменьшении сытости
+satiety_health_v 	= 0.005	;0.03			;увеличение здоровья при уменьшении сытости
 satiety_critical 	= -1.0		;0.25			;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
 radiation_health_v 	= 0.01	;0.006			;уменьшение здоровья при воздействии радиации
 morale_v		= 0.01					;скорость восстановления морали
@@ -163,16 +160,12 @@ sound_distant_idle		= monsters\dog\bdog_distant_	; только для расстояний свыше 2
 
 killer_clsids				= Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
 
-
-
 idle_sound_delay		= 80000;50000	;20000	;15000
 eat_sound_delay			= 2000	;3000
 attack_sound_delay		= 5000	;2000; 5000	;2000
 
 distant_idle_sound_delay = 80000
-distant_idle_sound_range = 30.0	
-
-
+distant_idle_sound_range = 30.0
 
 SoundThreshold		 = 0.04             ; range [0..1]
 max_hear_dist		 = 60
@@ -198,7 +191,6 @@ transparency_threshold		= 0.25
 DamagedThreshold		= 0.2
 damage					= m_dog_damage
 
-
 critical_wound_threshold		= 0.4	;1.1
 critical_wound_decrease_quant	= 0.
 
@@ -221,10 +213,7 @@ Max_Satiety			= 1.0	;0.9 ; ьръё. эюЁьр ёvЄюёЄш (сюы№°х - юўхэ№ ёvЄvщ)
 
 distance_to_corpse	= 1.3		; фшёЄ. фю ЄЁєяр, яЁш ъюЄюЁющ юэ яхЁхїюфшЄ т ёюёЄю эшх хфv
 
-
 terrain				 = dogs_terrain
-
-
 
 material				= creatures\medium
 DynamicObjectsCount		= 32
@@ -237,7 +226,6 @@ attack_params			= m_dog_attack_params
 step_params			= m_dog_step_params
 
 LegsCount			= 4
-
 
 ;species of monster
 species					= dog
@@ -274,10 +262,10 @@ time_attack		= 0.05		; fade in
 time_release	        = 0.25		; fade out
 
 ; camera effects
-ce_time			= 0.35 ;time 
-ce_amplitude		= 5.0 
-ce_period_number	= 2.0 
-ce_power		= 0.7 ; power 
+ce_time			= 0.35 ;time
+ce_amplitude		= 5.0
+ce_period_number	= 2.0
+ce_power		= 0.7 ; power
 
 ;===========================================================================
 ; Step Events
@@ -297,10 +285,10 @@ stand_drag_0		=	1,	0.2,     0.75,	  0.25,    0.7,    0.7,	    0.75,     0.7,    
 ; IMMUNITIES
 ;===========================================================================
 [dog_immunities]
-burn_immunity = 1.0				;коэффициенты иммунитета 
+burn_immunity = 1.0				;коэффициенты иммунитета
 strike_immunity = 1.0
 shock_immunity = 1.0
-wound_immunity = 0.9	;0.75	;1.0		
+wound_immunity = 0.9	;0.75	;1.0
 radiation_immunity = 0.001	;0.5
 telepatic_immunity = 1.0
 chemical_burn_immunity = 1.0
@@ -312,7 +300,7 @@ fire_wound_immunity  = 0.8
 ;=================================================================================
 [m_Dog_damage]
 ;bone_name		 = <hit_scale>,-1,<wound_scale>
-;<hit_scale>	- коэфф. изменения хита (уменьшения здоровья) 
+;<hit_scale>	- коэфф. изменения хита (уменьшения здоровья)
 ;<wound_scale>	- коэфф. изменения величины открытой раны
 
 default				= 0.5,	-1,	0.2
@@ -322,8 +310,6 @@ bip01_spine 		= 1.0, -1, 0.5
 bip01_spine1 		= 1.0, -1, 0.5
 bip01_neck 			= 1.0, -1, 1.5
 bip01_head 			= 2.0, -1, 0.5, 10
-
-
 
 [dog_critical_wound_bones_head]
 bip01_neck
@@ -364,14 +350,12 @@ bip01_r_finger0
 bip01_r_finger01
 bip01_l_thigh
 
-
-
 ;=================================================================================
 ; DOG Terrain
 ;=================================================================================
 [dogs_terrain]
 	255,000,255,255
-	
+
 ;*********************************************************************************
 ; WEAK PROFILE
 ;*********************************************************************************
@@ -390,7 +374,6 @@ community			= dog
 eye_fov				 = 100
 eye_range			 = 20
 time_quant			 = 0.003
-
 
 [dog_immunities_weak]
 burn_immunity			= 1.0
@@ -414,7 +397,6 @@ stand_attack_1 =	  	0.45,		0.10,	    50,        1.0, 0.1, 0.0,		 -0.5, 0.5, -1.0
 stand_attack_2 =	  	0.45,		0.10,	    50,        1.0, 0.1, 0.0,		 -0.5, 0.5, -1.0, 1.0,				 1.8
 stand_attack_3 =	  	0.45,		0.10,	    50,        1.0, 0.1, 0.0,		 -0.5, 0.5, -1.0, 1.0,				 1.8
 
-
 ;*********************************************************************************
 ; NORMAL PROFILE
 ;*********************************************************************************
@@ -429,7 +411,6 @@ immunities_sect		= dog_immunities_normal
 attack_params		= dog_attack_params_normal
 spec_rank			= normal
 community			= dog
-
 
 [dog_immunities_normal]
 burn_immunity			= 1.0
@@ -467,7 +448,6 @@ immunities_sect		= dog_immunities_strong
 attack_params		= dog_attack_params_strong
 spec_rank			= strong
 community			= dog
-
 
 [dog_immunities_strong]
 burn_immunity			= 1.0

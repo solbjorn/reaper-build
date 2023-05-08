@@ -2,7 +2,7 @@
 -- инициализация
 
 class "amk_options" (CUIScriptWnd)
- 
+
 function amk_options:__init(owner) super()
 	self.owner = owner
 	self:InitControls()
@@ -10,45 +10,45 @@ function amk_options:__init(owner) super()
 end
 
 function amk_options:__finalize() end
-	
+
 function amk_options:InitControls()
 	self:Init(0,0,1024,768)
 
 	local xml = CScriptXmlInit()
 	xml:ParseFile("ui_amk_options_wnd.xml")
 	--xml:InitStatic("back_video", 				self)
-	xml:InitStatic("background",				self)	
-	--xml:InitStatic("newspaper_video",			self)	
-	
+	xml:InitStatic("background",				self)
+	--xml:InitStatic("newspaper_video",			self)
+
 	self.form = xml:InitStatic("form",			self)
-	
+
 	xml:InitStatic("form:caption",				self.form)
 	xml:InitStatic("form:picture",				self.form)
 	xml:InitStatic("form:info_pic",				self.form)
-	
+
 	ctrl = xml:Init3tButton("form:btn_quit", 	self.form)
 	self:Register(ctrl, "btn_quit")
-	
+
 	local radio_hud = xml:InitTab("form:radio_amk_hud", self.form)
-	self:Register(radio_hud, "radio_amk_hud")	
+	self:Register(radio_hud, "radio_amk_hud")
 	self.radio_hud = radio_hud
 	radio_hud:SetNewActiveTab(amk.load_variable("option_hud",2))
-	
+
 	local radio_mus = xml:InitTab("form:radio_amk_mus", self.form)
-	self:Register(radio_mus, "radio_amk_mus")	
+	self:Register(radio_mus, "radio_amk_mus")
 	self.radio_mus = radio_mus
 	radio_mus:SetNewActiveTab(amk.load_variable("option_mus",1))
 
 	local radio_treasure = xml:InitTab("form:radio_amk_treasure", self.form)
-	self:Register(radio_treasure, "radio_amk_treasure")	
+	self:Register(radio_treasure, "radio_amk_treasure")
 	self.radio_treasure = radio_treasure
 	radio_treasure:SetNewActiveTab(amk.load_variable("option_treasure",0))
 
 	local radio_rad = xml:InitTab("form:radio_amk_rad", self.form)
-	self:Register(radio_rad, "radio_amk_rad")	
+	self:Register(radio_rad, "radio_amk_rad")
 	self.radio_rad = radio_rad
 	radio_rad:SetNewActiveTab(amk.load_variable("option_rad",1))
-	
+
 	self:Register(xml:Init3tButton("form:btn_okay", self.form),"btn_okay")
 
 end
@@ -64,14 +64,14 @@ function amk_options:on_okay()
 	local radio_hud = self:GetTabControl("radio_amk_hud")
 	local radio_treasure = self:GetTabControl("radio_amk_treasure")
 	local radio_rad = self:GetTabControl("radio_amk_rad")
-	
+
 	amk.save_variable("option_mus", radio_mus:GetActiveIndex() )
 	amk.save_variable("option_hud", radio_hud:GetActiveIndex() )
 	amk.save_variable("option_treasure", radio_treasure:GetActiveIndex() )
 	amk.save_variable("option_rad", radio_rad:GetActiveIndex() )
-	
+
 	self:on_quit()
-	
+
 end
 
 function amk_options:on_quit()

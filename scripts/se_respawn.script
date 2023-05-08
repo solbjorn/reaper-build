@@ -219,12 +219,12 @@ function init_respawn_params(obj, reset)
 	end
 
   obj.spawned_goes_online = r_bool(ini, section_name, "spawned_goes_online", nil)
-	
+
   obj.spawn_once = r_bool(ini, section_name, "spawn_once", false)
-	
+
   obj.amk_name = r_str(ini, section_name, "amk_name", nil)
 	if obj.amk_name then amk_named_respawner_control[obj.amk_name] = obj end
-	
+
 	obj.min_count = r_field_num("min_count", 0)
 	obj.max_count = r_field_num("max_count", 255)
 	if obj.max_count < 0 or obj.max_count > 255 then obj.max_count = 255 end
@@ -305,17 +305,17 @@ function se_respawn:create(prob)
     end
     sum = math_random(0, sum)
     for k,v in pairs(self.respawn_section) do
-        sum = sum - v.prob      
+        sum = sum - v.prob
         if sum <= 0 then
           spawn_section = v.section
           break
         end
     end
-    
+
     if spawn_section == "" then
       return false
     end
-    
+
     local parent_id = nil
     if self.parent ~= nil then
       local s_obj = alife():story_object(self.parent)
@@ -325,17 +325,17 @@ function se_respawn:create(prob)
       end
       parent_id = s_obj.id
     end
-    
+
     local obj
     if parent_id == nil then
-      obj = alife():create(spawn_section, 
+      obj = alife():create(spawn_section,
             self.position,
-            self.m_level_vertex_id, 
+            self.m_level_vertex_id,
             self.m_game_vertex_id)
     else
-      obj = alife():create(spawn_section, 
+      obj = alife():create(spawn_section,
             self.position,
-            self.m_level_vertex_id, 
+            self.m_level_vertex_id,
             self.m_game_vertex_id,
             parent_id)
     end
@@ -356,9 +356,9 @@ function se_respawn:create(prob)
 	end
 	return false
 end
--- Попытка спаунить объекты. Анализируется сколько уже заспавнено и выбирается один из механизмов - либо 
+-- Попытка спаунить объекты. Анализируется сколько уже заспавнено и выбирается один из механизмов - либо
 -- мы доспавниваем до минимального количества, либо спавним с заданной вероятностью
-function se_respawn:spawn()	
+function se_respawn:spawn()
 	if not self.spawn_once then
 		-- Пробегаемся по списку уже заспавненных объектов и удаляем из них мертвые либо уничтоженные.
 		for k,v in pairs(self.spawned_obj) do
@@ -374,17 +374,17 @@ function se_respawn:spawn()
 			else
 			  table_remove(self.spawned_obj, k)
 			end
-		end 
+		end
 	end
   if xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions) == "0" then
     return
   end
 
-	if self.spawn_once and not self.already_once_spawned then 
+	if self.spawn_once and not self.already_once_spawned then
 		self.already_once_spawned = true
 	end
   -- экстренный спаун минимального количества объектов
-  if #self.spawned_obj < self.min_count then 
+  if #self.spawned_obj < self.min_count then
     while #self.spawned_obj < self.min_count do
       if self:create(100) == false then
         return
@@ -392,16 +392,16 @@ function se_respawn:spawn()
     end
     return
   end
-  
+
   -- делаем несколько попыток заспаунить объект.
-  for i=1,self.max_spawn do   
+  for i=1,self.max_spawn do
     if self.max_count ~= -1 and #self.spawned_obj >= self.max_count then
       return
-    end   
+    end
     if self:create(xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions)) == false then
       return
     end
-  end   
+  end
 end
 --' Удаляем уже заспавненный объект из списка заспавненных
 --' Используется только  для ящиком со шмотками в смарттеррейнах
@@ -409,8 +409,8 @@ function se_respawn:remove_spawned(id)
   for k,v in pairs(self.spawned_obj) do
     if id == v then
       table_remove(self.spawned_obj, k)
-    end       
-  end 
+    end
+  end
 end
 function se_respawn:set_respawn_time()
 	local idle_time = game.CTime()
@@ -424,7 +424,7 @@ function se_respawn:execute()
   if self.idle_spawn_min == -1 then
     return
   end
-  
+
 	if self.respawn_time < game.get_game_time() then
 		if self.respawn_time == smart_terrain_CTime_0 then
 			self:set_respawn_time()
@@ -460,11 +460,11 @@ function spawn(name)
   for i=1,spawner.max_spawn do
     if spawner.max_count ~= -1 and #spawner.spawned_obj >= spawner.max_count then
       return
-    end   
+    end
     if spawner:create(xr_logic.pick_section_from_condlist(db.actor_proxy, spawner, spawner.conditions)) == false then
       return
     end
-  end   
+  end
 end
 
 function get_respawner_by_parent(parent_id)

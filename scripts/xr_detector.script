@@ -19,21 +19,21 @@ end
 function actor_detector:actor_exit()
 	--' Игрок входит на опасную территорию (покидает разрешенную границу уровня)
 	self.init_time = game.get_game_time()
-	
+
 	level.add_pp_effector("dead_zone.ppe", 1001, true)
 	level.set_pp_effector_factor(1001, 0.01)
-	
+
 	xr_sound.set_actor_sound("level_border_detector")
 	xr_sound.set_actor_sound_factor(10)
-	
-	self.last_update_time = game.get_game_time()	
+
+	self.last_update_time = game.get_game_time()
 end
 function actor_detector:update()
 	--' Апдейтим игрока и устанавливаем действия.
 	if self.init_time == -1 then
 		return
 	end
-	
+
 	if game.get_game_time():diffSec(self.last_update_time) < idle_time then
 		return
 	end

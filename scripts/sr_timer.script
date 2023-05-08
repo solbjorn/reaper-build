@@ -19,7 +19,7 @@ function action_timer:update(delta)
 	end
 	-- Высчитываем сколько времени уже работает счетчик
 	local nn = time_global() - db.storage[self.object:id()].activation_time
-	
+
 	-- Изменяем значение счетчика
 	local value_time = 0
 	if self.st.type == "inc" then
@@ -81,7 +81,7 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 		abort("ERROR: wrong sr_timer type. Section [%s], Restrictor [%s]", section, obj:name())
 		return
 	end
-	
+
 	if st.type == "dec" then
 		st.start_value = utils.cfg_get_number(ini, section, "start_value", obj, true)
 	else
@@ -91,11 +91,11 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	st.on_value = parse_data(obj, utils.cfg_get_string(ini, section, "on_value", obj, false, ""))
 	st.timer_id = utils.cfg_get_string( ini, section, "timer_id", obj, false, "", "hud_timer")
 	st.string	= utils.cfg_get_string( ini, section, "string", obj, false, "")
-		
+
 	st.ui = get_hud()
 	local custom_timer_static = st.ui:AddCustomStatic(st.timer_id, true)
 	st.timer = custom_timer_static:wnd()
-	
+
 	if st.string ~= nil then
 		local timer_text_static = st.ui:AddCustomStatic("hud_timer_text", true)
 		timer_text_static:wnd():SetTextST(st.string)
@@ -108,14 +108,13 @@ function parse_data(npc,s)
     if s then
 		for name in string_gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
 			local dat = {	dist = nil,
-							state = nil}	
-			
+							state = nil}
+
 			local t_pos = string_find( name, "|", 1, true )
-						
+
 			local dist = string_sub( name, 1, t_pos - 1 )
 			local state	= string_sub( name, t_pos + 1)
-			
-				
+
 			dat.dist = tonumber(dist)
 			if state then
 				dat.state = xr_logic.parse_condlist_q(state)

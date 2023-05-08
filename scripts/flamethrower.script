@@ -65,10 +65,10 @@ function give_flamethrower_worked(first_speaker, second_speaker)
 		if flame ~= nil then
 			flame:set_ammo_elapsed(max_fuel)
 		end
-	end	
+	end
 end
 
-function clear_parts(first_speaker, second_speaker)	
+function clear_parts(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
 		actor = first_speaker
@@ -99,7 +99,7 @@ function clear_parts(first_speaker, second_speaker)
 	end
 end
 
-function clear_fuel(first_speaker, second_speaker)	
+function clear_fuel(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
 		actor = first_speaker
@@ -109,7 +109,7 @@ function clear_fuel(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	trader:iterate_inventory( function (dummy,item)
-	if item:section() == "amk_ballon" or item:section() == "amk_kanistra" or item:section() == "wpn_flame" then 
+	if item:section() == "amk_ballon" or item:section() == "amk_kanistra" or item:section() == "wpn_flame" then
 	  alife():release(alife():object(item:id()), true)
 	end
 	end, nil)
@@ -120,7 +120,6 @@ function spawn_parts()
 	alife():create("trubka", vector():set(-57.36,22.54,-120.73), 118492, 298)
 	alife():create("gorelka", vector():set(-79.62,-10.69,39.95), 233164, 1595)
 end
-
 
 function set_metka()
  for a=1,65534 do
@@ -133,7 +132,6 @@ function set_metka()
   end
  end
 end
-
 
 function relocate_to_barman(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "gorelka", "in")
@@ -168,7 +166,6 @@ function out_flamethrower(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "flamethrower_bad", "out")
     dialogs.relocate_money(second_speaker, 2500, "in")
 end
-
 
 function have_a_fire_kolobok()
     local actor = db.actor
@@ -287,8 +284,6 @@ amk.write_stalker_params(params,obj)
 amk.add_spot_on_map(obj.id,'green_location','Лёха Тамбовский')
 end
 
-
-
 function start_work(first_speaker, second_speaker)
 	local gtime = amk.game_minutes()
 	amk.save_variable("flame_start", gtime)
@@ -329,8 +324,8 @@ function start_reload(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	dialogs.relocate_money(trader, 2000, "out")
-	dialogs.relocate_item_section(trader, "vodka", "out")	
-	dialogs.relocate_item_section(trader, "wpn_flame", "out")	
+	dialogs.relocate_item_section(trader, "vodka", "out")
+	dialogs.relocate_item_section(trader, "wpn_flame", "out")
 	local gtime = amk.game_minutes()
 	amk.save_variable("flame_reload", gtime + 30)
 	calc_reload(first_speaker, second_speaker)
@@ -347,8 +342,8 @@ function start_find_and_reload(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	dialogs.relocate_money(trader, 30000, "out")
-	dialogs.relocate_item_section(trader, "vodka", "out")	
-	dialogs.relocate_item_section(trader, "wpn_flame", "out")	
+	dialogs.relocate_item_section(trader, "vodka", "out")
+	dialogs.relocate_item_section(trader, "wpn_flame", "out")
 	local gtime = amk.game_minutes()
 	amk.save_variable("flame_reload", gtime + math_random(12, 24) * 60)
 	amk.save_variable("flame_reload_count", min_fuel)
@@ -399,15 +394,15 @@ function relocate_n_items_section(victim, section, type, n)
     if db.actor and victim then
           if type == "in" then
         for i=1,n do
-                         alife():create(section,     
+                         alife():create(section,
                              db.actor:position(),
-                                   db.actor:level_vertex_id(),     
+                                   db.actor:level_vertex_id(),
                                    db.actor:game_vertex_id(),
                                    db.actor:id())
         end
     elseif type == "out" then
       db.actor:iterate_inventory(function (dummy,item)
-        if item:section()==section and n>0 then 
+        if item:section()==section and n>0 then
           db.actor:transfer_item(item, victim)
           n=n-1
         end

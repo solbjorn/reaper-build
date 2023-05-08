@@ -38,49 +38,49 @@ function register_container(cont_id, cont_section, cont_arts)
   if get_inv_index(cont_id)>0 then -- Уже зарегистрирован
     return true
   end
-  
+
   local f = get_cfg_index(cont_section)
-  
+
   if f==0 then
     local ini = system_ini()
-    
+
     if ini:section_exist(cont_section) then
       local tmp = {}
-      
+
       tmp.section = cont_section
       if ini:line_exist(cont_section, "container_slots") then
         tmp.slots = ini:r_u32(cont_section, "container_slots")
       else
         return false
       end
-      
+
       -- TODO: добавить настройки меню
-      
+
       tmp.tx = ini:r_u32(cont_section, "inv_grid_x")
       tmp.ty = ini:r_u32(cont_section, "inv_grid_y")
       tmp.weight = ini:r_float(cont_section, "inv_weight")
-      
+
       table.insert(cfg_containers, tmp)
       f = table.getn(cfg_containers)
-      
+
       arc.info(list_cfg_containers(),1)
     else
       return false
     end
   end
-  
+
   local cnt = {}
-  
+
   cnt.id = cont_id
   cnt.type = f
   cnt.arts = {}
-  
+
   local arts = cont_arts
   if not arts then
     arts = get_container_arts(cont_id)
   end
   local s = cfg_containers[f].slots
-  
+
   for i = 1, s do
     if (not arts) or (not arts[i]) or (arts[i]=="_") then
       cnt.arts[i] = 0
@@ -106,15 +106,14 @@ function register_container(cont_id, cont_section, cont_arts)
 		-- Skunk finish
     end
   end
-  
-  
+
   table.insert(inv_containers, cnt)
   arc.info(list_inv_containers(),1)
-  
+
   if arts and (table.getn(arts)>s) then
     arc.warning("Количество артефактов превышает количество слотов в контейнере #"..cont_id..". При открытии контейнера лишние артефакты будут удалены.")
   end
-  
+
   return true --f
 end
 --]]
@@ -125,7 +124,7 @@ function respawn_container(cont_index)
 --    return false
   end
   local a = {}
-  
+
   for i=1, cfg_containers[ic.type].slots do
     if ic.arts[i]>0 then
       a[i] = arc_arts.get_art_section(ic.arts[i])
@@ -133,7 +132,7 @@ function respawn_container(cont_index)
       a[i] = "_"
     end
   end
-  
+
   local sobj = arc.give_item(cfg_containers[ic.type].section)
   if not sobj then
     return false
@@ -157,7 +156,7 @@ function on_lose_container(cont_id)
     if lost_cont_id > 0 then
       arc.fault("Потеряно более одного контейнера!")
     end
-    
+
     lost_cont_id = cont_id
   end
 end
@@ -165,14 +164,14 @@ end
 function on_actor_update()
   if lost_cont_id > 0 then
     local n = get_inv_index(lost_cont_id)
-    
+
     if alife():object(lost_cont_id)==nil then
       -- Контейнер использован. Показать меню
       arc_ui_8container_menu.show_menu(get_inv_index(lost_cont_id))
     else
       -- Контейнер выброшен. Удалить контейнер и арты в нём из списка
       local arts = inv_containers[n].arts
-      
+
       for i = 1, table.getn(arts) do
         if arts[i]>0 then
           arc_arts.register_artefact(arc_arts.get_art_section(arts[i]), -1, true)
@@ -194,7 +193,7 @@ function on_actor_update()
 
 		  end
       end
-      
+
       table.remove(inv_containers, n)
     end
     lost_cont_id = -1
@@ -212,19 +211,19 @@ function get_container_arts(cont_id)
   end
   local tbl = get_art_container_data(sobj)
   local cd_string = tbl.custom
-  
+
   arc.info("CD = ["..tostring(cd_string).."]",1)
-  
+
   if not cd_string or cd_string=="" then
     return nil
   end
-  
+
   local arts = {}
-  
+
   for a in string.gmatch(cd_string, "[_%w]+") do
     table.insert(arts, a)
   end
-  
+
   return arts
 end
 
@@ -283,24 +282,24 @@ end
 
 function list_cfg_containers()
   local s = "cfg_containers = "
-  
+
   for i=1, get_cfg_containers_number() do
     local c = cfg_containers[i]
 --    s = s.."\n s=["..c.section.."], b_r="..c.belt_rad..", i_r="..c.inv_rad.."; tx=["..c.tx..","..c.ty.."], w="..c.weight
     s = s.."["..c.section.."] "
   end
-  
+
   return s
 end
 
 function list_inv_containers()
   local s = "inv_containers = "
-  
+
   for i=1, get_inv_containers_number() do
     local c = inv_containers[i]
 --    s = s.."\n s=["..c.section.."], b_r="..c.belt_rad..", i_r="..c.inv_rad.."; tx=["..c.tx..","..c.ty.."], w="..c.weight
     s = s.."["..c.id.."] arts={"..table.concat(c.arts, ",").."}"
   end
-  
+
   return s
 end

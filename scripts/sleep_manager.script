@@ -19,7 +19,7 @@ end
 function main(scale)
 	--level.set_snd_volume(0.001)
 	amk.mod_call("reduce_need_sleep",scale)
---	get_console():execute("_main_")	
+--	get_console():execute("_main_")
 	local sleep_ltx = ini_file ("scripts\\actorsleep.ltx")
 	schemes["ar_sleep"] = "ar_sleep"
 	ar_sleep.set_scheme(db.actor, sleep_ltx, "ar_sleep", logic)
@@ -64,10 +64,9 @@ function stopper()
 		amk_corpses.update_all_corpses()
 	end
 
-	
 	if not db.actor:alive() then
 --
-	else 
+	else
 		level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
 		level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
 		level.add_pp_effector("total_recall.ppe", 2008, false)
@@ -76,7 +75,7 @@ function stopper()
 		snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 15.0)
 	    level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
 	end
-	level.enable_input()	
+	level.enable_input()
 	actor_flags.sleep_state = false
 end
 
@@ -85,14 +84,14 @@ function hp_corrector(fr)
 		hp = fr/6 + db.actor.health
 		if hp > 1 then hp = 1 end
 		return
-	elseif db.actor.health > hp then 
+	elseif db.actor.health > hp then
 		db.actor.health = hp - db.actor.health
 	end
 end
 
 function is_sleep_active()
-	if db.storage[db.actor:id()].active_scheme == "ar_sleep" then 
-		return true 
+	if db.storage[db.actor:id()].active_scheme == "ar_sleep" then
+		return true
 	end
 	return false
 end

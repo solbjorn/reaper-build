@@ -4,9 +4,9 @@ end
 
 function remove_item(item_section)
   local a = db.actor
-  
+
   local obj = db.actor:object(item_section)
-  
+
   remove_obj(obj:id())
 end
 
@@ -23,7 +23,7 @@ end
 
 function give_item(item_section)
   local a = db.actor
-  
+
   return alife():create(item_section, a:position(), a:level_vertex_id(), a:game_vertex_id(), a:id())
 end
 
@@ -52,11 +52,11 @@ function to_interval(x, a, b)
   while x<a do
     x=x+s
   end
-  
+
   while x>b do
     x=x-s
   end
-  
+
   return x
 end
 

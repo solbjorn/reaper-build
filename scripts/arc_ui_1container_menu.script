@@ -11,7 +11,7 @@ local menu_cfg =
     y_start = 137,
     space = 69
   },
-  
+
   put =
   {
     row_size = 5,
@@ -55,37 +55,37 @@ function arc_1container_menu:DrawArtButton(art_index, button_number, multi)
     n = button_number
     bp = n
   end
-  
+
   m = menu_cfg[s]
   x = m.x_start+(m.space*math.mod(bp-1,m.row_size))
   y = m.y_start+(m.space*math.floor((bp-1)/m.row_size))
-  
+
   b = btns[button_number]
   if ((not b) or (not multi)) and (art_index>0) then
     t = "+"..arc.round(10000*arc_arts.get_art_inv_rad(art_index))
     tx, ty = arc_arts.get_art_texture(art_index)
     tx, ty = 50*tx, 50*ty
   end
-  
+
   if not b then -- if first time
     btns[button_number] = CUIButton()
     b = btns[button_number]
     b:SetWindowName("btn_"..s.."_"..button_number)
-    
+
     b:SetAutoDelete(true)
     b:InitTexture("ui\\ui_icon_equipment")
     b:SetOriginalRect(tx,ty,50,50)
-    
+
     b:SetText(t)
     b:SetTextColor(255,0,255,255)
     b:SetFont(GetFontLetterica18Russian())
     b:Init(x,y,50,50)
-    
+
     self:AttachChild(b)
     self:AddCallback(
       b:WindowName(), ui_events.BUTTON_CLICKED,
       loadstring("arc_ui_1container_menu.btn_"..s.."_art("..n..")"), self)
-    
+
     if multi then
       b.multi = CUIStatic()
       m = b.multi
@@ -115,13 +115,13 @@ end
 
 function arc_1container_menu:__init() super()
   _menu = self
-  
+
   get_container_arts()
   get_inventory_arts()
-  
+
   self.take_buttons = {}
   self.put_buttons = {}
-  
+
   self:UpdateMenu()
 end
 
@@ -135,36 +135,36 @@ function arc_1container_menu:DrawBackground()
   local xs, ys
   xs = 350
   ys = 460
-  
+
   local b = self.bkg
   if not b then
     self:Init(10,10,xs,ys)
     self.bkg = CUIStatic()
     b = self.bkg
     b:SetWindowName("background")
-    
+
     b:SetAutoDelete(true)
     b:InitTexture("ui\\ui_dg_inventory_arc")
     b:SetOriginalRect(0,0,350,460)
-    
+
     b:Init(0,0,xs,ys)
-    
+
     self:AttachChild(b)
   end
-  
+
   local a = self.art_box
   if not a then
     self.art_box = CUIStatic()
     a = self.art_box
     a:SetWindowName("art_box")
-    
+
     a:SetAutoDelete(true)
     a:InitTexture("ui\\ui_arc_art_box_1basic")
 --    a:SetOriginalRect(0,0,250,170)
     a:SetStretchTexture(true)
-    
+
     a:Init(30,40,300,280)
-    
+
     self:AttachChild(a)
   end
 end
@@ -175,14 +175,14 @@ function arc_1container_menu:DrawWeight()
     self.arts_weight = CUIStatic()
     w = self.arts_weight
     w:SetWindowName("arts_weight")
-    
+
     w:SetAutoDelete(true)
-    
+
     w:Init(115,225,300,20)
-    
+
     self:AttachChild(w)
   end
-  
+
   w:SetText(string.format("Вес артефактов: %.2f кг.", arts_weight))
 end
 
@@ -195,7 +195,7 @@ function arc_1container_menu:DrawButtons()
       arts_weight = arts_weight + arc_arts.get_art_weight(container_arts[i])
     end
   end
-  
+
   btn_pos = 0
   for i = 1, arc_arts.get_cfg_arts_number() do
     if arc_arts.get_art_inv_rad(i)>0 then
@@ -205,58 +205,58 @@ function arc_1container_menu:DrawButtons()
       self:DrawArtButton(i,i,inventory_arts[i])
     end
   end
-  
+
   local q = self.btn_quit
   if not q then
     self.btn_quit = CUIButton()
     q = self.btn_quit
     q:SetWindowName("btn_quit")
-    
+
     q:SetAutoDelete(true)
-    
+
     q:SetText("Закрыть")
     q:SetTextColor(255,255,0,0)
     q:SetFont(GetFontLetterica25())
     q:Init(130,60,100,30)
-    
+
     self:AttachChild(q)
     self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
   end
-  
+
   local p = self.btn_prev
   if not p then
     self.btn_prev = CUIButton()
     p = self.btn_prev
     p:SetWindowName("btn_prev")
-    
+
     p:SetAutoDelete(true)
-    
+
     p:SetText("<<")
     p:SetTextColor(255,255,0,0)
     p:SetFont(GetFontLetterica25())
     p:Init(50,60,50,30)
-    
+
     self:AttachChild(p)
     self:AddCallback("btn_prev", ui_events.BUTTON_CLICKED, self.prev_container, self)
   end
-  
+
   local n = self.btn_next
   if not n then
     self.btn_next = CUIButton()
     n = self.btn_next
     n:SetWindowName("btn_next")
-    
+
     n:SetAutoDelete(true)
-    
+
     n:SetText(">>")
     n:SetTextColor(255,255,0,0)
     n:SetFont(GetFontLetterica25())
     n:Init(250,60,50,30)
-    
+
     self:AttachChild(n)
     self:AddCallback("btn_next", ui_events.BUTTON_CLICKED, self.next_container, self)
   end
-  
+
   local f = (arc_1containers.get_inv_containers_number()>1)
   p:Show(f)
   n:Show(f)
@@ -283,15 +283,15 @@ function arc_1container_menu:__finalize() end
 function btn_put_art(art_index)
   if (arts_cont < max_arts_in_container) and (inventory_arts[art_index]>0) then
     for i=1,max_arts_in_container do
-	
+
 	  if container_arts[i]==0 then
 	    container_arts[i]=art_index
 	    arts_cont = arts_cont + 1
 	     -- удаление арта
 	    arc.remove_item(arc_arts.get_art_section(art_index))
-	        
+
 	    arc_arts.register_artefact(arc_arts.get_art_section(art_index),1,true)
-	        
+
 	    inventory_arts[art_index]=inventory_arts[art_index]-1
 	    if inventory_arts[art_index]==0 then
 	      arts_inv = arts_inv - 1
@@ -310,22 +310,22 @@ function btn_take_art(slot)
       arts_inv = arts_inv + 1
     end
     inventory_arts[a]=inventory_arts[a]+1
-    
+
     container_arts[slot]=0
     arts_cont = arts_cont - 1
-    
+
     _menu:UpdateMenu()
-    
+
     -- спавн арта
     g_alife:object((arc.give_item(arc_arts.get_art_section(a))).id).already_taken = true
-    
+
     arc_arts.register_artefact(arc_arts.get_art_section(a),-1,true)
   end
 end
 
 function get_container_arts()
   container_arts = arc_1containers.get_inv_container_arts(cur_cont_index)
-  
+
   arts_cont = 0
   table.foreachi(container_arts, function(i,v) if v>0 then arts_cont = arts_cont+1 end end)
 end
@@ -333,13 +333,13 @@ end
 function get_inventory_arts()
   inventory_arts = {}
   arts_inv = 0
-  
+
   local t
   for i=1, arc_arts.get_cfg_arts_number() do
     t = arc_arts.get_inv_arts_number(i)
-    
+
     table.insert(inventory_arts, t)
-    
+
     if t>0 then
       arts_inv = arts_inv + 1
     end

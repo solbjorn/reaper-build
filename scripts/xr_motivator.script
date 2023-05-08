@@ -32,10 +32,10 @@ function motivator_binder:__init (obj) super(obj)
 end
 
 function motivator_binder:extrapolate_callback(cur_pt)
-	if self.object == nil then 
-		return false 
+	if self.object == nil then
+		return false
 	end
-	
+
   if self.st.active_section then
     xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "extrapolate_callback")
     self.st.move_mgr:extrapolate_callback(self.object)
@@ -50,8 +50,8 @@ end
 local def_ini_file = ini_file("[logic]\nactive = nil")
 
 function motivator_binder:reinit()
-	if self.object == nil then 
-		return 
+	if self.object == nil then
+		return
 	end
     object_binder.reinit(self)
 
@@ -181,7 +181,6 @@ function motivator_binder:net_destroy()
   self:clear_callbacks()
   self_object:set_callback(callback.use_object, nil)
 
-
         -- АМК. Очистка рестрикторов
         local id=self_object:id()
 
@@ -196,8 +195,8 @@ function motivator_binder:net_destroy()
 end
 
 function motivator_binder:clear_callbacks()
-	if self.object == nil then 
-		return 
+	if self.object == nil then
+		return
 	end
   self.object:set_patrol_extrapolate_callback(nil)
 	self.object:set_callback(callback_hit, nil)
@@ -247,8 +246,8 @@ end
 
 function motivator_binder:death_callback(victim, who)
 	local self_object = self.object
-	if self_object == nil then 
-		return 
+	if self_object == nil then
+		return
 	end
 
 	xrs_ai.npc_death_callback(self_object)
@@ -312,10 +311,10 @@ function motivator_binder:death_callback(victim, who)
 end
 
 function motivator_binder:use_callback(obj, who)
-	if self.object == nil then 
-		return 
+	if self.object == nil then
+		return
 	end
-	
+
   if self.object:alive() then
 		local npc_state_mgr = self.st.state_mgr
 		if npc_state_mgr and not (npc_state_mgr.combat or npc_state_mgr.alife) then
@@ -350,8 +349,8 @@ function motivator_binder:update(delta)
 		return
         end
 	local self_object = self.object
-	if self_object == nil then 
-		return 
+	if self_object == nil then
+		return
 	end
 	local self_object_id = self_object:id()
 

@@ -7,15 +7,10 @@ Version:  1.1.0.5
 
 --]]
 
-
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 -- *			                         Menu 					                 *
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 local RestrictionStock = 1   --Ограничения на вместимость инвентаря
-
-
-
-
 
 --* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 -- *			                         Callback 					                 *
@@ -54,8 +49,8 @@ function inventory_count(iItemSection)
 		vCount = 0
 		db.actor:iterate_inventory(function (dummy, vItem)
 				if vItem:section() == iItemSection then
-					vCount = vCount + 1 
-				end 
+					vCount = vCount + 1
+				end
 			end, nil)
 		InventoryState[iItemSection] = vCount
 	end
@@ -133,10 +128,10 @@ function actor_give_money(npcObj, actorObj, money, Type)
 		actor = actorObj
 		npc = npcObj
 	end
-	
+
 	if Type == "out" then
 		dialogs.relocate_money(npc, money, "out")
-	elseif Type == "in" then 
+	elseif Type == "in" then
 		dialogs.relocate_money(npc, money, "in")
 	end
 end
@@ -151,10 +146,10 @@ function actor_give_item(npcObj, actorObj, itemS, Type)
 		actor = actorObj
 		npc = npcObj
 	end
-	
+
 	if 	   Type == "out" then
 		dialogs.relocate_item_section(npc, itemS, "out")
-	elseif Type == "in" then 
+	elseif Type == "in" then
 		dialogs.relocate_item_section(npc, itemS, "in")
 	end
 end
@@ -171,7 +166,7 @@ function relocate_n_items_section(victim, section, Type, count)
 					db.actor:id())
 			end
 		elseif Type == "out" then
-			db.actor:iterate_inventory(function (dummy,item) if item:section() == section and count > 0 then 
+			db.actor:iterate_inventory(function (dummy,item) if item:section() == section and count > 0 then
 			db.actor:transfer_item(item, victim) count = count - 1 end end, nil)
 		end
 		news_manager.relocate_item(db.actor, Type, section)

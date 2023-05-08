@@ -38,10 +38,10 @@ function action_remark_activity:activate_scheme()
 
   -- Определим нужно ли нам отыгрывать анимацию/поворачиваться на объект.
   self.anim_scheduled = true
-  
+
   -- Определим нужно ли нам отыгрывать отдельно звук после поворота.
   if self.st.snd_anim_sync == false and
-     self.st.snd ~= nil 
+     self.st.snd ~= nil
   then
     self.snd_scheduled = true
   else
@@ -49,7 +49,7 @@ function action_remark_activity:activate_scheme()
   end
 
   self.snd_started = false
-  
+
   -- Задаем стартовое состояние
   self.state = state_initial
   self.tips_sound = nil
@@ -101,13 +101,13 @@ function action_remark_activity:update()
     if target == nil then
       return
     end
-    
-    state_mgr.set_state(self.object, self.st.anim, cb, 0, target, { animation = self.st.anim_reset }, synsound)     
+
+    state_mgr.set_state(self.object, self.st.anim, cb, 0, target, { animation = self.st.anim_reset }, synsound)
     self.state = state_animation
-    
+
   --' Ожидание колбека от стейтменеджера
   elseif self.state == state_animation then
-  
+
   --' 2. Мы должны отыграть фразу.
   elseif self.state == state_sound then
     --' Должны выдать сигнал anim_end
@@ -115,7 +115,7 @@ function action_remark_activity:update()
       self.anim_end_signalled = true
       self.st.signals["anim_end"] = true
     end
-  
+
     if self.snd_scheduled == true then
       self.snd_started = true
       xr_sound.set_sound_play(self.object, self.st.snd, 50)
@@ -129,9 +129,8 @@ function action_remark_activity:update()
       end
     end
 
-  
     self.state = state_finish
-    
+
   --' 3. Мы должны выдать сигнал об окончании действия
   --' должны выдать сигнал action_end
   --' должны выдать сигнал sound_end
@@ -142,7 +141,7 @@ function action_remark_activity:update()
         self.snd_started = false
       end
     end
-  
+
     if self.snd_started == false and self.object:active_sound_count() == 0 then
       if self.sound_end_signalled == false then
         self.st.signals["sound_end"] = true
@@ -159,7 +158,7 @@ function action_remark_activity:update()
       end
     end
   end
-  
+
 end
 function action_remark_activity:execute()
   action_base.execute(self)
@@ -247,7 +246,6 @@ function initialize_gulag_target(npc, target)
 
 	return nil, nil, false
 end
-
 
 -- Включение схемы
 function set_scheme(npc, ini, scheme, section, gulag_name)

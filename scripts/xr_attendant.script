@@ -6,7 +6,7 @@
 --	file base:	xr_attendant
 --	file ext:	script
 --	author:		Тундук Владимир aka Sidorovich
---	
+--
 --	purpose:	схема сопровождающего.
 ----------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ function evaluator_leader:evaluate ()
     -- Лидер уже есть
     if self.st.leader_id ~= nil then return true end
 
-    -- Если задан story id лидера, то будем его щупать. 
+    -- Если задан story id лидера, то будем его щупать.
     -- В результате должны получить его id
-    if self.st.leader ~= nil then 
+    if self.st.leader ~= nil then
        local sim = alife ()
        if sim then
           local se_obj = sim:story_object (tonumber(self.st.leader))
@@ -37,11 +37,10 @@ function evaluator_leader:evaluate ()
           end
        end
        return false
-    end         
+    end
     abort ("Don't use followers as patrol soldier in gulag system. Use XR_PATROL scheme")
 end
 -----------------------------------------------------------------------------------
-
 
 -----------------------------------------------------------------------------------
 -- Эвалуатор следования за лидером
@@ -96,7 +95,6 @@ function action_wait:activate_scheme ()
 end
 -----------------------------------------------------------------------------------
 
-
 -----------------------------------------------------------------------------------
 -- Экшен движения за лидером
 class "action_follow" (action_base)
@@ -113,61 +111,60 @@ end
 --------
 function action_follow:execute ()
     action_base.execute (self)
-    
+
     if not self.was_reset then
        self:reset_scheme()
     end
-    
+
     if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
        self.st.leader_id = nil
-       return 
+       return
     end
-    
-    -- FIXME !!! 
+
+    -- FIXME !!!
     -- проверим, а жив ли еще старшОй.
     local leader = level.object_by_id(self.st.leader_id)
     if leader == nil then
        self:free ()
-       return 
+       return
     end
-       
+
     if self.st.stub_for_corpse == false then
        if leader == nil or leader:alive () == false then
           self.st.signals["leader_dead"] = true
           --self:free ()
-          return 
-       end 
-    end   
-    
+          return
+       end
+    end
+
     -- проверим нахождение нас в списке
     self:check_list ()
-    
+
     if self.st.leader_section == nil then
        self.st.leader_section = db.storage[self.st.leader_id].active_section
     end
-           
+
     if db.storage[self.st.leader_id].active_section ~= self.st.leader_section then
-       self.st.signals["leader_section_changed"] = true 
+       self.st.signals["leader_section_changed"] = true
        self:free ()
        return
-    end    
-    
-    
+    end
+
     --получим целевую точку, дистанцию до нее и позицию.
     local vid, vdist, vpos = self:calculate_position ()
     if self.state == 0 then
-       if vdist > 1 then 
+       if vdist > 1 then
           self.object:set_dest_level_vertex_id (vid)
           self.object:set_desired_position (vpos)
           local dir
-          if self.st.stub_for_corpse == true then 
+          if self.st.stub_for_corpse == true then
              local pos = leader:position ()
              local cen = leader:center ()
              dir = cen:sub (pos)
              dir:normalize ()
           else
              dir = leader:direction ()
-          end   
+          end
           self.object:set_desired_direction (dir)
           self.object:set_detail_path_type (move.line)
           self.object:set_path_type (game_object.level_path)
@@ -177,12 +174,12 @@ function action_follow:execute ()
              state_mgr.set_state (self.object, self.st.animation_move)
           elseif vdist > 5 then
              state_mgr.set_state (self.object, self.st.animation_run)
-          end   
+          end
        else
           self.state = 1
-       end        
+       end
     else
-       if vdist > 3 then 
+       if vdist > 3 then
           self.state = 0
        else
           -- FIXME (remove stub for corpse)
@@ -190,25 +187,25 @@ function action_follow:execute ()
              if leader == nil or leader:alive () == false then
                 self.st.signals["leader_dead"] = true
                 --self:free ()
-                return 
-             end 
-          end   
-       
+                return
+             end
+          end
+
           if xr_meet.is_meet (leader) == true then
              state_mgr.set_state (self.object, self.st.state_if_leader_in_meet, nil, nil, db_actor)
-          else   
+          else
              state_mgr.set_state (self.object, "idle")
-          end  
-       end   
-    end    
-        
+          end
+       end
+    end
+
 end
 --------
 function action_follow:finalize ()
     action_base.finalize (self)
     if self.index ~= nil then
        self.index = nil
-    end   
+    end
 end
 --------
 function action_follow:calculate_position ()
@@ -301,7 +298,7 @@ function action_follow:free ()
     if gulag ~= nil then
        if self.st.dont_change_job == false then
           xr_gulag.resetJob (self.object)
-       end   
+       end
     else
        xr_logic.try_switch_to_another_section (self.object, self.st, db_actor)
     end

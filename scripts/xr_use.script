@@ -9,13 +9,12 @@ function action_process_use:use_callback(victim, who)
 	end
 end
 
-
 function notify_on_use(victim, who)
 	-- Если мы мертвы - на юзание не реагировать
 	if not victim:alive() then
 		return
 	end
-	
+
 	-- Согласны ли мы говорить при этом юзании или нет.
 	if victim:is_talk_enabled() == true then
 		if victim:active_sound_count() ~= 0 then
@@ -45,7 +44,7 @@ function notify_on_use(victim, who)
 		if xr_abuse.is_abuse(victim) == false then
 			return
 		end
-		
+
 		-- Мы не согласны говорить
 		if victim:best_enemy() ~= nil and not xr_wounded.is_wounded(victim) then
 			if victim:relation(db_actor) ~= game_object.enemy then
@@ -69,7 +68,7 @@ function notify_on_use(victim, who)
 			xr_abuse.add_abuse(victim, 1)
 		end
 	end
-------------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------	
+------------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 	if xr_conditions.aem_check_blow() then
 		if string.find(victim:name(), "aem_a") then
 			victim:disable_talk()

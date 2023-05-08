@@ -36,7 +36,7 @@ function action_walker_activity:activate_scheme(loading, npc)
 end
 
 function action_walker_activity:reset_scheme(loading, npc)
-	if self.st.path_walk_info == nil then			
+	if self.st.path_walk_info == nil then
 		self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
 	end
 	if self.st.path_look_info == nil then
@@ -139,7 +139,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 		st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
 		st.path_look_info = nil -- не загружены.
-	else 
+	else
 			abort("xr_walker scheme %s has bad or missing section: %s", scheme, tostring(section))
 			return
 	end

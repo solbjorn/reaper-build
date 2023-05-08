@@ -211,7 +211,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600,
 		predicate = function (info)
 		                     return info.profile_name == "mil_Svoboda_specnaz"
-		            end         
+		            end
 		}
 	sj[#sj+1] = t
 
@@ -224,11 +224,11 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600,
 		predicate = function (info)
 		                     return info.profile_name == "mil_Svoboda_specnaz"
-		            end         
+		            end
 		}
 	sj[#sj+1] = t
 
-    --охранник у входа 
+    --охранник у входа
     t = {section = "logic@mil_freedom_stalker8",
 		idle = 0,
 		prior = 13, state = {0, 3, 4},
@@ -237,7 +237,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600,
 		predicate = function (info)
 		                     return info.profile_name == "mil_Svoboda_zoneguard"
-		            end         
+		            end
 		}
 	sj[#sj+1] = t
 	-- просто мужик на входе
@@ -267,7 +267,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600
 --'		predicate = function (info)
 --'		                return (level.get_time_hours() > 6 and level.get_time_hours() < 21)
---'		            end    
+--'		            end
 	}
 	sj[#sj+1] = t
 	------
@@ -279,8 +279,8 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600
 --'		predicate = function (info)
 --'		                return (level.get_time_hours() > 6 and level.get_time_hours() < 21)
---'		            end    
-	}                         
+--'		            end
+	}
 	sj[#sj+1] = t
 	------
 	t = { section = "logic@mil_freedom_walker3",
@@ -291,7 +291,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		position_threshold = 600
 --'		predicate = function (info)
 --'		                return (level.get_time_hours() > 6 and level.get_time_hours() < 21)
---'		            end    
+--'		            end
 	}
 	sj[#sj+1] = t
 	------
@@ -403,7 +403,7 @@ function load_job_base (sj, gname, type, squad, groups)
 	sj[#sj+1] = t
 
 	-------------------------------- combat state 2-----------------------------
-	
+
 	for a = 1, 23, 1 do
 	    local sec = string.format ("logic@mil_freedom_defence%d", a)
         t = { section = sec,
@@ -459,7 +459,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		            --end
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker4_attack",
 		idle = 0,
 		prior = 17, state = {3},
@@ -473,7 +473,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		            --end
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker5_attack",
 		idle = 0,
 		prior = 15, state = {3},
@@ -487,7 +487,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		            --end
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker6_attack",
 		idle = 0,
 		prior = 15, state = {3},
@@ -498,7 +498,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		in_rest = "mil_freedom_wall_restrictor", out_rest = ""
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker7_attack",
 		idle = 0,
 		prior = 15, state = {3},
@@ -509,7 +509,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		in_rest = "mil_freedom_wall_restrictor", out_rest = ""
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker8_attack",
 		idle = 0,
 		prior = 15, state = {3},
@@ -520,7 +520,7 @@ function load_job_base (sj, gname, type, squad, groups)
 		in_rest = "mil_freedom_wall_restrictor", out_rest = ""
 		}
 	sj[#sj+1] = t
-	-- 
+	--
     t = {section = "logic@mil_freedom_stalker9_attack",
 		idle = 0,
 		prior = 15, state = {3},
@@ -617,7 +617,7 @@ end
 -- Проверка состояния гулага Свободы
 -------------------------------------------------------------------------------------------
 function check_state (gulag)
-    
+
     -- отсеиваем четвертое состояние.
     if has_alife_info("mil_lukash_dead") or has_alife_info("mil_freedom_quests_end") then
        if this.check_enemy (gulag) == true then
@@ -625,14 +625,14 @@ function check_state (gulag)
           if gulag:npc_is_enemy_to_anybody (db.actor) == true then
              relation_registry.set_community_goodwill ("freedom", db.actor:id (), -5000)
              xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, db.actor)
-          end   
+          end
           return 2
        else
           db_actor:disable_info_portion ("mil_freedom_under_attack")
           return 4
-       end          
-    end   
-    
+       end
+    end
+
     if gulag.state == 3 then
        if has_alife_info("mil_dolg_after_explode") or gulag:npc_is_enemy_to_anybody (db.actor) == true then
           db.actor:disable_info_portion ("mil_freedom_attack")
@@ -641,14 +641,14 @@ function check_state (gulag)
              relation_registry.set_community_goodwill ("freedom", db.actor:id (), -5000)
              xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, db.actor)
              --xr_gulag.setGulagGoodwill ("mil_freedom", -5000, db.actor)
-          end   
+          end
           return 2
-       end   
+       end
        if has_alife_info("mil_freedom_attack") then
           return 3
        end
-    end        
-    
+    end
+
     if has_alife_info("mil_freedom_under_attack") then
        if this.check_enemy (gulag) == true or not has_alife_info("mil_dolg_dead") then
           return 2
@@ -656,8 +656,8 @@ function check_state (gulag)
           db.actor:disable_info_portion ("mil_freedom_under_attack")
           return 0
        end
-    end            
-    
+    end
+
     if has_alife_info("mil_freedom_attack") then
        return 3
     end
@@ -675,7 +675,7 @@ function check_enemy (gulag)
               return true
            end
         end
-    end       
+    end
     return false
 end
 -------------------------------------------------------------------------------------------
@@ -686,14 +686,12 @@ function is_actor_enemy (gulag)
         if v ~= true then
           local e = v:best_enemy ()
           if e ~= nil and e:id () == db_actor_id then
-             return true 
+             return true
           end
-        end  
-    end       
+        end
+    end
     return false
 end
-
-
 
 -------------------------------------------------------------------------------------------
 -- Загрузка работ для блокпоста Свободы у выхода на Радар
@@ -702,7 +700,7 @@ function load_job_fblockpost (sj, gname, type, squad, groups)
 
     local t
     -- состояние 0
-    --мужик у костра 1    
+    --мужик у костра 1
     t = {section = "logic@mil_fblockpost_stalker",
 		idle = 0,
 		prior = 5, state = {0, 1},
@@ -867,19 +865,15 @@ function check_fblockpost_state (gulag)
 
     if gulag:npc_is_enemy_to_anybody (db.actor) == true then
        xr_gulag.setGulagEnemy ("mil_fneutral", db.actor)
-    end   
+    end
 
     if has_alife_info("mil_fblockpost_alarm") then
-       return 2 
+       return 2
     elseif utils.is_day () == true then
          return 0
-    end          
+    end
     return 1
 end
-
-
-
-
 
 -------------------------------------------------------------------------------------------
 -- Загрузка работ для блокпоста нейтралов у выхода на Радар
@@ -888,7 +882,7 @@ function load_job_fneutral (sj, gname, type, squad, groups)
 
     local t
     -- состояние 0
-    --мужик у костра 1    
+    --мужик у костра 1
     t = {section = "logic@mil_fneutral_stalker",
 		idle = 0,
 		prior = 1, state = {0, 1},
@@ -1005,17 +999,15 @@ function check_blockpost_state (gulag)
 
     if gulag:npc_is_enemy_to_anybody (db.actor) == true then
        xr_gulag.setGulagEnemy ("mil_fblockpost", db.actor)
-    end   
+    end
 
     if has_alife_info("mil_fblockpost_alarm") then
-       return 2 
+       return 2
     elseif utils.is_day () == true then
          return 0
-    end          
+    end
     return 1
 end
-
-
 
 --------------------------------------------------------------------------
 -- Dynamic ltx
@@ -1029,31 +1021,30 @@ end
 function checkStalker(npc_community, gulag_type)
 	if gulag_type == "mil_fneutral" then
 	   return npc_community == "freedom"
-	end       
-	
+	end
+
 	if gulag_type == "mil_freedom" then
 	   return npc_community == "freedom"
 	end
-	
+
 	if gulag_type == "mil_fblockpost" then
 	   return npc_community == "freedom"
-	end   
-	
-	if gulag_type == "mil_village" then
-	   return npc_community == "freedom" 
 	end
-	
+
+	if gulag_type == "mil_village" then
+	   return npc_community == "freedom"
+	end
+
 	if gulag_type == "mil_dolg" then
-	   return  npc_community == "dolg" 
-	end   
-	
+	   return  npc_community == "dolg"
+	end
+
 	if gulag_type == "mil_monolit" then
 	   return npc_community == "monolith"
 	end
-	    
+
 	return false
 end
-
 
 --------------------------------------------------------------------------
 -- Функция загрузки работ для деревни
@@ -1131,16 +1122,12 @@ end
 -- Функция проверки состояния гулага деревни
 --------------------------------------------------------------------------
 function check_village_state (gulag)
-    if has_alife_info("mil_miser_task_complete") or 
-       has_alife_info("mil_after_hunt_talked") then 
-       return 1 
+    if has_alife_info("mil_miser_task_complete") or
+       has_alife_info("mil_after_hunt_talked") then
+       return 1
     end
-    return 0    
+    return 0
 end
-
-
-
-
 
 --------------------------------------------------------------------------
 -- Функция загрузки работ для Долга
@@ -1159,7 +1146,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier1",
 		idle = 0,
 		prior = 10, state = {0},
@@ -1183,7 +1170,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier3",
 		idle = 0,
 		prior = 10, state = {0},
@@ -1195,7 +1182,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier4",
 		idle = 0,
 		prior = 10, state = {0},
@@ -1207,7 +1194,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier5",
 		idle = 0,
 		prior = 10, state = {0},
@@ -1219,7 +1206,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier6",
 		idle = 0,
 		prior = 10, state = {0},
@@ -1257,7 +1244,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier1_attack",
 		idle = 0,
 		prior = 10, state = {1},
@@ -1281,7 +1268,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier3_attack",
 		idle = 0,
 		prior = 10, state = {1},
@@ -1293,7 +1280,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier4_attack",
 		idle = 0,
 		prior = 11, state = {1},
@@ -1305,7 +1292,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier5_attack",
 		idle = 0,
 		prior = 11, state = {1},
@@ -1317,7 +1304,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier6_attack",
 		idle = 0,
 		prior = 11, state = {1},
@@ -1355,7 +1342,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier1_return",
 		idle = 0,
 		prior = 10, state = {2},
@@ -1379,7 +1366,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier3_return",
 		idle = 0,
 		prior = 10, state = {2},
@@ -1391,7 +1378,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier4_return",
 		idle = 0,
 		prior = 10, state = {2},
@@ -1403,7 +1390,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier5_return",
 		idle = 0,
 		prior = 10, state = {2},
@@ -1415,7 +1402,7 @@ function load_job_dolg (sj, gname, type, squad, groups)
 		            end
 		}
 	sj[#sj+1] = t
-	
+
     t = {section = "logic@mil_dolg_soldier6_return",
 		idle = 0,
 		prior = 10, state = {2},
@@ -1448,25 +1435,24 @@ end
 --              2 - Лукаш убит - возвращение на хутор
 --------------------------------------------------------------------------
 function check_dolg_state (gulag)
-      
+
     if has_alife_info("mil_lukash_dead") == true then
        return 2
-    end    
-    
+    end
+
     if has_alife_info("mil_dolg_skull_talk") == true and not has_alife_info("mil_lukash_dead") then
        return 1
-    end    
-    
+    end
+
     return 0
 end
-
 
 --------------------------------------------------------------------------
 -- Функция загрузки работ гулага у выхода на Радар Монолита
 --------------------------------------------------------------------------
 function load_job_monolith (sj, gname, type, squad, groups)
     local t, a
-    
+
     for a = 1, 3, 1 do
         t = {section = "logic@mil_monolith_soldier1",
 	    	idle = 0,
@@ -1478,7 +1464,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monolith_soldier2",
 	    	idle = 0,
 		    prior = a, state = {0},
@@ -1489,7 +1475,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monolith_soldier3",
 	    	idle = 0,
 		    prior = a, state = {0},
@@ -1500,7 +1486,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monolith_soldier4",
 	    	idle = 0,
 		    prior = a, state = {0},
@@ -1511,7 +1497,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monolith_soldier5",
 	    	idle = 0,
 		    prior = a, state = {0},
@@ -1522,7 +1508,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monolith_soldier6",
 	    	idle = 0,
 		    prior = a, state = {0},
@@ -1533,7 +1519,7 @@ function load_job_monolith (sj, gname, type, squad, groups)
 		                end
 		    }
 	    sj[#sj+1] = t
-    end	    
+    end
 end
 -------------------------------------------------------------------------------------------
 -- Проверка состояния гулага Монолита
@@ -1542,16 +1528,14 @@ function check_monolith_state (gulag)
     return 0
 end
 
-
-
 -------------------------------------------------------------------------------------------
 -- Загрузка работ для мутантов
 -------------------------------------------------------------------------------------------
 function load_job_mil_monster (sj, gname, type, squad, groups)
     local t, a
-    
+
     for a = 1, 10, 1 do
-        -- 
+        --
         t = {section = "logic@mil_monster1",
 	    	idle = 0,
 		    prior = 1, state = {0},
@@ -1559,7 +1543,7 @@ function load_job_mil_monster (sj, gname, type, squad, groups)
 		    in_rest = "", out_rest = ""
 		    }
 	    sj[#sj+1] = t
-	    
+
         t = {section = "logic@mil_monster2",
 	    	idle = 0,
 		    prior = 1, state = {1},
@@ -1567,7 +1551,7 @@ function load_job_mil_monster (sj, gname, type, squad, groups)
 		    in_rest = "", out_rest = ""
 		    }
 	    sj[#sj+1] = t
-    end	    
+    end
 end
 -------------------------------------------------------------------------------------------
 -- Проверка состояния гулага мутантов
@@ -1578,14 +1562,14 @@ function check_mil_monster_state (gulag)
     if gulag.state == 0 then
        --считаем только тех, кто уже пришёл, иначе создастся ситуация, когда гулаг
        --формально наполнен, но все новосёлы ещё гуляют по соседним локациям
-       if gulag:get_population_comed () > 9 then 
+       if gulag:get_population_comed () > 9 then
           return 1
        end
     else
-       if gulag:get_population_comed () ~= 0 then  
-          return 1 
-       end     
-    end      
+       if gulag:get_population_comed () ~= 0 then
+          return 1
+       end
+    end
     return 0
 end
 
@@ -1596,44 +1580,43 @@ function checkMonster(npc_community, gulag_type)
 
     if gulag_type == "mil_monster" then
        return true
-    end    
-    
-    return false   
-end
+    end
 
+    return false
+end
 
 -------------------------------------------------------------------------------------------
 -- Главная функция загрузки работ
 -------------------------------------------------------------------------------------------
 function load_job (sj, gname, type, squad, groups)
-    if type == "mil_freedom" then 
+    if type == "mil_freedom" then
        this.load_job_base (sj, gname, type, squad, groups)
 		return true
     end
     if type == "mil_fblockpost" then
        this.load_job_fblockpost (sj, gname, type, squad, groups)
 		return true
-    end   
+    end
     if type == "mil_fneutral" then
        this.load_job_fneutral (sj, gname, type, squad, groups)
 		return true
-    end   
+    end
     if type == "mil_village" then
        this.load_job_village (sj, gname, type, squad, groups)
 		return true
-    end    
+    end
     if type == "mil_dolg" then
        this.load_job_dolg (sj, gname, type, squad, groups)
 		return true
-    end   
+    end
     if type == "mil_monolit" then
        this.load_job_monolith (sj, gname, type, squad, groups)
 		return true
-    end   
+    end
     if type == "mil_monster" then
        this.load_job_mil_monster (sj, gname, type, squad, groups)
 		return true
-    end   
+    end
 end
 
 -------------------------------------------------------------------------------------------
@@ -1644,18 +1627,17 @@ function load_states (gname, type)
        return this.check_state -- (gulag)
     elseif type == "mil_fblockpost" then
        return this.check_fblockpost_state
-    elseif type == "mil_fneutral" then  
+    elseif type == "mil_fneutral" then
        return this.check_blockpost_state
     elseif type == "mil_village" then
-       return this.check_village_state    
+       return this.check_village_state
     elseif type == "mil_dolg" then
-       return this.check_dolg_state     
+       return this.check_dolg_state
     elseif type == "mil_monolit" then
-       return this.check_monolith_state    
+       return this.check_monolith_state
     elseif type == "mil_monster" then
-       return this.check_mil_monster_state    
-    end    
-    return nil    
+       return this.check_mil_monster_state
+    end
+    return nil
 end
-
 

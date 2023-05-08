@@ -1,8 +1,8 @@
 [wpn_flame]:identity_immunities
 GroupControlSection		= spawn_group
-discovery_dependency	= 
+discovery_dependency	=
 $spawn              	= "weapons\flame"	; name and section in level editor
-$npc					= on				
+$npc					= on
 $prefetch 				= 8
 scheduled				= off               ;[] option for ALife Simulator
 cform               	= skeleton
@@ -10,41 +10,39 @@ class               	= WP_LR300			; class of the weapon that corresponding to CP
 min_radius          	= 30				; [] for AI
 max_radius          	= 100				; [] for AI
 description				= wpn-flame_readme
-	
+
 ef_main_weapon_type		= 2
 ef_weapon_type			= 6
 
 ;-----------------------------------------------------------------------------------
-holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range 
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
 holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
 ;-----------------------------------------------------------------------------------
 
-
 cost					= 30000				; the price of the item
-weapon_class			= assault_rifle		; the type of the box that will be used in buy-menu in multiplayer mode	
-	
+weapon_class			= assault_rifle		; the type of the box that will be used in buy-menu in multiplayer mode
+
 ammo_limit				= 210				; obsolete
 ammo_elapsed			= 30				; obsolete
-	
+
 ammo_mag_size			= 150				; clip (magazine) size
 fire_modes				= -1
 f_mode				= 2
 
-ammo_class				= ammo_flame, ammo_flame_2   ; name of the ltx-section of used ammo 
+ammo_class				= ammo_flame, ammo_flame_2   ; name of the ltx-section of used ammo
 
 hand_dependence			= 2									; how many hands (1 or 2) we used to hold weapon in
 single_handed			= 0
-	
+
 slot 					= 2									; number of slot in inventory we put weapon in (1 - knife slot, 2 - pistol, 3 - rifle, 4 - grenade, 5 - apparatus)
 animation_slot			= 2									; type of the animation that will be used
 
-
-inv_name	        	= wpn-flame_name								; name in inventory	
-inv_name_short			= wpn-flame_name_s	
+inv_name	        	= wpn-flame_name								; name in inventory
+inv_name_short			= wpn-flame_name_s
 inv_weight			= 5								; weight in inventory
 
 inv_grid_width			= 5	 ; position and size of the icon that will be used to display weapon in the inventory menu
-inv_grid_height			= 2	 ; all icons are on the texture ui_icon_equipment.dds,   
+inv_grid_height			= 2	 ; all icons are on the texture ui_icon_equipment.dds,
 inv_grid_x				= 8  ; position and size are in terms of 64x64 squares
 inv_grid_y				= 38
 
@@ -57,13 +55,13 @@ kill_msg_height		= 30
 ; base dispersion
 ;
 ; === Setting of the weapon shooting dispersal parameter ===
-;Dispersal consists from to basic constituents - dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal. 
+;Dispersal consists from to basic constituents - dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal.
 ;Dispersal of the weapon depends only from basic dispersal, basket case factor ant time of the ammo.
 ;Dispersal of the way the host shooting (standing, running and etc.)
-;Two types of shooting modes can be defined: - usual mode and zoomed mode.  
+;Two types of shooting modes can be defined: - usual mode and zoomed mode.
 ;Usual mode: - depends from the position of the player while shooting (standing, sitting, walking and running)
-;Zoomed mode - depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector). 
-;Weapon recoil in the game also created by recoil effector. 
+;Zoomed mode - depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector).
+;Weapon recoil in the game also created by recoil effector.
 ;
 ;-----------------------------------------------------------------------------------
 ;params of weapon recoil
@@ -77,22 +75,22 @@ cam_dispersion          		= 0.001		;увеличения угла (в градусах) с каждым выстре
 cam_dispersion_inc			= 0.00001		;увеличениe cam_dispersion с каждым выстрелом
 cam_dispertion_frac			= 0.00001		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
 cam_max_angle				= 0.00001	    	;максимальный угол отдачи
-cam_max_angle_horz			= 0.01		;(degree) maximum shot horizontal degree 
+cam_max_angle_horz			= 0.01		;(degree) maximum shot horizontal degree
 cam_step_angle_horz			= 1.1		;(degree) size of step camera moved in horizontal position while shooting
 
-fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе 
-misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
 misfire_condition_k			= 0.05
 condition_shot_dec 			= 0.00000005	;увеличение износа при каждом выстреле
 ;-----------------------------------------------------------------------------------
 
-fire_point             		=  0,0.0,0.610			; position (3rd person view) for particles of fire 
+fire_point             		=  0,0.0,0.610			; position (3rd person view) for particles of fire
 ;fire_point2            		=  0.0, 0.262, 0.547		; position (3rd person view) for particles of fire (when shooting with secondary fire)
 
 flame_particles				= amk\firebat	; particles for shooting effects
-smoke_particles				= 
+smoke_particles				=
 grenade_flame_particles		= weapons\generic_weapon01
-	
+
 shell_point		 			= 0.00, 0.262, 0.189			; position (3rd person view) for shell to throw out
 shell_particles	 			= ;weapons\generic_shells	; name of the particles for shells
 
@@ -105,7 +103,7 @@ PDM_crouch_no_acc 			= 1.0
 ; ttc
 ; ttc
 hit_power                	= 0.54, 0.57, 0.59, 0.63		; size of damage by bullet
-hit_impulse		 			= 0		; size of physic impulse by bullet	
+hit_impulse		 			= 0		; size of physic impulse by bullet
 hit_type 					= burn 	; [] type of the wound
 hit_rate	= 2.5
 
@@ -114,7 +112,7 @@ bullet_speed				= 60		; starting bullet speed
 rpm                      	= 300		; max round per minute
 
 use_aim_bullet				= false	;true		;Поддерживается ли первая суппер пуля
-time_to_aim					= 1.0	
+time_to_aim					= 1.0
 
 silencer_hit_power       	= 0.65
 silencer_hit_impulse	 	= 65
@@ -136,9 +134,9 @@ visual         		        = amk\wpn_flame.ogf		; name of the model for 3rd person
 
 light_color					= 0.6,0.5,0.3				; params for light during the fire
 light_range					= 5							; radius
-light_var_color				= 0.05						
+light_var_color				= 0.05
 light_var_range				= 0.5
-light_time 					= 0.2						
+light_time 					= 0.2
 
 ph_mass						= 5							; physic mass (kg)
 
@@ -155,7 +153,7 @@ scope_x 					= 42						; offset in inventory icon
 scope_y 					= 3
 silencer_name  				= wpn_addon_silencer		; section name for the attachable silencer
 silencer_x 					= 218						; offset in inventory icon
-silencer_y 					= 13					
+silencer_y 					= 13
 grenade_launcher_name 		= wpn_addon_grenade_launcher; section name for the attachable grenade launcher
 grenade_launcher_x 			= 116						; offset in inventory icon
 grenade_launcher_y 			= 23
@@ -175,14 +173,13 @@ snd_reload_grenade			= $no_sound ;weapons\gen_grenload, 1.0, 0.8
 snd_switch					= $no_sound ;weapons\groza_switch, 1.0, 0.5
 ;------------------------------------------------------------------------------------------
 
-;params when silencer is attached 
+;params when silencer is attached
 ;similar to corresponding params without prefix silencer_
-
 
 ;silencer_flame_particles 	= weapons\generic_weapon01
 ;silencer_smoke_particles 	= weapons\generic_shoot_00
 
-;snd_silncer_shot			= weapons\w_ak74_shot1 
+;snd_silncer_shot			= weapons\w_ak74_shot1
 
 ;silencer_light_color		= 0.6,0.5,0.3
 ;silencer_light_range		= 0.01
@@ -190,13 +187,11 @@ snd_switch					= $no_sound ;weapons\groza_switch, 1.0, 0.5
 ;silencer_light_var_range	= 0.5
 ;silencer_light_time 		= 0.2
 
-
 ;-----------------------------------------------------------------------------
 ;-- HUD DESCRIPTION
 ;-----------------------------------------------------------------------------
- 
-[wpn_flame_hud]
 
+[wpn_flame_hud]
 
 ;similar to corresponding params in weapon section but for 1st person view
 
@@ -207,7 +202,7 @@ fire_point			= 0.0,0.0,0.0
 fire_point2              	= 0.0, 0.00, 0.0
 fire_bone               	= wpn_flame
 
-orientation             	= 0.0, 0.0, 0.0		
+orientation             	= 0.0, 0.0, 0.0
 position                 	= -0.12, -0.17, 0.07
 visual                  	= amk\wpn_flame_hud.ogf
 
@@ -222,7 +217,7 @@ anim_draw				= draw
 anim_holster				= holster
 anim_shoot				= shoot
 anim_idle_sprint			= sprint
-			
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;HUD offset in zoom mode (to all)
 ;(use CONSOLE: hud_adjust_mode 0,1,2, then keys WSADQE and P to show current value in console)
@@ -231,12 +226,11 @@ zoom_offset			= -0.137700,0.033800,-0.115100
 zoom_rotate_x		= -0.005000
 zoom_rotate_y		= 0.017900
 
-
-zoom_hide_crosshair	= true						;to hide crosshair in zoom 
+zoom_hide_crosshair	= true						;to hide crosshair in zoom
 
 [ammo_flame]:identity_immunities
 GroupControlSection	= spawn_group
-discovery_dependency = 
+discovery_dependency =
 $spawn			= "weapons\ammo\ammo_5.45x39_fmj" ; option for Level Editor
 class			= AMMO
 cform                   = skeleton
@@ -270,7 +264,7 @@ explosive		= on
 
 [ammo_flame_2]:identity_immunities
 GroupControlSection	= spawn_group
-discovery_dependency = 
+discovery_dependency =
 $spawn			= "weapons\ammo\ammo_5.45x39_fmj" ; option for Level Editor
 class			= AMMO
 cform                   = skeleton

@@ -20,7 +20,7 @@ function black_screen(actor, npc)
 	return device().precache_frame > 1
 end
 
--- 
+--
 function is_actor_sleeping(actor, npc)
     return db_actor:is_actor_sleeping()
 end
@@ -137,7 +137,7 @@ function one_obj_in_zone(actor, zone, p)
 					sim:set_switch_online(jail_door.id, true)
 				end
 			end
-			return true 
+			return true
 		end
         return zone:inside(obj1:position())
     else -- npc is offline
@@ -246,14 +246,13 @@ function npc_profile(actor, npc, p)
 	if p[1] == nil then
 		abort("Wrong number of params in npc_profile")
 	end
-	
+
 	if npc:profile_name() == p[1] then
 		return true
 	end
 	return false
-	
-end
 
+end
 
 -- ѕроверка того что удар был нанесен кем-то из npc указанных в списке.
 -- ѕараметры это story_id персонажей. ћожно задавать несколько story_id.
@@ -434,9 +433,9 @@ function gulag_population_active(actor, npc, p)
     if gulag == nil then
 		return 0
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		if (v == true or ( v:alive() and
 		   not(xr_wounded.is_heavy_wounded_by_id(k) or
@@ -455,9 +454,9 @@ function gulag_inactive(actor, npc, p)
     if gulag == nil then
 		return false
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		if (v == true or ( v:alive() and
 		   not(xr_wounded.is_heavy_wounded_by_id(k) or
@@ -476,9 +475,9 @@ function gulag_population_active_le(actor, npc, p)
     if gulag == nil then
 		return false
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		if (v == true or ( v:alive() and
 		   not(xr_wounded.is_heavy_wounded_by_id(k) or
@@ -552,13 +551,12 @@ end
 
 function see_enemy(actor, npc)
     local enemy = npc:best_enemy()
-    
-    if enemy ~= nil then 
-        return npc:see(enemy) 
+
+    if enemy ~= nil then
+        return npc:see(enemy)
     end
     return false
 end
-
 
 -- DELME: дл€ тестов: {=test_condition_actor_near}
 function test_condition_actor_near(actor, npc)
@@ -642,11 +640,11 @@ function time_period(actor, npc, p)
         return tshift > period and level.get_time_minutes() % tshift <= period
     end
     return false
-end    
+end
 
 function is_day (actor, npc)
     return level.get_time_hours() >= 6 and level.get_time_hours() < 21
-end  
+end
 -----------------------врем€ музыки-------------
 function is_fri_mor(actor, npc) return level.get_time_hours() >= 11 and level.get_time_hours() < 11 end
 function is_fri_day(actor, npc) return level.get_time_hours() >= 11 and level.get_time_hours() < 18 end
@@ -659,7 +657,7 @@ function is_dolg_nig(actor, npc) return (level.get_time_hours() >= 22 and level.
 function is_agr_mor(actor, npc) return level.get_time_hours() >= 7 and level.get_time_hours() < 7 end
 function is_agr_day(actor, npc) return level.get_time_hours() >= 7 and level.get_time_hours() < 18 end
 function is_agr_eve(actor, npc) return level.get_time_hours() >= 18 and level.get_time_hours() < 22 end
-function is_agr_nig(actor, npc) return (level.get_time_hours() >= 22 and level.get_time_hours() < 24) or (level.get_time_hours() >= 0 and level.get_time_hours() < 7) end  
+function is_agr_nig(actor, npc) return (level.get_time_hours() >= 22 and level.get_time_hours() < 24) or (level.get_time_hours() >= 0 and level.get_time_hours() < 7) end
 ------------------------------------------------------------
 function is_arsenal_guard_rest_time (actor, npc)
     return level.get_time_hours() > 3 and level.get_time_hours() < 5
@@ -667,16 +665,16 @@ end
 
 function bar_no_sniper_time (actor, npc)
     return level.get_time_hours() >= 5
-end 
+end
 
 function mob_has_enemy(actor, npc)
     if npc == nil then return false end
     return npc:get_enemy() ~= nil
-end    
+end
 
 function mob_actor_nearest(actor, npc)
     return false
-end    
+end
 
 function mob_was_hit(actor, npc)
 	local h = npc:get_monster_hit_info()
@@ -752,7 +750,6 @@ end
 function gar_bandits_seryi_not_die()
 	return not gar_bandits_seryi_die()
 end
-
 
 ------------------------------------------------------------------------------------
 -- Special functions for Dark Valley
@@ -877,16 +874,16 @@ end
 function val_fighting_sacrifice_victim(actor, npc)
 	-- FIXME: use SID!!!
 	return db.storage[npc:id()].enemy:name() == "val_sacrifice_victim"
-end    
+end
 
 function val_fighting_prisoner(actor, npc)
 	-- FIXME: use SID!!!
 	return db.storage[npc:id()].enemy:name() == "val_prisoner_captive"
-end    
+end
 
 function val_fighting_sacrifice_bloodsucker(actor, npc)
 	return db.storage[npc:id()].enemy:story_id() == 403
-end    
+end
 
 function val_actor_in_cage(actor, npc)
 	return utils.npc_in_zone(actor, db.zone_by_name["val_prisoner_cage_zone"])
@@ -903,14 +900,13 @@ function actor_wears_bandit_outfit(actor, npc)
 	return xr_conditions_impl.actor_has_object(actor, "bandit_outfit")
 end
 
-
 ------------------------------------------------------------------------------------
 -- Special functions for Pripyat
 ------------------------------------------------------------------------------------
 function pri_followers_can_hear(actor, npc)
 	local gulag = xr_gulag.get_gulag(823)
 
-    return not has_alife_info("pri_followers_start") or           
+    return not has_alife_info("pri_followers_start") or
            gulag ~= nil and gulag:get_population() > 0 and
            not gulag:npc_is_enemy_to_anybody(actor)
 end
@@ -936,7 +932,7 @@ function pri_follower_see_ambush (actor, npc)
     if gulag == nil then
 		return true
 	end
-	
+
 	for k,v in pairs(gulag.Object) do
 		if v ~= nil and npc:best_enemy() and npc:best_enemy():id() == v:id()
 			then
@@ -945,7 +941,6 @@ function pri_follower_see_ambush (actor, npc)
 	end
 	return false
 end
-
 
 ------------------------------------------------------------------------------------
 -- Special functions for Escape
@@ -978,7 +973,6 @@ end
 function dar_actor_has_a_key2(actor,npc)
 	return xr_conditions_impl.actor_has_object(actor,"krot_flash")
 end
-
 
 ------------------------------------------------------------------------------------
 -- Special functions for BAR - ROSTOK
@@ -1067,13 +1061,13 @@ end
 function mil_actor_enemy (actor, npc)
     local npc = level_object_by_sid (707)
     if npc == nil or npc:alive () == false then
-       npc = level_object_by_sid (702) 
+       npc = level_object_by_sid (702)
        if npc == nil or npc:alive () == false then
           npc = level_object_by_sid (728)
           if npc == nil then
              return
           end
-        end         
+        end
     end
     return npc:relation (actor) == game_object.enemy
 end
@@ -1081,7 +1075,7 @@ end
 function mil_actor_enemy_freedom (actor, npc)
     if relation_registry.community_goodwill ("freedom", actor:id ()) < -500 then
        return true
-    end   
+    end
     return false
 end
 
@@ -1104,7 +1098,6 @@ function cit_combat_ignore(actor, npc, p)
     return false
 end
 
-
 -------------------------------------------------------------------------------------
 -- Special for Agroprom
 -------------------------------------------------------------------------------------
@@ -1125,7 +1118,6 @@ function agr_nii_pop_check(actor, npc)
 	return false
 end
 
-
 -------------------------------------------------------------------------------------
 -- Special for rostok
 -------------------------------------------------------------------------------------
@@ -1135,13 +1127,13 @@ function rostok_gulag_inactive(actor, npc)
     if gulag == nil then
 		return true
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		local job_prior = gulag.Job[gulag.ObjectJob[k]].prior
 
-		if (v == true or 
+		if (v == true or
 		   (v:alive() and
 		    not xr_wounded.is_heavy_wounded_by_id(k) and
 		    not xr_wounded.is_psy_wounded_by_id(k) and
@@ -1150,7 +1142,7 @@ function rostok_gulag_inactive(actor, npc)
 			val = val + 1
 		end
 	end
-	if val == 0 then 
+	if val == 0 then
 		return true
 	end
 	return false
@@ -1162,9 +1154,9 @@ function agr_factory_hold_inactive (actor, npc)
     if gulag == nil then
 		return true
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		if (v == true or ( v:alive() and
 		   not(xr_wounded.is_heavy_wounded_by_id(k) or
@@ -1174,12 +1166,11 @@ function agr_factory_hold_inactive (actor, npc)
 			val = val + 1
 		end
 	end
-	if val == 0 then 
+	if val == 0 then
 		return true
 	end
 	return false
 end
-
 
 function rostok_gulag_2_inactive(actor, npc)
 	 local gulag = xr_gulag.get_gulag_by_name("bar_freedom_chasers_attack")
@@ -1187,9 +1178,9 @@ function rostok_gulag_2_inactive(actor, npc)
     if gulag == nil then
 		return true
 	end
-	
+
 	local val = 0
-	
+
 	for k,v in pairs(gulag.Object) do
 		if (v == true or ( v:alive() and
 		   not(xr_wounded.is_heavy_wounded_by_id(k) or
@@ -1199,7 +1190,7 @@ function rostok_gulag_2_inactive(actor, npc)
 			val = val + 1
 		end
 	end
-	if val == 0 then 
+	if val == 0 then
 		return true
 	end
 	return false
@@ -1219,14 +1210,12 @@ function has_ghost_pda ()
 		return db_actor:object ("yantar_ghost_pda") ~= nil
 end
 
-
 -------------------------------------------------------------------------------------
 -- Special for Radar
 -------------------------------------------------------------------------------------
 function rad_pass_time(actor, npc)
 	return true
 end
-
 
 -------------------------------------------------------------------------------------
 -- Special for Sarcofag

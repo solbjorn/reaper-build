@@ -16,14 +16,14 @@ function action_light:update(delta)
 	   self.active = false
 	   light_zones[self.id] = nil
 	   return
-	end	
+	end
 	self.active = true
 end
 function action_light:check_stalker(stalker)
-    if self.active == false then 
+    if self.active == false then
        return false, false
     end
-    
+
 	if self.object:inside(stalker:position()) then
 		return self.st.light, true
 	end
@@ -103,7 +103,7 @@ function check_light(stalker)
 			light = false
 		end
 	end
-	
+
 	if light ~= nil then
 		if light == false then torch:enable_attachable_item(true) end
 		torch:enable_attachable_item(light)
@@ -114,5 +114,5 @@ function check_light(stalker)
 end
 
 function clean_up ()
-   light_zones = {} 
+   light_zones = {}
 end

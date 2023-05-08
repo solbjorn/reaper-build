@@ -77,7 +77,6 @@ function eva_state_mgr_animation_locked:evaluate()
 	return anim_state == "_wait" or anim_state == "_new"
 end
 
-
 --' Играем входную анимацию
 class "act_state_mgr_animation_start" (action_base)
 function act_state_mgr_animation_start:__init(name, st) super (nil, name)
@@ -125,12 +124,11 @@ function act_state_mgr_animation_stop:finalize()
 	action_base.finalize(self)
 end
 
-
 class "animation"
 function animation:__init(npc, mgr)
 	self.mgr = mgr
 	self.npc = npc
-	
+
 	self.states = {
 		last_id = nil,
 		current_state = nil,
@@ -149,7 +147,7 @@ function animation:__init(npc, mgr)
 						wpn_binoc	= {mode = "detach", done = true},
 						kruglov_flash	= {mode = "detach", done = true}}
 	}
-	
+
 	self.clb_settings = {}
 	self.clb_cnt = 0
 end
@@ -181,7 +179,7 @@ function animation:set_state(id, reset)
 					end
 				end
 			end
-						
+
 			--' (2) экстренный выход, необходимо дропнуть приатаченные предметы
 			if state_mgr_animation_target.out ~= nil then
 				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_target.out)
@@ -198,8 +196,8 @@ function animation:set_state(id, reset)
 							end
 						end
 					end
-				end	
-			end		
+				end
+			end
 		else
 			--' выход из поданимаций
 			if subanim_ > 0 then
@@ -217,9 +215,7 @@ function animation:set_state(id, reset)
 						end
 					end
 				end
-			end			
-
-
+			end
 
 			if state_mgr_animation_target.out ~= nil then
 				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_target.out)
@@ -236,7 +232,7 @@ function animation:set_state(id, reset)
 								self.npc:add_animation(anima, true, false)
 					end
 					nn = nn +1
-				end			
+				end
 			end
 		end
 	end
@@ -326,16 +322,15 @@ function animation:update()
 			v.done = true
 		end
 	end
-	
+
 	if self.states.current_state == nil then
 		self:callback_process()
 		return
 	end
 
 	-- обрубить анимации и экстренно начать сразу
-	if self.mgr.emerg ~= nil and  
+	if self.mgr.emerg ~= nil and
 	   self.mgr.emerg.animation == true then
-
 
 		self.npc:clear_animations()
 		self:set_state(nil)
@@ -362,7 +357,7 @@ function animation:update()
 		end
 		return
 	end
-	
+
 	--' ожидаем окончания перехода.
 	if self.states.current_state == "_wait" then
 		state_mgr_animation_target = state_mgr_animations[self.states.target_state]
@@ -376,7 +371,7 @@ function animation:update()
 		if self.npc:animation_count() <= nnum then
 			self.states.current_state = self.states.target_state
 		end
-		
+
 		-- инициализация коллбека при повторном вызове этого же стейта
 		if self.states.target_state == state_lib.states[self.mgr.target_state].animation and
 		   self.mgr.callback and self.mgr.callback.func and self.mgr.callback.timeout and
@@ -387,7 +382,7 @@ function animation:update()
 		self:callback_process()
 		return
 	end
-	
+
 	-- Отыгрыш рандомных анимашек, если они есть
 	if 	self.states.current_state == self.states.target_state then
 		-- Инициализация колбека
@@ -396,8 +391,8 @@ function animation:update()
 		then
 			self:callback_init(true)
 		end
-	
-		--' проверка на экстренный ресет схемы	
+
+		--' проверка на экстренный ресет схемы
 		if self:callback_process() == true then
 			return
 		end
@@ -427,7 +422,7 @@ function animation:update()
 				--' устанавливаем музыку
 				if a.into_music then
 					xr_sound.set_sound_play(self.npc, a.into_music)
-				end				
+				end
 			end
 			self.states.anim_level = self_mgr_subanim
 			-- добавляем айдл текущего уровня
@@ -488,7 +483,7 @@ function animation:play_rnd(state, must_play)
 	then
 		return
 	end
-	
+
 	-- !!! проверка что закончился играться наш звук
 	if self.sound_played then
 		if self.npc:active_sound_count() == 0 then
@@ -496,18 +491,18 @@ function animation:play_rnd(state, must_play)
 		end
 		return
 	end
-	
-	--' Определение промежутков времени между анимациями	
+
+	--' Определение промежутков времени между анимациями
 	self.states.begin = time_global()
 	self.states.idle = (math_random(state.prop.maxidle) +
 									state.prop.sumidle) * 1000
 	if must_play or math_random(100) < state.prop.rnd then
 		local wpn_slot = self:weapon_slot()
 		local anima = self:anim_for_slot(wpn_slot,state.rnd)
-		if anima == nil then			
+		if anima == nil then
 			return
 		end
-		
+
 		local r
 		if #anima > 1 then
 			if self.states.last_id == nil then
@@ -521,14 +516,14 @@ function animation:play_rnd(state, must_play)
 			self.states.last_id = r
 		else
 			r = 1
-		end		
+		end
 		self.npc:clear_animations()
 		if anima[r] ~= nil then
 			self.npc:add_animation(anima[r], true, false)
 			-- добавить рандомный звук
 			if self.mgr.synsound and self.npc:active_sound_count() == 0 then
 				xr_sound.set_sound_play(self.npc, self.mgr.synsound)
-				self.sound_played = true		   
+				self.sound_played = true
 			end
 		end
 		if state.idle ~= nil then
@@ -539,8 +534,8 @@ function animation:play_rnd(state, must_play)
 		else
 			-- Для политкорректности просим анимстейт отыграть свою айдловую анимацию
 			self.mgr.animstate:add_idle_animation()
-		end				
-		self.states.current_state = "_wait"				
+		end
+		self.states.current_state = "_wait"
 	end
 end
 -- Инициализация коллбека
@@ -557,7 +552,7 @@ end
 --' обработка колбека на время
 function animation:callback_process()
 		local ret = false
-		
+
 		if self.mgr.callback ~= nil and
 		   self.mgr.callback.func ~= nil and
 		   self.mgr.callback.begin ~= nil
@@ -600,24 +595,24 @@ end
 function animation:anim_callback()
 	-- Проходим по таблице, из 1 позиции вычитываем действий. Остальные просто сдвигаем
 	v = self.clb_settings[1]
-	
+
 	if v == nil then
 		return true
-	end	
+	end
 	if v == "nil" then
 		table.remove(self.clb_settings, 1)
 		return true
 	end
-	
+
 	-- Производим действия находящиеся на 1 позиции
 	if v.a ~= nil and
-		self.states.attach_items[v.a] ~= nil 
+		self.states.attach_items[v.a] ~= nil
 	then
 		self.states.attach_items[v.a].mode = "attach"
 		self.states.attach_items[v.a].done = false
 	end
 	if v.d ~= nil and
-		self.states.attach_items[v.d] ~= nil 
+		self.states.attach_items[v.d] ~= nil
 	then
 		self.states.attach_items[v.d].mode = "detach"
 		self.states.attach_items[v.d].done = false
@@ -640,7 +635,7 @@ function animation:anim_callback()
 		v.f(self.npc)
 	end
 	table.remove(self.clb_settings, 1)
-	return true 
+	return true
 end
 --' в каком состоянии мы находимся
 function animation:state()

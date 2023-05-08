@@ -41,8 +41,8 @@ function amk_music:play()
 --	self.left:play_no_feedback(db.actor,sound_object.s2d, 0, dir, 1.0)
   amk.oau_reason="play pre length"
 	self.end_time = time_global() + self.left:length()
-  amk.oau_reason="play pre return"  
-  self:set_volume(get_console():get_float('snd_volume_music')) 
+  amk.oau_reason="play pre return"
+  self:set_volume(get_console():get_float('snd_volume_music'))
 	return self.end_time
 end
 
@@ -62,7 +62,7 @@ function amk_music:play_at_time(time)
 	self.left:play_at_pos(db.actor,dir,  (time - time_global())/1000, sound_object.s2d)
 --	self.left:play_no_feedback(db.actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
 	self.end_time = time + self.left:length()
-	self:set_volume(get_console():get_float('snd_volume_music')) 
+	self:set_volume(get_console():get_float('snd_volume_music'))
 	return self.end_time
 end
 
@@ -78,7 +78,7 @@ function amk_music:update()
 		dir.x=-dir.x
 		dir.z=-dir.z
 		self.left:set_position(dir)
-		self:set_volume(get_console():get_float('snd_volume_music')) 
+		self:set_volume(get_console():get_float('snd_volume_music'))
 	end
 end
 

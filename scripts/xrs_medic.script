@@ -2,7 +2,7 @@
 --'	Лечим нерадивых товарищей...
 --' ver: 2.0
 --'	автор: xStream
---'	TODO: 
+--'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 local excluded_npcs={
 	esc_fox=true,
@@ -45,12 +45,12 @@ function evaluator_medic:evaluate()
 	local npc = self.object
 	if wounded[npc:id()] then return false end
 	if not self.a.target_wounded then
-		
+
 		if (self.next_check_time or 0) > time_global() then return false end
 		self.next_check_time = time_global() + 5000
-		
+
 		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then return false end
-		
+
 		local wounded_guy
 		for k,v in pairs(wounded) do
 			if not has_medic[k] then
@@ -64,7 +64,7 @@ function evaluator_medic:evaluate()
 				end
 			end
 		end
-		
+
 		if not wounded_guy then return false end
 		self.a.target_wounded = wounded_guy
 		if self.a.next_medic_change_pos and self.a.next_medic_change_pos<time_global() then
@@ -89,18 +89,18 @@ function evaluator_self_medic:__init(name, storage) super (nil, name)
 end
 function evaluator_self_medic:evaluate()
 	if self.a.self_healing then return true end
-	
+
 	if (self.next_check_time or 0) > time_global() then return false end
 	self.next_check_time = time_global() + 5000
-	
+
 	local npc = self.object
 	if wounded[npc:id()] or has_medic[npc:id()] or excluded_npcs[npc:name()] then return false end
 	if self.check_time<time_global() then
 		self.check_time = time_global() + math.random(3000,10000)
 		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") and not npc:object("bandage") then return false end
-		if npc.health<0.5 then 
+		if npc.health<0.5 then
 			self.a.self_healing=true
-			return true 
+			return true
 		end
 	end
 	return false
@@ -119,7 +119,7 @@ function action_medic:initialize()
 	local npc=self.object
 	local wounded_npc = get_npc(self.a.target_wounded)
 	state_mgr.set_state(npc, "run",nil,nil,{ look_object = wounded_npc }, {animation = true})
-	
+
 	xr_sound.set_sound(npc, nil)
 	stop_play_sound(npc)
 end
@@ -131,7 +131,7 @@ function action_medic:execute()
 		utils.send_to_nearest_accessible_vertex(npc, get_npc(self.a.target_wounded):level_vertex_id())
 		npc:set_desired_position(get_npc(self.a.target_wounded):position())
 	else
-		
+
 		if not self.step1 and npc:animation_count()==0 then
 			utils.send_to_nearest_accessible_vertex(npc, npc:level_vertex_id())
 			npc:set_desired_position()
@@ -151,11 +151,11 @@ function action_medic:execute()
 			end
 		end
 		if self.step1 and not self.step2 and self.step1<time_global() then
-		
+
 			npc:clear_animations()
 			--wounded_npc:eat(wounded_npc:object(self.medsec))
 			xr_wounded.unlock_medkit(wounded_npc)
-			
+
 			if wounded_npc:relation(npc) ~= game_object.enemy then
 				wounded_npc:set_relation(game_object.friend, npc)
 			end
@@ -163,11 +163,11 @@ function action_medic:execute()
 			self.step2=time_global()+2000
 		end
 		if self.step1 and self.step2 and self.step2<time_global() then
-		
+
 			xr_logic.initialize_obj(wounded_npc, db.storage[wounded_npc:id()], true, db.actor, modules.stype_stalker)
 			--db.storage[wounded_npc:id()].wounded.wound_manager.medkit_eaten=true
 			--db.storage[wounded_npc:id()].wounded.wound_manager:update()
-			
+
 			has_medic[self.a.target_wounded]=nil
 			self.a.target_wounded = nil
 			self.a.from_point = nil
@@ -190,16 +190,16 @@ function action_self_medic:initialize()
 		self.a.self_healing=false
 		return
 	end
-	
+
 	npc:set_item(object.idle,nil)
 	npc:set_movement_type(move.stand)
 	npc:set_desired_position()
 	npc:set_desired_direction()
 	utils.send_to_nearest_accessible_vertex(npc, npc:level_vertex_id())
-	
+
 	state_mgr.set_state(npc, "idle")
 	self.dir = npc:direction()
-	
+
 	xr_sound.set_sound(npc, nil)
 	stop_play_sound(npc)
 
@@ -214,15 +214,15 @@ function action_self_medic:execute()
 	npc:set_sight(look.direction,self.dir)
 	npc:set_desired_direction(self.dir)
 	utils.send_to_nearest_accessible_vertex(npc, npc:level_vertex_id())
-	
+
 	if not self.initialized and state_mgr.get_state(npc)=="idle" then
-		if npc:animation_count()==0 then 
-		
+		if npc:animation_count()==0 then
+
 			local yad = npc:object("yad")
 			if yad then
 				yad:enable_attachable_item(true)
 			end
-			
+
 			npc:clear_animations()
 			--npc:add_animation("stoya_ruje_ 0")
 			npc:add_animation("idle_0_to_sit_2")
@@ -234,12 +234,12 @@ function action_self_medic:execute()
 		end
 		return
 	else
-		npc:set_item(object.idle,nil)		
+		npc:set_item(object.idle,nil)
 		local yad = npc:object("yad")
 		if yad then
 			yad:enable_attachable_item(true)
 		end
-		
+
 	end
 	if self.end_time and self.end_time<time_global() then
 		if npc:object("medkit") ~= nil then
@@ -251,7 +251,7 @@ function action_self_medic:execute()
 		elseif npc:object("bandage") ~= nil then
 			self.medsec="bandage"
 		end
-		
+
 		local yad = npc:object("yad")
 		if yad then
 			yad:enable_attachable_item(false)
@@ -265,12 +265,12 @@ function action_self_medic:execute()
 	if self.end_time_total and self.end_time_total<time_global() then
 		self.a.self_healing=false
 	end
-	
+
 end
 function action_self_medic:finalize()
 	action_base.finalize (self)
 	self.a.self_healing=false
-	
+
 	local npc=self.object
 	local yad = npc:object("yad")
 	if yad then
@@ -304,7 +304,7 @@ function add_to_binder_q(object, storage)
 		manager:add_evaluator (properties["medic"], evaluator_medic("medic", storage))
 		manager:add_evaluator (properties["self_medic"], evaluator_self_medic("self_medic", storage))
 	end
-	
+
 	local action = action_medic (object,"medic", storage)
 	action:add_precondition(world_property(stalker_ids.property_alive, true))
 	action:add_precondition(world_property(stalker_ids.property_enemy, false))
@@ -313,7 +313,7 @@ function add_to_binder_q(object, storage)
 	--xr_motivator.addCommonPrecondition(action)
 	action:add_effect (world_property(properties["medic"], false))
 	manager:add_action (operators["medic"], action)
-	
+
 	local action = action_self_medic (object,"self_medic", storage)
 	action:add_precondition(world_property(stalker_ids.property_alive, true))
 	action:add_precondition(world_property(stalker_ids.property_enemy, false))
@@ -323,8 +323,8 @@ function add_to_binder_q(object, storage)
 	--xr_motivator.addCommonPrecondition(action)
 	action:add_effect (world_property(properties["self_medic"], false))
 	manager:add_action (operators["self_medic"], action)
-		
-	action = manager:action (xr_actions_id.alife)	
+
+	action = manager:action (xr_actions_id.alife)
 	action:add_precondition	(world_property(properties["medic"], false))
 	action:add_precondition	(world_property(properties["self_medic"], false))
 
@@ -358,10 +358,10 @@ function death_callback(npc)
 	if npc:object("yad") then
 		alife():release(alife():object(npc:object("yad"):id()))
 	end
-	
+
 	if not npc:alive() then
 		local remove_medkits={}
-		npc:iterate_inventory(function (dummy, item) 
+		npc:iterate_inventory(function (dummy, item)
 			if item==nil or alife():object(item:id())==nil then return end
 			for k,v in pairs(mk_types) do
 				if item:section()==v then
@@ -378,13 +378,13 @@ end
 
 function npc_update(binder)
 	local npc = binder.object
-	
-	if not npc:alive() then 
+
+	if not npc:alive() then
 		wounded[npc:id()]=nil
 		has_medic[npc:id()]=nil
-		return 
+		return
 	end
-	
+
 	if npc:critically_wounded() or npc:wounded() then
 		if not wounded[npc:id()] then
 			wounded[npc:id()]=true
@@ -395,14 +395,14 @@ function npc_update(binder)
 	else
 		wounded[npc:id()]=nil
 	end
-	
+
 	if not npc:object("yad") then
 		alife():create("yad",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
 	end
-	
+
 	if not binder.medkit_update_time then binder.medkit_update_time=time_global()+5000 end
 	if npc:character_community()=="zombied" or npc:character_community()=="trader" or
-		  npc:character_community()=="arena_enemy" or npc:name()=="mil_stalker0012" or 
+		  npc:character_community()=="arena_enemy" or npc:name()=="mil_stalker0012" or
 		  npc:name()=="yantar_ecolog_general" then return end
 	if time_global()>binder.medkit_update_time then
 		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then

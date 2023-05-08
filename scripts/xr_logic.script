@@ -442,7 +442,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 		local panic_threshold = (st.ini:line_exist(section, "panic") and st.ini:r_float(section, "panic")) or nil
 		if panic_threshold then
 			npc:set_custom_panic_threshold(panic_threshold)
-		else 
+		else
 			npc:set_default_panic_threshold()
 		end
   elseif stype == modules.stype_item then
@@ -723,7 +723,7 @@ function try_switch_to_another_section(npc, st, actor)
 			return false
 		end
 
-		if section then 
+		if section then
 			switched = switch_to_section(npc, st, section)
 			if switched then
 				return true
@@ -743,7 +743,6 @@ function is_active(npc, st)
 
 	return (st.section == db_storage[npc:id()].active_section)
 end
-
 
 function abort_syntax_error_in_cond(npc, section, field, func_name)
 	abort("xr_logic: object '%s': section '%s': field '%s': syntax error in switch condition in %s()",

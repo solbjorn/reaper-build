@@ -1,5 +1,4 @@
 
-
 function spawn_banderos()
 	--свободный торговец
 	local obj = alife():create("trader_banderos",vector():set(109.98,4.22,-11.57),306355,987)
@@ -35,14 +34,12 @@ function spawn_my_inventory_box()
 	1)
 end
 
-
 ---квестовые--предметы--
 function spawn_banderos_art()
 	alife():create("banderos_art", vector():set(-3.19,-3.05,-31.46), 160313, 1022)
 	alife():create("banderos_art", vector():set(48.07,-2.49,-26.02), 235691, 1093)
 	alife():create("banderos_art", vector():set(20.19,1.02,-83.55), 198785, 1096)
 end
-
 
 function spawn_sniper_banderos()
  --1-й Снайпер на вышке
@@ -130,7 +127,6 @@ function spawn_tiran()
 	amk.write_stalker_params(params,obj)
 end
 
-
 function spawn_ban_trup_npc()
 	local obj = alife():create("trup_voennogo",vector():set(-45.41, 19.18, 5.84), 2340, 1530)
         local tbl = amk.read_stalker_params(obj)
@@ -142,7 +138,7 @@ function spawn_ban_trup_npc()
 end
 
 function trup_otprav_sms()
-	if db.actor ~= nil and 
+	if db.actor ~= nil and
 		has_alife_info("find_corpse_military_x16") and
 		not has_alife_info("find_corpse_military_x16_done")
 	then

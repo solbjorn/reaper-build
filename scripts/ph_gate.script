@@ -70,7 +70,7 @@ end
 
 function action_gate:reset_scheme(loading)
 	self.initialized = false
-	
+
 	self:initialize(loading)
 end
 
@@ -125,7 +125,7 @@ function action_gate:initialize(loading)
 	if not self.ph_shell then
 		return
 	end
-	
+
 	local left_open_limit, right_open_limit
 	if self.st.la and self.st.la >= 0 and self.st.la <= 180 then
 	    left_open_limit = -utils.deg2rad(self.st.la)
@@ -137,13 +137,13 @@ function action_gate:initialize(loading)
 	else
 	    right_open_limit = -utils.deg2rad(def_open_limit)
 	end
-	
+
     self.bone_id[1] = self:get_bone_id("door_left")
     self.bone_id[2] = self:get_bone_id("door_right")
-	
+
 	local angle_left = 0
 	local angle_right = 0
-	
+
 	if self.joint_left then
         angle_left = self.joint_left:get_axis_angle(1)
     end
@@ -169,17 +169,17 @@ function action_gate:initialize(loading)
 	else
 	    self.state = state_none
 	end
-	
+
 	self.left_open_limit = left_open_limit
 	self.left_close_limit = def_close_limit
 	self.right_open_limit = right_open_limit
 	self.right_close_limit = def_close_limit
-	
+
 	self:set_limits(1, left_open_limit, def_close_limit)
 	self:set_limits(2, right_open_limit, def_close_limit)
 
     self.breakable = self.st.breakable
-    
+
     if self.breakable then
         self.ph_shell:unblock_breaking()
     else
@@ -244,7 +244,7 @@ function action_gate:initialize(loading)
 	    self.left_close_limit = angle_left
 	    self.right_open_limit = angle_right
 	    self.right_close_limit = angle_right
-	
+
 	    self:set_limits(1, angle_left, angle_left)
 	    self:set_limits(2, angle_right, angle_right)
 
@@ -265,7 +265,7 @@ function action_gate:initialize(loading)
 	if self.st.snd_init then
 		self:gate_play_snd_from_set(self.st.snd_init)
 	end
-	
+
 	self.initialized = true
 end
 
@@ -273,8 +273,8 @@ function action_gate:gate_play_snd_from_set(sndset)
     if self.snd_obj ~= nil then
        self.snd_obj:stop ()
        self.snd_obj = nil
-    end    
-    	
+    end
+
 	self.snd_obj = xr_sound.get_sound_object(sndset, "random")
 	if not self.snd_obj then
 		abort("object '%s': unable to create a sound object for sound '%s' (soundset '%s')",
@@ -374,7 +374,7 @@ function action_gate:hit_callback(obj, amount, local_direction, who, bone_index)
 	    else
 	        force = 0
 	        velocity = 0
-	    end	    
+	    end
 	    self:set_max_fv(1, force, velocity)
 
 	    local angle_right = self:get_angle(2)
@@ -413,7 +413,7 @@ function action_gate:use_callback(obj, who)
 	if self:try_switch() then
 		return
 	end
-	
+
 	if self.locking == state_lock_hard or self.locking == state_lock_soft then
 		if self.st.snd_open_start then
 			self:gate_play_snd_from_set(self.st.snd_open_start)
@@ -465,7 +465,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.snd_open_start  = utils.cfg_get_string(ini, section, "snd_open_start", npc, false, "")
 	st.snd_close_start = utils.cfg_get_string(ini, section, "snd_close_start", npc, false, "")
 	st.snd_close_stop  = utils.cfg_get_string(ini, section, "snd_close_stop", npc, false, "")
-	
+
 	st.on_use    = xr_logic.cfg_get_condlist(ini, section, "on_use", npc)
 end
 

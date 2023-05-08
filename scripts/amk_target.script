@@ -26,7 +26,7 @@ function scan_targets()
     table.insert(best_tgts,{threat=-1000000})
   end
   local cpos=device().cam_pos
-  local cdir=device().cam_dir  
+  local cdir=device().cam_dir
   for id,obj in pairs(db.creatures) do
     local stalker=IsStalker(obj)
     local monster=IsMonster(obj)
@@ -38,9 +38,9 @@ function scan_targets()
         local threat=1
         if stalker then
           local rel=obj:relation(db.actor)
-          if rel==game_object.enemy then 
+          if rel==game_object.enemy then
 --            threat=3
-          elseif rel==game_object.friend then 
+          elseif rel==game_object.friend then
 --            threat=-1
           end
         else

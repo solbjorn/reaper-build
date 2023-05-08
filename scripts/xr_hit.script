@@ -25,7 +25,7 @@ end
 function set_hit_checker(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	
+
 	-- НЕ СТАВИТЬ hit callback напрямую - получаем его из motivator-а через
 	-- event в подписанном на него action-е:
 	--npc:set_callback(callback.hit, st.action.hit_callback, st.action)

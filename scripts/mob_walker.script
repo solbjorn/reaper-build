@@ -17,7 +17,7 @@ function set_state(obj, state)
 	if not state then
 		return
 	end
-	
+
 	if get_clsid(obj) == clsid_bloodsucker_s then
 		if state == "invis" then
 			obj:set_invisible(true)
@@ -99,7 +99,7 @@ function mob_walker:reset_scheme()
 		abort("object '%s': unable to find path_walk '%s' on the map",
 			self.object:name(), self.st.path_walk)
 	end
-	
+
 	if self.st.path_look then
 		self.patrol_look = patrol(self.st.path_look)
 		if not self.patrol_look then
@@ -120,17 +120,17 @@ function mob_walker:reset_scheme()
 	end
 
 	self.state = state_moving
-	
+
 	self.crouch = false
 	self.running = true
 	self.cur_anim_set = default_anim_standing
-	self.pt_wait_time = default_wait_time -- сколько ждать в точке, где играем анимацию 
+	self.pt_wait_time = default_wait_time -- сколько ждать в точке, где играем анимацию
 
 	self.scheduled_snd = nil
 
 	self.last_index = nil
 	self.last_look_index = nil
-	
+
 	action(self.object, move(move.run_fwd, patrol(self.st.path_walk, patrol.next, patrol.continue)),
 		cond(cond.move_end))
 end
@@ -139,7 +139,7 @@ function mob_walker:update(delta)
 	if alife_control(self.object, self.st.alife_mode) then
 		return
 	end
-	
+
 	-- Монстр после выхода из alife может уже быть не под скриптом, поэтому взять опять под скрипт
 	if not xr_logic.mob_captured(self.object) then
 		self:reset_scheme()
@@ -203,14 +203,14 @@ function mob_walker:waypoint_callback(obj, action_type, index)
 		local signals = storage[scheme].signals
 		signals[sig] = true
 	end
-	
+
 	local beh = this_path_walk_info["b"]
 	if beh then
 		set_state(self.object, beh)
 	else
 		set_state(self.object, self.st.state)
 	end
-	
+
 	local search_for = self.path_walk_info[index].flags
 	if search_for:get() == 0 then
 		-- TODO: запретить одноточечные пути без соответствующего path_look по аналогии с move_mgr
@@ -261,7 +261,7 @@ end
 
 function mob_walker:update_movement_state()
 	xr_logic.mob_capture(self.object, true)
-	
+
 	local m
 	if self.running then
 		m = move.run_fwd
@@ -299,7 +299,7 @@ function mob_walker:look_at_waypoint(pt)
 
 	xr_logic.mob_capture(self.object, true)
 	action(self.object, look(look_direction, look_pt), cond(cond.look_end))
-	
+
 	self.last_look_index = pt
 end
 
@@ -341,7 +341,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 			braindead       = get_field_bool("braindead", false)
 		}
 		st.state = get_field_string("state")
-	else 
+	else
 			abort("mob_walker scheme %s has bad or missing section: %s", scheme, tostring(section))
 			return
 	end

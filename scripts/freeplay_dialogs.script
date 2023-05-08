@@ -8,7 +8,7 @@ function trader_check_reward()
      for i = 1,7 do
         if has_alife_info("trader_freeplay_reward_task_"..i.."_start") and not has_alife_info("trader_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -16,14 +16,13 @@ function trader_not_check_reward()
     return not trader_check_reward()
 end
 
-
 --' MILITARY CHECK REWARD
 
 function military_check_reward()
      for i = 1,7 do
         if has_alife_info("military_freeplay_reward_task_"..i.."_start") and not has_alife_info("military_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -37,7 +36,7 @@ function neutral_check_reward()
      for i = 1,7 do
         if has_alife_info("neutral_freeplay_reward_task_"..i.."_start") and not has_alife_info("neutral_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -51,7 +50,7 @@ function svoboda_check_reward()
      for i = 1,7 do
         if has_alife_info("svoboda_freeplay_reward_task_"..i.."_start") and not has_alife_info("svoboda_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -65,7 +64,7 @@ function barman_check_reward()
      for i = 1,7 do
         if has_alife_info("barman_freeplay_reward_task_"..i.."_start") and not has_alife_info("barman_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -79,7 +78,7 @@ function ecolog_check_reward()
      for i = 1,7 do
         if has_alife_info("ecolog_freeplay_reward_task_"..i.."_start") and not has_alife_info("ecolog_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -93,7 +92,7 @@ function dolg_check_reward()
      for i = 1,7 do
         if has_alife_info("dolg_freeplay_reward_task_"..i.."_objective_1_done") and not has_alife_info("dolg_freeplay_reward_task_"..i.."_done") then
             return true
-        end  
+        end
      end
      return false
 end
@@ -101,18 +100,17 @@ function dolg_not_check_reward()
    for i = 1,7 do
         if has_alife_info("dolg_freeplay_reward_task_"..i.."_start") and not has_alife_info("dolg_freeplay_reward_task_"..i.."_objective_1_done") then
             return true
-        end  
+        end
      end
      return false
 end
-
 
 --'------------------------------------------------------
 --' GIVE REWARD
 --'------------------------------------------------------
 
 --' TRADER GIVE REWARD
-    
+
 function trader_give_reward(first_speaker, second_speaker)
     local spawn_items = {
         [1] = { "vodka" },
@@ -122,7 +120,7 @@ function trader_give_reward(first_speaker, second_speaker)
         [5] = { "treasure_item", "vodka", "vodka", "conserva", "bread" },
         [6] = { "treasure_item", "vodka", "vodka", "conserva", "bread" },
         [7] = { "neytral_gaz_outfit_m2_bast" }
-       }    
+       }
     for i = 1,7 do
          if has_alife_info("trader_freeplay_reward_task_"..i.."_start") and not has_alife_info("trader_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("trader_freeplay_reward_task_"..i.."_done")
@@ -130,22 +128,20 @@ function trader_give_reward(first_speaker, second_speaker)
                 if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
-
+    end
+end
 
 --' MILITARY GIVE REWARD
-
 
 function military_give_reward(first_speaker, second_speaker)
     local spawn_items = {
@@ -156,30 +152,28 @@ function military_give_reward(first_speaker, second_speaker)
         [5] = { "medkit_army", "medkit_army", "ammo_9x39_sp5", "ammo_9x39_sp5", "ammo_vog-25p", "ammo_vog-25p" },
         [6] = { "medkit_army", "medkit_army", "ammo_7.62x54_7h1", "ammo_7.62x54_7h1", "ammo_7.62x54_7h1" },
         [7] = { "wpn_svd", "ammo_7.62x54_7h14", "ammo_7.62x54_7h14", "ammo_7.62x54_7h14" }
-       }    
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("military_freeplay_reward_task_"..i.."_start") and not has_alife_info("military_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("military_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                 if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
-
+    end
+end
 
 --' NEUTRAL GIVE REWARD
-
 
 function neutral_give_reward(first_speaker, second_speaker)
     local spawn_items = {
@@ -190,26 +184,26 @@ function neutral_give_reward(first_speaker, second_speaker)
         [5] = { "5000" },
         [6] = { "5000" },
         [7] = { "25000" }
-       }    
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("neutral_freeplay_reward_task_"..i.."_start") and not has_alife_info("neutral_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("neutral_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
+    end
+end
 
 --' SVOBODA GIVE REWARD
 
@@ -222,26 +216,26 @@ function svoboda_give_reward(first_speaker, second_speaker)
         [5] = { "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209", "ammo_m209", "ammo_m209" },
         [6] = { "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209", "ammo_m209", "ammo_m209" },
         [7] = { "wpn_fn2000", "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209" }
-       }    
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("svoboda_freeplay_reward_task_"..i.."_start") and not has_alife_info("svoboda_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("svoboda_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
+    end
+end
 
 --' BARMAN GIVE REWARD
 
@@ -254,26 +248,26 @@ function barman_give_reward(first_speaker, second_speaker)
         [5] = { "grenade_f1", "grenade_f1", "ammo_og-7b", "ammo_og-7b" },
         [6] = { "ammo_og-7b", "ammo_og-7b", "ammo_og-7b", "ammo_vog-25p", "ammo_vog-25p", "ammo_vog-25p" },
         [7] = { "wpn_rg-6", "ammo_vog-25p", "ammo_vog-25p", "ammo_vog-25p", "ammo_vog-25p" }
-       }  
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("barman_freeplay_reward_task_"..i.."_start") and not has_alife_info("barman_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("barman_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                   if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
+    end
+end
 
 --' ECOLOG GIVE REWARD
 
@@ -286,29 +280,28 @@ function ecolog_give_reward(first_speaker, second_speaker)
         [5] = { "medkit_scientic", "medkit_scientic", "antirad", "antirad", "antirad" },
         [6] = { "medkit_scientic", "medkit_scientic", "antirad", "antirad", "antirad" },
         [7] = { "protection_outfit" }
-       }    
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("ecolog_freeplay_reward_task_"..i.."_start") and not has_alife_info("ecolog_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("ecolog_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
+    end
+end
 
 --' DOLG GIVE REWARD
-
 
 function dolg_give_reward(first_speaker, second_speaker)
     local spawn_items = {
@@ -319,25 +312,24 @@ function dolg_give_reward(first_speaker, second_speaker)
         [5] = { "ammo_12x76_dart", "ammo_12x76_dart", "ammo_12x76_dart", "ammo_arbolt", "ammo_arbolt" },
         [6] = { "ammo_7.62x54r", "ammo_arbolt", "ammo_arbolt", "ammo_arbolt" },
         [7] = { "wpn_pkm", "ammo_7.62x54r", "ammo_7.62x54r" }
-       }    
-    for i = 1,7 do 
+       }
+    for i = 1,7 do
          if has_alife_info("dolg_freeplay_reward_task_"..i.."_objective_1_done") and not has_alife_info("dolg_freeplay_reward_task_"..i.."_done") then
            db.actor:give_info_portion("dolg_freeplay_reward_task_"..i.."_done")
             for k,v in pairs(spawn_items[i]) do
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,	
+                    alife():create(v,
 						db.actor:position(),
-						db.actor:level_vertex_id(),	
-						db.actor:game_vertex_id(), 
+						db.actor:level_vertex_id(),
+						db.actor:game_vertex_id(),
 						db.actor:id())
                     news_manager.relocate_item(db.actor, "in", v)
                 end
             end
 			break
         end
-    end   
-end 
- 
- 
+    end
+end
+

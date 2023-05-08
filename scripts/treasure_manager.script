@@ -2,13 +2,12 @@
 
 File:  treasure_manager.script
 author:  wtcat
-modified: AMK TEAM 
+modified: AMK TEAM
 Version:  3.0.0.1
 
 --]]
 
 -- solid_list основан на Linspiro Addon v1.1
-
 
 local rare_list = {
 
@@ -45,7 +44,7 @@ local rare_list = {
  },
 
  veteran_section = {
- "af_spirit_1",        
+ "af_spirit_1",
  "af_cry_1",
  "af_babka_1",
  "af_pudd_1",
@@ -61,15 +60,15 @@ master_section = {
  "wpn_vintorez",
  "wpn_svu",
  "wpn_svd",
- "af_simbion",        
+ "af_simbion",
  "wpn_g36",
- "af_spirit_2",         
+ "af_spirit_2",
  "af_cry_2",
  "af_babka_2",
  "af_pudd_2",
  "af_dik_2",
  "af_kol_2",
- "af_armor_2"  
+ "af_armor_2"
  }
 }
 
@@ -85,7 +84,7 @@ local solid_list = {
  "af_medusa",
  --Аммуниция--
  "grenade_rgd5",
- "ammo_16cal_buck",     
+ "ammo_16cal_buck",
  "ammo_9x19_fmj",
  "ammo_9x19_pbp",
  "ammo_9x18_pmm",
@@ -118,7 +117,7 @@ experienced_section = {
  --Аммуниция--
  "grenade_rgd5",
  "grenade_gd-05",
- "grenade_f1",     
+ "grenade_f1",
  "ammo_5.7x28_ap",
  "ammo_7.62x39_ap",
  "ammo_5.45x39_fmj",
@@ -151,7 +150,7 @@ experienced_section = {
  "af_cristall",
  --Аммуниция--
  "grenade_f1",
- "ammo_vog-25",     
+ "ammo_vog-25",
  "ammo_m209",
  "ammo_5.45x39_ap",
  "ammo_11.43x23_hydro",
@@ -183,7 +182,7 @@ experienced_section = {
  "af_fuzz_kolobok",
  --Аммуниция--
  "ammo_m209",
- "ammo_vog-25p",     
+ "ammo_vog-25p",
  "ammo_9x39_ap",
  "ammo_12x76_dart",
  "ammo_7.62x54_7h14",
@@ -218,7 +217,7 @@ function parse_spawns(line)
 	--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
 	local t = se_respawn.parse_names(line)
 	local n = #t
-		
+
 	local ret_table = {}
 	local k = 1
 
@@ -246,7 +245,6 @@ function parse_spawns(line)
 	end
 	return ret_table
 end
-
 
 class "CTreasure"
 function CTreasure:__init()
@@ -276,7 +274,7 @@ function CTreasure:__init()
 
 		if  not self_ini:line_exist(id, "target") or
 			  not self_ini:line_exist(id, "name") or
-			  not self_ini:line_exist(id, "description") or 
+			  not self_ini:line_exist(id, "description") or
 			  not self_ini:line_exist(id, "items") then
 			abort("treasure_manager.ltx: section [%s] is missing target, name, description and/or items", id)
 			return
@@ -292,7 +290,6 @@ function CTreasure:__init()
 		for k,v in pairs(community) do
 			result.community[v] = true
 		end
-
 
 		if result.items == nil then
 			abort("treasure_manager: can't find 'items' in %s", id)
@@ -317,11 +314,11 @@ end
 
 function CTreasure:offline_give_treasure(npc)
 	local res, boxlist = amk_offline_alife.give_treasure(npc)
-	if res then 
+	if res then
 		if boxlist and #boxlist > 0 then
 			for iter, box_story_id in pairs(boxlist) do
 				local k = self.treasure_by_target[box_story_id]
-				if k ~= nil then 
+				if k ~= nil then
 					self.treasure_info[k].active = true
 					self.treasure_info[k].done = true
 				end
@@ -334,7 +331,7 @@ end
 
 --' Юзание инициатора (возможность выдать тайник)
 function CTreasure:use(npc)
-	--' Проверим, не вызывались ли мы уже для этого объекта. 
+	--' Проверим, не вызывались ли мы уже для этого объекта.
 	local se_obj = alife():object(npc:id())
 	if se_obj.treasure_processed == true then
 		return
@@ -347,22 +344,22 @@ function CTreasure:use(npc)
 	end
 	--lootmoney end
 	if self:offline_give_treasure(npc) then return end
-	local rarets 
-	
+	local rarets
+
 	if npc ~= nil then
 	  n_rank = npc:character_rank()
-	 else 
+	 else
       n_rank = 0
 	end
-	
+
 	-- если выбран редкий тип тайников, то снизим овероятность его выпадения
-	if amk.load_variable("option_treasure", 0) == 2 then 
+	if amk.load_variable("option_treasure", 0) == 2 then
 	  rarets = 97
-	else 
+	else
       rarets = 90
   end
 
-	if math_random(100) < rarets then 
+	if math_random(100) < rarets then
 	  return
 	end
 
@@ -425,7 +422,7 @@ function CTreasure:give_treasure(k, hide)
 	local v = self.treasure_info[k]
 	local obj = sim:story_object(v.target)
 	if obj ~= nil then
-		--' Пометить на карте		
+		--' Пометить на карте
 		local text = "%c[255,238,155,23]"..game.translate_string(v.name).."\\n"..
 				"%c[default]"..game.translate_string(v.description)
 
@@ -433,8 +430,8 @@ function CTreasure:give_treasure(k, hide)
 		-- если тайник не классический и не именной, то заменим содержимое
 		if amk.load_variable("option_treasure", 0) ~= 0 and self:named_treasure(v) == false then
 		   v.items = self:give_item_list()
-		end  
-		
+		end
+
 		--' Сгенерить вещи
 		local pos, lvid, gvid, pid = obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id
 		for kk,vv in pairs(v.items) do
@@ -470,7 +467,7 @@ function CTreasure:treasure_empty(box, box_story_id)
 	if tonumber(level.map_has_object_spot(box:id(), "treasure")) > 0 then
 		local k = self.treasure_by_target[box_story_id]
 
-		if k == nil or self.treasure_info[k] == nil then 
+		if k == nil or self.treasure_info[k] == nil then
 			return
 		end
 
@@ -536,9 +533,9 @@ function CTreasure:give_item_list()
    return xr_statistic_freeplay.get_freeplay_statistic().give_crap_item()
  end
 
--- считаем настройку пользователя 
+-- считаем настройку пользователя
  local opt = amk.load_variable("option_treasure", 0)
- 
+
   --~ -- определим ранг непися
    if n_rank == nil then n_rank = math_random(1, 9)*100 end
    if n_rank <= 300 then
@@ -547,18 +544,17 @@ function CTreasure:give_item_list()
      rank = 2
     elseif n_rank <= 900 then
      rank = 3
-    else 
+    else
      rank = 4
-    end	 
+    end
  --~ else
    --~ rank = 1
  --~ end
 
-
  for j = 1, i, 1 do
    local cnt = 0
    local spawn = {}
-  -- определим, из какой секции брать предметы, и какие именно  
+  -- определим, из какой секции брать предметы, и какие именно
    if  opt == 1 then
 		if rank == 1 then
 			spawn.section = solid_list.novice_section[math_random(#solid_list.novice_section)]
@@ -579,9 +575,9 @@ function CTreasure:give_item_list()
 		else
 			spawn.section = rare_list.master_section[math_random(#rare_list.master_section)]
 		end
-   end	 
-  
-  -- установка кол-ва предметов в зависимости от секции  
+   end
+
+  -- установка кол-ва предметов в зависимости от секции
    if ammo_section[spawn.section] == true then
       local ini = system_ini()
       local num_in_box = ini:r_u32(spawn.section, "box_size")
@@ -594,11 +590,11 @@ function CTreasure:give_item_list()
 	     cnt = 1
 	  elseif string.find(s, "addon") ~= nil or string.find(s, "af") ~= nil or string.find(s, "mutant") ~= nil then
          cnt = math_random(1,2)
-      else 
+      else
 	     cnt = math_random(1,5)
-	  end   
+	  end
    end
-  
+
   -- сохраняем инфу о текущем предмете
   spawn.prob = cnt
   tabla[#tabla + 1] = spawn
@@ -657,7 +653,7 @@ end
 function CTreasure:dialog(npc)
 	if npc ~= nil then
 	  n_rank = npc:character_rank()
-	 else 
+	 else
       n_rank = 0
 	end
 	local avail = {}

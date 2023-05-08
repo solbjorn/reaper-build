@@ -29,7 +29,7 @@ function full_init()
 
 	--' Множители и минимаксы для выпадения вещей в зависимости от уровня
 	local level_name = level.name()
-	
+
 	if not death_ini:section_exist(level_name) then
 		level_name = "default"
 	end
@@ -38,7 +38,7 @@ function full_init()
 	for i=0,n-1 do
 		result, id, value	= death_ini:r_line(level_name,i,"","")
 		mul_by_level[id] = tonumber(value)
-	end        
+	end
 
 	local item_count_section = "item_count_" .. level.get_game_difficulty()
 	n = death_ini:line_count(item_count_section)
@@ -54,7 +54,7 @@ function full_init()
 		if max == nil then
 			max = min
 		end
-		
+
 		if mul_by_level[id] == nil then
 			mul_by_level[id] = 0
 		end
@@ -63,7 +63,7 @@ function full_init()
 		max = tonumber(max) * mul_by_level[id]
 
 		count_by_level[id] = {min = min, max = max}
-	end        
+	end
 end
 
 local math_random = math.random
@@ -93,7 +93,7 @@ function ph_item_box:spawn_items()
 		--' Необходимо составить список объектов которые могут быть заспавнены для персонажа
 		spawn_items = item_by_community[community]
 		--' Если комьюнити задана не верно, то ставим дефолт и срем в лог.
-		if spawn_items == nil then 
+		if spawn_items == nil then
 			spawn_items = {}
 			spawn_items = item_by_community["def_box"]
 		end
@@ -208,7 +208,7 @@ function r_items( spawn_ini, section, line)
 		--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
 		local t = parse_names( spawn_ini:r_string( section, line ) )
 		local n = #t
-		
+
 		local ret_table = {}
 		local k = 1
 		while k <= n do

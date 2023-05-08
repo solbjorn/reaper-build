@@ -24,11 +24,11 @@ table.to_string = function(t)
 	local type_endtable = 5
 	local tk, tv
 	local ret = ""
-	
+
 	for k,v in pairs(t) do
 		tk = type(k)
 		tv = type(v)
-		
+
 		if tk == "number" then
 			ret = ret..string_char(type_num)..k
 		elseif tk == "string" then
@@ -36,7 +36,7 @@ table.to_string = function(t)
 		else
 			abort("table.to_string: unsupported key type "..tk)
 		end
-		
+
 		if tv == "number" then
 			ret = ret..string_char(type_num)..v
 		elseif tv == "string" then
@@ -49,7 +49,7 @@ table.to_string = function(t)
 			abort("table.to_string: unsupported value type "..tv)
 		end
 	end
-	
+
 	return ret
 end
 local table_to_string = table.to_string
@@ -106,7 +106,7 @@ string.to_table = function(s, idx)
 		if idx > string_len(s) then
 			return ret, idx
 		end
-		
+
 		tk, idx = get_byte(s, idx)
 		if tk == type_num then
 			key, idx = get_num(s, idx)
@@ -117,7 +117,7 @@ string.to_table = function(s, idx)
 		else
 			abort("string.to_table: unsupported key type "..tk)
 		end
-		
+
 		tv, idx = get_byte(s, idx)
 		if tv == type_num then
 			value, idx = get_num(s, idx)
@@ -130,7 +130,7 @@ string.to_table = function(s, idx)
 		else
 			abort("string.to_table: unsupported value type "..tv)
 		end
-		
+
 		ret[key] = value
 	end
 end

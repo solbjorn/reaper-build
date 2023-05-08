@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
 --'	Схема кемпер. Чудак с бальшой пушкой ходит и отстреливает живность.
 --'	автор: Диденко Руслан (Stohe)
---'	TODO: 
+--'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 local def_ignore_distance			= 150
@@ -15,7 +15,6 @@ local def_danger_inertion_time_corpse	= 10000
 local def_danger_inertion_time_hit		= 60000
 local def_danger_inertion_time_sound	= 15000
 local def_danger_inertion_time_ricochet	= 30000
-
 
 local always_ignore_danger_from = { m_car = "true" }
 
@@ -63,14 +62,14 @@ function evaluator_danger:evaluate()
 	if best_danger_object ~= nil then
 		best_danger_section_name = best_danger_object:section()
 	end
-	
+
 	if best_danger_section_name ~= nil then
 		if always_ignore_danger_from[best_danger_section_name] == "true" then
 			return false
 		end
 	end
 
-	local bd_type = best_danger:type()	
+	local bd_type = best_danger:type()
 	-- Проверка на запрещенный денжер от актера
 	if best_danger_object ~= nil and
 	   best_danger_object:id() == db_actor_id and
@@ -83,7 +82,7 @@ function evaluator_danger:evaluate()
       if bd_type ~= danger_object_bullet_ricochet or time_global()-best_danger:time()>10000 then
         return false
       end
-		end	
+		end
 	end
 
 	-- фикс агра на звуки от трупов
@@ -104,13 +103,13 @@ function evaluator_danger:evaluate()
 			bd_type == danger_object_attacked then
 		if self.a.ignore_types["hit"] == true then
 			return false
-		end	
+		end
 	elseif bd_type == danger_object_enemy_sound or
 	       bd_type == danger_object_attack_sound or
 	       bd_type == danger_object_entity_death then
 		if self.a.ignore_types["sound"] == true then
 			return false
-		end	
+		end
 	end
 
 	-- отсеиваем по настройке combat_ignore/danger
@@ -125,7 +124,7 @@ function evaluator_danger:evaluate()
 	    then
 		    return false
 	    end
-    end	    
+    end
 
 	-- инерция возврата. Только не для кемпера.
 	if self.danger_time then
@@ -139,10 +138,9 @@ function evaluator_danger:evaluate()
 			return true
 		else
 			return false
-		end		
+		end
 	end
 
-			
 	-- Отсеиваем по дистанции
 	if check_danger_distance(self_obj, best_danger) == false then
 		return false
@@ -175,7 +173,6 @@ function evaluator_danger:evaluate()
 		return true
 	end
 end
-
 
 ----------------------------------------------------------------------------------------------------------------------
 -- BINDER
@@ -243,11 +240,10 @@ function reset_danger(npc, scheme, st, section)
 	end
 end
 
-
 function check_danger_inertion_time(npc, danger, passed_time)
 	local danger_settings = db_storage[npc:id()].danger
 	local bd_type = danger:type()
-	
+
 	if danger_settings ~= nil then
 		if bd_type == danger_object_grenade then
 			if danger_settings.danger_inertion_time_grenade <= passed_time then
@@ -271,7 +267,7 @@ function check_danger_inertion_time(npc, danger, passed_time)
 		elseif bd_type == danger_object_bullet_ricochet then
 			if danger_settings.danger_inertion_time_ricochet <= passed_time then
 				return false
-			end	
+			end
 		end
 	else
 		if bd_type == danger_object_grenade then
@@ -296,7 +292,7 @@ function check_danger_inertion_time(npc, danger, passed_time)
 		elseif bd_type == danger_object_bullet_ricochet then
 			if def_danger_inertion_time_ricochet <= passed_time then
 				return false
-			end	
+			end
 		end
 	end
 	return true
@@ -330,7 +326,7 @@ function check_danger_distance(npc, danger)
 			if danger_distance_sqr >= danger_settings.ignore_distance_sound then
 				return false
 			end
-		end		   	   
+		end
 	else
 		if danger_distance_sqr >= def_ignore_distance then
 			return false
@@ -354,7 +350,7 @@ function check_danger_distance(npc, danger)
 			if danger_distance_sqr >= def_ignore_distance_sound then
 				return false
 			end
-		end	
+		end
 	end
-	return true			
+	return true
 end

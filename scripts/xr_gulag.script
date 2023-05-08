@@ -37,7 +37,7 @@ level_gulags = {
 local level_groups = {l01_escape = 1, l02_garbage = 2, l03_agroprom = 3, l03u_agr_underground = 4,
                 l04_darkvalley = 5, l04u_labx18 = 6, l05_bar = 7, l06_rostok = 8,
                 l07_military = 9, l08_yantar = 10, l08u_brainlab = 11, l10_radar = 12,
-                l10u_bunker = 13, l11_pripyat = 14, l12_stancia = 15, l12u_sarcofag = 16, 
+                l10u_bunker = 13, l11_pripyat = 14, l12_stancia = 15, l12u_sarcofag = 16,
                 l12u_control_monolith = 17, l12_stancia_2 = 18}
 
 local gulag_tasks_file_name  = "misc\\gulag_tasks.ltx"
@@ -101,7 +101,6 @@ function gulag:load_jobs()
 		self.ltx      = gulag_tasks_ltx
 		self.ltx_name = gulag_tasks_file_name
 	end
-
 
 	table_sort( self.Job, function(a,b) return a.prior > b.prior end )
 
@@ -529,7 +528,7 @@ function gulag:can_obj_begin_job( obj_id, obj )
 
 	if jobN and not self.Object_begin_job[obj_id] then
 		local job = self.Job[jobN]
-		
+
 		--' Спешл кейс, проверка только по вертексам графа
 		if job.position_threshold == "graph" then
 			local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
@@ -539,7 +538,7 @@ function gulag:can_obj_begin_job( obj_id, obj )
 			end
 			return false
 		end
-	
+
 		return self:distance_to_job_location(obj_id, job) < (job.position_threshold or job_position_threshold)
 	else
 		return false
@@ -802,7 +801,7 @@ function gulag:try_to_fill_free_high_prior_jobs( jobs, prior_block_start, prior_
 				self:free_obj_and_reinit( obj_id )
 
 				self:setJob( obj_id, jobs[i] )
-			end			
+			end
 		end
 	end
 end

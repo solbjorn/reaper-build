@@ -1,5 +1,5 @@
 function load_job(sj, gname, type, squad, groups)
---'--------------------------------------------------------------------------	
+--'--------------------------------------------------------------------------
 --' Labx18
 --'--------------------------------------------------------------------------
 local t
@@ -12,7 +12,7 @@ local t
 		sj[#sj+1] = t
 		return true
 	end
-	
+
 	if type == "dar_poltergeist_ring" then
 	    t = { section = "logic@dar_poltergeist_ring_base",
 		    idle = 0,
@@ -100,7 +100,6 @@ local t
 		sj[#sj+1] = t
 		return true
 	end
-
 
 	if type == "dar_poltergeist_tele" then
 	    t = { section = "logic@dar_poltergeist",
@@ -213,11 +212,8 @@ local t
 	end
 end
 
-
-
-
 function load_states(gname, type)
-	if type == "dar_com_center_poltergeist" then        
+	if type == "dar_com_center_poltergeist" then
 		return function(gulag)
 			return 0
 		end
@@ -229,37 +225,37 @@ function load_states(gname, type)
 		end
 	end
 
-	if type == "dar_com_center_tushkano" then        
+	if type == "dar_com_center_tushkano" then
 		return function(gulag)
 			return 0
 		end
 	end
 
-	if type == "dar_upper_big_tushkano" then        
+	if type == "dar_upper_big_tushkano" then
 		return function(gulag)
 			return 0
 		end
 	end
 
-	if type == "dar_upper_small_tushkano" then        
+	if type == "dar_upper_small_tushkano" then
 		return function(gulag)
 			return 0
 		end
 	end
 
-	if type == "dar_lower_tushkano" then        
+	if type == "dar_lower_tushkano" then
 		return function(gulag)
 			return 0
 		end
 	end
-	
-	if type == "dar_angar_gigant" then        
+
+	if type == "dar_angar_gigant" then
 		return function(gulag)
 			return 0
 		end
 	end
-	
-	if type == "dar_poltergeist_ring" then        
+
+	if type == "dar_poltergeist_ring" then
 		return function(gulag)
 			if not has_alife_info("dar_codelock1_unlock") then
 				return 3 -- оффлайн все
@@ -267,12 +263,11 @@ function load_states(gname, type)
 				return 1 -- онлайн 2
 			elseif has_alife_info("dar_ring_spawn2") then
 				return 2 -- онлайн 3
-			else			
+			else
 				return 0 -- онлайн 1
 			end
 		end
 	end
-
 
 	if type == "dar_military_scout" then
 		return function(gulag)
@@ -322,11 +317,11 @@ function checkMonster(npc_community, gulag_type)
 	if gulag_type == "dar_lower_tushkano" then
 		return npc_community == "tushkano"
 	end
-		
+
 	if gulag_type == "dar_angar_gigant" then
 		return npc_community == "pseudo_gigant"
 	end
-	
+
 	if gulag_type == "dar_poltergeist_ring" then
 		return npc_community == "poltergeist"
 	end

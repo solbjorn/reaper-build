@@ -2,7 +2,7 @@
 ОПИСАНИЕ ФУНКЦИЙ
 
 -- Выводит отладочное сообщение в лог, если скрипт активен (активный скрипт выбирается с помощью
--- переменной debug_info.trace_script). 
+-- переменной debug_info.trace_script).
 function trace(script_name, fmt, ...)
 
 -- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
@@ -39,7 +39,6 @@ function to_str(what)
 	end
 end
 
-
 --' Сравнивает два вектора
 function vector_cmp(a, b)
     return a.x == b.x and a.y == b.y and a.z == b.z
@@ -47,11 +46,10 @@ end
 
 --' Сравнивает два вектора с заданной погрешностью
 function vector_cmp_prec(a, b, d)
-    return math.abs(a.x - b.x) <= d and 
-           math.abs(a.y - b.y) <= d and 
+    return math.abs(a.x - b.x) <= d and
+           math.abs(a.y - b.y) <= d and
            math.abs(a.z - b.z) <= d
 end
-
 
 -- Создает и возвращает копию вектора
 function vector_copy_by_val(vec)
@@ -59,7 +57,7 @@ function vector_copy_by_val(vec)
 end
 
 -- Настройка параметра типа bool у игрового объекта.
--- 
+--
 -- char_ini - указатель на customdata (обычно object:spawn_ini())
 -- section - имя секции в customdata
 -- field - имя поля в customdata
@@ -422,7 +420,7 @@ function parse_data_1v(npc,s)
 	if s then
 		for name in string_gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
 			local dat = {	dist = nil,
-							state = nil}	
+							state = nil}
 
 			local t_pos = string_find( name, "|", 1, true )
 

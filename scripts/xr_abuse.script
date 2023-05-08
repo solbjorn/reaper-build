@@ -75,7 +75,7 @@ function CAbuseManager:update()
 	if self:abused() then
 		return true
 	end
-	
+
 	return false
 end
 function CAbuseManager:addAbuse(value)
@@ -125,8 +125,6 @@ function add_to_binder_q(object, st)
 	st.abuse_manager = CAbuseManager(object, st)
 end
 
-
-
 ------------
 -- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
 -- первичную настройку.
@@ -136,7 +134,6 @@ end
 -- Вызывается при переключении на новую секцию. Производит вычитывание настроек из текущей секции.
 function reset_abuse(npc, scheme, st, section)
 end
-
 
 function add_abuse(npc, value)
 	local t = db.storage[npc:id()].abuse

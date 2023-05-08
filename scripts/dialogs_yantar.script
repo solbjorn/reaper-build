@@ -13,38 +13,38 @@ function trader_repair_precond(trader, actor)
 	elseif item_in_slot_2 ~= nil and 1 > item_in_slot_2:condition() + 0.01 then return true
 	elseif item_in_slot_6 ~= nil and 1 > item_in_slot_6:condition() + 0.01 then return true
 	else return false
-	end	 
+	end
 end
 
 function trader_check_money_s1(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(1)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
 
 function trader_check_money_s2(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(2)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
 
 function trader_check_money_s6(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(6)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
@@ -73,20 +73,20 @@ function trader_repiar_armor_s6(trader, actor)
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
 		dialogs.relocate_money(actor, item_repair_cost, "out")
-	end	
+	end
 end
 
 function repair_costs(first_speaker, second_speaker)
 	local task_texture, task_rect = get_texture_info("ui_iconsTotal_lost_money")
-	
+
 	local item_name_and_price = ""
 	local item_repair_cost = 0
-	if db.actor ~= nil then 
+	if db.actor ~= nil then
 		local item_in_slot_1 = db.actor:item_in_slot(1)
 		local item_in_slot_2 = db.actor:item_in_slot(2)
 		local item_in_slot_6 = db.actor:item_in_slot(6)
-	
-		if item_in_slot_1 ~= nil then 
+
+		if item_in_slot_1 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_1:condition()) * item_in_slot_1:cost() * weapon_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_0").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
@@ -110,7 +110,6 @@ function repair_costs(first_speaker, second_speaker)
 	end
 end
 
-
 function have_kruglov_flash(first_speaker, second_speaker)
   	return first_speaker:object("kruglov_flash") ~= nil
 end
@@ -131,7 +130,7 @@ function yan_professor_talk_outfit (first_speaker, second_speaker)
 	if not has_alife_info("bar_x16_documents_start") then
 		if has_alife_info("bar_rescue_research_done") and  has_alife_info("yan_ecolog_outfit_given") then
 			return true
-		else 
+		else
 			return false
 		end
 		return true

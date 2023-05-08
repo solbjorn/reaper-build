@@ -1,7 +1,7 @@
 ----------------------------------------------
--- Copyright (c) 2007 Dmitri 'Red75' Roschin                                              
+-- Copyright (c) 2007 Dmitri 'Red75' Roschin
 ----------------------------------------------
--- Blowout hide v0.25 Behavioral scheme 
+-- Blowout hide v0.25 Behavioral scheme
 ----------------------------------------------
 
 evid_blowout=18572
@@ -71,10 +71,9 @@ function evaluator_anomaly:evaluate()
   return amk_anoms.have_pending_sync(npc)
 end
 
-
 class "evaluator_blowout" (property_evaluator)
 
-function evaluator_blowout:__init(st) super(nil,"evaluator_blowout")  
+function evaluator_blowout:__init(st) super(nil,"evaluator_blowout")
   self.st=st
   self.prevblow=0
 end
@@ -110,13 +109,13 @@ function evaluator_blowout:evaluate()
   end
   if self.st.washitat and self.st.washitat>time_global() then
     return false
-  end  
+  end
   return blowout>=2 and (not self.st.nohide)
 end
 
 class "evaluator_monolith_blowout" (property_evaluator)
 
-function evaluator_monolith_blowout:__init(st) super(nil,"evaluator_monolith_blowout")  
+function evaluator_monolith_blowout:__init(st) super(nil,"evaluator_monolith_blowout")
   self.st=st
 end
 
@@ -128,7 +127,7 @@ end
 
 class "evaluator_preblowout" (property_evaluator)
 
-function evaluator_preblowout:__init(st) super(nil,"evaluator_preblowout")  
+function evaluator_preblowout:__init(st) super(nil,"evaluator_preblowout")
   self.st=st
 end
 
@@ -141,7 +140,7 @@ end
 
 class "evaluator_outside" (property_evaluator)
 
-function evaluator_outside:__init(st) super(nil,"evaluator_outside")  
+function evaluator_outside:__init(st) super(nil,"evaluator_outside")
   self.st=st
   self.prev=false
   self.uptime=nil
@@ -184,7 +183,7 @@ function evaluator_outside:evaluate()
     self.prev=inhide
     -- Непись считается вылезшим из укрытия если он снаружи или рядом с точкой возврата
     inhide=inhide and (not retpt)
-    
+
     -- Если непись зашёл в укрытие, то дадим ему ещё 1 сек чтобы зайти глубже
     if inhide and self.uptime and self.uptime>time_global() then
       -- Уже в укрытии, но секунда ещё не прошла
@@ -201,13 +200,13 @@ function evaluator_outside:evaluate()
       -- Не в укрытии
       self.uptime=nil
     end
-    if inhide then 
+    if inhide then
       self.st.need_run=false
     end
     return (not inhide)
   else
     self.st.hidefound=nil
-    
+
     return false
   end
 end
@@ -391,7 +390,7 @@ function action_inhide:initialize()
       local v=utils.vector_rotate_y(v0,ang)
       local lvid=level.vertex_in_direction(self.st.hide.center,v,r)
       if npc:accessible(lvid) and (not self.st.hide.place[lvid]) and
-         amk_mod.check_npc_in_hideout(level.vertex_position(lvid),self.st.hide) and 
+         amk_mod.check_npc_in_hideout(level.vertex_position(lvid),self.st.hide) and
          level.vertex_position(lvid):distance_to(level.vertex_position(self.st.hide.center))>r/1.5 then
         self.lvid=lvid
         stop=true
@@ -521,7 +520,7 @@ function find_open_dir(npc,excludeang,excludewidth)
     end
   end
   return preflook,prefang
-end 
+end
 
 class "action_monolith_pray" (action_base)
 
@@ -603,14 +602,14 @@ function add_to_binder_q(npc,storage)
     action:add_effect(world_property(evid_blowout, false))
     action:add_effect(world_property(evid_wounded, true))
     manager:add_action(actid_monopray, action)
-    
+
     action=action_anomaly(storage)
     action:add_precondition(world_property(stalker_ids.property_alive, true))
     action:add_precondition(world_property(evid_wounded, false))
     action:add_precondition(world_property(evid_anomaly, true))
     action:add_effect(world_property(evid_anomaly, false))
     manager:add_action(actid_anomaly, action)
-   
+
     action = manager:action (xr_actions_id.alife)
     action:add_precondition(world_property(evid_anomaly, false))
     action:add_precondition (world_property(evid_blowout, false))
@@ -625,7 +624,7 @@ function add_to_binder_q(npc,storage)
   else
     manager:add_evaluator (evid_blowout, evaluator_blowout(storage))
     manager:add_evaluator (evid_outside, evaluator_outside(storage))
-    manager:add_evaluator (evid_preblowout, evaluator_preblowout(storage))  
+    manager:add_evaluator (evid_preblowout, evaluator_preblowout(storage))
     manager:add_evaluator (evid_anomaly, evaluator_anomaly(storage))
     local action = action_runtohide(storage)
     action:add_precondition(world_property(stalker_ids.property_alive, true))
@@ -647,7 +646,7 @@ function add_to_binder_q(npc,storage)
     action:add_effect(world_property(evid_outside, false))
     action:add_effect(world_property(evid_wounded, true))
     manager:add_action(actid_monopray, action)
-    
+
     action=action_inhide(storage)
     action:add_precondition(world_property(stalker_ids.property_alive,true))
     action:add_precondition(world_property(stalker_ids.property_enemy, false))
@@ -666,7 +665,7 @@ function add_to_binder_q(npc,storage)
     action:add_precondition(world_property(evid_anomaly, true))
     action:add_effect(world_property(evid_anomaly, false))
     manager:add_action(actid_anomaly, action)
-   
+
     action=action_preblow(storage)
     action:add_precondition(world_property(stalker_ids.property_alive,true))
     action:add_precondition(world_property(evid_wounded, false))
@@ -677,7 +676,7 @@ function add_to_binder_q(npc,storage)
     action:add_effect(world_property(evid_preblowout,false))
     action:add_effect(world_property(evid_wounded, true))
     manager:add_action(actid_preblow, action)
-    
+
     action = manager:action (xr_actions_id.alife)
     action:add_precondition (world_property(evid_outside, false))
     action:add_precondition (world_property(evid_blowout, false))
@@ -695,9 +694,9 @@ function add_to_binder_q(npc,storage)
     -- action = manager:action (stalker_ids.action_danger_in_direction_search)
     -- action:add_precondition (world_property(evid_outside, false))
     -- action:add_precondition (world_property(evid_blowout, false))
-    
+
     -- action = manager:action (xr_actions_id.stohe_kamp_base + 3)
-    -- action:add_precondition (world_property(evid_preblowout, false))    
+    -- action:add_precondition (world_property(evid_preblowout, false))
   end
   npc:set_enemy_callback(ecall,nil)
   -- get_console():execute("load ~~~bind scheme end "..npc:character_name())

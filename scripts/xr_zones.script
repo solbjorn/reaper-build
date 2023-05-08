@@ -55,7 +55,7 @@ end
 --' Сохранение списка зарегистренных объектов
 function arena_zone_binder:save(packet)
 	object_binder.save(self, packet)
-	
+
 	local num = 0
 	for k,v in pairs(self.saved_obj) do
 		num = num + 1
@@ -72,7 +72,7 @@ function arena_zone_binder:load(packet)
 	local num = packet:r_u8()
 	for i=1,num do
 		self.saved_obj[packet:r_u16()] = true
-	end	
+	end
 end
 
 --' callback на вход в зону. Нужно регистрить все объекты, кроме игрока.
@@ -91,7 +91,6 @@ function arena_zone_binder:on_exit(zone, obj)
 
 	self.saved_obj[obj:id()] = nil
 end
-
 
 function purge_arena_items(name)
 	local arena_zone = arena_zones[name]

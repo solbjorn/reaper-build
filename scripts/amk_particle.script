@@ -1,7 +1,7 @@
 class "amk_particle"
 function amk_particle:__init(params)
 	self.type = params.typ or "absolute" --bone,absolute
-	
+
 	self.dir = params.dir or vector():set(0,0,0)
 	self.len = params.len or 1
 	self.looped = params.looped or false
@@ -13,12 +13,12 @@ function amk_particle:__init(params)
 	self.gravity = params.gravity or vector():set(0,0,0)
 	self.give_dmg = params.give_dmg or false
 	self.target = params.target or nil
-	
+
 	if params.sound then
 		self.snd = sound_object(params.sound)
 		self.snd_looped = params.sound_looped or false
 	end
-	
+
 	self.cgravity=vector():set(0,0,0)
 	self.particle = particles_object(params.particle)
 	self.started=false
@@ -59,10 +59,10 @@ function amk_particle:update(delta)
 	if self.finalized then return end
 	self.cgravity = self.cgravity:add(self.gravity)
 	if self.particle:playing() then
-		if self.life_time>-1 and time_global()>self.start_time+self.life_time then 
+		if self.life_time>-1 and time_global()>self.start_time+self.life_time then
 			self.started=false
 			self.looped=false
-			self:stop() 
+			self:stop()
 			self.finalized=true
 		end
 		local pos

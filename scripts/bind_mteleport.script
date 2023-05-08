@@ -37,7 +37,6 @@ function teleportate(x,y,z)
 	reap.start_timer("bind_mteleport.snd_shock()", 200, timer_types.real)
 end
 
-
 function actor_update(delta)
 	local i,v,acter_poz,s
 
@@ -81,7 +80,7 @@ function actor_update(delta)
 end
 
 function bind( obj )
-	obj:bind_object( restrictor_teleport( obj ) ) 
+	obj:bind_object( restrictor_teleport( obj ) )
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -139,10 +138,9 @@ function restrictor_teleport:reload(section)
 	local char_ini = system_ini()
 
 	self.section = section
-	-- Если это телепорт то 
+	-- Если это телепорт то
 	if char_ini ~= nil and char_ini:line_exist(self.section, "teleport") then
 		self["teleport"] = true
 	end
 end
-
 

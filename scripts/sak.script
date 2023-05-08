@@ -1,11 +1,10 @@
 ---------------------------------------------------------------------
--- Привет от Сяка 
+-- Привет от Сяка
 ---------------------------------------------------------------------
 
 local amk_spawn_item = amk.spawn_item
 local math_random = math.random
 local string_find = string.find
-
 
 function add_new_escape_100()
 add_new_lc(9100,6854,"to_escape","info_way100a")
@@ -80,7 +79,7 @@ function out_new_lc(levch,info)
 end
 function add_new_item_in(item,sidlh)
 local nps = sidlh.id
-amk.spawn_item_in_inv(item,nps) 
+amk.spawn_item_in_inv(item,nps)
 end
 local krysyk_treasure
 function add_new_lcitem()
@@ -95,7 +94,7 @@ amk_spawn_item("rad_document6",vec:set(-28.4,-0.26,-173.55),676,211656) -- дело 
 amk_spawn_item("rad_pda",vec:set(530.7,-49.41,-241.61),2061,180657) -- ПДА в вагончике на Радаре
 amk_spawn_item("rad_document6",vec:set(-139.6,-25.03,-355.6),19,116593) -- дело на кордоне
 amk_spawn_item("sak_book4",vec:set(-3.77,-4.25,191.19),2195,97948) --книга доктора
-amk_spawn_item("playboy3",vec:set(-212.99,-22.51,-126.06),59,40605) 
+amk_spawn_item("playboy3",vec:set(-212.99,-22.51,-126.06),59,40605)
 amk_spawn_item("playboy2",vec:set(112.87,-1.94,1.6),117,413895)
 amk_spawn_item("playboy1",vec:set(138.57,-3.5,22.0),1237,37466)
 amk_spawn_item("playboy4",vec:set(-156.23,1.44,-162.05),669,82783)
@@ -121,19 +120,19 @@ function add_doktor_book()
 amk_spawn_item("sak_book4",vector():set(-3.49,-4.26,191.34),2195,96166)
 end
 function add_notebook()
-amk_spawn_item("notebook",vector():set(23.87,-5.65,-18.38),1140,6287) 
+amk_spawn_item("notebook",vector():set(23.87,-5.65,-18.38),1140,6287)
 end
 function add_diplomat()
-amk_spawn_item("diplomat",vector():set(90.96,10.18,-9.03),1544,6334) 
+amk_spawn_item("diplomat",vector():set(90.96,10.18,-9.03),1544,6334)
 end
 function add_computer()
-amk_spawn_item("computer",vector():set(-114.96,-2.23,8.18),2248,8511) 
+amk_spawn_item("computer",vector():set(-114.96,-2.23,8.18),2248,8511)
 end
 function add_new_103item()
 amk_spawn_item("quest_case_06",vector():set(-196.5,2.48,92.88),678,40284) --кейс в кунге дезертира
 end
 function add_sak_plan()
-amk_spawn_item("sak_plan",vector():set(-213.13,2.96,92.58),535,22245) -- мешок плана в кунге дезертира 
+amk_spawn_item("sak_plan",vector():set(-213.13,2.96,92.58),535,22245) -- мешок плана в кунге дезертира
 end
 function add_krot_pda()
 amk_spawn_item("agroprom_pda",vector():set(253,-0.2,76.17),498,428034) --ПДА в ЖД тоннеле Агропрома
@@ -164,10 +163,10 @@ function add_vyvert_green()
 amk_spawn_item("af_vyvert_green",vector():set(115.13,4.83,-409.26),942,311330) --Изумрудный выверт в ТД
 end
 function add_blood_green()
-amk_spawn_item("af_blood_green",vector():set(55.34,1.27,40.89),1511,68094) --Изумрудная кровь на Янтаре 
+amk_spawn_item("af_blood_green",vector():set(55.34,1.27,40.89),1511,68094) --Изумрудная кровь на Янтаре
 end
 function add_battery_red()
-amk_spawn_item("af_dummy_battery_red",vector():set(668.9,-45.79,-39.93),1896,227187) --Рубиновая батарейка на Радаре 
+amk_spawn_item("af_dummy_battery_red",vector():set(668.9,-45.79,-39.93),1896,227187) --Рубиновая батарейка на Радаре
 end
 function add_order()
 local obj = alife():story_object(9115)
@@ -180,8 +179,8 @@ function add_two_corpses()
 		tbl.sid = 48800
 		tbl.health = 0
 		tbl.updhealth = 0
-		amk.write_stalker_params(tbl, obj)					
-	end	
+		amk.write_stalker_params(tbl, obj)
+	end
 	alife():create("scaintist_docs",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(187.66,5.03,-375.97),938,386327)
 	if (IsStalker(obj)) then
@@ -189,8 +188,8 @@ function add_two_corpses()
 		tbl.sid = 48801
 		tbl.health = 0
 		tbl.updhealth = 0
-		amk.write_stalker_params(tbl, obj)					
-	end	
+		amk.write_stalker_params(tbl, obj)
+	end
 	amk_spawn_item("inventory_sakbox_05",vector():set(176.83,8.37,-375.96),938,377568)
 end
 function add_scaintist_body()
@@ -200,8 +199,8 @@ function add_scaintist_body()
 		tbl.sid = 48802
 		tbl.health = 0
 		tbl.updhealth = 0
-		amk.write_stalker_params(tbl, obj)					
-	end	
+		amk.write_stalker_params(tbl, obj)
+	end
 	alife():create("scaintist_pda",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_agroprom_box()
@@ -210,7 +209,7 @@ function add_agroprom_box()
 		if (obj and obj.name and obj:name() == "agr_quest_case_02") then
 		alife():release(obj, true)
 		end
-	end	
+	end
 	dialogs.relocate_item_section(db.actor, "quest_case_02", "in")
 end
 function add_kontainer()
@@ -221,27 +220,27 @@ local obj = alife():story_object(9115)
 alife():create("wpn_vintorez_m1",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_books()
-amk_spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530) 
-amk_spawn_item("sak_book2",vector():set(-120.27,21.56,-32.65),1529,165) 
-amk_spawn_item("sak_book3",vector():set(0.77,-19.45,24.89),2768,6203) 
+amk_spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530)
+amk_spawn_item("sak_book2",vector():set(-120.27,21.56,-32.65),1529,165)
+amk_spawn_item("sak_book3",vector():set(0.77,-19.45,24.89),2768,6203)
 end
 function add_new_111item()
-amk_spawn_item("dynamite",vector():set(-213.57,-23.19,-127.39),59,39928) 
+amk_spawn_item("dynamite",vector():set(-213.57,-23.19,-127.39),59,39928)
 end
 function add_new_109item()
-amk_spawn_item("quest_case_05",vector():set(150.57,7.02,-254.55),966,348350)  
+amk_spawn_item("quest_case_05",vector():set(150.57,7.02,-254.55),966,348350)
 end
 function info_received()
   amk.send_tip("","Новый путь!",0,10,"gen_info")
 end
 function add_resiver()
-amk_spawn_item("sak_resiver",vector():set(-185.57,-3.58,94.89),338,39411) 
+amk_spawn_item("sak_resiver",vector():set(-185.57,-3.58,94.89),338,39411)
 end
 function add_drug()
-amk_spawn_item("dogfrend",vector():set(-6.71,0.41,247.19),258,170000) 
+amk_spawn_item("dogfrend",vector():set(-6.71,0.41,247.19),258,170000)
 end
 function add_strelok_pda()
-amk_spawn_item("strelok_pda",vector():set(42.95,61.56,-26.25),2417,6406) 
+amk_spawn_item("strelok_pda",vector():set(42.95,61.56,-26.25),2417,6406)
 end
 function info_strelok_pda()
   amk.send_tip("","Сталкер! Остановись!",0,10,"gen_info")
@@ -264,12 +263,12 @@ function have_item_namber(itm,need_namber)
 end
 function create_items(npc,section,number)
         for i=1,number do
-			alife():create(section, 
+			alife():create(section,
             npc:position(),
-            npc:level_vertex_id(),  
+            npc:level_vertex_id(),
             npc:game_vertex_id(),
             npc:id())
-        end 
+        end
 end
 local reloc_params={}
 local stalk
@@ -309,62 +308,62 @@ end
 
 function artmodscheck(nearest_anomaly,af,anom_sect)
 local af_sect=af:section()
-if string_find(anom_sect,"_zharka")~=nil then 
-  artmod(nearest_anomaly,af,"af_medusa","af_rusty_thorn","af_vyvert","vodka","info_artmod_electra_flash_zharka","af_electra_flash") 
-  artmod(nearest_anomaly,af,"af_medusa","af_blood","kolbasa","mutant_dog_tail","info_artmod_ameba_slime_zharka","af_ameba_slime",1) 
-  artmod(nearest_anomaly,af,"af_medusa","af_blood","bandage","conserva","info_artmod_gravi_zharka","af_gravi",2) 
-  artmod(nearest_anomaly,af,"af_rusty_kristall","af_vyvert","af_electra_flash","mutant_snork_leg","info_artmod_night_star_zharka","af_night_star") 
-  artmod(nearest_anomaly,af,"af_gravi","af_medusa","af_electra_flash","mutant_krovosos_jaw","info_artmod_electra_moonlight_zharka","af_electra_moonlight") 
-  artmod(nearest_anomaly,af,"af_electra_flash","af_ameba_mica","vodka","mutant_dog_tail","info_artmod_dummy_battery_zharka","af_dummy_battery",4)  
+if string_find(anom_sect,"_zharka")~=nil then
+  artmod(nearest_anomaly,af,"af_medusa","af_rusty_thorn","af_vyvert","vodka","info_artmod_electra_flash_zharka","af_electra_flash")
+  artmod(nearest_anomaly,af,"af_medusa","af_blood","kolbasa","mutant_dog_tail","info_artmod_ameba_slime_zharka","af_ameba_slime",1)
+  artmod(nearest_anomaly,af,"af_medusa","af_blood","bandage","conserva","info_artmod_gravi_zharka","af_gravi",2)
+  artmod(nearest_anomaly,af,"af_rusty_kristall","af_vyvert","af_electra_flash","mutant_snork_leg","info_artmod_night_star_zharka","af_night_star")
+  artmod(nearest_anomaly,af,"af_gravi","af_medusa","af_electra_flash","mutant_krovosos_jaw","info_artmod_electra_moonlight_zharka","af_electra_moonlight")
+  artmod(nearest_anomaly,af,"af_electra_flash","af_ameba_mica","vodka","mutant_dog_tail","info_artmod_dummy_battery_zharka","af_dummy_battery",4)
 end
-if string_find(anom_sect,"_galant")~=nil then 
+if string_find(anom_sect,"_galant")~=nil then
   if af_sect=="af_dummy_battery_red" then af_zone_off(af)  end
-  artmod(nearest_anomaly,af,"af_blood","af_medusa","vodka","mutant_dog_tail","info_artmod_fireball_galant","af_fireball",2) 
-  artmod(nearest_anomaly,af,"af_vyvert","af_drops","conserva","mutant_dog_tail","info_artmod_cristall_flower_galant","af_cristall_flower",2) 
-  artmod(nearest_anomaly,af,"af_ameba_slime","af_drops","af_medusa","kolbasa","info_artmod_ameba_mica_galant","af_ameba_mica") 
-  artmod(nearest_anomaly,af,"af_gravi","af_blood","af_fireball","mutant_psevdodog_tail","info_artmod_electra_moonlight_galant","af_soul") 
-  artmod(nearest_anomaly,af,"af_medusa","af_rusty_thorn","af_cristall_flower","mutant_flesh_eye","info_artmod_gold_fish_galant","af_gold_fish") 
-  artmod(nearest_anomaly,af,"af_cristall_flower","af_cristall","mutant_psevdodog_tail","conserva","info_artmod_dummy_spring_galant","af_dummy_spring") 
-  artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_medusa_galant","af_medusa",1) 
+  artmod(nearest_anomaly,af,"af_blood","af_medusa","vodka","mutant_dog_tail","info_artmod_fireball_galant","af_fireball",2)
+  artmod(nearest_anomaly,af,"af_vyvert","af_drops","conserva","mutant_dog_tail","info_artmod_cristall_flower_galant","af_cristall_flower",2)
+  artmod(nearest_anomaly,af,"af_ameba_slime","af_drops","af_medusa","kolbasa","info_artmod_ameba_mica_galant","af_ameba_mica")
+  artmod(nearest_anomaly,af,"af_gravi","af_blood","af_fireball","mutant_psevdodog_tail","info_artmod_electra_moonlight_galant","af_soul")
+  artmod(nearest_anomaly,af,"af_medusa","af_rusty_thorn","af_cristall_flower","mutant_flesh_eye","info_artmod_gold_fish_galant","af_gold_fish")
+  artmod(nearest_anomaly,af,"af_cristall_flower","af_cristall","mutant_psevdodog_tail","conserva","info_artmod_dummy_spring_galant","af_dummy_spring")
+  artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_medusa_galant","af_medusa",1)
 end
-if string_find(anom_sect,"_buzz")~=nil then 
-  artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","af_drops","bread","info_artmod_rusty_kristall_buzz","af_rusty_kristall",2) 
-  artmod(nearest_anomaly,af,"af_blood","bandage","bread","mutant_dog_tail","info_artmod_rusty_thorn_buzz","af_rusty_thorn",1) 
-  artmod(nearest_anomaly,af,"af_rusty_thorn","af_vyvert","mutant_snork_leg","bread","info_artmod_fireball_buzz","af_fireball",2) 
-  artmod(nearest_anomaly,af,"af_cristall_flower","af_medusa","af_fireball","mutant_krovosos_jaw","info_artmod_cristall_buzz","af_cristall") 
-  artmod(nearest_anomaly,af,"af_gravi","af_blood","af_electra_flash","mutant_psevdodog_tail","info_artmod_night_star_buzz","af_gold_fish") 
+if string_find(anom_sect,"_buzz")~=nil then
+  artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","af_drops","bread","info_artmod_rusty_kristall_buzz","af_rusty_kristall",2)
+  artmod(nearest_anomaly,af,"af_blood","bandage","bread","mutant_dog_tail","info_artmod_rusty_thorn_buzz","af_rusty_thorn",1)
+  artmod(nearest_anomaly,af,"af_rusty_thorn","af_vyvert","mutant_snork_leg","bread","info_artmod_fireball_buzz","af_fireball",2)
+  artmod(nearest_anomaly,af,"af_cristall_flower","af_medusa","af_fireball","mutant_krovosos_jaw","info_artmod_cristall_buzz","af_cristall")
+  artmod(nearest_anomaly,af,"af_gravi","af_blood","af_electra_flash","mutant_psevdodog_tail","info_artmod_night_star_buzz","af_gold_fish")
   artmod(nearest_anomaly,af,"af_night_star","af_soul","af_electra_moonlight","af_rusty_sea-urchin","info_artmod_fuzz_kolobok_buzz","af_fuzz_kolobok",4)
-  artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_vyvert_buzz","af_vyvert",1)   
-end 
-if string_find(anom_sect,"_mincer")~=nil then 
-  artmod(nearest_anomaly,af,"af_blood","af_medusa","bandage","conserva","info_artmod_cristall_flower_mincer","af_cristall_flower",2) 
-  artmod(nearest_anomaly,af,"af_vyvert","bandage","vodka","mutant_dog_tail","info_artmod_drops_mincer","af_drops",1) 
-  artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","conserva","mutant_dog_tail","info_artmod_rusty_kristall_mincer","af_rusty_kristall",2) 
-  artmod(nearest_anomaly,af,"af_fireball","af_blood","af_ameba_slug","mutant_krovosos_jaw","info_artmod_electra_moonlight_mincer","af_electra_moonlight") 
-  artmod(nearest_anomaly,af,"af_electra_flash","af_vyvert","af_fireball","mutant_psevdodog_tail","info_artmod_ameba_slug_mincer","af_ameba_mica") 
-  artmod(nearest_anomaly,af,"af_ameba_mica","af_rusty_sea-urchin","af_gold_fish","af_night_star","info_artmod_dummy_glassbeads_mincer","af_dummy_glassbeads",4) 
+  artmod(nearest_anomaly,af,"mutant_face_tushkano","bandage","conserva","mutant_dog_tail","info_artmod_vyvert_buzz","af_vyvert",1)
+end
+if string_find(anom_sect,"_mincer")~=nil then
+  artmod(nearest_anomaly,af,"af_blood","af_medusa","bandage","conserva","info_artmod_cristall_flower_mincer","af_cristall_flower",2)
+  artmod(nearest_anomaly,af,"af_vyvert","bandage","vodka","mutant_dog_tail","info_artmod_drops_mincer","af_drops",1)
+  artmod(nearest_anomaly,af,"af_electra_sparkler","af_medusa","conserva","mutant_dog_tail","info_artmod_rusty_kristall_mincer","af_rusty_kristall",2)
+  artmod(nearest_anomaly,af,"af_fireball","af_blood","af_ameba_slug","mutant_krovosos_jaw","info_artmod_electra_moonlight_mincer","af_electra_moonlight")
+  artmod(nearest_anomaly,af,"af_electra_flash","af_vyvert","af_fireball","mutant_psevdodog_tail","info_artmod_ameba_slug_mincer","af_ameba_mica")
+  artmod(nearest_anomaly,af,"af_ameba_mica","af_rusty_sea-urchin","af_gold_fish","af_night_star","info_artmod_dummy_glassbeads_mincer","af_dummy_glassbeads",4)
   if af_sect=="af_dummy_spring_red" and db.actor:has_info("info_red_spring") then af_zone_off(af) end
 end
-if string_find(anom_sect,"_mosquito_bald")~=nil then 
-  artmod(nearest_anomaly,af,"af_vyvert","af_blood","vodka","mutant_dog_tail","info_artmod_mincer_meat_mosquito_bald","af_mincer_meat",2) 
-  artmod(nearest_anomaly,af,"af_drops","bandage","kolbasa","mutant_dog_tail","info_artmod_electra_sparkler_mosquito_bald","af_electra_sparkler",2) 
-  artmod(nearest_anomaly,af,"af_medusa","af_drops","bandage","vodka","info_artmod_ameba_slug_mosquito_bald","af_ameba_slug",2) 
-  artmod(nearest_anomaly,af,"af_mincer_meat","af_vyvert","af_fireball","mutant_flesh_eye","info_artmod_cristall_mosquito_bald","af_cristall") 
-  artmod(nearest_anomaly,af,"af_ameba_slime","af_blood","af_rusty_kristall","mutant_krovosos_jaw","info_artmod_rusty_sea-urchin_mosquito_bald","af_rusty_sea-urchin") 
-  artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_mincer_meat","af_night_star","info_artmod_dummy_dummy_mosquito_bald","af_dummy_dummy") 
+if string_find(anom_sect,"_mosquito_bald")~=nil then
+  artmod(nearest_anomaly,af,"af_vyvert","af_blood","vodka","mutant_dog_tail","info_artmod_mincer_meat_mosquito_bald","af_mincer_meat",2)
+  artmod(nearest_anomaly,af,"af_drops","bandage","kolbasa","mutant_dog_tail","info_artmod_electra_sparkler_mosquito_bald","af_electra_sparkler",2)
+  artmod(nearest_anomaly,af,"af_medusa","af_drops","bandage","vodka","info_artmod_ameba_slug_mosquito_bald","af_ameba_slug",2)
+  artmod(nearest_anomaly,af,"af_mincer_meat","af_vyvert","af_fireball","mutant_flesh_eye","info_artmod_cristall_mosquito_bald","af_cristall")
+  artmod(nearest_anomaly,af,"af_ameba_slime","af_blood","af_rusty_kristall","mutant_krovosos_jaw","info_artmod_rusty_sea-urchin_mosquito_bald","af_rusty_sea-urchin")
+  artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_mincer_meat","af_night_star","info_artmod_dummy_dummy_mosquito_bald","af_dummy_dummy")
   if af_sect=="af_dummy_pellicle_red" and db.actor:has_info("info_red_pellicle") then af_zone_off(af) end
 end
-if string_find(anom_sect,"_gravi_zone")~=nil then 
-  artmod(nearest_anomaly,af,"af_vyvert","af_medusa","kolbasa","mutant_dog_tail","info_artmod_ameba_slug_gravi_zone","af_ameba_slug",2) 
-  artmod(nearest_anomaly,af,"af_medusa","bandage","conserva","mutant_dog_tail","info_artmod_ameba_slime_gravi_zone","af_ameba_slime",1) 
-  artmod(nearest_anomaly,af,"af_vyvert","af_blood","mutant_dog_tail","vodka","info_artmod_electra_flash_gravi_zone","af_electra_flash") 
-  artmod(nearest_anomaly,af,"af_rusty_thorn","af_medusa","af_rusty_kristall","mutant_psevdodog_tail","info_artmod_night_star_gravi_zone","af_night_star") 
-  artmod(nearest_anomaly,af,"af_electra_flash","af_cristall_flower","af_ameba_slug","mutant_snork_leg","info_artmod_soul_gravi_zone","af_soul") 
-  artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_gold_fish","af_soul","info_artmod_dummy_pellicle_gravi_zone","af_dummy_pellicle",4) 
-  if af_sect=="af_dummy_battery_red" and db.actor:has_info("info_red_battery") then af_zone_off(af) end 
+if string_find(anom_sect,"_gravi_zone")~=nil then
+  artmod(nearest_anomaly,af,"af_vyvert","af_medusa","kolbasa","mutant_dog_tail","info_artmod_ameba_slug_gravi_zone","af_ameba_slug",2)
+  artmod(nearest_anomaly,af,"af_medusa","bandage","conserva","mutant_dog_tail","info_artmod_ameba_slime_gravi_zone","af_ameba_slime",1)
+  artmod(nearest_anomaly,af,"af_vyvert","af_blood","mutant_dog_tail","vodka","info_artmod_electra_flash_gravi_zone","af_electra_flash")
+  artmod(nearest_anomaly,af,"af_rusty_thorn","af_medusa","af_rusty_kristall","mutant_psevdodog_tail","info_artmod_night_star_gravi_zone","af_night_star")
+  artmod(nearest_anomaly,af,"af_electra_flash","af_cristall_flower","af_ameba_slug","mutant_snork_leg","info_artmod_soul_gravi_zone","af_soul")
+  artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_gold_fish","af_soul","info_artmod_dummy_pellicle_gravi_zone","af_dummy_pellicle",4)
+  if af_sect=="af_dummy_battery_red" and db.actor:has_info("info_red_battery") then af_zone_off(af) end
 end
 if string_find(anom_sect,"_ice")~=nil then
-	artmod(nearest_anomaly,af,"af_dummy_dummy","af_rusty_sea-urchin","af_gold_fish","af_night_star","life_heart_final","af_life_heart",6) 
+	artmod(nearest_anomaly,af,"af_dummy_dummy","af_rusty_sea-urchin","af_gold_fish","af_night_star","life_heart_final","af_life_heart",6)
   artmod01(af,"af_dummy_battery","af_dummy_battery_red","info_red_battery")
   artmod01(af,"af_dummy_spring","af_dummy_spring_red","info_red_spring")
   artmod01(af,"af_dummy_pellicle","af_dummy_pellicle_red","info_red_pellicle")
@@ -376,65 +375,65 @@ local pos=af:position()
 local startflag=false
 local zombieflag=false
 if rank == nil then rank = 3 end
-   if not db.actor:has_info(info_artmod) then 
-     return 
+   if not db.actor:has_info(info_artmod) then
+     return
    end
-   if alife():object(af:id())==nil then 
-     return 
+   if alife():object(af:id())==nil then
+     return
    end
    if (af_sect==item1 or af_sect==item2 or af_sect==item3 or af_sect==item4) and db.actor:has_info(info_artmod) then
       local s={}
-      s.i0t=-1 
-      s.i1t=-1 
-      s.i2t=-1 
-      s.i3t=-1 
+      s.i0t=-1
+      s.i1t=-1
+      s.i2t=-1
+      s.i3t=-1
       s.i4t=-1
       s.ams=0
       s.ami=-1
       s=amk.unpack_array_from_string(amk.load_variable("artmod_activation",amk.pack_array_to_string(s)))
-      if s.i0t~=nearest_anomaly then 
+      if s.i0t~=nearest_anomaly then
         s.i0t=nearest_anomaly
-        s.i1t=-1 
-        s.i2t=-1 
-        s.i3t=-1 
+        s.i1t=-1
+        s.i2t=-1
+        s.i3t=-1
         s.i4t=-1
         s.ams=0
         s.ami=-1
       end
-	if s.ams==1 and s.ami~=info_artmod then return 
+	if s.ams==1 and s.ami~=info_artmod then return
 	end
-	if af_sect==item1 and s.i1t==-1 then s.i1t=af:id() 
-		if s.ams==0 then startflag = true 
-		end 
+	if af_sect==item1 and s.i1t==-1 then s.i1t=af:id()
+		if s.ams==0 then startflag = true
+		end
 	end
-	if af_sect==item2 and s.i2t==-1 then s.i2t=af:id() 
-		if s.ams==0 then startflag = true 
-		end 
+	if af_sect==item2 and s.i2t==-1 then s.i2t=af:id()
+		if s.ams==0 then startflag = true
+		end
 	end
-	if af_sect==item3 and s.i3t==-1 then s.i3t=af:id() 
-		if s.ams==0 then startflag = true 
-		end 
+	if af_sect==item3 and s.i3t==-1 then s.i3t=af:id()
+		if s.ams==0 then startflag = true
+		end
 	end
-	if af_sect==item4 and s.i4t==-1 then s.i4t=af:id() 
-		if s.ams==0 then startflag = true 
-		end 
+	if af_sect==item4 and s.i4t==-1 then s.i4t=af:id()
+		if s.ams==0 then startflag = true
+		end
 	end
 	if startflag then
          s.ams=1
          s.ami=info_artmod
          startflag=false
-	end         
+	end
 	if ((s.i1t~=-1) and (alife():object(s.i1t)==nil)) then s.i1t=-1 zombieflag=true end
 	if ((s.i2t~=-1) and (alife():object(s.i2t)==nil)) then s.i2t=-1 zombieflag=true end
 	if ((s.i3t~=-1) and (alife():object(s.i3t)==nil)) then s.i3t=-1 zombieflag=true end
 	if ((s.i4t~=-1) and (alife():object(s.i4t)==nil)) then s.i4t=-1 zombieflag=true end
 	if zombieflag then
 		if (s.i1t==-1 and s.i2t==-1 and s.i3t==-1 and s.i4t==-1) then
-          s.i0t=-1 
+          s.i0t=-1
           s.ams=0
           s.ami=-1
           zombieflag = false
-		end 
+		end
 	end
 	if (s.i1t~=-1 and s.i2t~=-1 and s.i3t~=-1 and s.i4t~=-1) and amk_mod.check_af_transform_rank(rank) then
         alife():release(alife():object(s.i1t))
@@ -458,7 +457,7 @@ local pos=af:position()
       amk_mod.af_start_transform_timer(amk_mod.af_start_transform(99,1,af_sect,item_targ), pos ,0,0,5,game.translate_string(amk.get_inv_name(item_targ)))
     end
 end
-function make_kill_task_failed(actor,npc,p1,p2) 
+function make_kill_task_failed(actor,npc,p1,p2)
   local nid=npc:id()
   if nid==db.actor:id() then
     nid=actor:id()
@@ -468,30 +467,30 @@ function make_kill_task_failed(actor,npc,p1,p2)
     if v.id==nid then
       task_manager.make_task_failed(v.task_id)
     end
-  end  
+  end
 end
 
-function check_used_item(obj) 
+function check_used_item(obj)
 arc_main.get_item(obj)
-local info=nil 
-if level.name()=="l03_agroprom" and obj:section()=="amk_zapiska" then add_new_escape_100() amk.drop_item(db.actor,obj) amk.remove_item(obj) 
-elseif level.name()=="l10_radar" and obj:section()=="rad_document6" then add_new_darkvalley_107() amk.drop_item(db.actor,obj) amk.remove_item(obj) 
+local info=nil
+if level.name()=="l03_agroprom" and obj:section()=="amk_zapiska" then add_new_escape_100() amk.drop_item(db.actor,obj) amk.remove_item(obj)
+elseif level.name()=="l10_radar" and obj:section()=="rad_document6" then add_new_darkvalley_107() amk.drop_item(db.actor,obj) amk.remove_item(obj)
 elseif level.name()=="l03_agroprom" and obj:section()=="rad_document6" then info="info_artmod_rusty_thorn_buzz" amk.drop_item(db.actor,obj) amk.remove_item(obj) info_artmod()
 elseif level.name()=="l01_escape" and obj:section()=="rad_document6" then info="info_artmod_rusty_kristall_mincer" amk.drop_item(db.actor,obj) amk.remove_item(obj)  info_artmod()
-elseif level.name()=="l10_radar" and obj:section()=="sak_document" then add_new_radar_106() amk.drop_item(db.actor,obj) amk.remove_item(obj) 
-elseif level.name()~="l03_agroprom" and db.actor:has_info("ratcatcher_order_done") then info="ratcatcher_out" 
-elseif level.name()~="l05_bar" and db.actor:has_info("info_way_false") then info="informer_out" 
-elseif not db.actor:has_info("info_way104a") and obj:section()=="ara_pda" then  add_new_rostok_105()  add_new_mil_104() 
+elseif level.name()=="l10_radar" and obj:section()=="sak_document" then add_new_radar_106() amk.drop_item(db.actor,obj) amk.remove_item(obj)
+elseif level.name()~="l03_agroprom" and db.actor:has_info("ratcatcher_order_done") then info="ratcatcher_out"
+elseif level.name()~="l05_bar" and db.actor:has_info("info_way_false") then info="informer_out"
+elseif not db.actor:has_info("info_way104a") and obj:section()=="ara_pda" then  add_new_rostok_105()  add_new_mil_104()
 elseif not db.actor:has_info("info_artmod_electra_flash_zharka") and obj:section()=="sak_document2" then info="info_artmod_electra_flash_zharka" info_artmod()
 elseif not db.actor:has_info("info_artmod_drops_mincer") and obj:section()=="garbage_pda" then info="info_artmod_drops_mincer" info_artmod()
 elseif not db.actor:has_info("info_artmod_ameba_mica_galant") and obj:section()=="rad_pda" then info="info_artmod_ameba_mica_galant" info_artmod()
 elseif not db.actor:has_info("info_artmod_fireball_buzz") and obj:section()=="volkodav_pda" then info="info_artmod_fireball_buzz" info_artmod()
-elseif obj:section()=="outfit_bandit_m1" and not db.actor:has_info("esc_shustryi_outfit") 
+elseif obj:section()=="outfit_bandit_m1" and not db.actor:has_info("esc_shustryi_outfit")
 then info="esc_shustryi_outfit"
-elseif obj:section()=="sak_book4" and not db.actor:has_info("doktor_alife") 
+elseif obj:section()=="sak_book4" and not db.actor:has_info("doktor_alife")
 then info="doktor_alife" info_doktor()
-elseif obj:section()=="repair_item_outfit" or obj:section()=="repair_item_weapon" then repair_box_close(obj) 
-end 
+elseif obj:section()=="repair_item_outfit" or obj:section()=="repair_item_weapon" then repair_box_close(obj)
+end
   if info==nil or db.actor:has_info(info) then
     return
   end
@@ -505,26 +504,26 @@ local point_drop={
     {x=67, y=22, z=154},
 	{x=7, y=-1, z=115},
     {x=12, y=1, z=125},
-	{x=35, y=60, z=30}, 
+	{x=35, y=60, z=30},
 	{x=17, y=50, z=35},
-	{x=376, y=-1, z=15}, 
-	{x=393, y=2, z=65} 
-	} 
+	{x=376, y=-1, z=15},
+	{x=393, y=2, z=65}
+	}
 
 function check_droped_item(obj)
 	local actor = db_actor
 	local vec = vector()
 
 arc_main.lose_item(obj)
-local info=nil 
-if level.name()=="l07_military" and actor:has_info("yan_scientist_teleport_01_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[1],point_drop[2])~=false then info="yan_scientist_teleport_01_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(-244.62,-5.98,299.94),1797,89408) 
-elseif level.name()=="l01_escape" and actor:has_info("yan_scientist_teleport_02_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[3],point_drop[4])~=false then info="yan_scientist_teleport_02_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(62.99,29.23,154.39),97,359827) 
+local info=nil
+if level.name()=="l07_military" and actor:has_info("yan_scientist_teleport_01_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[1],point_drop[2])~=false then info="yan_scientist_teleport_01_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(-244.62,-5.98,299.94),1797,89408)
+elseif level.name()=="l01_escape" and actor:has_info("yan_scientist_teleport_02_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[3],point_drop[4])~=false then info="yan_scientist_teleport_02_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(62.99,29.23,154.39),97,359827)
 elseif level.name()=="l11_pripyat" and actor:has_info("yan_scientist_teleport_03_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[5],point_drop[6])~=false then info="yan_scientist_teleport_03_done" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(9.47,0.32,119.13),2166,113785)
 elseif level.name()=="l12_stancia" and actor:has_info("life_heart_sahar_start") and obj:section()=="sak_resiver_yantar" and amk.check_npc_in_box(actor, point_drop[9],point_drop[10])~=false then info="life_heart_sahar_have" amk.remove_item(obj) amk_spawn_item("m_sak_resiver_yantar",vec:set(387.51,0.16,31.10),2384,168953)
 elseif level.name()=="l12u_sarcofag" and actor:has_info("strelok_pda_have") and obj:section()=="af_gold_fish" and amk.check_npc_in_box(actor, point_drop[7],point_drop[8])~=false then amk_mod.af_flash(obj) get_sarcofag_stancia()
 elseif obj:section()=="af_life_heart" and actor:has_info("life_heart_final") then deadman_to_life(obj)
 elseif obj:section()=="repair_box_outfit" then repair_box_outfit(obj)
-end 
+end
 	  if info==nil or actor:has_info(info) then
     return
   end
@@ -535,7 +534,7 @@ for a=5000,6000,1 do
 		local obj=alife():object(a)
 		if (obj and obj.name and obj:name() == "agr_ratcatcher") then
 		--dbglog("Entered: "..obj:name().." id "..a.." sid "..obj.m_story_id) -- id~5564
-		amk.save_variable("agr_ratcatcher_id", a) 
+		amk.save_variable("agr_ratcatcher_id", a)
 		end
 	end
 end
@@ -568,14 +567,14 @@ local nepis = {
 }
 local nepis_id={3450,499,193,156,161,174,244,224,344,998,1101,1019,7026,7058,4899,4902,1667,1666,1668,1674,2157,2161,2162,2163,2158}
 function deadman_to_life(art)
-	for a=1,#nepis,1 do 
+	for a=1,#nepis,1 do
 		local npis=nepis[a]
 		local obj=alife():story_object(npis)
 		if  obj and IsStalker(obj) and not obj:alive() then
 			local name=obj:name()
 			local posobj=obj.position
 			local actorpos=db.actor:position()
-			if (posobj:distance_to(actorpos) < 2) then 
+			if (posobj:distance_to(actorpos) < 2) then
 			amk_mod.af_flash(art)
 			set_npc_health(obj, nepis_id[a])
 			end
@@ -698,34 +697,34 @@ function set_lc_data(t,obj)
 	obj:STATE_Read(packet, packet:w_tell())
 end
 local points_kordon={
-    {position={x=-244.69,y=-14.27,z=-16.33},gv=67,lv=12579}, 
-    {position={x=107.54,y=-7.14,z=1.09},gv=119,lv=408816}, 
-	{position={x=71.48,y=1.92,z=158.79},gv=96,lv=362726}, 
-	{position={x=33.69,y=5.02,z=407.89},gv=246,lv=565356}, 
-    {position={x=220.57,y=7.62,z=100.55},gv=152,lv=511605} 
+    {position={x=-244.69,y=-14.27,z=-16.33},gv=67,lv=12579},
+    {position={x=107.54,y=-7.14,z=1.09},gv=119,lv=408816},
+	{position={x=71.48,y=1.92,z=158.79},gv=96,lv=362726},
+	{position={x=33.69,y=5.02,z=407.89},gv=246,lv=565356},
+    {position={x=220.57,y=7.62,z=100.55},gv=152,lv=511605}
 }
 local points_yantar={
-    {position={x=165.06,y=-8.19,z=-103.95},gv=1442,lv=131181}, 
+    {position={x=165.06,y=-8.19,z=-103.95},gv=1442,lv=131181},
     {position={x=92.58,y=0.02,z=-39.23},gv=1515,lv=87813},
 	{position={x=34.48,y=0.04,z=18.19},gv=1445,lv=56341},
-	{position={x=24.61,y=0.02,z=-62.60},gv=1505,lv=51069}, 
-    {position={x=-60.17,y=-10.21,z=-202.66},gv=1447,lv=17529} 
+	{position={x=24.61,y=0.02,z=-62.60},gv=1505,lv=51069},
+    {position={x=-60.17,y=-10.21,z=-202.66},gv=1447,lv=17529}
 }
 local points_pripat={
-    {position={x=49.78,y=-3.6,z=120.99},gv=2166,lv=161768}, 
-    {position={x=191.20,y=-2.0,z=219.52},gv=2219,lv=260280}, 
-	{position={x=164.51,y=-3.89,z=80.83},gv=2145,lv=250751}, 
-	{position={x=-97.65,y=-2.4,z=71.81},gv=2140,lv=18233}, 
-    {position={x=116.64,y=-0.61,z=216.98},gv=2163,lv=226288} 
+    {position={x=49.78,y=-3.6,z=120.99},gv=2166,lv=161768},
+    {position={x=191.20,y=-2.0,z=219.52},gv=2219,lv=260280},
+	{position={x=164.51,y=-3.89,z=80.83},gv=2145,lv=250751},
+	{position={x=-97.65,y=-2.4,z=71.81},gv=2140,lv=18233},
+    {position={x=116.64,y=-0.61,z=216.98},gv=2163,lv=226288}
 }
 local points_military={
-    {position={x=81.65,y=-12.57,z=60.67},gv=1558,lv=379105}, 
-    {position={x=-35.96,y=-21.29,z=375.80},gv=1821,lv=272475}, 
+    {position={x=81.65,y=-12.57,z=60.67},gv=1558,lv=379105},
+    {position={x=-35.96,y=-21.29,z=375.80},gv=1821,lv=272475},
 	{position={x=-264.86,y=-22.6,z=275.85},gv=1797,lv=72698},
     {position={x=-340.59,y=-13.62,z=388.84},gv=1847,lv=12469}
 }
 local points_stancia={
-    {position={x=374.82,y=0,z=33.345},gv=2384,lv=161393} 
+    {position={x=374.82,y=0,z=33.345},gv=2384,lv=161393}
 }
 local out_points_kordon_sak={
     {position={x=-210,y=-20.53,z=-145.78},gv=61,lv=43273}}
@@ -738,7 +737,7 @@ local out_points_pripat={
 local out_points_military={
     {position={x=-94.71,y=-20.55,z=229.54},gv=1734,lv=220072}}
 local out_points_sarcofag={
-    {position={x=23.58,y=56,z=25.68},gv=2417,lv=5160}}	
+    {position={x=23.58,y=56,z=25.68},gv=2417,lv=5160}}
 function get_kordon_military() get_teleport("kordon","military",1,9121) end
 function get_kordon_yantar() get_teleport("kordon","yantar",1,9121) end
 function get_kordon_pripyat() get_teleport("kordon","pripat",1,9121) end
@@ -771,14 +770,14 @@ elseif pos_out == "military" then 	a = out_points_military[1]
 elseif pos_out == "yantar" 	then 	a = out_points_yantar[1]
 elseif pos_out == "sarcofag" then 	a = out_points_sarcofag[1]
 end
-if made==0 then 
-if     pos_in == "kordon"	then	name_level="l01_escape" 
+if made==0 then
+if     pos_in == "kordon"	then	name_level="l01_escape"
 b = points_kordon[math_random(#points_kordon)]
-elseif pos_in == "pripat" 	then 	name_level="l11_pripyat" 
+elseif pos_in == "pripat" 	then 	name_level="l11_pripyat"
 b = points_pripat[math_random(#points_pripat)]
-elseif pos_in == "military" then 	name_level="l07_military" 
+elseif pos_in == "military" then 	name_level="l07_military"
 b = points_military[math_random(#points_military)]
-elseif pos_in == "yantar" 	then 	name_level="l08_yantar" 
+elseif pos_in == "yantar" 	then 	name_level="l08_yantar"
 b = points_yantar[math_random(#points_yantar)] end
 elseif made==1 then
 if     pos_in == "kordon"	then	name_level="l01_escape" b = points_kordon[1]
@@ -789,7 +788,7 @@ elseif pos_in == "stancia" 	then 	name_level="l12_stancia" b = points_stancia[1]
 obj1=alife():create("level_changer",vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
 obj_tp=amk_spawn_item("zone_teleport",vector():set(a.position.x,a.position.y,a.position.z), a.gv, a.lv)
 obj_tport=obj_tp.id
-amk.save_variable("sak_teleport", obj_tport)  
+amk.save_variable("sak_teleport", obj_tport)
 if obj1 then local obj2 = alife():story_object(9120) local t = get_lc_data(obj2)
 t.story_id = sidlc
 t.dest_level_name = name_level
@@ -797,7 +796,7 @@ t.dest_position = vector():set(b.position.x,b.position.y,b.position.z)
 t.dest_game_vertex_id = b.gv
 t.dest_level_vertex_id = b.lv
 t.silent_mode = 1
-set_lc_data(t,obj1) end 
+set_lc_data(t,obj1) end
 info_teleport()
 end
 function out_teleport()
@@ -805,7 +804,7 @@ local sid={9121,9122,9123,9124,9125}
 local lev={"l01_escape","l11_pripyat","l07_military","l08_yantar","l12u_sarcofag"}
 	for a=1,#sid,1 do
 	local sidlc=sid[a]
-	local lname=lev[a]	
+	local lname=lev[a]
 	local obj=alife():story_object(sidlc)
 		if obj and level.name()~=lname then
 		local objt = amk.load_variable("sak_teleport", 0)
@@ -1030,22 +1029,22 @@ function repair_box_outfit(obj)
 	local robjd
 	local repiout =amk.load_variable("repair_item_outfit", 0)
 	local repiweap =amk.load_variable("repair_item_weapon", 0)
-	local enemy=false 
+	local enemy=false
 		for a=0,65534 do
 			local objg=level.object_by_id(a)
 			if objg then
-				if (objg and (( IsStalker(objg) and amk.get_npc_relation(objg,db.actor)=="enemy" ) or 
+				if (objg and (( IsStalker(objg) and amk.get_npc_relation(objg,db.actor)=="enemy" ) or
 				IsMonster(objg)) and objg:position():distance_to(db.actor:position())<40 and objg:see(db.actor))
-				then 
-				enemy=true 
+				then
+				enemy=true
 				break
-				end 
-			end 
+				end
+			end
 		end
-		if enemy==true then 
-		amk.send_tip(game.translate_string("Какой ремонт! Враг рядом!"),nil,nil,5) 
+		if enemy==true then
+		amk.send_tip(game.translate_string("Какой ремонт! Враг рядом!"),nil,nil,5)
 		else
-			if obj:section()=="repair_box_outfit" then 
+			if obj:section()=="repair_box_outfit" then
 				if (repiout~=0 or repiweap~=0) and (repiout or repiweap) then
 	amk.remove_item(obj)
 				robjd=amk_spawn_item("m_repair_box_outfit",vector():set((act_pos.x+xdelta),(act_pos.y+0.5),(act_pos.z+zdelta)),gvid,lvid)
@@ -1108,10 +1107,10 @@ function repair_box_close(obj)
 					amk.send_tip(game.translate_string("Оружие во втором слоте отремонтировано."),nil,nil,5)
 					end
 				elseif  (slot_1 and slot_1:condition() <0.5) or (slot_2 and slot_2:condition() <0.5) then
-				amk.send_tip(game.translate_string("Слишком сильное повреждение оружия!"),nil,nil,5) 
+				amk.send_tip(game.translate_string("Слишком сильное повреждение оружия!"),nil,nil,5)
 				else
 				amk.send_tip(game.translate_string("Оружие не нуждается в починке!"),nil,nil,5)
-				end 
+				end
 			elseif obj and obj:section()=="repair_item_outfit" then
 				if armor then
 					if armor:condition() >=0.5 and armor:condition() <0.97 then
@@ -1130,12 +1129,12 @@ function repair_box_close(obj)
 					else
 					amk.send_tip(game.translate_string("Броня не нуждается в починке!"),nil,nil,5)
 					end
-				else 
+				else
 				amk.send_tip(game.translate_string("Броня где? Придурок!"),nil,nil,5)
 				end
-			end	
+			end
 			amk.remove_item(obj)
-			repair_box_closed(objd)			
+			repair_box_closed(objd)
 	end
 	local self=level.main_input_receiver()
 	self:GetHolder():start_stop_menu	(self,true)
@@ -1179,7 +1178,7 @@ function add_repair_box()
 end
 function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "medkit", "in")
-end 
+end
 function set_community(actor, npc)
 	db.actor:set_character_community("stranger", 0, 0)
 end
@@ -1191,7 +1190,7 @@ function take_trasure(npc, npc1)
 end
 function have_trasure(first_speaker, second_speaker)
 	local tres = xr_statistic_freeplay.get_freeplay_statistic():get_actor_trust_ranks()
-	if amk.load_variable("option_treasure", 0) == 2 then 
+	if amk.load_variable("option_treasure", 0) == 2 then
 		tres = tres / 2
 	end
 

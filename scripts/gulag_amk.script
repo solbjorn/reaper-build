@@ -1,6 +1,6 @@
 local t = {}
 
-function load_job(sj, gname, type, squad, groups)	
+function load_job(sj, gname, type, squad, groups)
 
 	-- ÃÓËÀÃ ÂÎÅÍÍÛÕ ÍÀ ÍÀÑÛÏÈ
 	if type == "amk_embankment" then
@@ -59,8 +59,7 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		table.insert(sj, t)
 	end
-	
-	
+
 	-- ÃÓËÀÃ ÌÈÍÈ-ÁÀÐÀ ÍÀ ÑÂÀËÊÅ
 	if type == "amk_mini_bar" then
 		t = { section = "logic@amk_mini_bar_kulinar",
@@ -152,19 +151,19 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {0, 1},
 			in_rest = "", out_rest = "amk_mini_bar_restrictor"
 		}
-		table.insert(sj, t)		
+		table.insert(sj, t)
 		t = { section = "logic@amk_mini_bar_stalker1_kamp",
 			idle = 0,
 			prior = 10, state = {0, 1},
 			in_rest = "", out_rest = "amk_mini_bar_restrictor"
 		}
-		table.insert(sj, t)	
+		table.insert(sj, t)
 		t = { section = "logic@amk_mini_bar_stalker1_kamp",
 			idle = 0,
 			prior = 10, state = {0, 1},
 			in_rest = "", out_rest = "amk_mini_bar_restrictor"
 		}
-		table.insert(sj, t)	
+		table.insert(sj, t)
 	end
 end
 
@@ -173,22 +172,22 @@ function load_states(gname, type)
 		return function(gulag)
 			if db.actor ~= nil then
 				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
-					return 0  
+					return 0
 				else
-					return 1  
+					return 1
 				end
 			else
 				return gulag.state
 			end
 		end
-	end	
+	end
 	if type == "amk_mini_bar" then
 		return function(gulag)
 			if db.actor ~= nil then
 				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
-					return 0  
+					return 0
 				else
-					return 1  
+					return 1
 				end
 			else
 				return gulag.state
@@ -204,7 +203,7 @@ end
 function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
 	if gulag_type == "amk_embankment" then
 		return npc_community == "military"
-	end	
+	end
 	if gulag_type == "amk_mini_bar" then
 		return npc_community == "stalker"
 	end

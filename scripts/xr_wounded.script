@@ -10,7 +10,7 @@ local string_sub = string.sub
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
-class "evaluator_wound" (property_evaluator) 
+class "evaluator_wound" (property_evaluator)
 function evaluator_wound:__init(name, storage) super(nil, name)
     self.a = storage
 end
@@ -21,7 +21,7 @@ function evaluator_wound:evaluate ()
   if not self.a.regen then
     self.a.regen=npc:character_community()=="zombied" or npc:character_community()=="monolith"
   end
-  
+
   local sobj=alife():object(npc:id())
   if npc.health>0.95 and self.a.regen and tostring(xr_logic.pstor_retrieve(self.object, "wounded_state")) ~= "nil" then
     sobj.wounded=false
@@ -41,9 +41,9 @@ function evaluator_wound:evaluate ()
     return false
   end
   return tostring(xr_logic.pstor_retrieve(self.object, "wounded_state")) ~= "nil"
-end    
+end
 
-class "evaluator_can_fight" (property_evaluator) 
+class "evaluator_can_fight" (property_evaluator)
 function evaluator_can_fight:__init(name, storage) super(nil, name)
     self.a = storage
 end
@@ -53,7 +53,7 @@ function evaluator_can_fight:evaluate ()
   end
 
     return xr_logic.pstor_retrieve(self.object, "wounded_fight") ~= "false"
-end    
+end
 
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
@@ -84,12 +84,12 @@ function action_wounded:initialize ()
 			news_main.on_wound(self.object)
 		end
 	end
-  
+
 end
 function action_wounded:execute ()
     action_base.execute (self)
 
-  if self.object:character_community()~="monolith" and 
+  if self.object:character_community()~="monolith" and
 	self.object:character_community()~="zombied" then
 	self.object:enable_talk()
   else
@@ -108,7 +108,7 @@ function action_wounded:execute ()
     h.draftsman = db_actor
     h.impulse = 0
     h.type = hit.wound
-    self.object:hit(h)    
+    self.object:hit(h)
   else
     -- является ли текущий звук синхронным для текущего стейта
     for k,v in pairs(self.a.syndata) do
@@ -117,7 +117,7 @@ function action_wounded:execute ()
       then
         synsound = wound_manager_sound
       end
-    end 
+    end
     --' жрание аптечек и прочей срани.
     --' Использовать можно только если нам можно сейчас есть аптечку.
     if self.a.use_medkit == true then
@@ -157,12 +157,12 @@ function action_wounded:execute ()
       xr_sound.set_sound(self.object, nil)
     end
   end
-  
+
   local tt = db.storage[self.object:id()]
   if tt.active_scheme and not self.object:is_talking() then
 		xr_logic.try_switch_to_another_section(self.object, tt[tt.active_scheme], db_actor)
   end
-end    
+end
 function action_wounded:finalize ()
     action_base.finalize (self)
 
@@ -171,7 +171,7 @@ function action_wounded:finalize ()
     self.object:disable_talk()
     xr_sound.set_sound(self.object, nil)
     self.object:wounded(false)
-end    
+end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- Class wound_manager
@@ -192,7 +192,7 @@ function Cwound_manager:update()
   end
 
   self.state, self.sound = self:process_psy_wound(psy)
-  
+
   if self.state == "nil" and
      self.sound == "nil"
   then
@@ -205,11 +205,11 @@ function Cwound_manager:update()
     self.fight = "false"
     self.cover = "false"
     self.victim = "nil"
-  end 
+  end
 
   xr_logic.pstor_store(self.npc, "wounded_state", self.state)
   xr_logic.pstor_store(self.npc, "wounded_sound", self.sound)
-  xr_logic.pstor_store(self.npc, "wounded_fight", self.fight) 
+  xr_logic.pstor_store(self.npc, "wounded_fight", self.fight)
   xr_logic.pstor_store(self.npc, "wounded_victim", self.victim)
   if self.state==nil or self.state=="nil" then
     self.medkit_eaten=nil
@@ -250,7 +250,7 @@ function Cwound_manager:process_fight(hp)
     if self.a.hp_fight[key].state then
       return tostring(xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.hp_fight[key].state))
     end
-  end   
+  end
   return "true"
 end
 function Cwound_manager:process_victim(hp)
@@ -259,7 +259,7 @@ function Cwound_manager:process_victim(hp)
     if self.a.hp_victim[key].state then
       return tostring(xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.hp_victim[key].state))
     end
-  end   
+  end
   return "nil"
 end
 function Cwound_manager:process_hp_wound(hp)
@@ -305,11 +305,11 @@ end
 function Cwound_manager:get_key_from_distance(t, hp)
   local key
   for k,v in pairs(t) do
-    if v.dist >= hp then 
-      key = k 
+    if v.dist >= hp then
+      key = k
     else
       return key
-    end   
+    end
   end
   return key
 end
@@ -323,7 +323,7 @@ function Cwound_manager:hit_callback()
   end
 
   self:update()
-end    
+end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- binder
@@ -356,7 +356,7 @@ function add_to_binder_q(object, st)
     action:add_effect (wp_stalker_ids_property_enemy_false)
     action:add_effect (wp_prop_can_fight_true)
    	manager:add_action      (operator_wounded, action)
-   
+
     action = manager:action (xr_actions_id_alife)
     action:add_precondition (wp_prop_wounded_false)
 
@@ -373,7 +373,6 @@ function add_to_binder_q(object, st)
     action:add_precondition (wp_prop_can_fight_true)
 
 end
-
 
 ------------
 -- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
@@ -428,7 +427,7 @@ function init_wounded(npc, ini, section, st, scheme)
     def.help_dialog     = nil
     def.help_start_dialog = nil
     def.use_medkit      = false
-    
+
   elseif npc_community == "zombied" then
     def.hp_state      = "50|wounded_zombie@nil"
     def.hp_state_see    = "50|wounded_zombie@nil"
@@ -440,7 +439,7 @@ function init_wounded(npc, ini, section, st, scheme)
     def.help_dialog     = nil
     def.help_start_dialog = nil
     def.use_medkit      = false
-    
+
   else
     local state = wounded_by_state[math.mod(npc:id(), 3)]
     def.hp_state      = "10|"..state.."@help_heavy"
@@ -453,7 +452,7 @@ function init_wounded(npc, ini, section, st, scheme)
     def.help_dialog     = "dm_help_wounded_medkit_dialog"
     def.help_start_dialog = nil
     def.use_medkit      = true
-  end   
+  end
 
 	local xr_meet_parse_data_q = xr_meet.parse_data_q
 
@@ -485,7 +484,7 @@ function init_wounded(npc, ini, section, st, scheme)
 			st.use_medkit = def.use_medkit
 		end
 	end
-  
+
   -- флажок, что функция хотя бы раз вызывалась
   st.wounded_set = true
 end
@@ -496,10 +495,8 @@ function unlock_medkit(npc)
   end
 end
 
-
-
 function is_wounded(npc)
-  if db.storage[npc:id()].wounded ~= nil then 
+  if db.storage[npc:id()].wounded ~= nil then
     return tostring(db.storage[npc:id()].wounded.wound_manager.state) ~= "nil"
   end
   return false
@@ -510,7 +507,6 @@ function hit_callback(npc_id)
     db.storage[npc_id].wounded.wound_manager:hit_callback()
   end
 end
-
 
 function is_heavy_wounded_by_id(npc_id)
   if db.storage[npc_id].wounded ~= nil then
@@ -586,7 +582,7 @@ end
 			pri_stadium_help = {3,3}
 		}
 	}
-	
+
 local smarts_avail = {}
 --local smarts_other = {}
 local wound_id
@@ -598,8 +594,8 @@ function custom_change(npc)
 	if level and smarts[level] then
 		for k,v in pairs(smarts) do
 			for kk,vv in pairs(smarts[k]) do
-				local smarts_rank_min = vv[1] 
-				local smarts_rank_max = vv[2]	
+				local smarts_rank_min = vv[1]
+				local smarts_rank_max = vv[2]
 				if obj_rank and obj_rank >= smarts_rank_min and obj_rank <= smarts_rank_max then
 					local smart = alife():object(kk)
 					if smart and smart:is_gulag_available() and smart.gulag_working then
@@ -607,12 +603,12 @@ function custom_change(npc)
 							table.insert(smarts_avail,smart)
 						end
 					end
-				end		
+				end
 			end
 		end
-	end	
+	end
 	wound_id = npc:id()
-	if smarts_avail and npc:alive() then 
+	if smarts_avail and npc:alive() then
 		if #smarts_avail > 1 then
 			table.sort(smarts_avail,max_comp)
 		end
@@ -623,12 +619,12 @@ function custom_change(npc)
 			amk.write_stalker_params(packet_wounded,obj)
 		end
 	end
-	local unreg_id = obj:smart_terrain_id()    
-	if unreg_id ~= 65535 and npc:alive() then      
+	local unreg_id = obj:smart_terrain_id()
+	if unreg_id ~= 65535 and npc:alive() then
 		local unreg = alife():object(unreg_id)
-		if unreg then        
-			unreg:unregister_npc(obj) 
-		end  
+		if unreg then
+			unreg:unregister_npc(obj)
+		end
 	end
 end
 

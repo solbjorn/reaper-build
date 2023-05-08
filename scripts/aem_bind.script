@@ -11,7 +11,7 @@ class "aem_mob_binder" (object_binder)
 
 function aem_mob_binder:__init(obj) super(obj)
 	self.loaded = false
-end 
+end
 
 function aem_mob_binder:reload(section)
 	object_binder.reload(self, section)
@@ -52,7 +52,6 @@ function aem_mob_binder:update(delta)
 		self.object:set_tip_text_default()
 	end
 
-
 	if self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
 	end
@@ -61,7 +60,7 @@ end
 function aem_mob_binder:extrapolate_callback()
 	local cur_pt = self.object:get_current_point_index()
 
-	if self.object:get_script () == false then 
+	if self.object:get_script () == false then
 		return false
 	end
 
@@ -136,12 +135,12 @@ function aem_mob_binder:net_destroy()
 	if st and st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
-	
+
 	db.del_obj(self.object)
 	db.storage[self.object:id()] = nil
 
 	object_binder.net_destroy(self)
-end 
+end
 
 function aem_mob_binder:reload(section)
 	object_binder.reload(self, section)

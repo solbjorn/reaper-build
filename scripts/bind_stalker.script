@@ -124,7 +124,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:reinit()
   object_binder.reinit(self)
-  
+
   local npc_id = self.object:id()
 
   db.storage[npc_id] = { }
@@ -199,7 +199,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
   if device().precache_frame >1 then return end
-  
+
   if group == "Diary" then
     news_manager.send_encyclopedy(group, "diary")
   else
@@ -229,7 +229,7 @@ function actor_binder:on_item_take (obj)
 	sak.check_used_item(obj)
 	braad_test.checking_use_item(obj)
 	if xrs_ai then xrs_ai.actor_item_take(obj)
-	end 
+	end
 
   --AMK UTILS--
 
@@ -342,7 +342,7 @@ function actor_binder:update(delta)
 
   -- апдейт звуковой схемы актера
   xr_sound_update_actor()
-  
+
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 	aem_manager.get_aem():update()
 
@@ -361,7 +361,7 @@ function actor_binder:update(delta)
       self.object:restore_weapon()
       self.weapon_hide = false
     end
-  end 
+  end
 
   -- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
 	if self.next_restrictors_update_time < time_ then
@@ -406,20 +406,20 @@ function actor_binder:update(delta)
 	if self.object.radiation > 0.4 and self.in_rad_zone == false then
 		if (self.object:object("bread") or self.object:object("kolbasa")) then
        local need_say = false
-       self.object:iterate_inventory(function (dummy,item)  
+       self.object:iterate_inventory(function (dummy,item)
                                   if item:section()=="bread" and math.random() <= self.object.radiation then
-                                      need_say = true 
-                                      amk.remove_item(item)  
+                                      need_say = true
+                                      amk.remove_item(item)
                                       amk.spawn_item_in_inv("bread_a")
                                   elseif item:section()=="kolbasa" and self.object.radiation>0.6 and math.random() <= (self.object.radiation - 0.2) then
-                                      need_say = true 
-                                      amk.remove_item(item)  
+                                      need_say = true
+                                      amk.remove_item(item)
                                       amk.spawn_item_in_inv("kolbasa_a")
-                                  end 
+                                  end
                                   end, nil)
-      if need_say then 
-          amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)    
-      end 
+      if need_say then
+          amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)
+      end
 		end
 
 		self.in_rad_zone = true
@@ -448,10 +448,9 @@ function actor_binder:update(delta)
 		local actor_outfit = db_actor:item_in_slot(6)
 		if actor_outfit then db_actor:transfer_item(actor_outfit, db_actor) end
 
-    self.bCheckStart = false    
-  end   
-  
-  
+    self.bCheckStart = false
+  end
+
   --AMK UTILS--
   amk.on_actor_upade(delta)
   amk_offline_alife.actor_update(delta)
@@ -459,8 +458,8 @@ function actor_binder:update(delta)
 	arc_main.actor_update()
   sak.nepis_umer()
   braad_test.dead_npc()
-  
-  -- added by Red75. Контроль за переполнением 
+
+  -- added by Red75. Контроль за переполнением
   if self.warning then
     self.warning=nil
     get_hud():AddCustomStatic("hud_save_warning")
@@ -562,7 +561,7 @@ function actor_binder:load(reader)
 	task_manager.load(reader)
 
         self.freeplay_stats:load(reader)
-  
+
   if xr_logic.pstor_retrieve(self.object,"emerg",false) then -- нельзя использовать amk.load_varible(), так как db.actor ещё не определён
     self.warning=true
     self.critical=2

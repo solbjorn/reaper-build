@@ -72,7 +72,6 @@ function fill_object_packet(ret,stpk,updpk)
   stpk:w_s32(ret.obs32u3)
 end
 
-
 function parse_visual_packet(ret,stpk,updpk)
   ret.visual=stpk:r_stringZ()
   ret.vsu8u1=stpk:r_u8()
@@ -102,7 +101,7 @@ function parse_creature_packet(ret,stpk,updpk)
   ret.group=stpk:r_u8()
   ret.health=stpk:r_float()
   ret.crvu32u16u1=readvu32u16(stpk)
-  ret.crvu32u16u2=readvu32u16(stpk)  
+  ret.crvu32u16u2=readvu32u16(stpk)
   ret.killerid=stpk:r_u16()
   ret.game_death_time=readvu8u8(stpk)
 
@@ -120,7 +119,7 @@ function parse_creature_packet(ret,stpk,updpk)
   ret.upddir.z=updpk:r_float()
   ret.updteam=updpk:r_u8()
   ret.updsquad=updpk:r_u8()
-  ret.updgroup=updpk:r_u8()  
+  ret.updgroup=updpk:r_u8()
   return ret
 end
 
@@ -131,7 +130,7 @@ function fill_creature_packet(ret,stpk,updpk)
   stpk:w_u8(ret.group)
   stpk:w_float(ret.health)
   writevu32u16(stpk,ret.crvu32u16u1)
-  writevu32u16(stpk,ret.crvu32u16u2)  
+  writevu32u16(stpk,ret.crvu32u16u2)
   stpk:w_u16(ret.killerid)
   writevu8u8(stpk,ret.game_death_time)
 
@@ -156,7 +155,7 @@ function parse_monster_packet(ret,stpk,updpk)
   ret.baseinr=stpk:r_stringZ()
   ret.smtrid=stpk:r_u16()
   ret.smtrtaskactive=stpk:r_u8()
-  
+
   ret.updu16u1=updpk:r_u16()
   ret.updu16u2=updpk:r_u16()
   ret.upds32u3=updpk:r_s32()
@@ -170,7 +169,7 @@ function fill_monster_packet(ret,stpk,updpk)
   stpk:w_stringZ(ret.baseinr)
   stpk:w_u16(ret.smtrid)
   stpk:w_u8(ret.smtrtaskactive)
-  
+
   updpk:w_u16(ret.updu16u1)
   updpk:w_u16(ret.updu16u2)
   updpk:w_s32(ret.upds32u3)
@@ -185,7 +184,7 @@ function parse_trader_packet(ret,stpk,updpk)
   ret.communityid=stpk:r_s32()
   ret.rank=stpk:r_s32()
   ret.reputation=stpk:r_s32()
-  ret.charname=stpk:r_stringZ()  
+  ret.charname=stpk:r_stringZ()
   return ret
 end
 
@@ -204,7 +203,7 @@ function parse_human_packet(ret,stpk,updpk)
   parse_trader_packet(ret,stpk,updpk)
   parse_monster_packet(ret,stpk,updpk)
   ret.huvu32u8u1=readvu32u8(stpk)
-  ret.huvu32u8u2=readvu32u8(stpk)  
+  ret.huvu32u8u2=readvu32u8(stpk)
   return ret
 end
 
@@ -219,7 +218,7 @@ function parse_skeleton_packet(ret,stpk,updpk)
   ret.skeleton=stpk:r_stringZ()
   ret.skeleton_flags=stpk:r_u8()
   ret.source_id=stpk:r_u16()
-  
+
 --  ret.updsku8u1=updpk:r_u8()
   return ret
 end
@@ -228,7 +227,7 @@ function fill_skeleton_packet(ret,stpk,updpk)
   stpk:w_stringZ(ret.skeleton)
   stpk:w_u8(ret.skeleton_flags)
   stpk:w_u16(ret.source_id)
-  
+
 --  updpk:w_u8(ret.updsku8u1)
 end
 
@@ -289,7 +288,7 @@ function fill_se_monster_packet(ret,stpk,updpk)
   stpk:w_u8(ret.was_in_smtr)
   for i,v in ipairs(ret.stunk1) do
     stpk:w_u8(v)
-  end  
+  end
 end
 
 function read_stalker_params(sobj)
@@ -357,19 +356,19 @@ function get_anomaly_data(sobj)
   xrs_utils.parse_shape_packet(t,stpk,uppk,size)
 
 	t.restrictor_type = stpk:r_u8()
-	
+
 	t.max_power = stpk:r_float()
 	t.owner_id = stpk:r_s32()
 	t.enabled_time = stpk:r_s32()
 	t.disabled_time = stpk:r_s32()
 	t.start_time_shift = stpk:r_s32()
-	
+
 	t.offline_interactive_radius = stpk:r_float()
 	t.artefact_spawn_count = stpk:r_u16()
 	t.artefact_position_offset = stpk:r_s32()
-	
+
 	t.last_spawn_time_present = stpk:r_u8()
-	
+
 	if stpk:r_elapsed() ~= 0 then
 	end
 	return t
@@ -378,24 +377,24 @@ end
 function set_anomaly_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_shape_packet(t,stpk,uppk)
 
 	stpk:w_u8(t.restrictor_type)
-	
+
 	stpk:w_float(t.max_power)
 	stpk:w_s32(t.owner_id)
 	stpk:w_s32(t.enabled_time)
 	stpk:w_s32(t.disabled_time)
 	stpk:w_s32(t.start_time_shift)
-	
+
 	stpk:w_float(t.offline_interactive_radius)
 	stpk:w_u16(t.artefact_spawn_count)
 	stpk:w_s32(t.artefact_position_offset)
-	
+
 	stpk:w_u8(t.last_spawn_time_present)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -416,9 +415,9 @@ function get_lc_data(obj)
 	t.custom_data = packet:r_stringZ()
 	t.story_id = packet:r_s32()
 	t.spawn_story_id = packet:r_s32()
-	
+
 	t = xrs_utils.parse_shape_packet(t,packet)
-	
+
 	t.restrictor_type = packet:r_u8()
 	t.dest_game_vertex_id = packet:r_u16()
 	t.dest_level_vertex_id = packet:r_s32()
@@ -445,7 +444,7 @@ function set_lc_data(t,obj)
 	packet:w_stringZ(t.custom_data)
 	packet:w_s32(t.story_id)
 	packet:w_s32(t.spawn_story_id)
-	
+
 	xrs_utils.fill_shape_packet(t,packet)
 
 	packet:w_u8(t.restrictor_type)
@@ -493,11 +492,11 @@ end
 function set_breakable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
   xrs_utils.fill_object_physic_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -518,7 +517,7 @@ function get_spawner_data(sobj)
   local t={}
 	xrs_utils.parse_object_packet(t,stpk,uppk,size)
   xrs_utils.parse_shape_packet(t,stpk,uppk,size)
-	
+
 	t.restrictor_type = stpk:r_u8()
 	t.spawned_obj_count = stpk:r_u8()
   return t
@@ -527,12 +526,12 @@ end
 function set_spawner_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
 	stpk:w_u8(t.spawned_obj_count)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -590,7 +589,7 @@ function get_restrictor_data(sobj)
   local t={}
 	xrs_utils.parse_object_packet(t,stpk,uppk,size)
   xrs_utils.parse_shape_packet(t,stpk,uppk,size)
-	
+
 	t.restrictor_type = stpk:r_u8()
   return t
 end
@@ -598,11 +597,11 @@ end
 function set_restrictor_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -630,11 +629,11 @@ end
 function set_trader_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
   xrs_utils.fill_trader_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -661,10 +660,10 @@ end
 function set_invbox_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -691,7 +690,7 @@ end
 function parse_item_packet(ret,stpk,updpk)
 	ret.condition=stpk:r_float()
 	ret.updnum_items=updpk:r_u8()
-  ret.updpos={} 
+  ret.updpos={}
   ret.updpos.x=updpk:r_float()
   ret.updpos.y=updpk:r_float()
   ret.updpos.z=updpk:r_float()
@@ -745,12 +744,12 @@ end
 function set_ammo_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
   xrs_utils.fill_item_packet(t,stpk,uppk)
   xrs_utils.fill_item_ammo_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -779,12 +778,12 @@ end
 function set_destroyable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
   xrs_utils.fill_skeleton_packet(t,stpk,uppk)
   xrs_utils.fill_object_physic_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -814,12 +813,12 @@ end
 function set_weapon_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   xrs_utils.fill_object_packet(t,stpk,uppk)
   xrs_utils.fill_visual_packet(t,stpk,uppk)
   xrs_utils.fill_item_packet(t,stpk,uppk)
   xrs_utils.fill_item_weapon_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -835,7 +834,7 @@ function parse_item_weapon_packet(ret,stpk,updpk)
 	ret.weapon_state = stpk:r_u8()
 	ret.addon_flags = stpk:r_u8()
 	ret.ammo_type = stpk:r_u8()
-	
+
 	ret.updcondition = updpk:r_u8()
 	ret.updweapon_flags = updpk:r_u8()
 	ret.updammo_elapsed = updpk:r_u16()
@@ -853,7 +852,7 @@ function fill_item_weapon_packet(ret,stpk,updpk)
 	stpk:w_u8(ret.weapon_state)
 	stpk:w_u8(ret.addon_flags)
 	stpk:w_u8(ret.ammo_type)
-	
+
 	updpk:w_u8(ret.updcondition)
 	updpk:w_u8(ret.updweapon_flags)
 	updpk:w_u16(ret.updammo_elapsed)
@@ -920,15 +919,15 @@ function parse_custom_data(str)
 				if string.find(line,"=")~=nil then
 					for k, v in string.gfind(line, "([^=]-)%s*=%s*(.*)") do
 						k = trim(k)
-						if k~=nil and k~='' and v~=nil then 
-							t[section][k]=trim(v) 
+						if k~=nil and k~='' and v~=nil then
+							t[section][k]=trim(v)
 						end
 					end
 				else
 					for k, v in string.gfind(line, "(.*)") do
 						k = trim(k)
 						if k~=nil and k~='' then
-							t[section][k]="<<no_value>>" 
+							t[section][k]="<<no_value>>"
 						end
 					end
 				end

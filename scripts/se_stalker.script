@@ -59,8 +59,8 @@ function se_stalker:get_job_online()
 end
 --------------------
 function se_stalker:can_switch_offline ()
-  if amk.convert_npc[self.id]==true then 
-    return true 
+  if amk.convert_npc[self.id]==true then
+    return true
   elseif amk.convert_npc[self.id]==false then
   --  return false
   end
@@ -74,9 +74,9 @@ end
 function se_stalker:can_switch_online ()
   -- local ecolog=string.find(self:name(),"bar_ecolog")
   -- if ecolog then amk.mylog("chp1 "..self:name()) end
-  if amk.convert_npc[self.id]==true then 
+  if amk.convert_npc[self.id]==true then
     return false
-  elseif amk.convert_npc[self.id]==false then 
+  elseif amk.convert_npc[self.id]==false then
    -- return true
   end
   if self.dont_spawn_online == true then
@@ -90,16 +90,16 @@ function se_stalker:can_switch_online ()
   if self.ini == nil or self.spawner == nil then
     return cse_alife_human_stalker.can_switch_online(self)
   end
-    
+
     if db_actor ~= nil and db_actor:alive () == false then
     return self.online
-    end    
-    
+    end
+
   if self.online == false then
     return (xr_logic.pick_section_from_condlist(db_actor, self, self.spawner) ~= nil) and cse_alife_human_stalker.can_switch_online(self)
   else
     return xr_logic.pick_section_from_condlist(db_actor, self, self.spawner) ~= nil
-  end         
+  end
 end
 --------------------
 function se_stalker:STATE_Write (packet)
@@ -167,7 +167,7 @@ function se_stalker:on_register()
 	local tbl=amk.read_stalker_params(self)
 	tbl.crvu32u16u2={}
 	amk.write_stalker_params(tbl,self)
-	
+
   cse_alife_human_stalker.on_register( self )
 
 	local community = self:community()
@@ -191,7 +191,7 @@ function se_stalker:on_unregister()
 
   --' Отрегистрация в таскменеджере
   task_manager.get_random_task():unregister_target(self, clsid_script_stalker)
-  
+
 	local community = self:community()
 	if community == "zombied" or community == "monolith" or
 	   community == "arena_enemy" then

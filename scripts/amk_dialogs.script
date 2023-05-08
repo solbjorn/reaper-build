@@ -1,7 +1,7 @@
 -- AMK Поддержка функциональности диалогов
 -- Initial release by Red75
 
-function make_kill_task_failed(actor,npc,p1,p2) 
+function make_kill_task_failed(actor,npc,p1,p2)
   local nid=npc:id()
   if nid==db.actor:id() then
     nid=actor:id()
@@ -11,7 +11,7 @@ function make_kill_task_failed(actor,npc,p1,p2)
     if v.id==nid then
       task_manager.make_task_failed(v.task_id)
     end
-  end  
+  end
 end
 
 rndval=nil
@@ -40,14 +40,12 @@ function act_rnd_init(actor,npc) -- инициализирует значение переменной случайным
               end
           end
         end
-        setfenv(amk_dialogs["pre_rnd_"..a.."_"..b],amk_dialogs)            
+        setfenv(amk_dialogs["pre_rnd_"..a.."_"..b],amk_dialogs)
       end
     end
   end
   rndval=math.random(1,100)
 end
-
-
 
 function frenzy_humanoid(talker,listener) -- можно вызывать как из фразы ГГ, так и NPC
   local tgt=talker
@@ -82,7 +80,6 @@ function scare_humanoid(talker,listener) -- можно вызывать как из фразы ГГ, так 
 --  local hc=tgt:get_holder_class()
 --  amk.mylog("morale ".. tgt.morale .. " hclass " .. type(hc) .. " mor " .. type(hc.SetMorale))
 end
-
 
 function info_received()
   amk.send_tip("",game.translate_string("st_found_new_pda"),0,10,"gen_info")

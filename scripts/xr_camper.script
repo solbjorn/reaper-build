@@ -220,7 +220,6 @@ function action_patrol:execute()
 					self.direction:normalize()
 					local wide_sight = self.position:distance_to(self.enemy_position)*math.tan(self.a.enemy_disp)
 
-
 					self.point_0 = vector():set(self.enemy_position.x + wide_sight*self.direction.z,
 												self.enemy_position.y,
 												self.enemy_position.z - wide_sight*self.direction.x)
@@ -565,7 +564,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 		-- Время забывания врага
 		st.idle = (ini:line_exist(section, "enemy_idle") and ini:r_float(section, "enemy_idle")) or 60000
-	else 
+	else
 			abort("xr_camper scheme %s has bad or missing section: %s", scheme, tostring(section))
 			return
 	end

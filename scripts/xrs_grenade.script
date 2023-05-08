@@ -2,7 +2,7 @@
 --'	Сумасшедший придурок швыряется гранатами
 --' ver: 2.0
 --'	автор: xStream
---'	TODO: 
+--'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 local game_object_enemy = game_object.enemy
@@ -115,7 +115,7 @@ end
 function evaluator_crazy_grenadier:evaluate()
 	if self.a.throwing then return true end
 	local npc = self.object
-	
+
 	if self.a.testing then
 		if not self.a.test_grenades.hi or not self.a.test_grenades.lo or
 			not alife():object(self.a.test_grenades.hi) or not alife():object(self.a.test_grenades.hi) or
@@ -138,14 +138,14 @@ function evaluator_crazy_grenadier:evaluate()
 				self.a.test_begun = true
 				return false
 			end
-			if self.a.test_begun and not self.a.test_running and get_grenade(self.a.test_grenades.hi) and get_grenade(self.a.test_grenades.lo) then 
-				
+			if self.a.test_begun and not self.a.test_running and get_grenade(self.a.test_grenades.hi) and get_grenade(self.a.test_grenades.lo) then
+
 				throw(self.a.test_grenades.hi,'hi',self.a.target_point)
-				--level.map_add_object_spot(self.a.test_grenades.hi, "green_location", 1)	
-				
+				--level.map_add_object_spot(self.a.test_grenades.hi, "green_location", 1)
+
 				throw(self.a.test_grenades.lo,'lo',self.a.target_point)
-				--level.map_add_object_spot(self.a.test_grenades.lo, "red_location", 1)	
-				
+				--level.map_add_object_spot(self.a.test_grenades.lo, "red_location", 1)
+
 				self.a.test_running = true
 				self.a.test_end_time = time_global() + self.a.grenades[self.a.test_grenades_sect].explode_time
 				return false
@@ -154,7 +154,7 @@ function evaluator_crazy_grenadier:evaluate()
 				local hi_pos,lo_pos = get_grenade(self.a.test_grenades.hi):position(),get_grenade(self.a.test_grenades.lo):position()
 				local pos = level.vertex_position(self.a.from_vert)
 				local radius = self.a.grenades[self.a.test_grenades_sect].radius
-				
+
 				local can_throw=false
 				local hi_d,lo_d = false,false
 				if hi_pos:distance_to(pos)>radius and hi_pos:distance_to(self.a.target_point)<radius then
@@ -174,12 +174,12 @@ function evaluator_crazy_grenadier:evaluate()
 				if can_throw and get_grenade(self.a.grenade) then
 					self.a.throwing=true
 				end
-				
+
 				alife():release(alife():object(self.a.test_grenades.hi))
 				alife():release(alife():object(self.a.test_grenades.lo))
 				test_grenades[self.a.test_grenades.hi]=nil
 				test_grenades[self.a.test_grenades.lo]=nil
-				
+
 				self.a.testing = false
 				self.a.test_running = false
 				self.a.test_begun = false
@@ -187,7 +187,7 @@ function evaluator_crazy_grenadier:evaluate()
 			end
 		return false
 	end
-	
+
 	if self.a.next_check_time < time_global() then
 		self.a.next_check_time = time_global() + 1000
 		if npc:body_state()==move.crouch then return false end
@@ -197,8 +197,8 @@ function evaluator_crazy_grenadier:evaluate()
 			local curr_gr = nil
 			for k,v in pairs(gr_types) do
 				curr_gr = npc:object(v)
-				if curr_gr and self:check_grenade(curr_gr:section())==true then 
-					break 
+				if curr_gr and self:check_grenade(curr_gr:section())==true then
+					break
 				end
 				curr_gr = nil
 			end
@@ -209,7 +209,7 @@ function evaluator_crazy_grenadier:evaluate()
 			self.a.from_pos = npc:position()
 			self.a.target_point = be:position():add(vector_rotate_y(be:position():sub(npc:position()),90):normalize():mul(2))
 			self.a.grenade = curr_gr:id()
-			
+
 			local timeout = time_global() + self.a.grenades[get_grenade(self.a.grenade):section()].explode_time
 			self.a.test_grenades={}
 			local t
@@ -220,7 +220,7 @@ function evaluator_crazy_grenadier:evaluate()
 			test_grenades[t.id]=timeout+5000
 			self.a.test_grenades.lo=t.id
 			self.a.test_grenades_sect = get_grenade(self.a.grenade):section()
-			
+
 			self.a.test_end_time = timeout
 			self.a.testing = true
 		end
@@ -230,13 +230,13 @@ end
 function evaluator_crazy_grenadier:check_grenade(section)
 	local npc = self.object
 	local be = npc:best_enemy()
-	
+
 	local bp = be:position()
 	local np = npc:position()
 	local throw_dist=np:distance_to(bp)
 	--далеко кидать никак, мы ж не атлеты...
 	if throw_dist>grenade_max_dist then return false end
-	
+
 	local throw_dir=be:position():sub(np)
 	-- если накроет взрывом - не будем кидать
 	if throw_dist<self.a.grenades[section].radius then return false end
@@ -252,7 +252,7 @@ function evaluator_crazy_grenadier:check_grenade(section)
 		end
 		return false
 	end
-	
+
 	for o in npc:memory_visible_objects() do
 		if check_item(o) then return false end
 	end
@@ -322,13 +322,13 @@ function action_fire_in_the_hole:initialize()
 	self.at_pos = false
 	self.begin_throw = false
 	self.throw_end = false
-	
+
 	self.time_back_to_pos = time_global()+5000
-	
+
 	self.can_explode = false
 	self.finalized = false
 	local npc = self.object
-	
+
 	xr_sound.set_sound(npc, nil)
 	stop_play_sound(npc)
 
@@ -342,14 +342,14 @@ function action_fire_in_the_hole:execute()
 		return
 	end
 	local npc = self.object
-		
+
 	if not self.at_pos then
 		if time_global()>self.time_back_to_pos then
 			self.a.throwing = false
 			return
 		end
 		if self.a.from_vert==npc:level_vertex_id() and self.a.from_pos:distance_to(npc:position())<0.3 then
-		
+
 			local en_inj,fr_inj = false,false
 			local r = self.a.grenades[lobj_grenade:section()].radius
 			local obj, od
@@ -362,8 +362,8 @@ function action_fire_in_the_hole:execute()
 							if npc:relation(obj) == game_object_enemy then
 								en_inj=true
 							else
-								if od<r/2 then 
-									fr_inj=true 
+								if od<r/2 then
+									fr_inj=true
 									break
 								end
 							end
@@ -373,30 +373,30 @@ function action_fire_in_the_hole:execute()
 					end
 				end
 			end
-			
+
 			if fr_inj or not en_inj then
-				self.a.grenade = nil	
+				self.a.grenade = nil
 				self.a.throwing = false
 				self.a.target_point = nil
 				self.finalized = true
 				return
-			end	
-			
+			end
+
 			npc:set_item(object.idle,nil)
 			npc:set_movement_type(move.stand)
 			npc:set_mental_state(anim.danger)
 			npc:set_body_state(move.standing)
 			npc:movement_enabled(true)
-			
+
 			local snd_sect = snd_grenade_replics[npc:character_community()] or snd_grenade_replics.stalker
 			local snd = [[characters_voice\grenadier\]]..snd_sect[math.random(#snd_sect)]
 			snd = xr_sound.get_safe_sound_object(snd)
 			snd:play_no_feedback(npc, sound_object.s3d, 0, npc:position(), 1.0)
-			
+
 			self.start_time = time_global()
 			self.throw_time = self.start_time + 1000
 			self.end_time = self.throw_time + 300
-			
+
 			grenadiers[npc:id()]=self.a.grenade
 			self.at_pos = true
 			return
@@ -413,7 +413,7 @@ function action_fire_in_the_hole:execute()
 		end
 		return
 	end
-	
+
 	npc:set_sight(look.point,self.a.target_point)
 	npc:set_desired_direction(utils.vector_copy_by_val(self.a.target_point):sub(npc:position()))
 
@@ -427,7 +427,7 @@ function action_fire_in_the_hole:execute()
 		end
 		return
 	end
-	
+
 	if time_global() > self.end_time and not self.can_explode then
 		npc:drop_item_and_teleport(lobj_grenade, self.a.grenades_from_pos)
 		grenadiers[npc:id()]=nil
@@ -438,17 +438,17 @@ function action_fire_in_the_hole:execute()
 	if self.can_explode then
 		throw(self.a.grenade,self.a.throwing_type,self.a.target_point)
 		level.map_add_object_spot(self.a.grenade, "grenade_location", lobj_grenade:section())
-		
+
 		local timeout = self.a.grenades[lobj_grenade:section()].explode_time-(time_global()-self.can_explode)
-		
+
 		grenades[lobj_grenade:id()] = time_global() + timeout
-		
-		self.a.grenade = nil	
+
+		self.a.grenade = nil
 		self.a.next_check_time = time_global() + math.random(10000,60000)
 		self.a.throwing = false
 		self.a.target_point = nil
 		self.finalized = true
-		
+
 	end
 end
 
@@ -459,7 +459,7 @@ end
 function action_run_from_grenade:initialize()
 	action_base.initialize(self)
 	local npc=self.object
-	
+
 	xr_sound.set_sound(npc, nil)
 	stop_play_sound(npc)
 end
@@ -547,7 +547,7 @@ function add_to_binder_q(object, storage)
 		action = manager:action (stalker_ids_action_combat_planner)
 		action:add_precondition	(world_property(evid_crazy_grenadier, false))
 		action:add_precondition	(world_property(evid_aaa_grenade, false))
-		
+
 		action = manager:action (stalker_ids_action_danger_planner)
 		action:add_precondition	(world_property(evid_crazy_grenadier, false))
 		action:add_precondition	(world_property(evid_aaa_grenade, false))
@@ -583,12 +583,12 @@ function get_grenade_radius(section)
 end
 
 function update(delta)
-	
+
 	for k,v in pairs(pseudo_grenades) do
 		local sobj = alife():object(k)
 		if sobj then
 			local obj = level_object_by_id(k)
-			if obj then 
+			if obj then
 				obj:explode(0)
 				pseudo_grenades[k]=nil
 			end
@@ -596,13 +596,13 @@ function update(delta)
 			pseudo_grenades[k]=nil
 		end
 	end
-	
+
 	for k,v in pairs(grenades) do
 		local sobj = alife():object(k)
 		if sobj then
 			if time_global()>v then
 				local obj = level_object_by_id(k)
-				if obj then 
+				if obj then
 					local a = alife():create(obj:section().."_fake",obj:position():add(vector():set(0,1,0)),obj:level_vertex_id(),obj:game_vertex_id())
 					if a then
 						pseudo_grenades[a.id]=true
@@ -615,7 +615,7 @@ function update(delta)
 			grenades[k]=nil
 		end
 	end
-	
+
 	for k,v in pairs(test_grenades) do
 		local sobj = alife():object(k)
 		if sobj then
@@ -638,9 +638,9 @@ function death_callback(npc)
 		grenades[grenade.id] = time_global() + timeout
 		grenadiers[npc:id()]=nil
 	end
-	
+
 	local remove_grenades={}
-	npc:iterate_inventory(function (dummy, item) 
+	npc:iterate_inventory(function (dummy, item)
 		if item==nil or alife():object(item:id())==nil then return end
 		for k,v in pairs(gr_types) do
 			if item:section()==v then
@@ -670,7 +670,7 @@ function npc_update(binder)
 	if not npc:alive() then return end
 	if not binder.grenade_update_time then binder.grenade_update_time=time_global()+15000 end
 	if npc:character_community()=="ecolog" or npc:character_community()=="zombied" or npc:character_community()=="trader" or
-		  npc:out_restrictions()=="bar_arena_restrictor" or npc:name()=="mil_stalker0012" or 
+		  npc:out_restrictions()=="bar_arena_restrictor" or npc:name()=="mil_stalker0012" or
 		  npc:name()=="yantar_ecolog_general" then return end
 	if time_global()>binder.grenade_update_time then
 		for k,v in pairs(gr_types) do

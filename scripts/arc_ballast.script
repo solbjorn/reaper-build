@@ -5,9 +5,9 @@ local ballast_num = 0
 local lost_ballast_id = -1
 
 function on_get_ballast(obj)
-  
+
 end
- 
+
 function on_lose_ballast(obj)
   lost_ballast_id = obj:id()
 end
@@ -18,13 +18,13 @@ function check_ballast()
     obj = alife():object(lost_ballast_id)
     if obj then
       arc.remove_obj(obj.id)
-      
+
       ballast_num = 0
     end
-    
+
     lost_ballast_id = -1
   end
-  
+
   local t = convert_kg_to_num(current_ballast_weight)
   if (t ~= ballast_num) then
     local a = db.actor
@@ -32,12 +32,12 @@ function check_ballast()
     if obj then
       arc.remove_obj(obj:id())
     end
-    
+
     if t>0 then
       alife():create_ammo("arc_ballast", a:position(),
         a:level_vertex_id(), a:game_vertex_id(), a:id(), t)
     end
-    
+
     ballast_num = t
   end
 end

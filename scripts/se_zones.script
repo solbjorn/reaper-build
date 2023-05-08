@@ -2,18 +2,18 @@ local math_random = math.random
 local string_sub = string.sub
 
 class "se_zone_anom" (cse_anomalous_zone)
-function se_zone_anom:__init (section) super (section)  
+function se_zone_anom:__init (section) super (section)
 end
 function se_zone_anom:on_register()
   cse_anomalous_zone.on_register(self)
-  
+
   self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
-  self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100) 
+  self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)
 end
 
 function se_zone_anom:on_unregister()
   cse_anomalous_zone.on_unregister(self)
---  mylog("unreg " .. tostring(self.id))  
+--  mylog("unreg " .. tostring(self.id))
 end
 
 function se_zone_anom:update()
@@ -30,7 +30,7 @@ function se_zone_anom:update()
       if math_random(100) <= self.artefact_spawn_rnd then
         self:spawn_artefacts()
       end
-    end 
+    end
   else
     amk.mylog("Preventing artefact spawn for "..self:name())
   end
@@ -43,7 +43,7 @@ function se_zone_anom:STATE_Write(packet)
   else
     packet:w_u8(1)
     utils.w_CTime(packet, self.last_spawn_time)
-  end 
+  end
 end
 -- восстановление
 
@@ -67,7 +67,7 @@ end
 function repack_zone(packet,size)
   local a_radius=0
 	local packet1 = net_packet()
-  
+
 	-- свойства cse_alife_object
 	packet1:w_u16(packet:r_u16()) -- game_vertex_id 0
 	packet1:w_float(packet:r_float()) -- cse_alife_object__unk1_f32 2
@@ -122,9 +122,9 @@ function se_zone_visual:__init (section) super (section)
 end
 function se_zone_visual:on_register()
   cse_zone_visual.on_register(self)
-  
+
   self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
-  self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100) 
+  self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)
 end
 function se_zone_visual:update()
   cse_zone_visual.update(self)
@@ -138,7 +138,7 @@ function se_zone_visual:update()
     if math_random(100) <= self.artefact_spawn_rnd then
       self:spawn_artefacts()
     end
-  end 
+  end
 end
 
 function se_zone_visual:STATE_Write(packet)
@@ -149,7 +149,7 @@ function se_zone_visual:STATE_Write(packet)
   else
     packet:w_u8(1)
     utils.w_CTime(packet, self.last_spawn_time)
-  end 
+  end
 end
 -- восстановление
 function se_zone_visual:STATE_Read( packet, size )
@@ -160,8 +160,6 @@ function se_zone_visual:STATE_Read( packet, size )
     self.last_spawn_time = utils.r_CTime(packet)
   end
 end
-
-
 
 --' Рестрикторы
 class "se_restrictor" (cse_alife_space_restrictor)

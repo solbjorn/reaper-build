@@ -29,7 +29,6 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 	return true
 end
 
-
 function break_dialog(first_speaker, second_speaker, id)
 	first_speaker:stop_talk()
 	second_speaker:stop_talk()
@@ -92,7 +91,7 @@ function transfer_medkit(first_speaker, second_speaker)
 
 	--' Тут надо анлочить аптечку для использования.
 	xr_wounded.unlock_medkit(second_speaker)
-	
+
 	if second_speaker:relation(first_speaker) ~= game_object.enemy then
 		second_speaker:set_relation(game_object.friend, first_speaker)
 		first_speaker:change_character_reputation(10)
@@ -116,7 +115,6 @@ function kill_yourself(npc, actor)
 	npc:kill(actor)
 end
 
-
 --' Obsolete, do not use!!!
 function relocate_item(victim, obj, type)
 	if db.actor and victim then
@@ -135,13 +133,13 @@ function relocate_item_section(victim, section, type)
 
 			--' Трансферить нужно только квестовые предметы.
 			if quest_section[section] == true and
-			   victim:object(section) ~= nil 
+			   victim:object(section) ~= nil
 			then
 				victim:transfer_item(victim:object(section), db.actor)
 			else
-				alife():create(section,	
+				alife():create(section,
 					    db.actor:position(),
-						db.actor:level_vertex_id(),	
+						db.actor:level_vertex_id(),
 						db.actor:game_vertex_id(),
 						db.actor:id())
 			end
@@ -151,7 +149,6 @@ function relocate_item_section(victim, section, type)
 		news_manager.relocate_item(db.actor, type, section)
 	end
 end
-
 
 function relocate_money(victim, num, type)
 	if db.actor and victim then
@@ -187,13 +184,12 @@ end
 function allow_wounded_dialog(object, victim, id)
 	if db.storage[victim:id()].wounded == nil then
 		return false
-	end	
+	end
 	if db.storage[victim:id()].wounded.help_dialog == id then
 		return true
 	end
-	return false	
+	return false
 end
-
 
 -----------------------------------------------------------------------------------
 -- LEVELS
@@ -263,7 +259,7 @@ end
 --' Инициализация торговли
 function trade_init(seller, buyer)
 	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
-	xr_position.setPosition(db.storage[seller:id()].meet.Seller, 
+	xr_position.setPosition(db.storage[seller:id()].meet.Seller,
 							db.storage[seller:id()].meet.Seller:level_vertex_id())
 	db.storage[seller:id()].meet.Buyer = buyer
 end
@@ -278,6 +274,6 @@ function want_trade(seller, buyer)
 	end
 end
 
-function dont_want_trade(seller, buyer)	
+function dont_want_trade(seller, buyer)
 	return not want_trade(seller,buyer)
 end

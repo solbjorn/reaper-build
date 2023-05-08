@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
 --	Менеджер изменения состояния тела
 --	автор: Диденко Руслан (Stohe)
---	TODO: 
+--	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 local prop_state_mgr_idle_combat = xr_evaluators_id.state_mgr + 1
@@ -79,11 +79,11 @@ function evaluator_state_mgr_idle_off:__init(name, state_manager) super (nil, na
 	self.mental_eval = planner:evaluator(props["mental"])
 end
 function evaluator_state_mgr_idle_off:evaluate()
-	return self.st.target_state == "idle" and 
+	return self.st.target_state == "idle" and
 		self.movement_eval:evaluate() and
 		self.animstate_eval:evaluate() and
-		self.animation_eval:evaluate() and 
-		self.bodystate_eval:evaluate() and 
+		self.animation_eval:evaluate() and
+		self.bodystate_eval:evaluate() and
 		self.weapon_eval:evaluate() and
 		self.mental_eval:evaluate()
 end
@@ -137,10 +137,9 @@ function evaluator_state_mgr_idle_alife:evaluate()
 	return true
 end
 
-
 --' Переход в idle
 class "act_state_mgr_to_idle" (action_base)
-function act_state_mgr_to_idle:__init(name,state_manager) super (nil, name)	
+function act_state_mgr_to_idle:__init(name,state_manager) super (nil, name)
 	self.st = state_manager
 end
 function act_state_mgr_to_idle:initialize()
@@ -170,20 +169,20 @@ function act_state_mgr_to_idle:execute()
 		self.st:set_state("idle", nil, nil, nil, {animation = true})
 		return
 	end
-	self.st:set_state("idle")	
+	self.st:set_state("idle")
 end
 function act_state_mgr_to_idle:finalize()
-	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть", 
+	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть",
 	-- чтобы при возврате было понятно что его нужно переинициализировать.
-	
+
 	self.st.current_object = -1
-	
+
 	action_base.finalize(self)
 end
 
 --' Переход в idle
 class "act_state_mgr_to_off" (action_base)
-function act_state_mgr_to_off:__init(name,state_manager) super (nil, name)	
+function act_state_mgr_to_off:__init(name,state_manager) super (nil, name)
 	self.st = state_manager
 end
 
@@ -199,14 +198,13 @@ function act_state_mgr_to_off:execute()
 end
 
 function act_state_mgr_to_off:finalize()
-	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть", 
+	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть",
 	-- чтобы при возврате было понятно что его нужно переинициализировать.
-	
+
 	self.st.current_object = -1
 	self.object:movement_enabled(true)
 	action_base.finalize(self)
 end
-
 
 --'-------------------------------------------------------------------------------------
 --' Эвалуаторы и экшены менеджера
@@ -225,7 +223,7 @@ function eva_state_mgr_end:evaluate()
 	if not self.mgr:initialized() then
 		return false
 	end
-	
+
 	local current_action_id = self.mgr:current_action_id()
 	if current_action_id ~= stalker_ids_action_combat_planner and
 		current_action_id ~= stalker_ids_action_danger_planner and
@@ -347,12 +345,11 @@ function act_state_mgr_locked:initialize()
 	action_base.initialize(self)
 end
 function act_state_mgr_locked:execute()
-	action_base.execute(self)	
+	action_base.execute(self)
 end
 function act_state_mgr_locked:finalize()
 	action_base.finalize(self)
 end
-
 
 animation_reset_denied = {
 	wounded = true,
@@ -366,7 +363,7 @@ animation_reset_denied = {
 class "state_manager"
 function state_manager:__init(npc)
 	state_mgr_goap.goap_graph(self, npc)
-		
+
 	self.target_state = "idle"
 	self.current_direction = nil
 	self.target_position = nil
@@ -387,7 +384,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	--сперва устанавливаем цели
 	if target ~= nil then
 		self.look_position = target.look_position
-		if target.look_object ~= nil then 
+		if target.look_object ~= nil then
 			self.look_object = target.look_object:id()
 		else
 			self.look_object = nil
@@ -416,10 +413,10 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		local lib_last_state = state_lib.states[last_state]
 		--' Если мы переключаемся из стреляющего состояния в нестреляющее - необходимо сразу же прекратить стрельбу
 		if (lib_last_state.weapon == "fire" or
-		   lib_last_state.weapon == "sniper_fire") and 
+		   lib_last_state.weapon == "sniper_fire") and
 		   (lib_new_state.weapon ~= "fire" and
-		   lib_new_state.weapon ~= "sniper_fire")		
-		then		
+		   lib_new_state.weapon ~= "sniper_fire")
+		then
 			self.npc:set_item(state_mgr_weapon.get_idle_state(state_name), state_mgr_weapon.get_weapon(self.npc, state_name))
 		end
 
@@ -433,7 +430,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 			self.npc:movement_enabled(false)
 		end
 
-		self.target_state = state_name	
+		self.target_state = state_name
 		self.current_object = nil
 		switched = true
 	end
@@ -452,16 +449,15 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	end
 
 	self.synsound = synsound
-	
-	
+
 	self.callback = callback
 	if timeout ~= nil and
-	   timeout >= 0 
+	   timeout >= 0
 	then
 		self.callback.timeout = timeout
 		self.callback.begin = nil
 	else
-		if self.callback then			
+		if self.callback then
 			self.callback.func = nil
 			self.callback.timeout = nil
 		end
@@ -472,15 +468,11 @@ function state_manager:get_state()
 end
 function state_manager:update()
 	--printf("Update called")
-	self.animstate:update()	
-	self.animation:update()	
-	self.planner:update()	
+	self.animstate:update()
+	self.animation:update()
+	self.planner:update()
 	--self.planner:show("")
 end
-
-
-
-
 
 function set_state(npc, state_name, callback, timeout, target, emerg, synsound, extrakeys)
 	local st_mgr = db.storage[npc:id()].state_mgr
@@ -511,7 +503,7 @@ function bind_manager(object)
 	action:add_precondition		(wp_prop_state_mgr_idle_combat_false)
 	action:add_effect 			(wp_state_mgr_idle_combat_true)
 	manager:add_action(operator_state_mgr_to_idle_combat, action)
-	
+
 	-- Добавим ещё один тип отключения этого безобразия
 	action = this.act_state_mgr_to_off("state_mgr_to_off", state_manager)
 	action:add_precondition(wp_prop_state_mgr_idle_off_false)

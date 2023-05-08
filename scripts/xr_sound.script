@@ -49,13 +49,13 @@ function get_key(npc)
 	-- формирование ключа
 	local overrides = db.storage[npc:id()].overrides
 	if overrides and
-	   overrides.soundgroup 
+	   overrides.soundgroup
 	then
 		key = overrides.soundgroup
 	else
 		key = tostring(npc_id)
 	end
-	
+
 	-- апдейт таблиц :) не менять!
 	local keyid = key_by_id[npc_id]
 	if keyid ~= key then
@@ -153,8 +153,8 @@ function update(npc)
 	--' Если не задана, то нужно играть idle, при условии что у нас нет врагов и денжеров.
 	local npc_sounds = db_sound[npc_id]
 	if npc_sounds ~= nil and npc_sounds.snd == nil then
-		return 
-	end	
+		return
+	end
 
 	local key = get_key(npc)
 
@@ -206,7 +206,7 @@ function play_sound(npc, group_table, timeout)
 	group_table.last_npc = npc_id
 	local idle = 1000
 
-	-- из списка тем выбираем одну.	
+	-- из списка тем выбираем одну.
 	local snd = snd_table[math_random(0, t-1)]
 	if snd == nil or snd.rmk_type == nil then
 		group_table.busy_until = time_global() + idle
@@ -284,7 +284,7 @@ function play_sound(npc, group_table, timeout)
 			else
 				s = math_random(0, snd.rnd_max-2)
 				if s >= last_rnd then s = s + 1 end
-			end	
+			end
 		end
 
 		if timeout == nil then
@@ -317,7 +317,7 @@ function set_actor_sound(sound)
 		if sound == nil then sound = "" end
 		actor_sound.theme = sound
 		actor_sound.begin = nil
-		
+
 		this.set_actor_sound_factor(1)
 	end
 end
@@ -333,7 +333,7 @@ end
 function update_actor()
 	local theme = sound_theme.actor_theme[actor_sound.theme]
 	if theme == nil then return end
-	
+
 	if #theme.sounds == 0 then
 		return
 	end
@@ -342,7 +342,7 @@ function update_actor()
 	   time_global() - actor_sound.begin >= actor_sound.idle
 	then
 		actor_sound.begin = time_global()
-		
+
 		--' Тут надо отыграть звук
 		local sound = theme.sounds[math_random(#theme.sounds)]
 		if sound ~= nil then
@@ -351,9 +351,6 @@ function update_actor()
 		actor_sound.idle = math_random(actor_sound.min_snd, actor_sound.max_snd)
 	end
 end
-
-
-
 
 --' Таблица для хранения созданных саунд обжектов.
 sound_object_by_theme = {}

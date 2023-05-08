@@ -11,7 +11,7 @@ class "BBolt" (object_binder)
 
 function BBolt:__init(obj) super(obj)
 	self.object=obj
-end 
+end
 
 function BBolt:reload(section)
 	object_binder.reload(self, section)
@@ -67,7 +67,7 @@ function BBolt:use_callback(obj, who)
 	amk.spawn_item_in_inv("fake_bolt")
 	db.actor:drop_item_and_teleport(self.object,vector():set(0,0,0))
 	self.object:bind_object(nil)
-end 
+end
 
 function BBolt:net_save_relevant()
 	return true

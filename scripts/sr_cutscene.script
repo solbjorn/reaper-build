@@ -4,7 +4,7 @@
 
 --' локальные переменные
 local state_nowhere = 0 --' схема только что включилась
-local state_inside = 1  --' актер внутри 
+local state_inside = 1  --' актер внутри
 local state_outside = 2 --' актер снаружи
 
 local cutscene_finished
@@ -45,16 +45,16 @@ function action_cutscene:update( delta )
 
     if self.ui_disabled then
         if cutscene_finished == true then
-           if not actor:is_talking() then 
+           if not actor:is_talking() then
 				xr_effects.enable_ui(actor, nil)
 		   else
-				level.enable_input()	
+				level.enable_input()
 		   end
            self.ui_disabled = false
            self.st.signals["cameff_end"] = true
         end
     end
-	
+
     --' собственно наша функци€, осуществл€юща€ вызов начала сцены
 	self:switch_state( actor )
 
@@ -69,24 +69,24 @@ function action_cutscene:switch_state( actor )
 
 	--' храним состо€ние персонажа локально (так быстрее)
     local state = self.state
-	
+
     --' если снаружи или ешЄ не определились где
-	if state ~= state_inside 
+	if state ~= state_inside
     then
         --' то провер€ем на вхождение в пространственный ограничитель
-		if self.object:inside( actor:center() ) 
+		if self.object:inside( actor:center() )
         then
             --' и если внутри то вызываем функцию входа внутрь и выходим из функции
 			self:zone_enter()
 			return
 		end
 	end
-	
+
     --' если внутри или ешЄ не определились где
 	if state ~= state_outside
     then
         --' то провер€ем на не вхождение в пространственный ограничитель
-		if not self.object:inside( actor:center() ) 
+		if not self.object:inside( actor:center() )
         then
             --' и если снаружи то вызываем функцию выхода наружу и выходим из функции
 			self:zone_leave()
@@ -106,13 +106,11 @@ function action_cutscene:zone_enter()
     --' телепорт в выбранную точку
     xr_effects.teleport_actor(db.actor, nil, {self.st.point, self.st.look})
     level.add_pp_effector (self.st.pp_effector, 234, false)
-    
+
 	level.add_cam_effector2(self.st.cam_effector, 123, false, "sr_cutscene.effector_callback")
     xr_effects.disable_ui(db.actor, nil)
     self.ui_disabled = true
 	cutscene_finished = false
-  
-
 
 end
 
@@ -151,7 +149,7 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 		end
 		st.pp_effector = get_field_string("pp_effector", "blink") .. ".ppe"
 		st.cam_effector = "camera_effects\\" .. st.cam_effector .. ".anm"
-	else 
+	else
 		abort("sr_cutscene scheme %s has bad or missing section: %s", scheme, tostring(section))
 		return
 	end

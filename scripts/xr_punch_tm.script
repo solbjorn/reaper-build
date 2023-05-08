@@ -34,7 +34,7 @@ function evaluator_need_trade:evaluate()
 	if dist > min_check_dist then
 		npc_traded[self.object:id()] = nil
 		return false
-	elseif npc_traded[self.object:id()] then 
+	elseif npc_traded[self.object:id()] then
 		return false
 	end
 	return dist > neer_trade_dist and whom:see(self.object) and self.object:see(whom) and self:is_vip()
@@ -79,10 +79,10 @@ function action_punch_activity:do_move()
 		self.desired_vx = whom:level_vertex_id()
 		self.object:set_path_type(game_object.level_path)
 		self.object:set_detail_path_type(move.line)
-		
+
 		utils.send_to_nearest_accessible_vertex(self.object, self.desired_vx)
 		self.object:set_desired_position(whom:position())
-		
+
 		state_mgr.set_state(self.object, self.move_type, nil, nil, { look_object = whom }, {animation = true})
 		self.object:movement_enabled(true)
 	end
@@ -108,7 +108,7 @@ function action_punch_activity:execute()
 			--a NPC has reached Mecheniy and can punch him now
 			self.object:set_movement_type(move.stand)
 			state_mgr.set_state(self.object, "punch", nil, nil, { look_object = whom }, {animation = true})
-			--it's a time period for punching (two seconds) 
+			--it's a time period for punching (two seconds)
 			self.expiration_time = time_global() + punch_time
 			self.state = state_punch
 			xr_sound.set_sound_play(self.object, "use_abuse")
@@ -138,12 +138,12 @@ function action_trade_activity:initialize()
 	action_base.initialize(self)
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	self.tt=time_global()+20000 
+	self.tt=time_global()+20000
 end
 
 function action_trade_activity:execute()
 	action_base.execute(self)
-	if self.tt < time_global() then 
+	if self.tt < time_global() then
 		npc_traded[self.object:id()] = true
 		return
 	end
@@ -179,7 +179,7 @@ function addCommonPrecondition_tm(action)
 	action:add_precondition (world_property(xr_evaluators_id.sidor_wounded_base + 0, false))
 	action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
 	action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
-  
+
 	action:add_precondition (world_property(blowout_scheme.evid_outside, false))
 	action:add_precondition (world_property(blowout_scheme.evid_blowout, false))
 	action:add_precondition (world_property(blowout_scheme.evid_preblowout, false))
@@ -197,7 +197,7 @@ function add_to_binder_q(npc, storage)
 	properties["need_trade"]  = need_trade_id
 	operators["action_trade"] = need_trade_id
 
-	local zombi=npc:character_community()=="zombied" or npc:character_community()=="arena_enemy" or 
+	local zombi=npc:character_community()=="zombied" or npc:character_community()=="arena_enemy" or
 				npc:character_community()=="trader" or npc:name()=="mil_stalker0012" or npc:name()=="yantar_ecolog_general"
 
 	if zombi then
@@ -222,7 +222,7 @@ function add_to_binder_q(npc, storage)
 		new_action:add_precondition(world_property(properties["need_punch"], false))
 		new_action:add_effect(world_property(properties["need_trade"], false))
 		manager:add_action(operators["action_trade"], new_action)
-	
+
 		new_action = manager:action(xr_actions_id.alife)
 		new_action:add_precondition(world_property(properties["need_punch"], false))
 		new_action:add_precondition(world_property(properties["need_trade"], false))
@@ -240,5 +240,4 @@ function disable_scheme(npc, scheme)
 		st.enabled = false
 	end
 end
-
 

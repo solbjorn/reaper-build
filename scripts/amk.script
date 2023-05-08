@@ -48,7 +48,7 @@ function send_tip(news_text, header, timeout, showtime, sender, sound)
 end
 
 function add_spot_on_map(obj_id,type,text)
-  --возможные типы type смотри в ui\map_spots.xml 
+  --возможные типы type смотри в ui\map_spots.xml
   if obj_id then
     if text==nil then text=" " end
     -- Ставим метку на серверный объект чтобы её не пришлось обновлять
@@ -227,25 +227,25 @@ end
 
 --для спавна патронов используем spawn_ammo_in_inv
 function spawn_item_in_inv(spawn_item,npc)
-  if npc==nil then 
-    npc=db_actor 
+  if npc==nil then
+    npc=db_actor
   end
-  return g_alife:create(spawn_item, 
+  return g_alife:create(spawn_item,
       npc:position(),
-      npc:level_vertex_id(),  
+      npc:level_vertex_id(),
       npc:game_vertex_id(),
       npc:id())
 end
 
 --используем для спавна патронов
 function spawn_ammo_in_inv(spawn_item,number,npc)
-  if npc==nil then 
-    npc=db_actor 
+  if npc==nil then
+    npc=db_actor
   end
   if number > 0 then
-    return se_respawn.create_ammo(spawn_item, 
+    return se_respawn.create_ammo(spawn_item,
         npc:position(),
-        npc:level_vertex_id(),  
+        npc:level_vertex_id(),
         npc:game_vertex_id(),
         npc:id(),
         number)
@@ -301,7 +301,7 @@ function set_npc_relation(obj,target,relation)
     rel=game_object.enemy
   else
     return false
-  end 
+  end
   obj:set_relation(rel,target)
   return true
 end
@@ -402,17 +402,17 @@ function check_npc_in_box(npc, p1,p2,p3)
       is_point_inside_interval(pos.z,p1.z,p2.z) then
       return true
     else
-      return false  
+      return false
     end
   else
     local v1,v2,r,proj1,proj2,dv1,dv2
     v1=sub(p2,p1)
     v2=sub(p3,p2)
-    v1.y=0 
+    v1.y=0
     v2.y=0
     dv1=v1:magnitude()
     dv2=v2:magnitude()
-    v1:normalize() 
+    v1:normalize()
     v2:normalize()
     r=sub(pos,p1)
     local v1p=vector():set(v1.z,0,-v1.x)
@@ -427,13 +427,13 @@ function check_npc_in_box(npc, p1,p2,p3)
 end
 
 function is_point_inside_interval(x,p1,p2)
-  if p1>p2 then 
-    p1,p2 = p2,p1 
+  if p1>p2 then
+    p1,p2 = p2,p1
   end
-  
-  if x>p1 and x<p2 then 
+
+  if x>p1 and x<p2 then
     return true
-  else 
+  else
     return false
   end
 end
@@ -470,7 +470,7 @@ gps_habar.on_item_take(obj) -- Idler ++--
     escape_dialog.have_a_art()
 	flamethrower.on_item()
 skunk.nano_bronik_on_take(obj)
-	
+
   remove_spot_from_map(obj:id(),"red_location")
   mod_call("check_usable_item",obj)
 end
@@ -497,7 +497,7 @@ end
 --колбэк на апдейт ГГ (удобно для проверки условий, так как вызывается постоянно, нельзя перегружать, а то будут лаги)
 function on_actor_upade(delta)
 	oau_watchdog=100
-	--user area 
+	--user area
 	braad_test.check_npc_dead()
 	braad_test.check_ecolog_dead()
 	oau_watchdog=99
@@ -567,7 +567,7 @@ function on_npc_spawn(npc)
 		news_main.on_spawn(npc)
 	end
   for k,v in pairs(npc_spawner) do
-    if k==npc:id() then 
+    if k==npc:id() then
       __npc_spawn_case(npc,v)
       npc_spawner[k]=nil
     save_variable("x_npc_spawner",pack_array_to_string(npc_spawner) )
@@ -583,9 +583,9 @@ function __npc_spawn_case(npc,select_string)
     <вызов сторонних функций>
     -- можно передавать npc как параметр
   end
-  
+
   ]]
---user area 
+--user area
 -----------
 end
 -----------------------
@@ -656,12 +656,12 @@ end
 function enemy_see_actor(obj,typ)
 	mod_call("calc_adrenaline","enemy_see_actor",obj,typ)
 end
-function actor_see_enemy(obj,typ) 
+function actor_see_enemy(obj,typ)
 	mod_call("calc_adrenaline","actor_see_enemy",obj,typ)
 end
 
 -- непись стрелял в гг
-function npc_shot_actor(obj) 
+function npc_shot_actor(obj)
 	mod_call("calc_adrenaline","enemy_hit_actor",obj,"npc")
 end
 
@@ -676,7 +676,7 @@ function on_game_load()
 
   mod_call("first_run")
 
---user area 
+--user area
   mod_call("test_sleep_pp")
   mod_call("check_spawn")
 --  local str=string
@@ -688,8 +688,8 @@ function on_game_load()
 end
 
 --записываем все переменные, которые нужно, вызывается присохранении игры, автоматически; вручную не вызывать
-function on_game_save() 
-  
+function on_game_save()
+
 end
 
 -- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db_actor недоступен!
@@ -810,7 +810,6 @@ function fill_object_packet(ret,stpk,updpk)
   stpk:w_s32(ret.obs32u3)
 end
 
-
 function parse_visual_packet(ret,stpk,updpk)
   ret.visual=stpk:r_stringZ()
   ret.vsu8u1=stpk:r_u8()
@@ -840,7 +839,7 @@ function parse_creature_packet(ret,stpk,updpk)
   ret.group=stpk:r_u8()
   ret.health=stpk:r_float()
   ret.crvu32u16u1=readvu32u16(stpk)
-  ret.crvu32u16u2=readvu32u16(stpk)  
+  ret.crvu32u16u2=readvu32u16(stpk)
   ret.killerid=stpk:r_u16()
   ret.game_death_time=readvu8u8(stpk)
 
@@ -858,7 +857,7 @@ function parse_creature_packet(ret,stpk,updpk)
   ret.upddir.z=updpk:r_float()
   ret.updteam=updpk:r_u8()
   ret.updsquad=updpk:r_u8()
-  ret.updgroup=updpk:r_u8()  
+  ret.updgroup=updpk:r_u8()
   return ret
 end
 
@@ -869,7 +868,7 @@ function fill_creature_packet(ret,stpk,updpk)
   stpk:w_u8(ret.group)
   stpk:w_float(ret.health)
   writevu32u16(stpk,ret.crvu32u16u1)
-  writevu32u16(stpk,ret.crvu32u16u2)  
+  writevu32u16(stpk,ret.crvu32u16u2)
   stpk:w_u16(ret.killerid)
   writevu8u8(stpk,ret.game_death_time)
 
@@ -894,7 +893,7 @@ function parse_monster_packet(ret,stpk,updpk)
   ret.baseinr=stpk:r_stringZ()
   ret.smtrid=stpk:r_u16()
   ret.smtrtaskactive=stpk:r_u8()
-  
+
   ret.updu16u1=updpk:r_u16()
   ret.updu16u2=updpk:r_u16()
   ret.upds32u3=updpk:r_s32()
@@ -908,7 +907,7 @@ function fill_monster_packet(ret,stpk,updpk)
   stpk:w_stringZ(ret.baseinr)
   stpk:w_u16(ret.smtrid)
   stpk:w_u8(ret.smtrtaskactive)
-  
+
   updpk:w_u16(ret.updu16u1)
   updpk:w_u16(ret.updu16u2)
   updpk:w_s32(ret.upds32u3)
@@ -923,7 +922,7 @@ function parse_trader_packet(ret,stpk,updpk)
   ret.communityid=stpk:r_s32()
   ret.rank=stpk:r_s32()
   ret.reputation=stpk:r_s32()
-  ret.charname=stpk:r_stringZ()  
+  ret.charname=stpk:r_stringZ()
   return ret
 end
 
@@ -942,7 +941,7 @@ function parse_human_packet(ret,stpk,updpk)
   parse_trader_packet(ret,stpk,updpk)
   parse_monster_packet(ret,stpk,updpk)
   ret.huvu32u8u1=readvu32u8(stpk)
-  ret.huvu32u8u2=readvu32u8(stpk)  
+  ret.huvu32u8u2=readvu32u8(stpk)
   return ret
 end
 
@@ -957,7 +956,7 @@ function parse_skeleton_packet(ret,stpk,updpk)
   ret.skeleton=stpk:r_stringZ()
   ret.skeleton_flags=stpk:r_u8()
   ret.source_id=stpk:r_u16()
-  
+
 --  ret.updsku8u1=updpk:r_u8()
   return ret
 end
@@ -966,7 +965,7 @@ function fill_skeleton_packet(ret,stpk,updpk)
   stpk:w_stringZ(ret.skeleton)
   stpk:w_u8(ret.skeleton_flags)
   stpk:w_u16(ret.source_id)
-  
+
 --  updpk:w_u8(ret.updsku8u1)
 end
 
@@ -1027,7 +1026,7 @@ function fill_se_monster_packet(ret,stpk,updpk)
   stpk:w_u8(ret.was_in_smtr)
   for i,v in ipairs(ret.stunk1) do
     stpk:w_u8(v)
-  end  
+  end
 end
 
 -- серверный объект на входе
@@ -1111,19 +1110,19 @@ function get_anomaly_data(sobj)
   amk.parse_shape_packet(t,stpk,uppk,size)
 
 	t.restrictor_type = stpk:r_u8()
-	
+
 	t.max_power = stpk:r_float()
 	t.owner_id = stpk:r_s32()
 	t.enabled_time = stpk:r_s32()
 	t.disabled_time = stpk:r_s32()
 	t.start_time_shift = stpk:r_s32()
-	
+
 	t.offline_interactive_radius = stpk:r_float()
 	t.artefact_spawn_count = stpk:r_u16()
 	t.artefact_position_offset = stpk:r_s32()
-	
+
 	t.last_spawn_time_present = stpk:r_u8()
-	
+
 	if stpk:r_elapsed() ~= 0 then
 --		abort("left=%d", stpk:r_elapsed())
 	end
@@ -1133,24 +1132,24 @@ end
 function set_anomaly_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_shape_packet(t,stpk,uppk)
 
 	stpk:w_u8(t.restrictor_type)
-	
+
 	stpk:w_float(t.max_power)
 	stpk:w_s32(t.owner_id)
 	stpk:w_s32(t.enabled_time)
 	stpk:w_s32(t.disabled_time)
 	stpk:w_s32(t.start_time_shift)
-	
+
 	stpk:w_float(t.offline_interactive_radius)
 	stpk:w_u16(t.artefact_spawn_count)
 	stpk:w_s32(t.artefact_position_offset)
-	
+
 	stpk:w_u8(t.last_spawn_time_present)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -1170,15 +1169,15 @@ function parse_custom_data(str)
 				if string_find(line,"=")~=nil then
 					for k, v in string_gfind(line, "([^=]-)%s*=%s*(.*)") do
 						k = trim(k)
-						if k~=nil and k~='' and v~=nil then 
-							t[section][k]=trim(v) 
+						if k~=nil and k~='' and v~=nil then
+							t[section][k]=trim(v)
 						end
 					end
 				else
 					for k, v in string_gfind(line, "(.*)") do
 						k = trim(k)
 						if k~=nil and k~='' then
-							t[section][k]="<<no_value>>" 
+							t[section][k]="<<no_value>>"
 						end
 					end
 				end
@@ -1205,7 +1204,7 @@ function gen_custom_data(tbl)
 		end
 	end
 	return str
-end 
+end
 
 function get_lc_data(obj)
 	local packet = net_packet()
@@ -1219,9 +1218,9 @@ function get_lc_data(obj)
 	t.custom_data = packet:r_stringZ()
 	t.story_id = packet:r_s32()
 	t.spawn_story_id = packet:r_s32()
-	
+
 	amk.parse_shape_packet(t,packet)
-	
+
 	t.restrictor_type = packet:r_u8()
 	t.dest_game_vertex_id = packet:r_u16()
 	t.dest_level_vertex_id = packet:r_s32()
@@ -1248,7 +1247,7 @@ function set_lc_data(t,obj)
 	packet:w_stringZ(t.custom_data)
 	packet:w_s32(t.story_id)
 	packet:w_s32(t.spawn_story_id)
-	
+
 	amk.fill_shape_packet(t,packet)
 
 	packet:w_u8(t.restrictor_type)
@@ -1312,11 +1311,11 @@ end
 function set_breakable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
   amk.fill_object_physic_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -1329,7 +1328,7 @@ function on_REspawn(obj,respawner)
 	if obj and respawner then
 		mod_call("respawned",obj,respawner)
 		if IsMonster(obj) then
-			if respawner.spawned_goes_online==true then mod_call("switch_monster_online",obj) 
+			if respawner.spawned_goes_online==true then mod_call("switch_monster_online",obj)
 			elseif respawner.spawned_goes_online==false then mod_call("switch_monster_offline",obj) 			end
 		end
 	end
@@ -1353,7 +1352,7 @@ function get_spawner_data(sobj)
   local t={}
 	amk.parse_object_packet(t,stpk,uppk,size)
   amk.parse_shape_packet(t,stpk,uppk,size)
-	
+
 	t.restrictor_type = stpk:r_u8()
 	t.spawned_obj_count = stpk:r_u8()
   -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
@@ -1363,12 +1362,12 @@ end
 function set_spawner_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
 	stpk:w_u8(t.spawned_obj_count)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1437,7 +1436,6 @@ function quotemeta(str)
 	return (string_gsub(s, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
 end
 
-
 function add(v1,v2)
 	local nv=vector()
 	nv.x=v1.x+v2.x
@@ -1459,7 +1457,7 @@ function get_restrictor_data(sobj)
   local t={}
 	amk.parse_object_packet(t,stpk,uppk,size)
   amk.parse_shape_packet(t,stpk,uppk,size)
-	
+
 	t.restrictor_type = stpk:r_u8()
   -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
   return t
@@ -1468,11 +1466,11 @@ end
 function set_restrictor_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1503,11 +1501,11 @@ end
 function set_trader_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
   amk.fill_trader_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1537,10 +1535,10 @@ end
 function set_invbox_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1623,12 +1621,12 @@ end
 function set_ammo_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
   amk.fill_item_packet(t,stpk,uppk)
   amk.fill_item_ammo_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   stpk:r_seek(0)
@@ -1666,12 +1664,12 @@ end
 function set_destroyable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
   amk.fill_skeleton_packet(t,stpk,uppk)
   amk.fill_object_physic_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1704,12 +1702,12 @@ end
 function set_weapon_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-	
+
   amk.fill_object_packet(t,stpk,uppk)
   amk.fill_visual_packet(t,stpk,uppk)
   amk.fill_item_packet(t,stpk,uppk)
   amk.fill_item_weapon_packet(t,stpk,uppk)
-	
+
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
   -- amk.mylog("wsp "..size.." "..size1)
@@ -1726,7 +1724,7 @@ function parse_item_weapon_packet(ret,stpk,updpk)
 	ret.weapon_state = stpk:r_u8()
 	ret.addon_flags = stpk:r_u8()
 	ret.ammo_type = stpk:r_u8()
-	
+
 	ret.updcondition = updpk:r_u8()
 	ret.updweapon_flags = updpk:r_u8()
 	ret.updammo_elapsed = updpk:r_u16()
@@ -1744,7 +1742,7 @@ function fill_item_weapon_packet(ret,stpk,updpk)
 	stpk:w_u8(ret.weapon_state)
 	stpk:w_u8(ret.addon_flags)
 	stpk:w_u8(ret.ammo_type)
-	
+
 	updpk:w_u8(ret.updcondition)
 	updpk:w_u8(ret.updweapon_flags)
 	updpk:w_u16(ret.updammo_elapsed)
@@ -1809,5 +1807,5 @@ MMMMMMM    MMMMM    MMMMMM  MMMMMMMMMMMMM  MMMMMMMMMMM     MMMMMMMMMMM    MMMMMM
     MMMMMMMM       MMMMMMM      MMMMMM      MMMMMMM MMMM   MMMMMMMMMM  MMMM MMMMMMM  MMMMMMMMMMMMMMMMM
    MMMMMMMMMM        MMMMM      MMMMMM      MMMMMMMMMMM    MMMMMMM     MMMM  MMMMMM  MMMMMMMMMMMMMMMMM
   MMMMM  MMMMM    MMMMMMMM      MMMMMM      MMMMMMMMMMMMMM MMMMMMMMMMM MMMMMMMMMMMMM MMMMM MMMMM MMMMM
- MMMMM   MMMMMM    MMMMMM       MMMMMM      MMMMMMM MMMMM  MMMMMMMMMM MMMMMMM MMMMMM MMMM   MM   MMMM 
+ MMMMM   MMMMMM    MMMMMM       MMMMMM      MMMMMMM MMMMM  MMMMMMMMMM MMMMMMM MMMMMM MMMM   MM   MMMM
 ]]

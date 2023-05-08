@@ -30,20 +30,20 @@ function insert_custom_data(npc,actor)
 		actor_ = actor
 		npc_ = npc
 	end
-	
+
 	local id = npc_:id()
 	local obj = alife():object(id)
 	if (obj) then
 		local t = amk.read_stalker_params(obj)
 		local cd = amk.parse_custom_data(t.custom)
-		if not cd.npc then 
-			cd.npc={} 
+		if not cd.npc then
+			cd.npc={}
 		end
-		if not cd.npc.vv then 
-			cd.npc.vv = 0 
+		if not cd.npc.vv then
+			cd.npc.vv = 0
 		end
 		t.custom = amk.gen_custom_data(cd)
-		amk.write_stalker_params(t, obj, true) 
+		amk.write_stalker_params(t, obj, true)
 	end
 end
 
@@ -56,7 +56,7 @@ function precond(npc, actor)
 		actor_ = actor
 		npc_ = npc
 	end
-	
+
 	local zz = true
 	local id = npc_:id()
 	local obj = alife():object(id)
@@ -71,17 +71,17 @@ function precond(npc, actor)
 end
 
 function amk_options_2()
-	if amk.load_variable("option_treasure", 0) == 2 then 
+	if amk.load_variable("option_treasure", 0) == 2 then
 	  return true
-	else 
+	else
       return false
 	end
 end
 
 function amk_options_1()
-	if amk.load_variable("option_treasure", 0) ~= 2 then 
+	if amk.load_variable("option_treasure", 0) ~= 2 then
 		return true
-	else 
+	else
 		return false
 	end
 end
@@ -122,7 +122,7 @@ function rank_get(npc, actor)
 		actor_ = actor
 		npc_ = npc
 	end
-	
+
 	if db.actor:character_rank() > 300 then
 		return false
 	else
@@ -140,7 +140,7 @@ function have_a_item(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("mutant_krovosos_jaw", 3) and 
+	return amk_utils_inventory_search("mutant_krovosos_jaw", 3) and
 	       amk_utils_inventory_search("mutant_burer_hand", 3) and
 	       amk_utils_inventory_search("mutant_psevdodog_tail", 3)
 end
@@ -159,7 +159,7 @@ function out_item(first_speaker, second_speaker)
 	flamethrower.relocate_n_items_section(trader, "mutant_psevdodog_tail", "out", 3)
 end
 --Воронин
-function enter_to_dolg(first_speaker, second_speaker)	
+function enter_to_dolg(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
 		actor = first_speaker

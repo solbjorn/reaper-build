@@ -124,7 +124,6 @@ files = game_tasks
 
 #include "inventory_sect.ltx"
 
-
 [lights_hanging_lamp]
 GroupControlSection = spawn_group
 $spawn        = "physics\hanging lamp"
@@ -179,7 +178,6 @@ blood_drop_time_min = 0.3     ;
 blood_drop_time_max = 2.0     ;
 blood_drop_size   = 0.1     ;размер капли (м) крови, которая упала
 
-
 [entity_fire_particles]
 fire_particles = damage_fx\burn_creatures
 start_burn_size = 0.0003    ;размер ожега после которого начать играть партиклы огня
@@ -220,10 +218,9 @@ hit_mark_texture = ui\ui_hud_hit_mark
 ;; inventory items
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 [document]
 GroupControlSection = spawn_group
-;discovery_dependency = 
+;discovery_dependency =
 $spawn        = "documents\document 01"
 ;$prefetch      = 32
 class       = II_DOC
@@ -240,16 +237,13 @@ inv_grid_x      = 0
 inv_grid_y      = 0
 cost        = 0
 
-
-
-
 [spectator]
  $player        = on
 class                   = SPECT
 
 [m_car]
 GroupControlSection = spawn_group
-discovery_dependency = 
+discovery_dependency =
 $spawn      = "vehicles\car"
 cform                   = skeleton
 class                   = SCRPTCAR
@@ -260,7 +254,6 @@ inv_grid_width      = 1
 inv_grid_height     = 1
 
 script_binding      = bind_physic_object.init
-
 
 [actor_firsteye_cam]
 lim_pitch                = -1.5, 1.5
@@ -278,7 +271,7 @@ lim_pitch                = -1.5, 1.5
 lim_yaw                  = 0, 0
 lim_zoom                 = 0.4, 10
 rot_speed                = 3.14, 1.0, 10
- 
+
 [actor_look_cam]
 lim_pitch                = -0.7, 1
 lim_yaw                  = 0, 0
@@ -303,7 +296,7 @@ rot_speed                = 3.14, 1.0, 0
 lim_pitch                = -0.5, 0.3
 lim_yaw                  = -2.0, 2.0
 rot_speed                = 3.14, 1.0, 0
- 
+
 [car_free_cam]
 lim_pitch                = -1, 1.56 ;0, 1.56
 lim_yaw                  = 0, 0 ;0, 0
@@ -321,23 +314,22 @@ lim_pitch                = -1.5, 1.5
 lim_yaw                  = 0, 0
 lim_zoom                 = 5, 25
 rot_speed                = 3.14, 1.0, 10
- 
+
 [heli_front_cam]
 ;lim_yaw    = -0.01,0.01
 lim_pitch                = -1.2, 1.2
 lim_yaw                  = -1.5, 1.5
 rot_speed                = 3.14, 1.5, 0
- 
+
 [heli_look_cam]
 lim_pitch                = 0, 1.56
 lim_yaw                  = 0, 0
 lim_zoom                 = 5, 15
 rot_speed                = 3.14, 1.0, 10
- 
+
 [interface]
 font_game                = font_game
 font_small               = font_small
- 
 
 [graph_point]
 class                = AI_GRAPH
@@ -354,8 +346,6 @@ buy_price_factor_friendly = 1   ;коэффициент покупки при goodwill = 100
 sell_price_factor_hostile = 1.2   ;коэффициент покупки при goodwill = -100
 sell_price_factor_friendly  = 1   ;коэффициент покупки при goodwill = 100
 
-
-
 ;-----------------------------------------------------------------
 
 [spawn_group_zone]
@@ -369,14 +359,14 @@ $spawn            = "ai\spawn group"                ; option for Level Editor
 class           = AI_SPGRP
 
 [level_changer]
-GroupControlSection = 
+GroupControlSection =
 $spawn      = "ai\level changer"
 ;$prefetch    = 4
 class     = LVL_CHNG
 script_binding  = amk.bind_lc
 
 [script_zone]
-GroupControlSection = 
+GroupControlSection =
 $spawn      = "ai\script zone"
 ;$prefetch    = 4
 class     = SCRIPTZN
@@ -416,7 +406,6 @@ last_name_cnt = 200
 name_cnt    = 1
 last_name_cnt = 200
 
-
 [script_object]
 GroupControlSection     = spawn_group
 $spawn            = "script\script object"            ; option for Level Editor
@@ -436,7 +425,7 @@ snd_new_contact1        = $no_sound
 
 [attachable_item]
 GroupControlSection   = spawn_group
-discovery_dependency  = 
+discovery_dependency  =
 $spawn          = "equipment\attachable_item"
 cform                   = skeleton
 class         = II_ATTCH
@@ -454,7 +443,7 @@ attach_bone_name    = bip01_head
 
 [new_attachable_item]
 GroupControlSection   = spawn_group
-discovery_dependency  = 
+discovery_dependency  =
 $spawn          = "equipment\new_attachable_item"
 cform                   = skeleton
 class         = II_BTTCH
@@ -472,7 +461,7 @@ attach_bone_name    = bip01_head
 
 [hand_radio]:identity_immunities
 GroupControlSection   = spawn_group
-discovery_dependency  = 
+discovery_dependency  =
 $spawn          = "equipment\hand_radio"
 cform                   = skeleton
 class         = II_ATTCH
@@ -548,7 +537,7 @@ schedule_max      = 1000
 
 [custom_script_object]
 GroupControlSection   = spawn_group
-discovery_dependency  = 
+discovery_dependency  =
 $spawn          = "scripts\custom_object"
 cform                   = skeleton
 class         = NW_ATTCH
@@ -809,7 +798,6 @@ actors\corpses\dead_neytral_hood1
 actors\corpses\dead_neytral_hood2
 actors\corpses\dead_neytral_hood3
 
-
 ;;;;; AMK section
 
 ; Original monsters
@@ -857,24 +845,24 @@ monsters\tushkano\tushkano_dead
 
 ; Cut monsters
 
-monsters\burer\burer 
-monsters\burer\burer_1 
-monsters\cat\cat 
-monsters\chimera\chimera 
-monsters\crow\crow 
-monsters\dark_stalker\dark_stalker 
-monsters\izlom\izlom 
-monsters\rat\rat_1 
-monsters\rat\rat_2 
-monsters\rat\rat_3 
-monsters\topolinypuh\topolinypuh 
-monsters\topolinypuh\tp_bottom 
-monsters\zombi\zombi_1 
-monsters\zombi\zombi_1_ghost 
-monsters\zombi\zombi_2 
-monsters\zombi\zombi_4 
-monsters\zombi\zombi_trup 
-monsters\zombi\zombi_trup_2 
+monsters\burer\burer
+monsters\burer\burer_1
+monsters\cat\cat
+monsters\chimera\chimera
+monsters\crow\crow
+monsters\dark_stalker\dark_stalker
+monsters\izlom\izlom
+monsters\rat\rat_1
+monsters\rat\rat_2
+monsters\rat\rat_3
+monsters\topolinypuh\topolinypuh
+monsters\topolinypuh\tp_bottom
+monsters\zombi\zombi_1
+monsters\zombi\zombi_1_ghost
+monsters\zombi\zombi_2
+monsters\zombi\zombi_4
+monsters\zombi\zombi_trup
+monsters\zombi\zombi_trup_2
 
 objects\dynamics\balon\balon_01
 objects\dynamics\balon\bidon

@@ -2,7 +2,6 @@
 Зоны пси-излучения. Отыгрывают постпроцесс и фантомов по настройкам из custom_data
 --------------------------------------------------------------------------------------------------]]
 
-
 class "PsyAntenna"
 function PsyAntenna:__init				()
 -- ----------------------------------------------------------------------------------------
@@ -139,39 +138,39 @@ function PsyAntenna:update(dt)
 			end
 		end
 
-		if		ii < 0.0 then ii = 0.0 
+		if		ii < 0.0 then ii = 0.0
 		elseif	ii > 1.0 then ii = 1.0 end
 		return ii
 	end
-	
+
 	self:generate_phantoms()
-	
+
 	self.sound_intensity = update_intensity(self.sound_intensity_base, self.sound_intensity)
 	self:update_sound()
-	
+
 	for k,v in pairs(self.postprocess) do
 		v.intensity = update_intensity(v.intensity_base, v.intensity)
 		local exist = self:update_postprocess(v)
-		
+
 		if exist == false then
 			self.postprocess[k] = nil
 		end
 	end
-	
+
 	self:update_psy_hit(dt)
 end
 function PsyAntenna:save(p)
 	p:w_float(self.hit_intensity)
 	p:w_float(self.sound_intensity)
-	p:w_float(self.sound_intensity_base)	
+	p:w_float(self.sound_intensity_base)
 	p:w_float(self.mute_sound_threshold)
 
 	p:w_u8(self.postprocess_count)
 	for k,v in pairs(self.postprocess) do
-		p:w_stringZ(k)	
-		p:w_float(v.intensity)	
-		p:w_float(v.intensity_base)	
-		p:w_u16(v.idx)	
+		p:w_stringZ(k)
+		p:w_float(v.intensity)
+		p:w_float(v.intensity_base)
+		p:w_u16(v.idx)
 	end
 end
 function PsyAntenna:load(p)
@@ -200,13 +199,11 @@ end
 -- логическая схема для space restrictor
 ----------------------------------------------------------------------------------------------------
 
-
 local state_outside = 0 -- актер снаружи
 local state_inside  = 1 -- актер внутри
 local state_void  = 2 -- неизвестный статус
 
 psy_antenna = false
-
 
 class "action_psy_antenna"
 function action_psy_antenna:__init( obj, storage )
@@ -240,7 +237,7 @@ function action_psy_antenna:switch_state( actor )
 			self:zone_enter()
 			return
 		end
-	else		
+	else
 		if not self.object:inside( actor:position() ) then
 			self:zone_leave()
 			return

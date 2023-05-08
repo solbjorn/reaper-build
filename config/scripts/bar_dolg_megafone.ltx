@@ -1,6 +1,6 @@
 [logic]
 active = ph_sound@idle
- 
+
 [ph_sound@idle]
 snd = dolg_speech_day
 min_idle = 5000
@@ -41,7 +41,6 @@ on_info3 = {=is_dolg_day} ph_sound@idle
 on_info4 = {=is_dolg_mor} ph_sound@morning
 on_info5 = {=is_dolg_eve} ph_sound@evening
 
- 
 [ph_sound@start_megafon]
 snd = bar_start_megafon
 min_idle = 5000
@@ -78,7 +77,7 @@ on_info ={+bar_arena_start_introduce +bar_arena_actor_afraid} ph_sound@actor_afr
 [ph_sound@actor_afraid]
 snd = arena_actor_afraid
 on_signal = theme_end| ph_idle@idle %-bar_arena_start_introduce +bar_arena_reset%
-	
+
 [ph_sound@introduce_pseudodog]
 snd = arena_introduce_pseudodog
 on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
@@ -101,7 +100,6 @@ on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
 
 [ph_idle@fight]
 on_info = {-bar_arena_start} ph_sound@idle, {+bar_arena_actor_victory +bar_arena_20_p +bar_arena_start_introduce} ph_sound@victory, {+bar_arena_actor_victory +bar_arena_start_introduce} ph_sound@victory, {+bar_arena_actor_lose +bar_arena_start_introduce} ph_sound@lose, {+bar_arena_actor_dead +bar_arena_start_introduce} ph_sound@death,  {+bar_arena_monstr_ready +bar_arena_start_introduce} ph_sound@fight_begin
-
 
 [ph_sound@fight_begin]
 snd = arena_fight_begin

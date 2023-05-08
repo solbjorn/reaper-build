@@ -66,7 +66,7 @@ local math_pi = math.pi
 local hud = get_hud()
 local angle = 0
 local lim_angle = 1000*2*math_pi
-local biomap_sweep = nil  
+local biomap_sweep = nil
 -- вызывается из net_spawn биндера объекта
 -- регистрирует объект
 function add_obj(obj)
@@ -103,13 +103,13 @@ function update()
 			biomap_sweep:Init(1024 + 3 - (biomap_width + biomap_sweep_width)*koef_x/2,2 + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width*koef_x,biomap_sweep_width)
 		end
 	end
-	
+
 	local actor_pos = db_actor:position()
 	local sim = alife()
 	local sdir = device().cam_dir
 	a = math_atan2(-sdir.x,sdir.z)
 	s,c = ms(a),mc(a)
-	
+
 	if biomap_sweep_enabled or fading then
 		angle = angle - step_angle
 		if angle < -lim_angle then angle = angle + lim_angle end
@@ -130,7 +130,7 @@ function update()
 	if fading then
 		xa = - math_fmod(angle*(180 / math_pi),360)
 	end
-	
+
 	for id,is_stalker in pairs(creatures) do
 		local so = sim:object(id)
 		if so then
@@ -190,7 +190,7 @@ function dot:draw(dir,obj_alive)
 		self.cnt = self.cnt - 1
 		return
 	end
-	
+
 	local z = dir:magnitude()/ max_dist
 	if z<=1 then
 		if self.alive and not obj_alive then
@@ -206,10 +206,10 @@ function dot:draw(dir,obj_alive)
 		self.st:SetWndPos( (x + d)*koef_x - 1, y + d)
 		if self.o_id == 0 then self.cnt = 100000 return end
 		-------- угасание точек -------
-		if fading then 
+		if fading then
 			local u = math_atan2(y, x) * (180 / math_pi) + 180
 			if (xa > u and xa-u or u-xa) < 1.5 then
-				self.a = 255 
+				self.a = 255
 			elseif self.a > 2 then
 				self.a = self.a - 1
 			end

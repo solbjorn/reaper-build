@@ -13,38 +13,38 @@ function trader_repair_precond(trader, actor)
 	elseif item_in_slot_2 ~= nil and 1 > item_in_slot_2:condition() + 0.01 then return true
 	elseif item_in_slot_6 ~= nil and 1 > item_in_slot_6:condition() + 0.01 then return true
 	else return false
-	end	 
+	end
 end
 
 function trader_check_money_s1(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(1)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
 
 function trader_check_money_s2(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(2)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
 
 function trader_check_money_s6(trader, actor)
 	local item_in_slot = db.actor:item_in_slot(6)
-	if item_in_slot ~= nil then 
+	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
-		end 
+		end
 	end
 	return false
 end
@@ -73,20 +73,20 @@ function trader_repiar_armor_s6(trader, actor)
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
 		dialogs.relocate_money(actor, item_repair_cost, "out")
-	end	
+	end
 end
 
 function repair_costs(first_speaker, second_speaker)
 	local task_texture, task_rect = get_texture_info("ui_iconsTotal_lost_money")
-	
+
 	local item_name_and_price = ""
 	local item_repair_cost = 0
-	if db.actor ~= nil then 
+	if db.actor ~= nil then
 		local item_in_slot_1 = db.actor:item_in_slot(1)
 		local item_in_slot_2 = db.actor:item_in_slot(2)
 		local item_in_slot_6 = db.actor:item_in_slot(6)
-	
-		if item_in_slot_1 ~= nil then 
+
+		if item_in_slot_1 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_1:condition()) * item_in_slot_1:cost() * weapon_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_0").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
@@ -162,7 +162,6 @@ function trader_check_miniquest_free_all_neg(trader, actor)
 	return true
 end
 
-
 --------------------------------------------------------------------------------------------------------
 -- Dialog & InfoPortions Function
 --------------------------------------------------------------------------------------------------------
@@ -171,18 +170,16 @@ end
 -- Trader
 --------------------------------------------------------------------------------------------------------
 
-
 function transfer_deneg(first_speaker, second_speaker)
     dialogs.relocate_money(second_speaker, 1400, "in")
     dialogs.relocate_item_section(second_speaker, "detector_simple", "in")
 	dialogs.relocate_item_section(second_speaker, "arc_art_box_8basic", "in")
 	dialogs.relocate_item_section(first_speaker, "arc_art_box_1basic", "out")
-	
+
 end
-   
 
 function give_weapon_from_trader(trader, actor)
-    dialogs.relocate_item_section(trader, "wpn_knife", "in") 
+    dialogs.relocate_item_section(trader, "wpn_knife", "in")
 	dialogs.relocate_item_section(trader, "arc_art_box_1basic", "in")
 
 	dialogs.relocate_item_section(trader, "fake_bolt", "in")
@@ -203,16 +200,12 @@ actor:give_info_portion("test_quest_art_vziat")
     end
 end
 
-
 function have_a_art2 (stalker, player)
     return stalker:object ("amk_af_night_star") ~= nil
 end
 function have_box (stalker, player)
     return stalker:object ("arc_art_box_1basic") ~= nil
 end
-
-
-
 
 function trader_alredy_give_job(trader, actor)
 	if (has_alife_info("agroprom_military_case") and not has_alife_info("agroprom_military_case_done")) or
@@ -222,7 +215,7 @@ function trader_alredy_give_job(trader, actor)
 	then
 		return true
 	end
-	return false 
+	return false
 end
 
 function trader_give_extra_job(trader, actor)
@@ -244,7 +237,7 @@ function bandits_die(actor,npc)
 end
 
 function trader_need_extra_job(trader, actor)
-	if not has_alife_info("escape_blockpost_case") and 
+	if not has_alife_info("escape_blockpost_case") and
 	    has_alife_info("esc_return")
 	then
 		return true
@@ -276,11 +269,9 @@ function not_final_job(trader, actor)
 end
 
 function trader_test(actor, npc)
- 	printf ("!!!!!")	
+ 	printf ("!!!!!")
 	return true
 end
-
-
 
 function trader_dont_give_job(first_speaker, second_speaker)
 	return not trader_alredy_give_job(first_speaker, second_speaker)
@@ -296,13 +287,13 @@ function finalize_quests(first_speaker, second_speaker)
 end
 
 function not_finalize_quests(first_speaker, second_speaker)
-	return not this.finalize_quests(first_speaker, second_speaker)	
+	return not this.finalize_quests(first_speaker, second_speaker)
 end
 
 function tutorial_artefact_end(first_speaker, second_speaker)
 	local actor = db.actor
 	local tutorial_artefact = first_speaker:object("af_blood_tutorial")
-	if has_alife_info("tutorial_artefact_start") and 
+	if has_alife_info("tutorial_artefact_start") and
 	   not has_alife_info("tutorial_artefact_done") and
 	   tutorial_artefact ~= nil
 	then
@@ -314,7 +305,7 @@ end
 function tutorial_artefact_have_not(first_speaker, second_speaker)
 	local actor = db.actor
 	local tutorial_artefact = first_speaker:object("af_blood_tutorial")
-	if has_alife_info("tutorial_artefact_start") and 
+	if has_alife_info("tutorial_artefact_start") and
 	   not has_alife_info("tutorial_artefact_done") and
 	   tutorial_artefact == nil
 	then
@@ -326,8 +317,8 @@ end
 function tutorial_wounded_end(first_speaker, second_speaker)
 	local actor = db.actor
 	-- local wounded_flash = first_speaker:object("esc_wounded_flash")
-	if has_alife_info("tutorial_wounded_start")	and 
-		has_alife_info("tutorial_wounded_give_info")	and 	
+	if has_alife_info("tutorial_wounded_start")	and
+		has_alife_info("tutorial_wounded_give_info")	and
 	   not has_alife_info("esc_serious_talk")
  -- and   wounded_flash ~= nil
 	then
@@ -345,7 +336,6 @@ function trader_dont_has_job(first_speaker, second_speaker)
 	return false
 end
 
-
 --' Escape tutorial artefact
 function have_tutorial_artefact(first_speaker, second_speaker)
   	return first_speaker:object("af_blood_tutorial") ~= nil
@@ -356,7 +346,6 @@ end
 function give_tutorial_artefact(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "af_blood_tutorial", "out")
 end
-
 
 --' Meet fox
 function have_fox_info(first_speaker, second_speaker)
@@ -381,12 +370,10 @@ function give_weapon_to_actor (trader, actor)
 	end
 end
 
-
 --' Escape blockpost box
 function have_blockpost_case(first_speaker, second_speaker)
   	return first_speaker:object("quest_case_01") ~= nil
 end
-
 
 function give_blockpost_case(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "quest_case_01", "out")
@@ -418,7 +405,6 @@ function have_artefact_from_fleshes(first_speaker, second_speaker)
 	end
   	return false
 end
-
 
 --' ящик с блокпоста
 function trader_need_blockpost_box(first_speaker, second_speaker)
@@ -467,7 +453,6 @@ function wolf_additional_reward(first_speaker, second_speaker)
     dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
 end
 
-
 --' Escape Wounded's flash
 function wounded_give_flash(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "esc_wounded_flash", "in")
@@ -500,12 +485,10 @@ function give_documents_reward (first_speaker, second_speaker)
 	dialogs.relocate_money(first_speaker, 1000, "in")
 end
 
-
 --' Kill killers raid
 function give_reward_killers(first_speaker, second_speaker)
 	dialogs.relocate_money(first_speaker, 2500, "in")
 end
-
 
 --' Soldiers on bridge
 function has_soldiers_bribe(actor, npc)
@@ -513,11 +496,11 @@ function has_soldiers_bribe(actor, npc)
 end
 
 function give_soldiers_bribe(actor, npc)
-	dialogs.relocate_money(npc, 500, "out")	
+	dialogs.relocate_money(npc, 500, "out")
 end
 
 function fox_pay_money(actor, npc)
-	dialogs.relocate_money(npc, 1500, "in")	
+	dialogs.relocate_money(npc, 1500, "in")
 	treasure_manager.get_treasure_manager():give_treasure("esc_secret_truck_goods")
 end
 

@@ -3,8 +3,8 @@
 ----------------------------------------------------------------------------------------------------
 -- Исходный скрипт: Tunduk Vladimir (Sidorovich)
 -- Идея следующая. Мы прикладываем к объекту линейно нарастающую силу в течении определенного времени
--- По истечении времени, мы передергиваем направление силы (на противоположное или еще как) и снова 
--- прикладываем к объекту (не забываем о линейном нарастании). 
+-- По истечении времени, мы передергиваем направление силы (на противоположное или еще как) и снова
+-- прикладываем к объекту (не забываем о линейном нарастании).
 ----------------------------------------------------------------------------------------------------
 class "action_oscillator"
 ---------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ end
 function action_oscillator:reset_scheme ()
     self.time = device():time_global()
     self.dir = vector ():set (math.random (), 0, math.random ()):normalize ()
-    self.coefficient = self.st.force / self.st.period 
+    self.coefficient = self.st.force / self.st.period
     self.joint = self.object:get_physics_shell ():get_joint_by_bone_name (self.st.joint)
     self.time = time_global ()
     self.pause = false
@@ -36,7 +36,7 @@ function action_oscillator:update (delta)
        end
        self.time = c_time
        self.pause = false
-    end        
+    end
     -- проверим на необходимость изменения направления
     if c_time - self.time >= self.st.period then
        self.dir.x = -self.dir.x
@@ -63,16 +63,16 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.joint = utils.cfg_get_string (ini, section, "joint", npc, true, gulag_name)
 	if st.joint == nil then
 	   abort ("Invalid joint definition for object %s", npc:name ())
-	end   
+	end
 	st.period = utils.cfg_get_number (ini, section, "period", npc, true, 0)
 	st.force = utils.cfg_get_number (ini, section, "force", npc, true, 0)
     if st.period == nil or st.force == nil then
        abort ("[ph_oscillate] Error : Force or period not defined")
-    end   
+    end
     st.angle = utils.cfg_get_number (ini, section, "correct_angle", npc, false, 0)
     if st.angle == nil then
        st.angle = 0
-    end    
+    end
 end
 
 ---------------------------------------------------------------------------------------------------------------------

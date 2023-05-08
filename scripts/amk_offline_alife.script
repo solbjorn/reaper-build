@@ -96,7 +96,6 @@ local smart_filters = {
 	"esc_bridge", "esc_blokpost"
 }
 
-
 local rel_enemy,rel_friend
 
 --радиус "обзора"
@@ -141,8 +140,8 @@ end
 function update()
 	if (bFlag == false and iTime ~= -1) then
 		if (amk_game_minutes() - iTime > iFreq) then
-			bFlag = true			
-			off_npcs={}	
+			bFlag = true
+			off_npcs={}
 			items={}
 			iCounter = 1
 			amk.mylog("Updating offline-ALife started")
@@ -161,7 +160,7 @@ function update()
 			  add_fresh_meat(obj)
 			  iCounter = iCounter + 1
 			  if iCounter >= 65535 then break end
-			end  
+			end
 		end
 	end
 end
@@ -204,7 +203,7 @@ function add_fresh_meat(obj)
 									if (p_map ~= map) then
 										if not off_npcs[p_map] then off_npcs[p_map]={monsters={},stalkers={},weapons={},artefacts={}, inv_boxes={}} end
 										map = p_map
-									end	
+									end
 								end
 							end
 						end
@@ -225,7 +224,7 @@ function add_fresh_meat(obj)
 								if (p_map ~= map) then
 									if not off_npcs[p_map] then off_npcs[p_map]={monsters={},stalkers={},weapons={},artefacts={}, inv_boxes={}} end
 									map = p_map
-								end	
+								end
 							end
 						end
 					end
@@ -234,7 +233,7 @@ function add_fresh_meat(obj)
 			elseif ((obj:section_name()=="inventory_box" or (obj:section_name()=="m_inventory_box" and is_look_rukzak)) and box_is_protected(obj)==false) then
 				table_insert(off_npcs[map].inv_boxes, {id = obj.id, name = obj:name()})
 			end
-			
+
 			if (obj.parent_id ~= nil and obj.m_story_id~=nil and obj.m_story_id==4294967296 and IsMonster(obj)==false and IsStalker(obj)==false) then
 				local zz = alife():object(obj.parent_id)
 				if zz then
@@ -263,7 +262,7 @@ function build_tables()
 		local s_comm = s_value[a]
 		table_insert(comm_list, s_comm)
 	end
-  
+
 	local tmp={}
 	local result, id, value = nil, nil, nil
 	for a=0,system_ini():line_count("communities_relations")-1 do
@@ -273,7 +272,7 @@ function build_tables()
 			table_insert(tmp, trim(id))
 		end
 	end
-	
+
 	for a=1,#tmp do
 		local value = utils.cfg_get_string(system_ini(), "communities_relations", tmp[a], nil, false, "", "")
 		local idx = tmp[a]
@@ -286,7 +285,7 @@ function build_tables()
 			end
 		end
 	end
-	
+
 	sell_table = {}
 	local sini = ini_file("misc\\trade_generic.ltx")
 	local cfg_sell = utils.cfg_get_string(sini, "trader", "sell_condition", npc, false, false, "")
@@ -323,13 +322,13 @@ function build_tables()
             always_keep_item[id] = true
         end
     end
-	
+
 	tables_ready = true
 end
 
 function update_npc_tables()
 	item_cleaner.clean_items()
-	off_npcs={}	
+	off_npcs={}
 	local obj
 	for a=1,65534 do
 		obj = alife():object(a)
@@ -372,7 +371,7 @@ function update_tables(level)
 				end
 			end
 		end
-	end	
+	end
 end
 
 function trim (s)
@@ -391,7 +390,7 @@ function offline_alife(level_name)
 	amk.oau_reason="cn offline_alife chp3"
 			local rnd = math_random(st)
 	amk.oau_reason="cn offline_alife chp4"
-			if off_npcs[lname].stalkers[rnd] then 
+			if off_npcs[lname].stalkers[rnd] then
 	amk.oau_reason="cn offline_alife chp5"
 				local victim = alife():object(off_npcs[lname].stalkers[rnd].id)
 	amk.oau_reason="cn offline_alife chp6"
@@ -454,12 +453,12 @@ function collect_info(victim,map)
 	vdata.rank = victim:rank() --ранг
 	vdata.health = victim:health()  --хелсы
 	vdata.community = victim:community()  --группировка
-	
+
 	--пытаемся определить пушку
 	local wp = #off_npcs[map].weapons
 	--условная огневая мощь
 	vdata.fire_power = 0
-	
+
 	local sim = alife()
 	vdata.weapons={own={},seen={}}
 	-- если есть пушки в карманах, выбираем лучшую (по условной мощности)
@@ -481,12 +480,12 @@ function collect_info(victim,map)
 			end
 		end
 	end
-	
+
 	--составляем списки друзей и врагов в зоне "видимости"
 	-- Для тех, у кого смарт в фильтрах - не собираем врагов
 	-- Для остальных - не учитываем врагов из смартов
 	local npc_peaceful = npc_smart_is_peaceful(victim)
-	
+
 	vdata.friends={}
 	vdata.enemies={}
 	vdata.corpses={monsters={},stalkers={}}
@@ -515,7 +514,7 @@ function collect_info(victim,map)
 			end
 		end
 	end
-	
+
 	--составляем список монстряков в зоне "видимости"
 	vdata.monsters={}
 	if off_npcs[map].monsters then
@@ -536,7 +535,7 @@ function collect_info(victim,map)
 			end
 		end
 	end
-	
+
 	--составляем список артов в зоне "видимости"
 	vdata.artefacts={}
 	if off_npcs[map].artefacts then
@@ -553,7 +552,7 @@ function collect_info(victim,map)
 			end
 		end
 	end
-	
+
 	--составляем список контейнеров в зоне "видимости"
 	vdata.inv_boxes={}
 	vdata.hide_boxes={}
@@ -564,32 +563,32 @@ function collect_info(victim,map)
 				if off_npcs[map].inv_boxes[a] then
 					local inv_box = sim:object(off_npcs[map].inv_boxes[a].id)
 					--skip trapped box
-					if (inv_box and inv_box.can_switch_online and inv_box:can_switch_online() and inv_box:name() == off_npcs[map].inv_boxes[a].name and 
+					if (inv_box and inv_box.can_switch_online and inv_box:can_switch_online() and inv_box:name() == off_npcs[map].inv_boxes[a].name and
 					   (inv_box.parent_id==nil or inv_box.parent_id==65535)) and sobj_is_far(inv_box, to_actor) then
-					   
+
 						local dist = victim.position:distance_to(inv_box.position)
 						local owner_id = get_box_owner(inv_box.id)
-						
+
 						--look is higher for ruksaks
 						local lookr = look_radius_box
 						local is_ruksak = inv_box:section_name() == "m_inventory_box"
 						if is_ruksak then lookr = look_radius_ruksak end
-						
-						if dist<=lookr and owner_id==65535 then	
+
+						if dist<=lookr and owner_id==65535 then
 							local zdist = victim.position:distance_to(inv_box.position)/lookr * 0.75
 							if my_random() > zdist then
 								table_insert(vdata.inv_boxes, {id = inv_box.id, name = inv_box:name()})
 							end
 						end
-						
+
 						--making the list of empty boxes to hide habar except ruksaks
 						if not is_ruksak and (not items[inv_box.id] or #items[inv_box.id] == 0 or owner_id~=65535) then
-							table_insert(allemptyboxes, inv_box)	
+							table_insert(allemptyboxes, inv_box)
 							if dist<=look_radius_hide1 then
 								table_insert(vdata.hide_boxes, {id = inv_box.id, name = inv_box:name()})
 							end
 						end
-						
+
 					end
 				end
 			end
@@ -693,11 +692,11 @@ function on_enemies_found(victim, vdata)
 		if (#team_A >0 and #team_B > 0) then
 			local index = #team_A
 			local attacker
-			local defender 
-			local attack_info 
+			local defender
+			local attack_info
 			local rank_hit_chance
 			local distance_hit_chance
-			local hit_chance			
+			local hit_chance
 			if (#team_B > index) then index = #team_B end
 			for j = 1, index do
 				attacker = team_A[j]
@@ -708,7 +707,7 @@ function on_enemies_found(victim, vdata)
 					-- master to novice - 30% max
 					-- 100 метров - 33% 10 метров - 100% 1 метр - 115% Каждый метр - минус 1.5% попасть.
 					rank_hit_chance = math_floor((attacker.rank - defender.rank) / 50)
-					distance_hit_chance = 100 - math_floor((attack_info.distance) / 1.5)					
+					distance_hit_chance = 100 - math_floor((attack_info.distance) / 1.5)
 					hit_chance = distance_hit_chance + rank_hit_chance
 					if ((math_random() * 100) < hit_chance) then
 						-- Попал таки, гад. Посмотрим, как сильно.
@@ -717,7 +716,7 @@ function on_enemies_found(victim, vdata)
 							defender.health = 0
 						else
 							defender.health = defender.health - (attack_info.fp / base_fp)
-							if (defender.health < 0 ) then defender.health = 0 end							
+							if (defender.health < 0 ) then defender.health = 0 end
 						end
 						if (defender.health <= 0) then
 							if (defender.flags >= 2) then
@@ -750,7 +749,7 @@ function on_enemies_found(victim, vdata)
 													local mm = itA.parent_id
 													if mm == nil then mm = "nil" end
 												end
-											end	
+											end
 										end
 									end
 								end
@@ -769,7 +768,7 @@ function on_enemies_found(victim, vdata)
 						-- master to novice - 30% max
 						-- 100 метров - 33% 10 метров - 100% 1 метр - 115% Каждый метр - минус 1.5% попасть.
 						rank_hit_chance = math_floor((attacker.rank - defender.rank) / 50)
-						distance_hit_chance = 100 - math_floor((attack_info.distance) / 1.5)					
+						distance_hit_chance = 100 - math_floor((attack_info.distance) / 1.5)
 						hit_chance = distance_hit_chance + rank_hit_chance
 						if math_random() * 100 < hit_chance then
 							-- Попал таки, гад. Посмотрим, как сильно.
@@ -783,7 +782,7 @@ function on_enemies_found(victim, vdata)
 							if (defender.health <= 0) then
 								if (defender.flags >= 2) then
 									defender.health = health_wound
-								else								
+								else
 									-- Если сталкер - дадим опыт.
 									if (IsStalker(attacker.player) and attacker.player.community) then
 										local m_comm  = attacker.player:community()
@@ -792,7 +791,7 @@ function on_enemies_found(victim, vdata)
 											local coeff = 1
 											if (defender.rank < attacker.rank) then coeff = 0.5 end
 											if (defender.rank > attacker.rank) then coeff = 2 end
-											attacker.player:set_rank(attacker.player:rank() + math_floor(rate_kill_base * coeff))							
+											attacker.player:set_rank(attacker.player:rank() + math_floor(rate_kill_base * coeff))
 										end
 									end
 									news_main.on_offline_death(defender.player, attacker.player, attacker.weapon)
@@ -851,7 +850,7 @@ function on_enemies_found(victim, vdata)
 				news_main.on_offline_wound(vv.player)
 				table_remove(team_B, kk)
 			end
-		end		
+		end
 	end
 end
 
@@ -959,7 +958,7 @@ function on_monsters_found(victim, vdata)
 					rank_hit_chance = math_floor((attacker.rank - defender.rank) / 50)
 					local dii = math_floor(attack_info.distance - defender.speed * i * 5)
 					if (dii <=8) then dii = 45 end -- Вблизи еще и фиг попадешь...
-					distance_hit_chance = 100 - math_floor(dii / 1.5)					
+					distance_hit_chance = 100 - math_floor(dii / 1.5)
 					hit_chance = distance_hit_chance + rank_hit_chance
 					if ((math_random() * 100) < hit_chance) then
 						-- Попал таки, гад. Посмотрим, как сильно.
@@ -968,7 +967,7 @@ function on_monsters_found(victim, vdata)
 							defender.health = 0
 						else
 							defender.health = defender.health - (attack_info.fp / base_fp) * defender.immunity
-							if (defender.health < 0 ) then defender.health = 0 end							
+							if (defender.health < 0 ) then defender.health = 0 end
 						end
 						if (defender.health <= 0) then
 							if defender.flags >= 2 then
@@ -1000,8 +999,8 @@ function on_monsters_found(victim, vdata)
 												if(itA) then
 													local mm = itA.parent_id
 													if mm == nil then mm = "nil" end
-												end											
-											end			
+												end
+											end
 										end
 									end
 								end
@@ -1073,8 +1072,8 @@ function on_monsters_found(victim, vdata)
 				news_main.on_offline_wound(vv.player)
 				table_remove(team_B, kk)
 			end
-		end		
-	end	
+		end
+	end
   amk.oau_reason="on_monsters_found end"
 end
 
@@ -1103,7 +1102,7 @@ function on_npc_corpses_found(victim, vdata)
 							if l_objA then
 								anypick = true
 							end
-						end			
+						end
 					end
 				end
 				if anypick then
@@ -1128,7 +1127,7 @@ function on_monster_corpses_found(victim, vdata)
 		v_obj = vdata.corpses.monsters[i]
 		local corpse = alife():object(v_obj.id)
 		if (corpse and corpse:name() == v_obj.name) then
-			news_main.on_offline_corpse_found(victim, corpse)		
+			news_main.on_offline_corpse_found(victim, corpse)
 			id = corpse.id
 			if (id and items[id]) then
 				for a=1, #items[id] do
@@ -1137,7 +1136,7 @@ function on_monster_corpses_found(victim, vdata)
 						local itA = alife():object(v_itA.id)
 						if (itA and itA:name() == v_itA.name and itA.parent_id == id) then
 							local l_objA = pick_item(victim, itA)
-						end			
+						end
 					end
 				end
 			end
@@ -1203,14 +1202,14 @@ function inv_box_is_avail(victim, box)
 	if (victim == nil or box == nil or box.id == 0) then return false end
 
 	local n_rnd
-	if victim.position and box.position then 
+	if victim.position and box.position then
 		n_rnd = math_random(3, 10)
 		if math.abs(box.position.y - victim.position.y) > n_rnd then
 			return false
-		end 
+		end
 	end
 
-	local anom_list=amk_anoms.get_anomaly_list_for_pos(box.position,20) 
+	local anom_list=amk_anoms.get_anomaly_list_for_pos(box.position,20)
 	local n_anoms = #anom_list
 	n_rnd = math_random(1, 100)
 	if n_rnd < n_anoms * 20 then -- смотрим вероятность. Чем больше аномалий, тем меньше шансов. При 5 - точно до ящика не доберется
@@ -1252,7 +1251,7 @@ function on_inv_boxes_found(victim, vdata)
 								local bTake = is_valuable(itA)
 								if bTake then
 									if checktrap then
-										if check_box_trapped(victim, v_obj) then 
+										if check_box_trapped(victim, v_obj) then
 											npc_hide_habar_boxs(victim, vdata.hide_boxes)
 											return
 										end
@@ -1266,17 +1265,17 @@ function on_inv_boxes_found(victim, vdata)
 										end
 									end
 								end
-							end			
+							end
 						end
 						a=a+1
-					end					
+					end
 					if anyfound then
 						set_box_trapped(v_obj.id, 0)
 					end
 				end
 			end
 		end
-		
+
 		if (b_stalker == true) and anyfound then
 			victim:set_rank(victim:rank() + rate_art_found)
 		end
@@ -1338,10 +1337,10 @@ local max_ammo_boxes=1
 
 function npc_hide_habar_boxs(victim, boxs)
     if not boxs or not victim or not items[victim.id] then return end
-	
+
 	local nbox = table.getn(boxs)
 	if nbox == 0 then return end
-	
+
 	--find a box the npc owns
 	local box = nil
 	local nbvoxs = {}
@@ -1354,7 +1353,7 @@ function npc_hide_habar_boxs(victim, boxs)
 			table_insert(nbvoxs, boxs[iter])
 		end
 	end
-	
+
 	-- randomly pick a box
 	if not box then
 		-- first try to find nobody's box
@@ -1380,7 +1379,7 @@ function npc_hide_habar_boxs(victim, boxs)
 		end
 	end
 	if not box then return end
-	
+
 	--collecting items to hide
 	local hitems  = {}
 	local medkits = {}
@@ -1390,7 +1389,7 @@ function npc_hide_habar_boxs(victim, boxs)
 	local outfits = {}
 	local ammos = {}
 	local sim = alife()
-	
+
 	for iter=1, table.getn(items[victim.id]) do
       local v_itA = items[victim.id][iter]
       if v_itA then
@@ -1416,17 +1415,17 @@ function npc_hide_habar_boxs(victim, boxs)
 					table_insert(weapons2, obj)
 				end
 			end
-		  end	
+		  end
 	    end
 	  end
 	end
-	  
+
 	--hiding collected items
     local boxobj = sim:object(box.id)
     if not boxobj then return end
-	
+
 	local habarcost = hide_items_box(boxobj, hitems, 0, victim.id)
-	
+
 	--defining weapon priorities
 	local weaponparams = {}
 	for witer, wpn in pairs(weapons) do
@@ -1435,7 +1434,7 @@ function npc_hide_habar_boxs(victim, boxs)
 		if isammofor(wpn, ammos) then fp = fp * 1000 end
 		weaponparams[wpn.id] = fp
 	end
-	
+
 	--a npc keeps a best outfit, a best weapon for each slot and one medkit
 	table_sort(outfits, function(a,b) return get_item_cost(a) < get_item_cost(b) end)
 	table_sort(weapons1, function(a,b) return weaponparams[a.id] < weaponparams[b.id] end)
@@ -1448,7 +1447,7 @@ function npc_hide_habar_boxs(victim, boxs)
 		local ammo = ammos[aiter]
 		local ammo_sec = ammo:section_name()
 		if not coll_ammo[ammo_sec] then coll_ammo[ammo_sec] = 0 end
-		
+
 		local keep = false
 		if coll_ammo[ammo_sec] < max_ammo_boxes then
 			if table.getn(weapons1) > 0 then
@@ -1468,24 +1467,24 @@ function npc_hide_habar_boxs(victim, boxs)
 				end
 			end
 		end
-		
+
 		if keep then
 			table_remove(ammos, aiter)
 		else
 			aiter=aiter+1
 		end
 	end
-	
+
 	habarcost = hide_items_box(boxobj, weapons1, 1, victim.id) + habarcost
 	habarcost = hide_items_box(boxobj, weapons2, 1, victim.id) + habarcost
 	habarcost = hide_items_box(boxobj, ammos, 0, victim.id)    + habarcost
 	habarcost = hide_items_box(boxobj, medkits, 1, victim.id)  + habarcost
 	habarcost = hide_items_box(boxobj, outfits, 1, victim.id)  + habarcost
-	
+
 	if habarcost > 0 then
 		npc_put_trap_box(victim, box, habarcost)
 		send_metka_hide_box(boxobj, victim)
-		
+
 		local owner_id = get_box_owner(box.id)
 		if owner_id ~= 65535 then
 			--a npc occupies a box only if his rank is higher than an owner rank or the owner is gone
@@ -1515,12 +1514,12 @@ function IsTrader(npc_id)
 			end
 		end
 	end
-	
+
 	local char_ini = xr_logic.get_customdata_or_ini_file(npc, "<customdata>")
 	if char_ini and char_ini:section_exist("logic") and char_ini:line_exist("logic", "trade") then
 		return true
 	end
-	
+
 	return false
 end
 
@@ -1536,7 +1535,7 @@ function find_metka_near_box(boxobj)
 		metka = obj
 		break
 	end
-	
+
 	if obj and (obj.parent_id == nil or obj.parent_id == 65535) and obj.section_name and obj:section_name() == "amk_metka" then
 	  if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 		local mlid = game_graph():vertex(obj.m_game_vertex_id):level_id()
@@ -1560,18 +1559,18 @@ function send_metka_hide_box(boxobj, victim)
   local sname = get_npc_name(npc)
   amk.remove_spot_from_map(boxobj.id, "treasure")
   amk.add_spot_on_map(boxobj.id, "treasure", sname.." cпрятал хабар в надежном месте")
-  
+
   if boxobj.m_story_id then
     local trman = treasure_manager.get_treasure_manager()
 	if trman then
 		local k = trman.treasure_by_target[boxobj.m_story_id]
-		if k then 
+		if k then
 			trman.treasure_info[k].active = true
 			trman.treasure_info[k].done = true
 		end
 	end
   end
-  
+
   local pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
   pda_news:play(db.actor, 0, sound_object.s2d)
   local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
@@ -1593,7 +1592,7 @@ function npc_put_trap_box(victim, box, habarcost)
   elseif habarcost < 50000 then
     prob = 90
   end
-  
+
   if prob >= my_random(100) then
     --put a trap in the box
 	local tr = get_box_trap_rank(box.id)
@@ -1610,7 +1609,7 @@ function hide_items_box(boxobj, itemlist, cntkeep, npc_id)
 			local obj = itemlist[iter]
 			local section = obj:section_name()
 			local new = create_newitem(obj, boxobj.position, boxobj.m_level_vertex_id, boxobj.m_game_vertex_id, boxobj.id)
-			
+
 			if new then
 				res  = res + get_item_cost(obj)
 				if new.parent_id then
@@ -1620,7 +1619,7 @@ gps_habar.insert_item(new.parent_id, new) -- Idler++-- корректируем хабар в поме
 				end
 				set_item_owner(npc_id, new.id)
 				do_drop_object(obj)
-			end	
+			end
 		end
 	end
 	return res
@@ -1629,10 +1628,10 @@ end
 function check_box_trapped(victim, box)
   if victim == nil or box == nil then return false end
   local result = check_box_trap_trigger(victim, box)
-  
+
   local boxobj = alife():object(box.id)
   if not boxobj then return result end
-  
+
   local metka = find_metka_near_box(boxobj)
   if metka == nil then return result end
 
@@ -1657,8 +1656,8 @@ function blow_habar_out(box_id)
   local sim=alife()
   local boxobj = sim:object(box_id)
   if not boxobj then return end
-  
---collection habar to blow out (maximum 10 items)  
+
+--collection habar to blow out (maximum 10 items)
   local habar = {}
   local rnd = 1000/table.getn(items[box_id])
   for iter=1, table.getn(items[box_id]) do
@@ -1666,14 +1665,14 @@ function blow_habar_out(box_id)
       local v_itA = items[box_id][iter]
       if v_itA then
         local itA = sim:object(v_itA.id)
-        if itA and itA:name()==v_itA.name and itA.parent_id == box_id and not string_find(itA:section_name(), "^grenade_") then 
+        if itA and itA:name()==v_itA.name and itA.parent_id == box_id and not string_find(itA:section_name(), "^grenade_") then
 		  table_insert(habar, itA)
 		  if table.getn(habar) == 10 then break end
 	    end
 	  end
 	end
   end
-  
+
   --throwing habar around the box
   local base_dir = vector():set(boxobj.position.x, boxobj.position.y, boxobj.position.z)
   base_dir.y = base_dir.y + 0.5
@@ -1683,18 +1682,18 @@ function blow_habar_out(box_id)
 	local radius = my_random() * 5.0
 	local dir = vector():set(math.cos(ang), 0.0001, math.sin(ang))
 	local lv = level.vertex_in_direction(boxobj.m_level_vertex_id, dir, radius)
-	
+
 	if not lv or lv == 65535 then
 		lv = boxobj.m_level_vertex_id
 	end
 	local pos = vector():set(base_dir.x + radius * dir.x, base_dir.y, base_dir.z + radius * dir.z)
-	
+
 	local new = create_newitem(obj, pos, lv, boxobj.m_game_vertex_id, 65535)
 	if new then
 	  add_fresh_meat(new)
 	end
 	do_drop_object(obj)
-  end  
+  end
 end
 
 function my_random(lower)
@@ -1717,7 +1716,7 @@ function check_box_trap_trigger(victim, box)
     if v_itA then
       local itA = sim:object(v_itA.id)
       if itA and itA:name()==v_itA.name and itA.parent_id == box.id and
-	     (itA:section_name() == "grenade_rgd5" or itA:section_name() == "grenade_f1") then 
+	     (itA:section_name() == "grenade_rgd5" or itA:section_name() == "grenade_f1") then
 		  table_insert(grenades, itA)
 		  --maximum 5 grenades in a trap
 		  if table.getn(grenades) == 5 then break end
@@ -1742,8 +1741,8 @@ function check_box_trap_trigger(victim, box)
   elseif rank < 2000 then --master
     f1f = 75
 	rgd5f = 85
-  end 
-  
+  end
+
   local failed = false
   for iter=1, table.getn(grenades) do
     local grenade = grenades[iter]
@@ -1763,13 +1762,13 @@ function check_box_trap_trigger(victim, box)
 	  failed = true
 	  break
 	end
-  end	
+  end
 
   if failed then
 	--setting the npc as a wounded one
 	set_npc_health(victim, health_wound_set)
 	blow_habar_out(box.id)
-  end	
+  end
   return failed
 end
 
@@ -1831,7 +1830,7 @@ function pick_item(npc, obj)
 	if npc and obj and db.actor and obj.id ~= db.actor:id() then
 		--npc does not take a weapon or an outfit if he already has the same
 		if npc_has_same_wo(npc, obj) then return new end
-		
+
 		new = create_newitem(obj, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
 		if new then
 			if new.parent_id then
@@ -1856,7 +1855,7 @@ function get_npc_weapon(npc)
 				if cur_fp > fp then
 					fp = cur_fp
 					obj = wpn
-				end			
+				end
 			end
 		end
 	end
@@ -1960,7 +1959,7 @@ function set_npc_health(obj, health)
 			local tbl = amk.read_stalker_params(obj)
 			tbl.health = health
 			tbl.updhealth = health
-			amk.write_stalker_params(tbl, obj)																			
+			amk.write_stalker_params(tbl, obj)
 		end
 		if health == 0 then
 			on_death(obj.id)
@@ -1979,13 +1978,13 @@ function list_npc_items(obj)
 				if isWeapon(it) then
 					find = it.id
 				end
-			end			
+			end
 		end
 	end
 end
 
 --[[
-	Уникальные предметы НЕ ПРОДАЕМ. Максимум - в новости.	
+	Уникальные предметы НЕ ПРОДАЕМ. Максимум - в новости.
 	Отсортировали оружие по firepower (можем еще ef_weapon_type добавить.)
 	Оставили себе то, для которого есть патроны. (а) - wpn..ammo_class + item_dependence
 	Оставили одно, которое лучше (а), но патронов нет (б) (%)
@@ -1996,11 +1995,11 @@ end
 	Оставляем не более 2 аптечек и бинтов, антирада
 	Оставляем 1-2 гранаты (%)
 	Оставляем не более 1 шт: фонарик, рация, ПДА, бинокль, нож, детекторы
-	Еда, водка - не более 1-2 шт (%)	
+	Еда, водка - не более 1-2 шт (%)
 	Броники наверное продаем...
 	Части монстров? Тоже продаем наверное, максимум 1-2 оставим.
 ]]
-function process_trade(npc, vdata)	
+function process_trade(npc, vdata)
 	if vdata then
 		--hide or sell
 		local rank = npc:rank()
@@ -2013,24 +2012,24 @@ function process_trade(npc, vdata)
 			thresh = 40
 		elseif rank < 2000 then --master
 			thresh = 25
-		end 
-		
+		end
+
 		local rnd = my_random(100)
 		if rnd >= thresh then
 			npc_hide_habar_boxs(npc, vdata.hide_boxes)
 		end
-	end	
+	end
 	do_process_trade(npc)
 end
 
-function do_process_trade(npc)	
+function do_process_trade(npc)
 	local item_list = {}
 	local sell_list = {}
 	local sim = alife()
 	-- Имеет смысл проверять на наличие trade в секции [logic]...
 	if npc and IsStalker(npc) and npc:alive() and npc.m_story_id~=nil and npc.m_story_id == 4294967296 and items[npc.id] and #items[npc.id]>0 then
 		local m_comm = npc:community()
-		local b_stalker = false		
+		local b_stalker = false
 		if (m_comm == "actor" or m_comm == "actor_dolg" or m_comm == "actor_freedom" or m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
 			if (npc.name and npc:name() ~= "agr_ratcatcher") then
 				b_stalker = true
@@ -2038,8 +2037,8 @@ function do_process_trade(npc)
 		elseif m_comm == "zombied" then
 			return
 		end
-			
-		--Фильтруем квестовые items - always_keep_item, sell_table	
+
+		--Фильтруем квестовые items - always_keep_item, sell_table
 		local obj, v_obj
 		for ok,ov in pairs(items[npc.id]) do
 			obj = sim:object(ov.id)
@@ -2052,7 +2051,7 @@ function do_process_trade(npc)
 			end
 		end
 		if item_list and #item_list>0 then
-			table_sort(item_list, function(a,b) return get_item_cost(a) > get_item_cost(b) end)		
+			table_sort(item_list, function(a,b) return get_item_cost(a) > get_item_cost(b) end)
 			-- Выберем, что за оружие оставит себе NPC.
 			local cnt_medkit = 0
 			local cnt_antirad = 0
@@ -2071,10 +2070,10 @@ function do_process_trade(npc)
 			local cnt_detector = 0
 			local cnt_addons = 0
 			local cnt_mparts = 0
-			
+
 			local weapons = {}
 			local ammo = {}
-			for k,v in pairs(item_list) do			
+			for k,v in pairs(item_list) do
 				local sect = v:section_name()
 				--news_main.trace("Process_trade: first pass - "..npc:name().." ["..m_comm.."] have "..sect.." ["..v:name().."]")
 				if isWeapon(v) and not (sect == "grenade_f1" or sect =="grenade_gd-05" or sect == "grenade_rgd5" or sect == "wpn_knife") then
@@ -2100,7 +2099,7 @@ function do_process_trade(npc)
 						end
 					end
 				elseif string_find(sect, "^ammo_") then
-					if ammo[sect] == nil then 
+					if ammo[sect] == nil then
 						ammo[sect] = 1
 					else
 						ammo[sect] = ammo[sect] + 1
@@ -2109,12 +2108,12 @@ function do_process_trade(npc)
 						end
 					end
 				elseif string_find(sect, "^af_") then
-					-- 3 самых хороших арта оставили себе (+здоровье), остальные на продажу (фильтруем булыжник)				
+					-- 3 самых хороших арта оставили себе (+здоровье), остальные на продажу (фильтруем булыжник)
 					if sect ~= "af_buliz" then
 						cnt_arts = cnt_arts + 1
 						if cnt_arts > 3 then
 							table_insert(sell_list, v)
-						end				
+						end
 					end
 				elseif sect == "device_torch" then
 					cnt_torch = cnt_torch + 1
@@ -2238,7 +2237,7 @@ function do_process_trade(npc)
 			item_list = nil
 			local money = 0
 			if sell_list and #sell_list>0 then
-				table_sort(sell_list, function(a,b) return get_item_cost(a) > get_item_cost(b) end)		
+				table_sort(sell_list, function(a,b) return get_item_cost(a) > get_item_cost(b) end)
 				local zz = sell_list[1]
 				if zz and b_stalker == true and (get_item_cost(zz) >= sell_limit) then
 					-- Продадим через новости.
@@ -2266,7 +2265,7 @@ gps_habar.remove_item(npc.id, items[npc.id][z]) -- Idler++-- корректируем хабар 
 						end
 					end
 					sim:release(sim:object(vv.id), true)
-				end				
+				end
 			end
 			if (money > 0) then
 				local tbl = amk.read_stalker_params(npc)
@@ -2302,7 +2301,7 @@ function get_monster_params(obj)
   amk.oau_reason="get_monster_params chp7"
 			local immunity 	= utils.cfg_get_number(system_ini(), imm_sect, "fire_wound_immunity", obj, false, 1)
   amk.oau_reason="get_monster_params chp8"
-			local att_sect 	= utils.cfg_get_string(system_ini(), sect, "attack_params", obj, false, "", "") 
+			local att_sect 	= utils.cfg_get_string(system_ini(), sect, "attack_params", obj, false, "", "")
   amk.oau_reason="get_monster_params chp9"
 			local attack	= 0
   amk.oau_reason="get_monster_params chp10 "..tostring(att_sect)
@@ -2323,7 +2322,7 @@ function get_monster_params(obj)
   amk.oau_reason="get_monster_params chp17"
 							local v = tonumber(m_value[2])
   amk.oau_reason="get_monster_params chp18"
-							if (v and v > max_attack) then					
+							if (v and v > max_attack) then
   amk.oau_reason="get_monster_params chp19"
 								max_attack = v
 							end
@@ -2431,7 +2430,7 @@ function is_valuable(item)
 	local result = false
 	if item and not (IsMonster(item) or IsStalker(item)) then
 		-- Уники не подбираем (пока?)
-		
+
 		if item:section_name() == "amk_metka" or always_keep_item[item:section_name()] then
 			return false
 		end
@@ -2472,7 +2471,7 @@ function set_body_trap(npc_id, body_id)
 			tp = 55
 		elseif rank < 2000 then --master
 			tp = 75
-		end 
+		end
 		if my_random(100) > tp then return end
 		rank = npc:rank()
 		if get_body_trap(body_id) > rank then return end
@@ -2521,7 +2520,7 @@ function clear_item_owner(item_id)
 	if item_id then
 		for owner_id, items in pairs(item_owners) do
 			for iter=1, table.getn(items) do
-				if items[iter] == item_id then 
+				if items[iter] == item_id then
 					table_remove(items, iter)
 					if table.getn(items) == 0 then
 						item_owners[owner_id] = nil
@@ -2542,7 +2541,7 @@ function set_box_trapped(box_id, trap_rank)
 	if trap_rank then
 		status_boxs[box_id].trap_rank = trap_rank
 	end
-	
+
 	check_box_remove(box_id)
 end
 
@@ -2560,7 +2559,7 @@ function set_box_owner(box_id, owner_id)
 	if owner_id then
 		status_boxs[box_id].owner_id = owner_id
 	end
-	
+
 	check_box_remove(box_id)
 end
 
@@ -2589,7 +2588,7 @@ end
 function give_treasure(npc)
 	if not npc then return false end
 	local npc_id = npc:id()
-	
+
 	local res = false
 	local boxlist = {}
 	local sim=alife()
@@ -2663,19 +2662,19 @@ function take_item_from_box(box, item)
 
 	set_be_enemy(get_box_owner(box_id), enemy_level_hit)
 	set_box_owner(box_id, 65535)
-	
+
 	local trman = treasure_manager.get_treasure_manager()
 	local needempty = true
 	if trman then
 		local bstid = box:story_id()
 		if bstid then
 			local k = trman.treasure_by_target[bstid]
-			if k and trman.treasure_info[k] then 
+			if k and trman.treasure_info[k] then
 				needempty = false
 			end
 		end
 	end
-	
+
 	if needempty and level.map_has_object_spot(box_id, "treasure") ~= 0 then
 		level.map_remove_object_spot(box_id, "treasure")
 		empty_treasure(box_id)
@@ -2692,7 +2691,7 @@ gps_habar.remove_item(box_id, items[box_id][z]) -- Idler++-- корректируем хабар 
 				end
 			end
 		end
-		
+
 		local owner_id = clear_item_owner(itemid)
 		if owner_id and owner_id > 0 then
 			if get_item_cost(alife():object(itemid)) >= val_item_cost then
@@ -2714,13 +2713,13 @@ function actor_update(delta)
 		check_body_trap(body_blow_id)
 		body_blow_id = nil
 	end
-	
+
 	if need_hit and not sleep_manager.is_sleep_active() then
 		need_hit = false
 		trap_hit_actor()
 		return
 	end
-	
+
 	if trap_timer then
 		if time_global() >= trap_timer then
 			trap_timer = nil
@@ -2729,7 +2728,7 @@ function actor_update(delta)
 		end
 		return
 	end
-	
+
 	check_be_enemy()
 	local sim=alife()
 	local mi=level.main_input_receiver()
@@ -2757,11 +2756,11 @@ end
 function check_body_trap(body_id)
 	trap_rank = get_body_trap(body_id)
 	if trap_rank <=0 then return end
-	
+
 	local body = alife():object(body_id)
 	if not(body and IsStalker(body) and body.alive and not body:alive()) then return end
 	trap_explosion(body)
-	
+
 	if not db.actor:item_in_slot(6) then
 		trap_hit_actor(true)
 	else
@@ -2772,7 +2771,7 @@ end
 
 function trap_hit_stalkers(pos)
 	local level_name = level.name()
-	if off_npcs[level_name] then 
+	if off_npcs[level_name] then
 		for iter, stalker in pairs(off_npcs[level_name].stalkers) do
 			local obj = alife():object(stalker.id)
 			if obj and obj:name()==stalker.name and obj.online and obj.alive and obj:alive() and obj.health and obj:health() > health_wound_set then
@@ -2795,7 +2794,7 @@ function trap_hit_armor()
 		armor_damage = 0.15
 	elseif trap_rank < 2000 then --master
 		armor_damage = 0.2
-	end 
+	end
 
 	local armor = db.actor:item_in_slot(6)
 	if armor then
@@ -2823,7 +2822,7 @@ function trap_hit_actor(strong)
 			hit_power = 1.2
 		elseif trap_rank < 2000 then --master
 			hit_power = 1.6
-		end 
+		end
 	end
 
     h.power = hit_power
@@ -2833,7 +2832,7 @@ function trap_hit_actor(strong)
 	h:bone("bip01_spine")
     h.type = hit.fire_wound
 	db.actor:hit(h)
-	
+
 	level.add_pp_effector("amk_shoot.ppe", 2011, false)
 end
 
@@ -2847,7 +2846,7 @@ function trap_explosion(box)
     h.power = 0.01
     h.impulse = 500
 	h.draftsman = db.actor
-	
+
 	local bpos = box.position
 	amk_particle.amk_particle({particle=[[explosions\explosion_dynamite]], pos=bpos, sound=[[weapons\rpg7_explode]]})
 	local apos = db.actor:position()
@@ -2895,13 +2894,13 @@ function save(p)
 		p:w_u32(box.trap_rank)
 		p:w_u16(box.owner_id)
 	end
-	
+
 	--save gps metka info
 	save_nested_data(p, status_metka)
-	
+
 	--save items in boxes and their owners
 	save_nested_data(p, item_owners)
-	
+
 	--save be enemies
 	size = 0
 	for npc_id, lvl in pairs(be_enemies) do
@@ -2912,7 +2911,7 @@ function save(p)
 		p:w_u16(npc_id)
 		p:w_u8(lvl)
 	end
-	
+
 	--save trapped bodies
 	size = 0
 	for body_id, tr in pairs(trapped_bodies) do
@@ -2943,7 +2942,7 @@ end
 
 function load(p)
 	local ver = p:r_u16()
-	
+
 	status_boxs = {}
 	--load box status info
 	local size = p:r_u16()
@@ -2953,18 +2952,18 @@ function load(p)
 		status_boxs[boxid].trap_rank = p:r_u32()
 		status_boxs[boxid].owner_id = p:r_u16()
 	end
-	
+
 	--load gps metka info
 	status_metka = {}
 	load_nested_data(p, status_metka)
-	
+
 	be_enemies = {}
 	item_owners = {}
 	trapped_bodies = {}
 	if ver > 1 then
 		--load items and their owners
 		load_nested_data(p, item_owners)
-		
+
 		--load be enemies
 		size = p:r_u16()
 		for iter=1, size do
@@ -2975,7 +2974,7 @@ function load(p)
 				be_enemies[p:r_u16()] = enemy_level_kill
 			end
 		end
-		
+
 		if ver > 3 then
 			--load trapped bodies
 			local size = p:r_u16()
@@ -2993,7 +2992,7 @@ function get_item_box_cost(box_id)
 	--returns a cost of items in given box
 	local res = 0
 	if not items[box_id] then return res end
-	
+
 	local sim=alife()
 	local whomid=db.actor:id()
 	for iter=1, table.getn(items[box_id]) do
@@ -3035,7 +3034,7 @@ local spawn_maps={
 		creatures = {"yan_zombied_respawn_1", "yan_zombied_respawn_2", "yan_zombied_respawn_3"},
 		sounds = {[[zombied\fight\attack\attack_4]], [[zombied\fight\attack\attack_5]], [[zombied\fight\attack\attack_6]]}},
 	["l10_radar"]				= {
-		creatures = {"rad_monolith_respawn_1", "rad_monolith_respawn_2", "rad_monolith_respawn_3", "rad_specnaz_respawn_specnaz", "rad_soldier_master", 
+		creatures = {"rad_monolith_respawn_1", "rad_monolith_respawn_2", "rad_monolith_respawn_3", "rad_specnaz_respawn_specnaz", "rad_soldier_master",
 					 "rad_zombied_respawn_1", "rad_zombied_respawn_2", "rad_zombied_respawn_3"},
 		sounds = {[[monolith\fight\attack\attack_one_1]], [[monolith\fight\attack\attack_one_2]], [[monolith\fight\attack\attack_one_3]], [[military\fight\attack\attack_one_4]], [[military\fight\attack\attack_one_5]],
 				  [[zombied\fight\attack\attack_8]], [[zombied\fight\attack\attack_4]], [[zombied\fight\attack\attack_6]]}},
@@ -3060,8 +3059,8 @@ function empty_treasure(box_id)
 	elseif habarcost < 35000 then
 		prob = 90
 	end
-	if my_random(100) > prob then return end 
-	
+	if my_random(100) > prob then return end
+
 	local sim = alife()
 	for iter=1, 65534 do
 		local obj = sim:object(iter)
@@ -3069,10 +3068,10 @@ function empty_treasure(box_id)
 					obj:community()~="monolith" and obj:community()~="military" and obj:community()~="killer" and
 					obj:community()~="bandit" and obj:community()~="zombied" then return end
 	end
-	
+
 	local lname = level.name()
 	if not spawn_maps[lname] then return end
-	
+
 	local st = my_random(table.getn(spawn_maps[lname].creatures))
 	if st <= 0 then return end
 
@@ -3091,7 +3090,7 @@ function empty_treasure(box_id)
 		end
 		sim:create(spawn_maps[lname].creatures[st], pos, lv, db.actor:game_vertex_id())
 	end
-	
+
 	local sname = spawn_maps[lname].sounds[st]
 	if pos and sname and sanem~="" then
 		local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_01\]]..sname)
@@ -3107,15 +3106,15 @@ function checked_marked_npc()
 	local sim = alife()
 	for iobj=1,65534 do
 		local obj = sim:object(iobj)
-		if obj then 
+		if obj then
 			if IsStalker(obj) and level.map_has_object_spot(obj.id, "red_location")~= 0 then
 				table_insert(stalkers, obj)
 			elseif obj:section_name() == "amk_metka" and (not obj.parent_id or obj.parent_id == 65535) then
 				table_insert(metkas, obj)
-			end			
+			end
 		end
 	end
-	
+
 	for inpc=1, table.getn(stalkers) do
 		local npc = stalkers[inpc]
 		--find closest gps metka
@@ -3150,8 +3149,8 @@ end
 
 function set_be_enemy_f(npc_id, lvl)
 	if not npc_id or npc_id == 65535 then return end
-	
-	local obj = alife():object(npc_id) 
+
+	local obj = alife():object(npc_id)
 	if obj and IsStalker(obj) and obj.health and obj:health() > 0 then
 		be_enemies[npc_id] = lvl
 	end
@@ -3159,8 +3158,8 @@ end
 
 function set_be_enemy(npc_id, lvl)
 	if not npc_id or npc_id == 65535 or (be_enemies[npc_id] and be_enemies[npc_id] >= lvl) then return end
-	
-	local obj = alife():object(npc_id) 
+
+	local obj = alife():object(npc_id)
 	if obj and IsStalker(obj) and obj.health and obj:health() > 0 then
 		if obj.m_story_id~=nil and obj.m_story_id < 4294967296 and lvl > enemy_level_hit then
 			be_enemies[npc_id] = enemy_level_hit
@@ -3197,7 +3196,7 @@ function check_be_enemy()
 		local obj = sim:object(iter)
 		if obj and obj.online and IsStalker(obj) and obj.health and obj:health() > 0 then
 			local npc = level.object_by_id(obj.id)
-			
+
 			if npc then
 				if lvl == enemy_level_angry then
 					if angry_npc_timer[iter] then

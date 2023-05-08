@@ -19,7 +19,7 @@ function check_spawn(s_object)
 				return true
 			else
 				spawn.npc = nil
-				return false 
+				return false
 			end
 		else
 			return true
@@ -44,17 +44,16 @@ end
 --------------------
 function se_car:can_switch_online ()
 	if self.ini == nil then
-		self.ini = self:spawn_ini() 
+		self.ini = self:spawn_ini()
 		self.spawner_present = self.ini:section_exist("spawner")
 	end
 
-	if self.ini == nil or self.spawner_present == false then 
+	if self.ini == nil or self.spawner_present == false then
 		return cse_alife_car.can_switch_online(self)
-	end    
+	end
 	return check_spawn(self)
-end    
+end
 --------------------
-
 
 --'Helicopter
 class "se_heli" (cse_alife_helicopter)

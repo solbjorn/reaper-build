@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
 --	Схема лагерь. Чудак(и) у костра.
 --	автор: Диденко Руслан (Stohe)
---	TODO: 
+--	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 kamps = {}
@@ -49,7 +49,7 @@ function evaluator_see_deadman:evaluate()
 	local npc = self.object
 	-- Есть дела поважнее, чем трупы складировать...
 	if not xr_logic.is_active(self.object, self.a) then
-		if self.a.choosed_deadman then 
+		if self.a.choosed_deadman then
 			deadmansids[self.a.choosed_deadman]=nil
 			self.a.choosed_deadman=nil
 			self.a.reached=nil
@@ -58,10 +58,10 @@ function evaluator_see_deadman:evaluate()
 	end
 
 	-- Труп себе уже выбрали, не спускаем с него глаз...
-	if self.a.choosed_deadman then 
+	if self.a.choosed_deadman then
 		local obj = level.object_by_id(self.a.choosed_deadman)
 		if obj and obj:position():distance_to(patrol(self.a.center_point):point(0))<20 then
-			return true 
+			return true
 		end
 		-- если утащен далеко, то ну его нафиг...
 		deadmansids[self.a.choosed_deadman]=nil
@@ -69,7 +69,7 @@ function evaluator_see_deadman:evaluate()
 		self.a.reached=nil
 		return false
 	end
-	
+
 	local function check_item(o)
 			local obj=o:object()
 			--если есть рядом с костром труп сталкера или монстра, его еще никто не прихватил себе и трупец нигде не застрял, то забираем его...
@@ -78,7 +78,7 @@ function evaluator_see_deadman:evaluate()
 					deadmansids[obj:id()]=npc:id()
 					self.a.choosed_deadman=obj:id()
 					deadmansidsuses[obj:id()] = (deadmansidsuses[obj:id()] or 0) +1
-					-- ...заодно сразу прикидываем, куда бы его оттащить от костра, желательно под забор, стену дома и т.п., 
+					-- ...заодно сразу прикидываем, куда бы его оттащить от костра, желательно под забор, стену дома и т.п.,
 					-- за неимением таковых - будем тащить куда попало, главное - подальше от костра
 				  self.a.drop_lvid=npc:level_vertex_id()
 				  local gi=level.object_by_id(self.a.choosed_deadman)
@@ -102,15 +102,15 @@ function evaluator_see_deadman:evaluate()
 				    if tgt_vertex==nil then
 				      tgt_vertex=npc:vertex_in_direction(base_point,vector_rotate_y(base_dir,math_random()*180-90),20)
 				    end
-				    
+
 				    self.a.drop_lvid = tgt_vertex
 				    self.a.ps=gi:get_physics_shell()
 				  end
 					return true
 				end
 			end
-	end	
-	
+	end
+
 	for o in npc:memory_visible_objects() do
 		check_item(o)
 	end
@@ -165,7 +165,7 @@ function action_go_position:check_progress(ticks)
 			vector_rotate_y (self.object:direction(), -10)
 			self.object:set_desired_position()
 			self.object:set_desired_direction()
-			
+
 			self.a.pos_vertex = nil
 			self.a.dest_vertex = nil
 			return false
@@ -185,7 +185,7 @@ function action_go_position:execute ()
 	if tmp_pos_vertex == nil then
 		tmp_pos_vertex = kamps[self.a.center_point]:getDestVertex(self.object:id(), self.a.radius)
 		if tmp_pos_vertex == nil then return end
-		self.a.dest_vertex = tmp_pos_vertex 
+		self.a.dest_vertex = tmp_pos_vertex
 	end
 	if self.a.pos_vertex ~= tmp_pos_vertex then
 		if self:check_progress(2000) == false then return end
@@ -271,7 +271,7 @@ function action_go_to_deadman:initialize()
 	action_base.initialize(self)
 	local npc=self.object
 	local gi=level.object_by_id(self.a.choosed_deadman)
-	if gi then 
+	if gi then
 		--попремся в сторону головы - за шкирятник тащить бум
 		self.a.dest_lvid=gi:level_vertex_id()
 		local diff=gi:bone_position("bip01_head"):sub(gi:position())
@@ -347,15 +347,15 @@ function action_moving_deadman:execute ()
 	action_base.execute (self)
   local npc=self.object
   local gi=level.object_by_id(self.a.choosed_deadman)
-  
+
 	--хватит таскать труп - время истекло, пусть другие этим занимаются
   if self.a.time_end<time_global() then
     deadmansids[self.a.choosed_deadman]=nil
     self.a.choosed_deadman=nil
 	self.a.reached=nil
-    return 
+    return
   end
-	
+
 	-- смотри мне в глаза!
 	local dir=gi:position():sub(npc:position())
 	dir.y=0
@@ -380,7 +380,7 @@ function action_moving_deadman:execute ()
     else
     end
   end
-  
+
 	-- уф! дотащили... всем спасибо, все свободны...
   if self.a.drop_lvid and self.a.drop_lvid==npc:level_vertex_id() then
     deadmansids[self.a.choosed_deadman]=nil
@@ -651,7 +651,7 @@ function CKampManager:proceedRole(npc, director)
 				temp[#temp+1] = v
 			end
 		end
-		
+
 		-- Если мы решили говорить историю, надо выбрать какую именно говорить.
 		if sound == "play_story" and self.selected_story == nil and db.story_by_id[npc_id] ~= nil then
 			local story_num = #db.story_by_id[npc_id]
@@ -893,7 +893,7 @@ function CKampManager:checkNpcAbility(npc)
 		npc_states["eat_sigaret"] = true
 	else
 		npc_states["eat_sigaret"] = false
-	end 
+	end
 
 	-- Если чувак знает истории, надо добавить их к лагерю
 
@@ -1026,7 +1026,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_prop_kamp_end_false)
 	action:add_effect		(wp_prop_on_position_true)
 	manager:add_action (operator_go_position, action)
-	
+
 	-- видим труп - идем разбираться...
 	action = this.action_go_to_deadman (object:name(),"action_go_to_deadman", storage)
 	action:add_precondition		(wp_stalker_ids_property_alive_true)
@@ -1074,7 +1074,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 		end
 		st.radius = (ini:line_exist(section, "radius") and ini:r_float(section, "radius")) or 2
 		st.def_state_moving = (ini:line_exist(section, "def_state_moving") and ini:r_string(section, "def_state_moving")) or "walk"
-	else 
+	else
 			abort("xr_kamp scheme %s has bad or missing section: %s", scheme, tostring(section))
 			return
 	end

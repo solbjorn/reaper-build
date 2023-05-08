@@ -10,8 +10,8 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 	end
-	
---- svalka лагерь ---	
+
+--- svalka лагерь ---
 	if type == "svalka_lager" then
 		t = { section = "logic@svalka_lager_esc_kostya",
 			idle = 0,
@@ -21,7 +21,7 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 	end
-	
+
 --- bar лагерь ---
 	if type == "bar_lager" then
 		t = { section = "logic@bar_lager_esc_kostya",
@@ -32,8 +32,8 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 	end
-	
---- as лагерь ---	
+
+--- as лагерь ---
     if type == "as_lager" then
 		t = { section = "logic@as_lager_esc_kostya",
 			idle = 0,
@@ -43,8 +43,8 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 	end
-	
---- pripyat лагерь ---	
+
+--- pripyat лагерь ---
     if type == "pripyat_lager" then
 		t = { section = "logic@pripyat_lager_esc_kostya",
 			idle = 0,
@@ -391,7 +391,7 @@ function load_job(sj, gname, type, squad, groups)
 						end
 		}
 		sj[#sj+1] = t
-		
+
 		-- Фанат
 		t = { section = "logic@esc_lager_fanat",
 			idle = 0,
@@ -745,7 +745,6 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 
-
 		t = { section = "logic@esc_killer_fight",
 			idle = 0,
 			prior = 15, state = {1},
@@ -1001,7 +1000,6 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		sj[#sj+1] = t
 	end
-
 
 	if type == "esc_dogs_to_fox" then
 		t = { section = "logic@esc_dogs_to_fox_home",
@@ -1528,7 +1526,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "",
 			predicate = function(obj_info)
         					return obj_info.name == "esc_novice_attacker2"
-						end			
+						end
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault3",
@@ -1555,7 +1553,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "",
 			predicate = function(obj_info)
         					return obj_info.name == "esc_novice_attacker2"
-						end			
+						end
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault3",
@@ -1585,7 +1583,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
 			predicate = function(obj_info)
         					return obj_info.name == "esc_novice_attacker2"
-						end			
+						end
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_fight3",
@@ -1614,7 +1612,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "",
 			predicate = function(obj_info)
         					return obj_info.name == "esc_novice_attacker2"
-						end			
+						end
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_home_leader",
@@ -1642,7 +1640,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "",
 			predicate = function(obj_info)
         					return obj_info.name == "esc_novice_attacker2"
-						end			
+						end
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_kamp",
@@ -2041,35 +2039,35 @@ function load_states(gname, type)
 			return 0
 		end
 	end
-	
+
 	--- svalka лагерь ---
 	if type == "svalka_lager" then
 		return function (gulag)
 			return 0
 		end
 	end
-	
+
 	--- bar лагерь ---
 	if type == "bar_lager" then
 		return function (gulag)
 			return 0
 		end
 	end
-	
+
 	--- as лагерь ---
 	if type == "as_lager" then
 		return function (gulag)
 			return 0
 		end
 	end
-	
+
 	--- pripyat лагерь ---
 	if type == "pripyat_lager" then
 		return function (gulag)
 			return 0
 		end
 	end
-	
+
 	if type == "esc_blokpost" then
 		return function (gulag)
 			local actor = db.actor
@@ -2132,7 +2130,6 @@ function load_states(gname, type)
 		end
 	end
 
-
 	if type == "esc_fabrika_bandit" then
 		return function(gulag)
 				for k,v in pairs(gulag.Object) do
@@ -2156,7 +2153,7 @@ function load_states(gname, type)
 			local actor = db.actor
 			if not has_alife_info("escape_stalker_dog_spawn") then
 				return 0 -- оффлайн
-			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then 
+			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then
 				return 2 -- онлайн
 			else
 				return 1 -- атака
@@ -2329,8 +2326,6 @@ function load_states(gname, type)
 	end
 end
 
-
-
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
@@ -2343,28 +2338,28 @@ function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
 	--- новый лагерь ---
 	if gulag_type == "esc_new_lager" then
 		return se_obj:profile_name() == "esc_kostya"
-	end 
-	
+	end
+
 	--- svalka лагерь ---
 	if gulag_type == "svalka_lager" then
 		return se_obj:profile_name() == "esc_kostya"
-	end 
-	
+	end
+
 	--- bar лагерь ---
 	if gulag_type == "bar_lager" then
 		return se_obj:profile_name() == "esc_kostya"
-	end 
-	
+	end
+
 	--- as лагерь ---
 	if gulag_type == "as_lager" then
 		return se_obj:profile_name() == "esc_kostya"
-	end 
-	
+	end
+
 	--- pripyat лагерь ---
 	if gulag_type == "pripyat_lager" then
 		return se_obj:profile_name() == "esc_kostya"
 	end
-	
+
 	if gulag_type == "esc_bridge" then
 		return npc_community == "military"
 	end
@@ -2404,7 +2399,6 @@ function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
 	if gulag_type == "esc_stalker_camp" then
 		return npc_community == "stalker"
 	end
-
 
 	return false
 end

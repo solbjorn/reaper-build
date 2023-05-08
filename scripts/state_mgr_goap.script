@@ -228,8 +228,6 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(11, true)) --weapon
 	st.planner:add_action(15, action)
 
-
-
 	action = state_mgr_movement.act_state_mgr_movement_walk("state_mgr_movement_walk", st)
 	action:add_precondition    (world_property( 2, false)) --locked
 	action:add_precondition    (world_property(21, false)) --movement
@@ -261,8 +259,6 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(21, true)) --movement
 	st.planner:add_action(24, action)
 
-
-
 	action = state_mgr_direction.act_state_mgr_direction_turn("state_mgr_direction_turn", st)
 	action:add_precondition    (world_property( 2, false)) --locked
 	action:add_precondition    (world_property(51, false)) --direction
@@ -284,8 +280,6 @@ function goap_graph(st, npc)
     action:add_precondition    (world_property(21, true)) --movement
 	action:add_effect    (world_property(51, true)) --direction
 	st.planner:add_action(52, action)
-
-
 
 	action = state_mgr_mental.act_state_mgr_mental_free("state_mgr_mental_free")
 	action:add_precondition    (world_property(31, false)) --mental
@@ -317,8 +311,6 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(31, true)) --mental
 	st.planner:add_action(33, action)
 
-
-
 	action = state_mgr_bodystate.act_state_mgr_bodystate_crouch("state_mgr_bodystate_crouch")
 	action:add_precondition    (world_property(41, false)) --bodystate
 	action:add_precondition    (world_property(11, true)) --weapon
@@ -336,7 +328,6 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(41, true)) --bodystate
 	action:add_effect    (world_property(45, true)) --bodystate_standing_now
 	st.planner:add_action(42, action)
-
 
 	action = state_mgr_animstate.act_state_mgr_animstate_2sit("state_mgr_animstate_2sit", st)
 	action:add_precondition    (world_property( 2, false)) --locked
@@ -373,7 +364,7 @@ function goap_graph(st, npc)
 	action:add_precondition    (world_property(69, true)) --animstate_sit_ass
 	action:add_effect    (world_property(61, true)) --animstate
 	st.planner:add_action(64, action)
-	
+
 	action = state_mgr_animstate.act_state_mgr_animstate_2sit_japan("state_mgr_animstate_2sit_japan", st)
 	action:add_precondition    (world_property( 2, false)) --locked
 	action:add_precondition    (world_property(61, false)) --animstate
@@ -385,7 +376,7 @@ function goap_graph(st, npc)
 	action:add_precondition    (world_property(77, true)) -- animstate_sit_japan
 	action:add_effect    (world_property(61, true)) --animstate
 	st.planner:add_action(75, action)
-	
+
 	action = state_mgr_animstate.act_state_mgr_animstate_2sit_kurit("state_mgr_animstate_2sit_kurit", st)
 	action:add_precondition    (world_property( 2, false)) --locked
 	action:add_precondition    (world_property(61, false)) --animstate
@@ -449,8 +440,6 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(64, true)) --animstate_idle_now
 	st.planner:add_action(70, action)
 
-
-
 	action = state_mgr_animation.act_state_mgr_animation_start("state_mgr_animation_start", st)
 	action:add_precondition    (world_property( 2, false)) --locked
 	action:add_precondition    (world_property(61, true)) --animstate
@@ -493,13 +482,11 @@ function goap_graph(st, npc)
 	action:add_effect    (world_property(86, true)) --animation_none_now
 	st.planner:add_action(74, action)
 
-
 	action = state_mgr.act_state_mgr_locked("state_mgr_locked", st)
 	action:add_precondition    (world_property( 2, true)) --locked
 	action:add_effect          (world_property( 1, true)) --end
 	action:add_effect          (world_property( 2, false)) --locked
 	st.planner:add_action( 2, action)
-
 
 	action = state_mgr.act_state_mgr_end("state_mgr_end", st)
 	action:add_precondition    (world_property( 1, false)) --end

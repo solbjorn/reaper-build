@@ -2,9 +2,9 @@ function lose_item(obj)
   local obj_id = obj:id()
   local obj_sect = obj:section()
   local obj_clsid = obj:clsid()
-  
+
   arc.info("Lose item: "..obj:section().."("..obj:clsid()..") id="..obj_id, 2)
-  
+
   if obj_clsid == clsid.wpn_ammo then -- 38
     if obj_sect == "arc_ballast" then
       arc_ballast.on_lose_ballast(obj)
@@ -18,7 +18,7 @@ function lose_item(obj)
       arc_8containers.on_lose_container(obj_id)
     elseif obj_sect=="arc_art_box_1basic" then
       arc_1containers.on_lose_container(obj_id)
-   end  
+   end
   end
 end
 
@@ -26,9 +26,9 @@ function get_item(obj)
   local obj_id = obj:id()
   local obj_sect = obj:section()
   local obj_clsid = obj:clsid()
-  
+
   arc.info("Get item: "..obj:section().."("..obj:clsid()..") id="..obj_id, 2)
-  
+
   if obj_clsid == clsid.wpn_ammo then -- 38
     if obj_sect == "arc_ballast" then
       arc_ballast.on_get_ballast(obj)

@@ -96,7 +96,7 @@ function move_mgr:standing_on_terminal_waypoint()
 			return true, idx
 		end
 	end
-	
+
 	return false
 end
 
@@ -110,7 +110,7 @@ end
 --' нужно вызвать метод set_movement_state, который включит перемещение по вейпоинтам с нужной
 --' скоростью.
 function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, team, suggested_state, move_cb_info, no_validation, continue, use_default_sound)
-	--' сколько ждать в точке, где играем анимацию 
+	--' сколько ждать в точке, где играем анимацию
 	self.pt_wait_time = default_wait_time
 
 	--' Запоминаем массив целиком на случай, если придется себя сбросить, повторно
@@ -136,7 +136,7 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 	self.syn_signal = nil
 
 	self.move_cb_info = move_cb_info
-	 
+
 	--' Возможные изменения
 	--' Изменилась команда
 	if team ~= self.team then
@@ -155,7 +155,7 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 	if self.path_walk ~= path_walk or self.path_look ~= path_look then
 
 		self.no_validation = no_validation
-		
+
 		self.path_walk = path_walk
 		self.patrol_walk = patrol(path_walk)
 		if not self.patrol_walk then
@@ -180,7 +180,7 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 			end
 		else
 			self.patrol_look = nil
-		end		
+		end
 		self.path_look = path_look
 		self.path_look_info = path_look_info
 
@@ -201,7 +201,6 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 		self.walk_until = time_global() + walk_min_time
 		self.run_until = time_global() + walk_min_time + run_min_time
 		self.keep_state_until = time_global()
-
 
 		self.last_index = nil
 		self.last_look_index = nil
@@ -313,14 +312,13 @@ function move_mgr:arrived_to_first_waypoint()
 	return self.last_index ~= nil
 end
 
-
 --' Проверка синхронизации с остальными солдатами на пути.
 --' Возвращает true, если дальнейшее движение разрешено.
 function move_mgr:sync_ok()
 	if self.team then
 		local s = sync[self.team]
 		local self_id = self.object:id()
-		
+
 		for k, v in pairs(s) do
 			local obj = level.object_by_id(k)
 			if obj and obj:alive() then
@@ -342,7 +340,7 @@ function move_mgr:update()
 			self.syn_signal = nil
 		end
 	end
-	
+
 	if self.can_use_get_current_point_index and not self:arrived_to_first_waypoint() then
 		local t = time_global()
 		if t >= self.keep_state_until then
@@ -434,8 +432,8 @@ function move_mgr:scheme_set_signal(sig)
 		local signals = stor[stor.active_scheme].signals
 		if signals ~= nil then
 		   signals[sig] = true
-		end   
-	end	
+		end
+	end
 end
 
 function move_mgr:turn_end_callback()
@@ -446,7 +444,7 @@ function move_mgr:turn_end_callback()
 			abort("object '%s': path_look '%s': syn flag uset without sig flag", self.object:name(), self.path_look)
 		end
 
-		-- Отметить, что мы сами уже прибыли в точку синхронизации:		
+		-- Отметить, что мы сами уже прибыли в точку синхронизации:
 		if self.team then
 			sync[self.team][self.object:id()] = true
 		end
@@ -477,7 +475,7 @@ function move_mgr:turn_end_callback()
 		--' то включаем опять таймер.
 		--' Если callback вернул true - не восстанавливаем таймер т.к. это могли сделать в
 		--' самом callback-е.
-		
+
 		--' 1) Отключаем таймер
 		state_mgr.set_state(self.object, self.cur_state_standing, nil, nil, nil)
 		--' 2) Вызываем callback
@@ -499,7 +497,7 @@ function move_mgr:turn_end_callback()
 end
 
 function move_mgr:waypoint_callback(obj, action_type, index)
-	
+
 	if index == -1 or index == nil then
 		return
 	end
@@ -519,7 +517,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 		else
 			snd_prob = 100
 		end
-	
+
 		if snd_prob == 100 or snd_prob >= math.random(1, 100) then
 			xr_sound.set_sound(self.object, suggested_snd)
 		else
@@ -540,7 +538,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 	local retv = self.path_walk_info[index]["ret"]
 	if retv then
 		local retv_num = tonumber(retv)
-		
+
 		if not self.move_cb_info then
 			abort("object '%s': path_walk '%s': ret flag is set, but " ..
 				"callback function wasn't registered in move_mgr:reset()",
@@ -557,7 +555,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 	end
 
 	local stop_probability = self.path_walk_info[index]["p"]
-	
+
 	if not self.patrol_look or
 	   (stop_probability and tonumber(stop_probability) < math.random(1, 100)) then
 		self:update_movement_state() --' идти дальше
@@ -613,7 +611,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 				else
 					snd_prob = 100
 				end
-				
+
 				if snd_prob == 100 or snd_prob >= math.random(1, 100) then
 					--xr_sound.set_sound(self.object, nil, true)
 					self.sound_after_anim_start = suggested_snd

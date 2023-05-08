@@ -38,7 +38,7 @@ function action_process_enemy:enemy_callback( obj, enemy )
 end
 
 function action_process_enemy:hit_callback(obj, amount, local_direction, who, bone_index)
-	if who == nil then	
+	if who == nil then
 		return
 	end
 
@@ -47,7 +47,6 @@ function action_process_enemy:hit_callback(obj, amount, local_direction, who, bo
 		return
 	end
 
-	
 	if who:id() == db_actor_id then
 		local overrides = db.storage[obj:id()].overrides
 		if not overrides or not overrides.combat_ignore_keep_when_attacked then

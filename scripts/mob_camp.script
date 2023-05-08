@@ -15,7 +15,7 @@ function set_state(obj, state)
 	if not state then
 		return
 	end
-	
+
 	if get_clsid(obj) == clsid_bloodsucker_s then
 		if state == "invis" then
 			obj:set_invisible(true)
@@ -144,7 +144,6 @@ function mob_camp:select_current_home_point(first_call)
 			camp_storage[self.st.home_point] = camp_st
 		end
 
-
 		for i = 1, self.home_path:count() do
 			if (camp_st[i] == nil) or
 				(camp_st[i] == false) then
@@ -198,7 +197,6 @@ function mob_camp:select_state()
 		self.prev_enemy = false
 	end
 
-
 	if enemy ~= nil then
 		local enemy_dist	= enemy:position():distance_to(home_position)
 		--local my_dist		= self.object:position():distance_to(home_position)
@@ -251,7 +249,6 @@ function mob_camp:execute_state()
 	if (self.state_current ~= STATE_ALIFE) and (self.state_prev == STATE_ALIFE) then
 		xr_logic.mob_capture(self.object, true)
 	end
-
 
 	-- STATE_CAMP
 	if self.state_current == STATE_CAMP then

@@ -395,7 +395,6 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
         if level_groups[smart_level_group] ~= level_groups[npc_level_group] then
             return false
         end
-    
 
     if self.accepted_communities and not self.accepted_communities[community] then
       return false
@@ -434,7 +433,7 @@ function se_smart_terrain:obj_accepts_smart_terrain( obj )
       s = xr_logic.pick_section_from_condlist( db.actor_proxy, obj, condlist )
 
       if s ~= nil then
-        if name == "none" then        
+        if name == "none" then
           return disagreed
         elseif name == self:name() then
           return agreed_exclusive
@@ -489,7 +488,7 @@ end
 -- TODO Оптимизировать
 function se_smart_terrain:suitable( obj )
   local v = 0
-  
+
   --' Повысить подходящесть эксклюзивного смарттеррейна
   if self:obj_accepts_smart_terrain(obj) == agreed_exclusive then
     v = 100000 --'Так чтобы все эксклюзивные были заведомо лучше
@@ -738,8 +737,6 @@ function se_smart_terrain:register_if_needed()
   task_manager.get_random_task():register_target(self, clsid_smart_terrain)
 end
 
-
-
 -- дерегистрация объекта в симуляторе.
 -- вызывается симулятором.
 function se_smart_terrain:on_unregister()
@@ -824,8 +821,6 @@ function unregister_npc(npc)
     end
   end
 end
-
-
 
 --------------------
 -- прочитать секцию [smart_terrains]

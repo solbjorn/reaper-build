@@ -17,11 +17,10 @@ function PPEffector:process (pp)
     self.host:update_params ()
 	pp:assign (self.params)
     effector.process (self, pp)
-    
+
     return true
 end
 -------------------
-
 
 -------------------
 class "action_postprocess"
@@ -49,13 +48,13 @@ function action_postprocess:reset_scheme ()
 	self.intensity_base					= self.st.intensity
 	self.hit_power                      = 0
 	self.old_time                       = time_global ()
-	
+
 	if self.intensity_base < 0.0 then
 	   self.intensity_inertion	= -self.st.intensity_speed
-	else   
+	else
 	   self.intensity_inertion	= self.st.intensity_speed
-	end    
-	
+	end
+
 	self.pp 							= PPEffector (self.object:id () + 2000, self)
 	self.pp.params.noise				= noise ()
 	self.pp:start						()
@@ -73,28 +72,28 @@ function action_postprocess:deactivate()
 end
 -------------------
 function action_postprocess:update_params ()
-    
+
 	local c_time = (time_global () - self.old_time) * 0.001
 	self.old_time = time_global ()
-	
+
 	if self.actor_inside == true then
 	   self.intensity = self.intensity + self.intensity_inertion * c_time
 	   if self.intensity_base < 0.0 then
 	      if self.intensity < self.intensity_base then self.intensity = self.intensity_base end
-	   else   
+	   else
 	      if self.intensity > self.intensity_base then self.intensity = self.intensity_base end
 	   end
 	else
 	   if self.intensity_base < 0.0 then
 	      self.intensity = self.intensity - self.intensity_inertion * c_time
 	      if self.intensity > 0.0 then self.intensity = 0.0 end
-	   else   
-	      self.intensity = self.intensity - self.intensity_inertion * c_time  
+	   else
+	      self.intensity = self.intensity - self.intensity_inertion * c_time
 	      if self.intensity < 0.0 then self.intensity = 0.0 end
-	   end   
-	   
+	   end
+
 	end
-	
+
 	self.pp.params.color_base			= self.base_color
 	self.pp.params.color_gray			= color (self.gray_color.r + self.intensity, self.gray_color.g + self.intensity, self.gray_color.b +  self.intensity)
 	self.pp.params.gray					= self.gray_amplitude * self.intensity
@@ -121,8 +120,8 @@ function action_postprocess:update_hit		(delta)
     end
     self.hit_power = self.hit_power + (delta * 0.001) * (self.st.hit_intensity * 0.01)
     if time_global () - self.hit_time < 1000 then
-       return 
-    end    
+       return
+    end
     self.hit_time = time_global ()
     local h = hit ()
     h.power = self.hit_power
@@ -131,10 +130,10 @@ function action_postprocess:update_hit		(delta)
 	h.draftsman = db_actor
 	h.type = hit.radiation
 	db.actor:hit (h)
-	
+
 	h.type = hit.shock
 	db.actor:hit (h)
-	
+
 end
 
 ---------------------------------------------------------------------------------------------------------------------

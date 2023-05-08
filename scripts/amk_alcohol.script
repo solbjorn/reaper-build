@@ -17,7 +17,7 @@ local ap_old={}
 		ap_old.poison_death_flag = 0
 		ap_old.alco_dream_flag = 0
 		ap_old.alco_good_morning_flag = 0
-		
+
 		ap_old.alco_drink_timer = 0
 		ap_old.must_drink_timer = 0
 		ap_old.abstinent_step_timer = 0
@@ -26,7 +26,7 @@ local ap_old={}
 		ap_old.poison_death_timer = 0
 		ap_old.alco_dream_timer = 0
 		ap_old.alco_good_morning_timer = 0
-		
+
 		ap_old.amk_gg_bottle_drinked = 0
 		ap_old.amk_gg_bottle_summary_drinked = 0
 		ap_old.amk_gg_is_alcoholic = 0
@@ -37,28 +37,28 @@ local ap={}
 		-- служебные флаги для таймеров
 		ap.a0 = 0	--ap_old.alco_drink_flag
 		ap.a1 = 0	--ap_old.alco_drink_timer
-		
+
 		ap.b0 = 0	--ap_old.must_drink_flag
 		ap.b1 = 0	--ap_old.must_drink_timer
-		
+
 		ap.c0 = 0	--ap_old.abstinent_step_flag
 		ap.c1 = 0	--ap_old.abstinent_step_timer
-		
+
 		ap.d0 = 0	--ap_old.alcoholic_lose_hp_flag
 		ap.d1 = 0	--ap_old.alcoholic_lose_hp_timer
-		
+
 		ap.e0 = 0	--ap_old.sober_step_flag
 		ap.e1 = 0	--ap_old.sober_step_timer
-		
+
 		ap.f0 = 0	--ap_old.poison_death_flag
 		ap.f1 = 0	--ap_old.poison_death_timer
-		
+
 		ap.g0 = 0	--ap_old.alco_dream_flag
 		ap.g1 = 0	--ap_old.alco_dream_timer
-		
+
 		ap.h0 = 0	--ap_old.alco_good_morning_flag
 		ap.h1 = 0	--ap_old.alco_good_morning_timer
-		
+
 		ap.a = 0	--ap_old.amk_gg_bottle_drinked
 		ap.b = 0	--ap_old.amk_gg_bottle_summary_drinked
 		ap.c = 0	--ap_old.amk_gg_is_alcoholic
@@ -100,28 +100,28 @@ function convert_variables()
 	ap = amk.unpack_array_from_string(amk.load_variable("alcpar",amk.pack_array_to_string(ap)))
 	ap.a0 = ap_old.alco_drink_flag
 	ap.a1 = ap_old.alco_drink_timer
-	
+
 	ap.b0 = ap_old.must_drink_flag
 	ap.b1 = ap_old.must_drink_timer
-	
+
 	ap.c0 = ap_old.abstinent_step_flag
 	ap.c1 = ap_old.abstinent_step_timer
-	
+
 	ap.d0 = ap_old.alcoholic_lose_hp_flag
 	ap.d1 = ap_old.alcoholic_lose_hp_timer
-	
+
 	ap.e0 = ap_old.sober_step_flag
 	ap.e1 = ap_old.sober_step_timer
-	
+
 	ap.f0 = ap_old.poison_death_flag
 	ap.f1 = ap_old.poison_death_timer
-	
+
 	ap.g0 = ap_old.alco_dream_flag
 	ap.g1 = ap_old.alco_dream_timer
-	
+
 	ap.h0 = ap_old.alco_good_morning_flag
 	ap.h1 = ap_old.alco_good_morning_timer
-	
+
 	ap.a = ap_old.amk_gg_bottle_drinked
 	ap.b = ap_old.amk_gg_bottle_summary_drinked
 	ap.c = ap_old.amk_gg_is_alcoholic
@@ -144,7 +144,7 @@ function check_alcohol()
 	--условия на сработку "таймера"
 	-- выпил водку
 	if ap.a0 == 1 then
-		if ap.a1 <= time then 
+		if ap.a1 <= time then
 			if alife():object(ap.d) == nil then
 				ap.a0 = 0
 				ap.a1 = 0
@@ -160,8 +160,8 @@ function check_alcohol()
 			reset_dream()
 			reset_sober()
 			reset_lose_hp()
-			ap.f0 = 0 
-			ap.f1 = 0 
+			ap.f0 = 0
+			ap.f1 = 0
 			amk_alcohol_poison_death()
 		end
 	end
@@ -217,7 +217,7 @@ function check_alcohol()
 	end
 	--  упаковка состояний и флагов таймеров, переменных
 	amk.save_variable("alcpar",amk.pack_array_to_string(ap))
-	
+
 end
 --
 -- Проверка распития бутылки водки
@@ -347,7 +347,7 @@ function amk_need_alcohol(game_time)
 end
 --
 --Нанесение вреда здоровью, если вовремя не выпил
-function amk_lose_hp(game_time)	
+function amk_lose_hp(game_time)
 	if ap.b0 == 1 then
 		local h = hit()
 		h.draftsman = db.actor
@@ -423,5 +423,4 @@ function reset_lose_hp()
 end
 --
 --=========================--
-
 

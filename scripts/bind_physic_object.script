@@ -22,7 +22,7 @@ function init(obj)
 	   obj:clsid() ~= clsid_projector then
 		return
 	end
-	
+
 	obj:bind_object(generic_physics_binder(obj))
 end
 
@@ -35,7 +35,7 @@ class "generic_physics_binder" (object_binder)
 function generic_physics_binder:__init(obj) super(obj)
 	self.initialized = false
 	self.loaded = false
-end 
+end
 
 function generic_physics_binder:reload(section)
 	object_binder.reload(self, section)
@@ -115,7 +115,7 @@ function generic_physics_binder:net_spawn(data)
 	end
 
 	amk.on_net_spawn(self.object)
-	
+
 	return true
 end
 
@@ -196,7 +196,7 @@ function generic_physics_binder:death_callback(victim, who)
     if self.disable_graph_point ~= nil then
         game_graph():accessible(self.disable_graph_point, true)
     end
-	
+
 	if self.is_drop_box then
 		self.box_items:spawn_items()
 	end

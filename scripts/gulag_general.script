@@ -22,7 +22,7 @@ function load_job(sj, gname, type, squad, groups, st)
 		  "use_wpn			= false\n"..
 		  "syndata			= backoff@threat_weap\n"..
 		  "precond			= visibility\n"
-		  
+
 	-- УНИВЕРСАЛЬНЫЙ ЛАГЕРЬ СТАЛКЕРОВ
 	if type == "general_lager" then
 		-- Проверяем наличие кампов.
@@ -85,7 +85,6 @@ function load_job(sj, gname, type, squad, groups, st)
 			ltx = ltx..job_ltx
 			it = it + 1
 		end
-
 
 		-- Проверяем наличие путей брожения внутри лагеря.
 		it = 1
@@ -243,7 +242,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = camper@"..way_name.."\n"..
 
-							"[camper@"..way_name.."]\n"..							
+							"[camper@"..way_name.."]\n"..
 							"path_walk = sniper_"..it.."_walk\n"..
 							"path_look = sniper_"..it.."_look\n"..
 							"sniper = true\n"
@@ -320,7 +319,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			-- добавляем описание должности в лтх.
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = mob_home@"..way_name.."\n"..
-							
+
 							"[mob_combat@"..way_name.."]\n"..
 							"on_timer = ".. math.random(30000,60000) .." | mob_home@"..way_name.."\n"..
 
@@ -333,8 +332,6 @@ function load_job(sj, gname, type, squad, groups, st)
 		end
 
 		-- Необходим fake_death с патрульным путем
-
-
 
 		-- Необходима атака в лице mob_home с agressive
 		-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
@@ -373,7 +370,6 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-
 	end
 end
 
@@ -408,7 +404,7 @@ function load_states(gname, type)
 			end
 		end
 	elseif type == "general_lair" then
-		return function(gulag) 
+		return function(gulag)
 			if gulag.state == 0 then
 				if gulag.population_comed == 0 then
 					return 0
@@ -432,7 +428,6 @@ function load_states(gname, type)
 	end
 end
 
-
 function checkStalker(npc_community, type)
 	return type == "general_lager"
 end
@@ -440,7 +435,6 @@ end
 function checkMonster(npc_community, type)
 	return type == "general_lair"
 end
-
 
 --------------------------------------------------------------------------
 -- Dynamic ltx

@@ -11,15 +11,14 @@ function snd_source:reset_scheme(loading)
   self.st.signals = {}
   self.played_sound = nil
 
-  
   self.first_sound = true
-    self.st.pause_time = 0  
+    self.st.pause_time = 0
     self.st.sound_set = true
     if loading == false then
      self.destructed = false
   else
      self.destructed = xr_logic.pstor_retrieve (self.object, "destr")
-  end   
+  end
 end
 
 function snd_source:save ()
@@ -45,7 +44,7 @@ local is_siren={
   pri_ambient_battle_sound_zone_0000=true,
   pri_ambient_battle_sound_zone_0001=true,
   pri_ambient_battle_sound_zone_0002=true,
-  pri_ambient_battle_sound_zone_0003=true 
+  pri_ambient_battle_sound_zone_0003=true
 }
 
 function snd_source:update(delta)
@@ -70,11 +69,11 @@ function snd_source:update(delta)
   if self.st.pause_time > time_global() then
       return
   end
-       
+
   self.st.pause_time = 0
   if self.st.sound_set == true then
       self.st.sound_set = false
-    
+
     if self.amk_override then
       rnd=math_random(0,100)
       if rnd<2 then
@@ -103,33 +102,33 @@ function snd_source:update(delta)
       self.st.signals["theme_end"] = true
     end
     self.first_sound = false
-  end   
-      
+  end
+
   if self.last_update == 0 then
      self.last_update = time_global() + 50
   else
      if time_global() > self.last_update then
         self.last_update = 0
      else
-        return     
-     end          
+        return
+     end
   end
-       
-  if self.played_sound ~= nil then 
+
+  if self.played_sound ~= nil then
     if self.played_sound:playing () == false then
       if self.first_sound == false then
         self.st.signals["sound_end"] = true
       end
-                  
+
       self.st.sound_set = true
       if (self.st.pause_min ~= 0 or self.st.pause_max ~= 0) and (not self.amk_override) then
         self.st.pause_time = time_global() + math_random(self.st.pause_min, self.st.pause_max)
-      end 
+      end
       self.first_sound = false
     else
       self.played_sound:set_position (self.object:position ())
     end
-  end  
+  end
 end
 
 function snd_source:deactivate ()
@@ -138,8 +137,6 @@ function snd_source:deactivate ()
        self.played_sound = nil
     end
 end
-
-
 
 function add_to_binder_q(npc, storage)
 	storage.actions[ snd_source(npc, storage) ] = true

@@ -474,7 +474,7 @@ local suits_to_visuals = {
 --		soldier_suit = {
 --		},
 		stalker_comander_suit = {
-		}	
+		}
 	},
 	killer={
 		green_stalker_suit = {
@@ -550,7 +550,7 @@ local suits_to_visuals = {
 --		soldier_suit = {
 --		},
 		stalker_comander_suit = {
-		}	
+		}
 	},
 	ecolog={
 		green_stalker_suit = {
@@ -627,7 +627,7 @@ local suits_to_visuals = {
 --		soldier_suit = {
 --		},
 		stalker_comander_suit = {
-		}	
+		}
 	},
 	sniper={
 		green_stalker_suit = {
@@ -1204,7 +1204,7 @@ local suits_to_visuals = {
 		stalker_comander_suit = {
 			[[militari\stalker_militari_antigas_2]],
 			[[militari\stalker_militari_2]]
-		}	
+		}
 	},
 	bandit={
 		green_stalker_suit = {
@@ -1431,10 +1431,9 @@ local suits_to_visuals = {
 		stalker_comander_suit = {
 			[[militari\stalker_militari_antigas_2]],
 			[[militari\stalker_militari_2]]
-		}	
+		}
 	}
 }
-
 
 function npc_update(binder)
 	if (binder.armor_check_update or 0)<time_global() then
@@ -1464,9 +1463,9 @@ function check_armor(npc, item, just_report)
 				end
 			else
 				if #suits_to_visuals[com][vis] > 0 and get_npc_current_visual_level(npc:id())<=armor_levels[vis] then
-					if ((not db.actor:see(npc) and npc:position():distance_to(db.actor:position())>1) or 
+					if ((not db.actor:see(npc) and npc:position():distance_to(db.actor:position())>1) or
 						npc:position():distance_to(db.actor:position())>100) then
-						
+
 						change_vis(npc:id(),"actors\\"..suits_to_visuals[com][vis][math_random(#suits_to_visuals[com][vis])],armor_levels[vis],true)
 						alife():release(alife():object(item:id()))
 					end
@@ -1532,11 +1531,11 @@ function get_npc_current_visual_level(id)
 			if vis == "stalker_mo_nauchniy" then sect = "monolit_scientific_outfit" end
 			if vis == "stalker_mo_exo" then sect = "monolit_exoskeleton" end
 	-- nauchniy (see ecolog)
-	-- neytral		
-			if string_find(vis,"stalker_neytral") or vis == "stalker_hood" then sect = "stalker_outfit" end 
-			if string_find(vis,"stalker_neytral_rukzak") then sect = "outfit_stalker_m2" end 
+	-- neytral
+			if string_find(vis,"stalker_neytral") or vis == "stalker_hood" then sect = "stalker_outfit" end
+			if string_find(vis,"stalker_neytral_rukzak") then sect = "outfit_stalker_m2" end
 			if vis == "stalker_bar_security" then sect = "stalker_guard_outfit" end
-			if vis == "stalker_neytral_hood_92" then sect = "neytral_gaz_outfit_m1" end 
+			if vis == "stalker_neytral_hood_92" then sect = "neytral_gaz_outfit_m1" end
 			if vis == "stalker_neytral_hood_9" then sect = "neytral_gaz_outfit_m2" end
 			if vis == "stalker_2_gas" then sect = "neytral_gaz_outfit_v1" end
 			if vis == "stalker_3_gas" then sect = "neytral_gaz_outfit_v2" end
@@ -1563,13 +1562,13 @@ function get_npc_current_visual_level(id)
 			if vis == "green_stalker_antigas" then sect = "neytral_novice_gaz_outfit_m1" end
 	-- protect (see ecolog)
 	-- soldier
-			if string_find(vis,"soldier_bandana") or string_find(vis,"soldier_beret") or vis == "soldier_mask" or vis == "soldier_obichniy" or vis == "stalker_soldier" then sect = "outfit_soldier_m1" end 
+			if string_find(vis,"soldier_bandana") or string_find(vis,"soldier_beret") or vis == "soldier_mask" or vis == "soldier_obichniy" or vis == "stalker_soldier" then sect = "outfit_soldier_m1" end
 			if vis == "soldier_spetsnaz" or vis == "stalker_specops" then sect = "specops_outfit" end
 			if vis == "soldier_antigas" then sect = "outfit_specnaz_m1" end
 	-- stalker_zombi
 			if vis == "stalker_zombie1" then sect = "bandit_outfit" end
 			if vis == "stalker_zombie2" or vis == "zombie_fresh_1" then sect = "dolg_outfit" end
-			if vis == "stalker_zombie3" or vis == "stalker_zombie6" or vis == "zombie_fresh_2" then sect = "stalker_outfit" end 
+			if vis == "stalker_zombie3" or vis == "stalker_zombie6" or vis == "zombie_fresh_2" then sect = "stalker_outfit" end
 			if vis == "stalker_zombie4" then sect = "killer_outfit" end
 			if vis == "stalker_zombie5" then sect = "stalker_guard_outfit" end
 			if vis == "stalker_zombie7" then sect = "novice_outfit" end
@@ -1592,7 +1591,7 @@ function get_npc_current_visual_level(id)
 			if vis == "stalker_france_killer_antigas" then sect = "stalker_france_killer_gaz" end
 		end
 	end
-	local vis_suit = read_if_exist_str(system_ini(),sect,"visual",nil) 
+	local vis_suit = read_if_exist_str(system_ini(),sect,"visual",nil)
 	if vis_suit then
 		vis_suit = xrs_utils.str_explode("\\",vis_suit)
 		vis_suit = xrs_utils.str_explode(".",vis_suit[2])
@@ -1614,9 +1613,9 @@ end
 -------------
 
 function change_vis(id, suit_vis, lvl, now)
-	
-	if look_for_armor(id,suit_vis) then 
-		if now then 
+
+	if look_for_armor(id,suit_vis) then
+		if now then
 			local npc = level.object_by_id(id)
 			if npc then
 				npc:clear_animations()
@@ -1664,7 +1663,7 @@ function update()
 			convert_npc[k]=nil
 		end
 	end
-	
+
 	--armor upgrade part
 	if auto_upgrades==true then
 	    local time = amk_game_minutes()
@@ -1682,7 +1681,7 @@ function update()
 						if map and upgrade_top_lvl[map]~=nil then
 							local lvl = get_npc_level(a)
 							if lvl<upgrade_top_lvl[map] or math_random()<upgrade_over_top_chance then
-								if not stalkers[lvl] then 
+								if not stalkers[lvl] then
 									stalkers[lvl]={}
 								end
 								table.insert(stalkers[lvl],a)
@@ -1702,7 +1701,7 @@ function update()
 								local npc_id=stalkers[a][idx]
 								if math_random()<upgrade_steps[a].prb then
 									if select_next_visual(npc_id,visible_auto_upgrades)==true then
-										if not stalkers[a+1] then 
+										if not stalkers[a+1] then
 											stalkers[a+1]={}
 										end
 										table.insert(stalkers[a+1],npc_id)
@@ -1716,7 +1715,7 @@ function update()
 			end
 			xr_logic.pstor_store(db.actor,"xrs_armor_t",time+upgrade_delta)
 		end
-	end	
+	end
 end
 
 function select_next_visual(id,now)
@@ -1741,7 +1740,7 @@ function select_next_visual(id,now)
 					end
 				end
 			end
-			
+
 			if new_vis~="" then
 				change_vis(id,"actors\\"..new_vis,nl,now)
 				return true
@@ -1777,10 +1776,10 @@ function evaluator_see_useful_armor:evaluate()
 			self.a.see_outfit=nil
 		end
 	end
-	
+
 	if (self.next_check_time or 0) > time_global() then return false end
 	self.next_check_time = time_global() + 5000
-	
+
 	local function check_item(obj)
 		obj=obj:object()
 		if obj==nil or obj.clsid==nil or obj.id==nil then return false end
@@ -1797,7 +1796,7 @@ function evaluator_see_useful_armor:evaluate()
 	local item = false
 	for o in npc:memory_visible_objects() do
 		item = check_item(o)
-		if item then 
+		if item then
 			self.a.see_outfit = item
 			pickupers[npc:id()]=true
 			return true
@@ -1814,13 +1813,13 @@ end
 function action_get_useful_armor:initialize()
 	action_base.initialize(self)
 	local npc=self.object
-	
+
 	npc:set_item(object.idle,nil)
 	npc:set_movement_type(move.stand)
 	state_mgr.set_state(npc, "walk",nil,nil,{ look_object = level.object_by_id(self.a.see_outfit) }, {animation = true})
 	npc:set_desired_position(level.object_by_id(self.a.see_outfit):position())
 	npc:set_dest_level_vertex_id(level.object_by_id(self.a.see_outfit):level_vertex_id())
-	
+
 	xr_sound.set_sound(npc, nil)
 	stop_play_sound(npc)
 end
@@ -1833,12 +1832,12 @@ function action_get_useful_armor:execute()
 		return
 	end
 	if not self.end_time then
-		if level.object_by_id(self.a.see_outfit):position():distance_to(npc:position())<1 then 
+		if level.object_by_id(self.a.see_outfit):position():distance_to(npc:position())<1 then
 			npc:set_desired_position()
 			npc:set_desired_direction()
 			npc:set_dest_level_vertex_id(npc:level_vertex_id())
 			state_mgr.set_state(npc, "dynamite",nil,nil,{ look_object = level.object_by_id(self.a.see_outfit) }, {animation = true})
-			if npc:animation_count()==1 then 
+			if npc:animation_count()==1 then
 				self.end_time = time_global() + 1500
 			end
 		else
@@ -1881,20 +1880,20 @@ function add_to_binder_q(object, storage)
 	else
 		manager:add_evaluator (properties["armor"], evaluator_see_useful_armor("armor", storage))
 	end
-	
+
 	local action = action_get_useful_armor (object,"armor", storage)
 	action:add_precondition(world_property(stalker_ids.property_alive, true))
 	action:add_precondition(world_property(stalker_ids.property_enemy, false))
 	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
-	
+
 	xr_motivator.addCommonPrecondition(action)
 	action:remove_precondition(properties["armor"])
 	action:add_precondition	(world_property(properties["armor"], true))
-	
+
 	action:add_effect (world_property(properties["armor"], false))
 	manager:add_action (operators["armor"], action)
 
-	action = manager:action (xr_actions_id.alife)	
+	action = manager:action (xr_actions_id.alife)
 	action:add_precondition	(world_property(properties["armor"], false))
 
 end
