@@ -338,9 +338,11 @@ function show_news()
 		if math_random()>0.2 then
 			if math_random()>0.875 then
 				if amk_dolg and math_random()>0.5 then
+					sound_object("device\\pda\\pda_news"):play(db_actor, 0, sound_object.s2d)
 					local dolg_news=amk_dolg.get_strings()
 					db.actor:give_game_news(dolg_news, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), 0, 15000)
 				elseif amk_freedom then
+					sound_object("device\\pda\\pda_news"):play(db_actor, 0, sound_object.s2d)
 					local freedom_news=amk_freedom.get_strings()
 					db.actor:give_game_news(freedom_news, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), 0, 15000)
 				end
@@ -351,6 +353,7 @@ function show_news()
 				local name,sname = amk_names_lists.get_strings()
 				amk.send_tip(uniq,name.." "..sname,nil,15,"uniq", "pda_news")
 			elseif amk_modders then
+				sound_object("device\\pda\\pda_news"):play(db_actor, 0, sound_object.s2d)
 				local mod_news=amk_modders.get_strings()
 				db.actor:give_game_news(mod_news, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, 15000)
 			end
