@@ -3,9 +3,10 @@
 -- Дата: 17/08/2010 - 26/04/2011
 -----------------------------------------------------------------------------------
 
-local bolt_cnt = 0
-local hud, st
 local game_start = true
+local bolt_cnt = 0
+local st_bolt_cnt
+local hud, st
 
 function on_item_take(obj)
 	local sect = obj:section()
@@ -80,7 +81,15 @@ end
 
 function update()
 	if db_actor:active_slot() == 5 and not level.main_input_receiver() then
-		if st then st:SetText("1/" .. bolt_cnt) else show_static() end
+		if st then
+			if st_bolt_cnt ~= bolt_cnt then
+				st:SetText("1/" .. bolt_cnt)
+				st_bolt_cnt = bolt_cnt
+			end
+		else
+			show_static()
+			st_bolt_cnt = -1
+		end
 	elseif st then
 		remove_static()
 	end

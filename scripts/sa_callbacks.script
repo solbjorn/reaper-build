@@ -10,10 +10,20 @@ prefetch("sa_utils")
 --[[-----------------------------------------------------------------------------------------------
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
+local hud_interface_mgr
+local next_500 = 0
+---------------------------------------------------------------------------------------------------
 function actor_update(delta)
-	sa_hud_interface_mgr.get_hud_interface_mgr():update()
+	if not hud_interface_mgr then
+		hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
+	end
+	local time_ = time_global()
+	hud_interface_mgr:update()
 	sa_inventory_items_mgr.repack_ammo()
-	sa_main.bunker_cooling_sound()
+	if next_500 < time_ then
+		sa_main.bunker_cooling_sound()
+		next_500 = time_ + 500
+	end
 	reap.update()
 end
 ---------------------------------------------------------------------------------------------------
@@ -37,7 +47,7 @@ function actor_hit(obj, amount, local_direction, who, bone_index)
 end
 ---------------------------------------------------------------------------------------------------
 function actor_death(victim, who)
-	sa_hud_interface_mgr.get_hud_interface_mgr():actor_death()
+	hud_interface_mgr:actor_death()
 	sa_main.restore_torch(victim)
 end
 ---------------------------------------------------------------------------------------------------

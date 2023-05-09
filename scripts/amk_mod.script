@@ -794,7 +794,7 @@ function check_metka()
 		end
 	end
 end
-local last_update=0
+local next_update=0
 local inert = 1000
 local clicks_prev = 200 music_section="" music_previous_section="" music_next_section_start_time=0 music_stop_previous=0 music=false music_init = 0 music_themes = {} music_phases={} musicflag=1
 local music_objs={[1]=nil,[2]=nil}
@@ -864,24 +864,40 @@ if music_objs[2]==nil then music_objs[2]=amk_music.amk_music()  end music_objs[m
 function music_change(sound)
 if music then music_objs[musicflag]:initialize(music_phases[sound]) music_next_section_start_time=music_objs[musicflag]:play_at_time(music_next_section_start_time+200)-200 musicflag=3-musicflag music_previous_section=music_section  end end
 
-function interactive_music() amk.oau_reason="music begin"
-if (amk_load_variable("option_mus",1)==0 or amk_music==nil) then return end
-if music_init==-1 then return end
-if music_init==0 then
-if build_music_graph() then music_init=1 else music_init=-1 return  end end
-if not music then
-if time_global() - last_update > inert then music_select_section(inert) last_update = time_global()  end end
-if not music and music_previous_section=="" and music_section~="" then music_start(music_section) end
-if music and music_previous_section~="" and music_section=="" then music_previous_section="" end
-if music then music_objs[1]:update() music_objs[2]:update()
-if time_global() > music_next_section_start_time then music_select_section(music_objs[musicflag]:length())
-if music_section~="" then music_change(music_section) else music=false  end end  end amk.oau_reason="" end
+function interactive_music()
+	amk.oau_reason="music begin"
+	if (amk_load_variable("option_mus",1)==0 or amk_music==nil) then return end
+	if music_init ~= 1 then
+		if music_init==-1 then
+			return
+		else
+			if build_music_graph() then music_init=1 else music_init=-1 return  end
+		end
+	end
+	local time_ = time_global()
+	if not music then
+		if next_update < time_ then music_select_section(inert) next_update = time_ + inert end
+	end
+	if not music and music_previous_section=="" and music_section~="" then music_start(music_section) end
+	if music and music_previous_section~="" and music_section=="" then music_previous_section="" end
+	if music then
+		music_objs[1]:update()
+		music_objs[2]:update()
+		if time_ > music_next_section_start_time then
+			music_select_section(music_objs[musicflag]:length())
+			if music_section~="" then music_change(music_section) else music=false end
+		end
+	end
+	amk.oau_reason=""
+end
 
 function reset_music_cntrs(c) music_stor.actor_see_enemy=music_stor.actor_see_enemy-2*c music_stor.enemy_see_actor=music_stor.enemy_see_actor-2*c music_stor.actor_hit_enemy=music_stor.actor_hit_enemy-8*c music_stor.enemy_hit_actor=music_stor.enemy_hit_actor-4*c
 if music_stor.actor_see_enemy<0 then music_stor.actor_see_enemy=0 elseif music_stor.actor_see_enemy>music_lo_lvl then music_stor.actor_see_enemy=music_lo_lvl end
 if music_stor.enemy_see_actor<0 then music_stor.enemy_see_actor=0 elseif music_stor.enemy_see_actor>music_lo_lvl then music_stor.enemy_see_actor=music_lo_lvl end
 if music_stor.actor_hit_enemy<0 then music_stor.actor_hit_enemy=0 elseif music_stor.actor_hit_enemy>music_hi_lvl then music_stor.actor_hit_enemy=music_hi_lvl end
-if music_stor.enemy_hit_actor<0 then music_stor.enemy_hit_actor=0 elseif music_stor.enemy_hit_actor>music_hi_lvl then music_stor.enemy_hit_actor=music_hi_lvl  end end
+if music_stor.enemy_hit_actor<0 then music_stor.enemy_hit_actor=0 elseif music_stor.enemy_hit_actor>music_hi_lvl then music_stor.enemy_hit_actor=music_hi_lvl  end
+end
+
 local shoot_helper=0
 
 function calc_adrenaline(act,obj,typ)
@@ -918,8 +934,7 @@ if music and music_objs[musicflag]~=nil then l=music_objs[musicflag]:length()  e
 --'*******************************************************************************
 function blowout_phantoms()
 	local blow=amk_load_variable("blowout",-1)
-	local bt=blowout_type()
-	if blow>1 and blow<4 and bt<2 then
+	if blow>1 and blow<4 and blowout_type()<2 then
 	  local lname=level.name()
 		if not in_hide and amk_hideouts.blowouts_phantoms[lname] then
 			local phantoms=amk_hideouts.blowouts_phantoms[lname]
@@ -1096,8 +1111,8 @@ function Blowout_pp(phase)
 end
 
 local next_actor_hit_time=0
-function on_blowout_hit_actor()
-	if next_actor_hit_time<time_global() then
+function on_blowout_hit_actor(force)
+	if force or next_actor_hit_time<time_global() then
 		next_actor_hit_time=time_global()+1000
 		on_blowout_hit(db.actor)
 	end
@@ -2125,10 +2140,7 @@ function set_hud_tex(static,enabled)
 		return
 	end
 
-	if hud:GetCustomStatic("hud_time") then
-		hud:RemoveCustomStatic("hud_date")
-		hud:RemoveCustomStatic("hud_time")
-	end
+	lhup.nextupd = 0
 	lhup.night_vision_active = false
 
 	current_zoom=rect.zoom
@@ -2705,21 +2717,17 @@ function repair_armor(val)
 end
 
 function check_armor()
-	local armor = db.actor:item_in_slot(6)
-	local weapon = db.actor:item_in_slot(2)
+	local actor = db_actor
+	local armor = actor:item_in_slot(6)
 
-	if db.actor:active_slot()==2 and weapon then
-		local tmp
-		if armor then
-			tmp = armor:section()
-		else
-			tmp = "none"
-		end
+	if actor:active_slot()==2 then
+		local weapon = actor:item_in_slot(2)
+		local tmp = weapon and armor and armor:section()
 
-		if (not string_find(tmp, "exo")) and weapon:section()=="wpn_pkm1" then
-			db.actor:drop_item(weapon)
+		if tmp and weapon:section()=="wpn_pkm1" and not string_find(tmp, "exo") then
+			actor:drop_item(weapon)
 			local tmpw = amk.spawn_item_in_inv("wpn_pkm1")
-			db.actor:transfer_item(weapon,db.actor)
+			actor:transfer_item(weapon, actor)
 			alife():release(tmpw)
 		end
 	end

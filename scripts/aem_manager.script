@@ -174,6 +174,7 @@ function CArenaext:__init()
 
 	time_def = time_get_start()
 
+	self.nextupd = 0
 	-- время последнего обновления (update)
 	self.lt = xr_logic.pstor_retrieve(actor, "aem_lt", 0)
 	-- время последнего/следующего открытия арены
@@ -855,18 +856,14 @@ function CArenaext:reinit()
 end
 
 -------
--- вызывается из "bind_stalker.script" <actor_binder:update(delta)>
+-- update() вызывается из "bind_stalker.script" <actor_binder:update(delta)>
 -------
-function CArenaext:update()
-	local curr = time_get_curr()
-
+function CArenaext:update_slow(curr)
 	local id, npc, ctm, rt, ct
 
-	if actor:dont_has_info("aem_startup") then
-		if aem_only == true then
-			actor:give_info_portion("bar_arena_fight_8_done")
-			startup()
-		end
+	if aem_only == true and actor:dont_has_info("aem_startup") then
+		actor:give_info_portion("bar_arena_fight_8_done")
+		startup()
 	end
 
 	id = xr_logic.pstor_retrieve(actor, "aem_id", 0)
@@ -986,6 +983,19 @@ function CArenaext:update()
 		end
 	end
 
+	self.lt = curr
+	xr_logic.pstor_store(actor, "aem_lt", self.lt)
+end
+
+function CArenaext:update()
+	local curr = time_get_curr()
+	local time_ = time_global()
+
+	if self.nextupd < time_ then
+		self:update_slow(curr)
+		self.nextupd = time_ + 1000
+	end
+
 	if actor:has_info("aem_startup") then
 		if actor:has_info("aem_open") then
 			if actor:has_info("aem_done") then
@@ -1067,9 +1077,6 @@ function CArenaext:update()
 			end
 		end
 	end
-
-	self.lt = curr
-	xr_logic.pstor_store(actor, "aem_lt", self.lt)
 end
 
 -------

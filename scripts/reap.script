@@ -21,7 +21,7 @@ _G.timer_types = {
  * Callbacks
 --]]---------------------------------------------------------------------------
 
-local next_update_200 = -1
+local next_update_200 = 0
 
 function net_spawn()
 	set_timer_tick()
@@ -39,9 +39,9 @@ function update()
 	local time_ = time_global()
 
 	if next_update_200 < time_ then
-		next_update_200 = time_ + 200
-
 		safe_place()
+
+		next_update_200 = time_ + 200
 	end
 end
 

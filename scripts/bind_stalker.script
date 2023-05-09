@@ -324,30 +324,36 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 local object_binder_update = object_binder.update
 local xr_sound_update_actor = xr_sound.update_actor
-local corspoff = true
+
+local start = true
+local aem
+
+local next_100 = 0
+local next_200 = 0
+local next_500 = 0
 
 function actor_binder:update(delta)
-  if corspoff then
-    sak_off_corpses.off_corpses()
-    corspoff = false
-  end
-  object_binder_update(self, delta)
+	if start then
+		sak_off_corpses.off_corpses()
+		aem = aem_manager.get_aem()
+
+		start = false
+	end
+
+	object_binder_update(self, delta)
 
 	local time_ = time_global()
 
-  -- $DreamMod  апдейт схемы сна
-  if sleep_manager.is_sleep_active() and xr_conditions.actor_dead() then
-    xr_logic.issue_event(db_actor, db.storage[db_actor_id]["ar_sleep"], "update")
-  end
+	-- $DreamMod  апдейт схемы сна
+	if not db_actor:alive() and sleep_manager.is_sleep_active() then
+		xr_logic.issue_event(db_actor, db.storage[db_actor_id]["ar_sleep"], "update")
+	end
 
-  -- апдейт звуковой схемы актера
-  xr_sound_update_actor()
+	-- апдейт звуковой схемы актера
+	xr_sound_update_actor()
 
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
-	aem_manager.get_aem():update()
-
-	--'for debug only
-	--aem_grenade.scan_dif()
+	aem:update()
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 
   -- Апдейт прятание оружия игрока во время диалога
@@ -363,11 +369,9 @@ function actor_binder:update(delta)
     end
   end
 
-  -- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
+	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
 	if self.next_restrictors_update_time < time_ then
-    bind_restrictor.actor_update(delta)
-  -- Апдейтим наш телепорт
-	bind_mteleport.actor_update(delta)
+		bind_restrictor.actor_update(delta)
 		self.next_restrictors_update_time = time_ + 200
 
 		-- апдейт схемы детектора
@@ -395,42 +399,49 @@ function actor_binder:update(delta)
 				hud:RemoveCustomStatic(rad_danger)
 			end
 		end
-  end
+	end
 
   -- обновление пси-антенны
   if sr_psy_antenna.psy_antenna then
     sr_psy_antenna.psy_antenna:update(delta)
   end
 
-    -- TAG Хлеб и колбаса портятся от радиации
-	if self.object.radiation > 0.4 and self.in_rad_zone == false then
-		if (self.object:object("bread") or self.object:object("kolbasa")) then
-       local need_say = false
-       self.object:iterate_inventory(function (dummy,item)
-                                  if item:section()=="bread" and math.random() <= self.object.radiation then
-                                      need_say = true
-                                      amk.remove_item(item)
-                                      amk.spawn_item_in_inv("bread_a")
-                                  elseif item:section()=="kolbasa" and self.object.radiation>0.6 and math.random() <= (self.object.radiation - 0.2) then
-                                      need_say = true
-                                      amk.remove_item(item)
-                                      amk.spawn_item_in_inv("kolbasa_a")
-                                  end
-                                  end, nil)
-      if need_say then
-          amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)
-      end
-		end
+	if next_200 < time_ then
+		-- Апдейтим наш телепорт
+		bind_mteleport.actor_update(delta)
 
-		self.in_rad_zone = true
-	elseif self.in_rad_zone == true and self.object.radiation < 0.3 then
-		self.in_rad_zone = false
+		-- TAG Хлеб и колбаса портятся от радиации
+		if self.object.radiation > 0.4 and self.in_rad_zone == false then
+			if (self.object:object("bread") or self.object:object("kolbasa")) then
+				local need_say = false
+				self.object:iterate_inventory(
+					function (dummy,item)
+						if item:section()=="bread" and math.random() <= self.object.radiation then
+							need_say = true 
+							amk.remove_item(item)
+							amk.spawn_item_in_inv("bread_a")
+						elseif item:section()=="kolbasa" and self.object.radiation>0.6 and math.random() <= (self.object.radiation - 0.2) then
+							need_say = true 
+							amk.remove_item(item)
+							amk.spawn_item_in_inv("kolbasa_a")
+						end
+					end
+				)
+				if need_say then 
+					amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)    
+				end 
+			end
+
+			self.in_rad_zone = true
+		elseif self.in_rad_zone == true and self.object.radiation < 0.3 then
+			self.in_rad_zone = false
+		end
 	end
 
-  if self.freeplay_stats ~= nil then
-        self.freeplay_stats:check_actor_money()
-        self.freeplay_stats:check_actor_rank()
-  end
+	if next_500 < time_ then
+		self.freeplay_stats:check_actor_money()
+		self.freeplay_stats:check_actor_rank()
+	end
 
   if self.bCheckStart then
     if not has_alife_info("storyline_actor_start") and
@@ -453,35 +464,49 @@ function actor_binder:update(delta)
 
   --AMK UTILS--
   amk.on_actor_upade(delta)
-  amk_offline_alife.actor_update(delta)
   --AMK UTILS--
-	arc_main.actor_update()
-  sak.nepis_umer()
-  braad_test.dead_npc()
 
-  -- added by Red75. Контроль за переполнением
-  if self.warning then
-    self.warning=nil
-    get_hud():AddCustomStatic("hud_save_warning")
-    local wnd=get_hud():GetCustomStatic("hud_save_warning"):wnd()
-    if self.critical==1 then
-      wnd:SetTextST(game.translate_string("amk_warn_trans"))
-      self.critical=nil
-    elseif self.critical==2 then
-      wnd:SetTextST(game.translate_string("amk_warn_trans_critical"))
-      self.critical=nil
-    else
-      wnd:SetTextST(game.translate_string("amk_warn_attention"))
-    end
-  elseif self.wt and self.wt<time_ then
-    self.wt=nil
-    if get_hud():GetCustomStatic("hud_save_warning") then
-      get_hud():RemoveCustomStatic("hud_save_warning")
-    end
-  end
+	if next_100 < time_ then
+		amk_offline_alife.actor_update(delta)
+		arc_main.actor_update()
+
+		next_100 = time_ + 100
+	end
+
+	if next_500 < time_ then
+		sak.nepis_umer()
+		braad_test.dead_npc()
+
+		next_500 = time_ + 500
+	end
+
+	if next_200 < time_ then
+		-- added by Red75. Контроль за переполнением 
+		if self.warning then
+			self.warning=nil
+			get_hud():AddCustomStatic("hud_save_warning")
+			local wnd=get_hud():GetCustomStatic("hud_save_warning"):wnd()
+			if self.critical==1 then
+				wnd:SetTextST(game.translate_string("amk_warn_trans"))
+				self.critical=nil
+			elseif self.critical==2 then
+				wnd:SetTextST(game.translate_string("amk_warn_trans_critical"))
+				self.critical=nil
+			else
+				wnd:SetTextST(game.translate_string("amk_warn_attention"))
+			end
+		elseif self.wt and self.wt<time_ then
+			self.wt=nil
+			if get_hud():GetCustomStatic("hud_save_warning") then
+				get_hud():RemoveCustomStatic("hud_save_warning")
+			end
+		end
+		-- end of addition
+
+		next_200 = time_ + 200
+	end
 
 	xrs_ai.actor_update(delta)
-  -- end of addition
 	biodetector.update()
 
 	sa_callbacks.actor_update(delta)

@@ -17,12 +17,17 @@ function CHudInterfaceMgr:__init()
 	local nv = hud:GetCustomStatic("night_vision_static"):wnd()
 	nv:SetWidth(0)
 
+	self.nextupd = 0
 	self.night_vision = nv
 	self.night_vision_active = false
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:update()
-	self:date_static()
+	local time_ = time_global()
+	if self.nextupd < time_ then
+		self:date_static()
+		self.nextupd = time_ + 1000
+	end
 	self:night_vision_static()
 end
 ---------------------------------------------------------------------------------------------------
