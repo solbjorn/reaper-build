@@ -421,40 +421,44 @@ function test_for_need_sleep_nrg(oid)
 	end
 end
 
-function test_for_need_sleep_matras(oid)
-	if alife():object(oid)==nil then
-		local enemy=false
-		local obj
-		local actorPos = db_actor:position()
-		for npcId, npc in pairs(db.storage) do
-			obj = level_object_by_id(npcId)
-			if obj then
-				if (( IsStalker(obj) and amk.get_npc_relation(obj,db_actor)=="enemy" ) or IsMonster(obj))
-					and obj:position():distance_to(actorPos) < 40 and obj:see(db_actor) then
-					enemy=true
-					break
-				end
+function sleep_action()
+	local enemy=false
+	local obj
+	local actorPos = db_actor:position()
+	for npcId, npc in pairs(db.storage) do
+		obj = level_object_by_id(npcId)
+		if obj then
+			if (( IsStalker(obj) and amk.get_npc_relation(obj,db_actor)=="enemy" ) or IsMonster(obj))
+				and obj:position():distance_to(actorPos) < 40 and obj:see(db_actor) then
+				enemy=true
+				break
 			end
 		end
-		if enemy==true then
-			amk.send_tip(game.translate_string("not_need_sleep_enemy"),nil,nil,5)
+	end
+	if enemy==true then
+		amk.send_tip(game.translate_string("not_need_sleep_enemy"),nil,nil,5)
+	else
+		if amk_load_variable("blowout",-1)>-1 and amk_load_variable("blowout",-1)<5 then
+			amk.send_tip(game.translate_string("blowout_not_sleep"),nil,nil,5)
 		else
-			if amk_load_variable("blowout",-1)>-1 and amk_load_variable("blowout",-1)<5 then
-				amk.send_tip(game.translate_string("blowout_not_sleep"),nil,nil,5)
-			else
-				if amk_load_variable("block_sleep_menu",0)==0 then
-					if amk_load_variable("gg_need_sleep",0)>10 then
-						local spwn=ui_cheat.cheat(get_hud())
-						level.start_stop_menu(spwn,true)
-					else
-						amk.send_tip(game.translate_string("not_need_sleep"),nil,nil,5)
-					end
+			if amk_load_variable("block_sleep_menu",0)==0 then
+				if amk_load_variable("gg_need_sleep",0)>10 then
+					local spwn=ui_cheat.cheat(get_hud())
+					level.start_stop_menu(spwn,true)
 				else
-					amk.send_tip(game.translate_string("not_need_sleep_nrg"),nil,nil,5)
+					amk.send_tip(game.translate_string("not_need_sleep"),nil,nil,5)
 				end
+			else
+				amk.send_tip(game.translate_string("not_need_sleep_nrg"),nil,nil,5)
 			end
-		 end
-	    amk.spawn_item_in_inv("matras")
+		end
+	end
+end
+
+function test_for_need_sleep_matras(oid)
+	if alife():object(oid)==nil then
+		sleep_action()
+		amk.spawn_item_in_inv("matras")
 	end
 end
 

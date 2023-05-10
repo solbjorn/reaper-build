@@ -1,0 +1,70 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : dmx_sleep_binder.script
+ Description  : Биндер спального места
+ Copyright    : DMX MOD
+ Author       : Shadows and Charsi
+ Last update  : 22.04.2011
+--]]-----------------------------------------------------------------------------------------------
+
+function init(obj)
+    obj:bind_object(BSleep(obj))
+end
+
+class "BSleep" (object_binder)
+
+function BSleep:__init(obj) super(obj)
+    self.object=obj
+end 
+
+function BSleep:reload(section)
+    object_binder.reload(self, section)
+end
+
+function BSleep:reinit()
+   object_binder.reinit(self)
+   self.object:set_callback(callback.use_object, BSleep.use_callback, self) 
+end
+
+function BSleep:update(delta)
+    object_binder.update(self, delta)
+end
+
+function BSleep:net_spawn(data)
+    local h = hit()
+    h.draftsman = db.actor
+    h.type = hit.strike
+    h.direction = vector():set(0, 0, 0)
+    h.power = 0.0001
+    h.impulse = 0.0001
+    self.object:hit(h)
+    self.object:set_tip_text("st_dmx_sleep")
+    return object_binder.net_spawn(self, data)
+end
+
+function BSleep:net_destroy()
+    object_binder.net_destroy(self)
+end
+
+function BSleep:net_save_relevant()
+return true
+end
+
+function BSleep:use_callback(obj, who)
+	amk_mod.sleep_action()
+end
+
+-- Спавн мест для сна
+function place_of_sleep_spawn()
+	local vec = vector()
+	local sim = g_alife
+
+	sim:create("place_of_sleep",vec:set(-210.765,-22.881,-122.198),42632,59) -- Кордон - в подвале деревни
+	sim:create("place_of_sleep",vec:set(47.043,1.567,243.461),219251,359) -- Свалка - на заставе Долга
+	sim:create("place_of_sleep",vec:set(-68.412,-6.368,-68.965),3552,717) -- Подземка Агропрома - тайник
+	sim:create("place_of_sleep",vec:set(48.180,1.101,-59.024),235536,1083) -- ТД - У бандитов
+	sim:create("place_of_sleep",vec:set(117.971,0.206,66.106),34340,1252) -- Бар - комната около Захара
+	sim:create("place_of_sleep",vec:set(27.627,-10.949,-280.456),54978,1480) -- Янтарь - в бункере
+	sim:create("place_of_sleep",vec:set(9.233,-7.186,20.183),316476,1582) -- АС - в бараках
+	sim:create("place_of_sleep",vec:set(36.312,-3.370,-48.361),22448,1996) -- Радар - в доме Сяка
+	sim:create("place_of_sleep",vec:set(99.587,4.333,131.124),210226,2171) -- Припять - в квартире Стрелка
+end
