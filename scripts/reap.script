@@ -1,4 +1,12 @@
 --[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local string_match = string.match
+local utils_r_CTime = utils.r_CTime
+local utils_w_CTime = utils.w_CTime
+
+--[[---------------------------------------------------------------------------
  * Globals
 --]]---------------------------------------------------------------------------
 
@@ -51,6 +59,9 @@ function item_take(obj)
 	if obj:is_artefact() then
 		art_hit.hit_by_art(obj)
 	end
+	if obj:section() == "val_zapis_1" and not has_info("coll_tele1_on") then
+		valerich_treasures.spawn_next(1)
+	end
 end
 
 function item_drop(obj)
@@ -85,6 +96,11 @@ function take_item_from_box(box, item)
 		sim:create("treasure_item", box:position(), db_actor:level_vertex_id(),
 			   db_actor:game_vertex_id())
 		sim:release(sim:object(box:id()))
+	end
+
+	local name, id = string_match(item:section(), "(val_zapis_)(%d+)")
+	if name and id then
+		valerich_treasures.spawn_next(tonumber(id))
 	end
 end
 
@@ -177,8 +193,6 @@ local timer_tick
 local timers = { }
 local timer_nextup
 
-local string_match = string.match
-
 function set_timer_tick()
 	timer_tick = game.CTime()
 	timer_tick:setHMSms(0, 0, 0, timer_res * base_time_factor)
@@ -259,9 +273,6 @@ function update_timers()
 		end
 	end
 end
-
-local utils_r_CTime = utils.r_CTime
-local utils_w_CTime = utils.w_CTime
 
 function save_timers(packet)
 	local num = #timers
