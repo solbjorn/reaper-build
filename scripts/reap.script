@@ -47,6 +47,10 @@ end
 
 function item_take(obj)
 	bolt_ending.on_item_take(obj)
+
+	if obj:is_artefact() then
+		art_hit.hit_by_art(obj)
+	end
 end
 
 function item_drop(obj)
