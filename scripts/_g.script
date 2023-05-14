@@ -24,13 +24,79 @@ function load_scheme(filename, scheme, stype)
 	end
 end
 
+-- Глобальные singletone классы
+config = system_ini()
+
+-- Следующие singletone классы задаются в start_game_callback
 g_alife = nil
 
 prefetch("lua_ext")
 
+-- Короткие имена для частых функций
+voice = xr_sound.get_safe_sound_object
+
+-- переменные
+set_value = amk.save_variable
+get_value = amk.load_variable
+del_value = amk.del_variable
+
+-- Проиграть звук
+function say(s)
+	voice(s):play_no_feedback(db_actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
+end
+
 -- Вместо has_alife_info, alife():has_info, db.actor:has_info
 function has_info(i)
-	return g_alife:has_info(0, i)
+	return g_alife:has_info(0,i)
+end
+
+-- Вместо db.actor:give_info_portion
+function give_info(i)
+	return db_actor:give_info_portion(i)
+end
+
+-- Вместо db.actor:disable_info_portion
+function disable_info(i)
+	return db_actor:disable_info_portion(i)
+end
+
+-- Вместо alife():create() все варианты
+function create(...)
+	return g_alife:create(...)
+end
+
+-- Вместо alife():release(), alife():release(alife():object(id|name)) со всеми проверками.
+-- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
+function release(o)
+	if not o then return end
+
+	o = server_object(o)
+	if o then
+		g_alife:release(o)
+	end
+end
+
+-- Вместо alife():object(id|name)
+-- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
+function server_object(o)
+	if not o then return nil end
+
+	if type(o) ~= "userdata" then		-- id или name
+		return g_alife:object(o)
+	elseif o.section_name then			-- серверный объект
+		return o
+	else								-- клиентский объект
+		return g_alife:object(o:id())
+	end
+end
+
+-- Вместо level.object_by_id()
+level_object = level.object_by_id
+
+-- Это использовать только при разовых указаниях позиции для create и т.п. Для всего остального использовать свой экземпляр класса vector().
+local pos_only = vector()
+function xyz(x,y,z)
+	return pos_only:set(x,y,z)
 end
 
 ----------------------------------------------------------------------
