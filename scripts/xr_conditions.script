@@ -147,6 +147,7 @@ end
 
 function actor_in_zone(actor, npc, p)
 	local zone = db.zone_by_name[p[1]]
+	actor = db_actor
 	return actor ~= nil and zone ~= nil and zone:inside(actor:position())
 end
 function actor_out_zone(actor, npc, p)
@@ -154,6 +155,7 @@ function actor_out_zone(actor, npc, p)
 	if zone == nil then
 		return false
 	end
+	actor = db_actor
 	return not (actor ~= nil and zone:inside(actor:position()))
 end
 
