@@ -1,4 +1,4 @@
-total_diaries_number = 17
+total_diaries_number = 33
 
 function monster_killed(obj,who)
   local obj_sect = obj:section()
@@ -6,6 +6,8 @@ function monster_killed(obj,who)
     amk.spawn_item_in_inv("vodka",obj)
     if not has_alife_info("kontroler_diary_info_17") then
        amk.spawn_item_in_inv("arc_diary_17", obj)
+		else
+			check_info(obj, who)
     end
   end
   if obj_sect=="m_controller_normal" then
@@ -32,7 +34,7 @@ function monster_killed(obj,who)
 end
 
 function check_info(obj,who)
-    local s = get_random_diary_section(1,16)
+    local s = get_random_diary_section(1, total_diaries_number)
        if s then
           amk.spawn_item_in_inv(s, obj)
        else
