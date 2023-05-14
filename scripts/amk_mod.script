@@ -234,9 +234,9 @@ function check_spawn()
 	-- Выдадим сообщения при переходе на уровень.
 	if news_main then
 		if (lname ~= sname and sname ~= "") then
-			if (news_main.isIsolatedLevel(lname)== true and news_main.isIsolatedLevel(sname) == false) then -- Спустились под землю.
+			if (level.indoor(lname) == true and level.indoor(sname) == false) then -- Спустились под землю.
 				news_main.on_disconnect()
-			elseif (news_main.isIsolatedLevel(lname) == false and news_main.isIsolatedLevel(sname) == true) then -- Выбрались из-под земли.
+			elseif (level.indoor(lname) == false and level.indoor(sname) == true) then -- Выбрались из-под земли.
 				news_main.on_connect()
 			end
 			if (amk_offline_alife) then
