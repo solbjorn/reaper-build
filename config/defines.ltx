@@ -1,5 +1,24 @@
-[sect_identity_immunities]
-burn_immunity			= 1.0
+; –í—Å–µ –±–∞–∑–æ–≤—ã–µ –∑–Ω–∞—á–µ–Ω–∏—è –ø–æ —É–º–æ–ª—á–∞–Ω–∏—é –¥–ª—è –≤—Å–µ—Ö —Ç–∏–ø–æ–≤ –æ–±—ä–µ–∫—Ç–æ–≤ –≤ –∏–≥—Ä–µ.
+; –î–ª—è —Å–æ–±–ª—é–¥–µ–Ω–∏—è –ø–æ—Ä—è–¥–∫–∞ –Ω–æ–≤—ã–µ –±–∞–∑–æ–≤—ã–µ —Å–µ–∫—Ü–∏–∏ –æ–ø—Ä–µ–¥–µ–ª—è—Ç—å –∏—Å–∫–ª—é—á–∏—Ç–µ–ª—å–Ω–æ –∑–¥–µ—Å—å!
+
+[spawn_group_zone]
+GroupControlSection = spawn_group_zone
+class           	= AI_SPGRP
+
+[spawn_group]
+GroupControlSection = spawn_group
+class           	= AI_SPGRP
+
+; –ò–º–º—É–Ω–∏—Ç–µ—Ç—ã
+[immunities]
+hit_probability_gd_novice	= 0.20
+hit_probability_gd_stalker	= 0.30
+hit_probability_gd_veteran	= 0.40
+hit_probability_gd_master	= 0.50
+immunities_sect				= default_immunities
+
+[default_immunities] ; –ò–º–º—É–Ω–∏—Ç–µ—Ç—ã –ø–æ —É–º–æ–ª—á–∞–Ω–∏—é
+burn_immunity			= 1.0	; (+1% –ø—Ä–∏ + –Ω–∞ 0.01)
 strike_immunity			= 1.0
 shock_immunity			= 1.0
 wound_immunity			= 1.0
@@ -10,33 +29,107 @@ chemical_burn_immunity	= 1.0
 explosion_immunity		= 1.0
 fire_wound_immunity		= 1.0
 
-[identity_immunities]
-immunities_sect				= sect_identity_immunities
-use_aim_bullet				= false
-hit_probability_gd_novice	= 0.20
-hit_probability_gd_stalker	= 0.30
-hit_probability_gd_veteran	= 0.40
-hit_probability_gd_master	= 0.50
-
-[common_ph_friction_params_on_npc_death] ;œ‡‡ÏÂÚ˚ ‰Îˇ Á‡‰‡ÌËˇ ËÁÏÂÌÂÌËˇ ÚÂÌËˇ ‚ ÏÓÏÂÌÚ ÒÏÂÚË ÔÂÒÓÌ‡Ê‡
-
-ph_skeleton_airr_lin_factor   = -0.45 ;2.0 ;550.0 (ËÁÏÂÌÌÓ ËÁ-Á‡ ÚÓ„Ó, ˜ÚÓ Û·‡ÌÓ ‰ÓÏÌÓÊÂÌËÂ ÍÓ˝ÙÙËˆËÂÌÚ 0.002 ËÁ ÍÓ‰‡)
-ph_skeleton_airr_ang_factor   = 0.0 ;0.0 (ËÁÏÂÌÌÓ ËÁ-Á‡ ÚÓ„Ó, ˜ÚÓ Û·‡ÌÓ ‰ÓÏÌÓÊÂÌËÂ Ì‡ ÍÓ˝ÙÙËˆËÂÌÚ 0.3 ËÁ ÍÓ‰‡ (0.0*0.3=0.0))
-ph_skeleton_hinger_factor1    = 1.0 ;1.0 (ËÁÏÂÌÌÓ ËÁ-Á‡ ÚÓ„Ó, ˜ÚÓ Û·‡ÌÓ ‰ÓÏÌÓÊÂÌËÂ Ì‡ ÍÓ˝ÙÙËˆËÂÌÚ 5.0 ËÁ ÍÓ‰‡)
-ph_skeleton_ddelay	     	  = 15.0 ;¬ÂÏˇ ËÁÏÂÌÂÌËˇ ÁÌ‡˜ÂÌËˇ ÚÂÌËˇ ‚ ÒÛÒÚ‡‚Â Ò ÏÓÏÂÌÚ‡ ÒÓÁ‰‡ÌËˇ ¯ÂÎÎ‡, ÒÂÍ
+; –ü–∞—Ä–∞–º–µ—Ç—Ä—ã –¥–ª—è –∑–∞–¥–∞–Ω–∏—è –∏–∑–º–µ–Ω–µ–Ω–∏—è —Ç—Ä–µ–Ω–∏—è –≤ –º–æ–º–µ–Ω—Ç —Å–º–µ—Ä—Ç–∏ –ø–µ—Ä—Å–æ–Ω–∞–∂–∞
+[friction]
+ph_skeleton_airr_lin_factor   = -0.45 ;2.0 ;550.0 (–∏–∑–º–µ–Ω–Ω–æ –∏–∑-–∑–∞ —Ç–æ–≥–æ, —á—Ç–æ —É–±—Ä–∞–Ω–æ –¥–æ–º–Ω–æ–∂–µ–Ω–∏–µ –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç 0.002 –∏–∑ –∫–æ–¥–∞)
+ph_skeleton_airr_ang_factor   = 0.0 ;0.0 (–∏–∑–º–µ–Ω–Ω–æ –∏–∑-–∑–∞ —Ç–æ–≥–æ, —á—Ç–æ —É–±—Ä–∞–Ω–æ –¥–æ–º–Ω–æ–∂–µ–Ω–∏–µ –Ω–∞ –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç 0.3 –∏–∑ –∫–æ–¥–∞ (0.0*0.3=0.0))
+ph_skeleton_hinger_factor1    = 1.0 ;1.0 (–∏–∑–º–µ–Ω–Ω–æ –∏–∑-–∑–∞ —Ç–æ–≥–æ, —á—Ç–æ —É–±—Ä–∞–Ω–æ –¥–æ–º–Ω–æ–∂–µ–Ω–∏–µ –Ω–∞ –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç 5.0 –∏–∑ –∫–æ–¥–∞)
+ph_skeleton_ddelay	     	  = 15.0 ;–í—Ä–µ–º—è –∏–∑–º–µ–Ω–µ–Ω–∏—è –∑–Ω–∞—á–µ–Ω–∏—è —Ç—Ä–µ–Ω–∏—è –≤ —Å—É—Å—Ç–∞–≤–µ —Å –º–æ–º–µ–Ω—Ç–∞ —Å–æ–∑–¥–∞–Ω–∏—è —à–µ–ª–ª–∞, —Å–µ–∫
 
 ph_skel_fatal_impulse_factor  = 4.0	;6.0
 ph_after_death_velocity_factor= 0.75
 ph_skel_shot_up_factor        = 0.25
 
-ph_skeleton_skin_friction_start	= 0.0   ;—Ú‡ÚÓ‚ÓÂ ÁÌ‡˜ÂÌËÂ ÚÂÌËˇ ‰Îˇ Ó·ÓÎÓ˜ÍË
-ph_skeleton_skin_friction_end	= 2.0   ;‘ËÌ‡Î¸ÌÓÂ ÁÌ‡˜ÂÌËÂ ÚÂÌËˇ ‰Îˇ Ó·ÓÎÓ˜ÍË
-ph_skeleton_skin_ddelay			= 6.0		;¬ÂÏˇ ËÁÏÂÌÂÌËˇ ÁÌ‡˜ÂÌËˇ ÚÂÌËˇ Ò ÏÓÏÂÌÚ‡ ÒÓÁ‰‡ÌËˇ ¯ÂÎÎ‡, ÒÂÍ.
-ph_skeleton_skin_ddelay_after_wound = 2.0 ;¬ÂÏˇ ËÁÏÂÌÂÌËˇ ÁÌ‡˜ÂÌËˇ ÚÂÌËˇ Ò ÏÓÏÂÌÚ‡ ÒÓÁ‰‡ÌËˇ ¯ÂÎÎ‡, ÒÂÍ.(‰Îˇ ÔÂÒÓÌ‡Ê‡ ÔÓÒÎÂ ‡ÌÂÌËˇ)
-ph_pelvis_factor_low_pose_detect =0.3	;‰ÎËÌÌ‡ ÎÛ˜‡ Ì‡ ÍÓÎÎËÁË˛ Ò ÁÂÏÎ∏È ËÁ ˆÂÌÚ‡ ÔÂÎ‚ËÒ‡
-										;ÂÒÎË ÍÓÎÎËÁËÚ¸Òˇ, ÚÓ ÔÂÒÓÌ‡Ê Ì‡ıÓ‰ËÚ¸Òˇ ‚ ÌËÊÌÂÈ ÔÓÁÂ(ËÎË ‡ÌÂÌ)(‚ ˝ÚÓÏ ÒÎÛ˜‡Â ‰Îˇ ÌÂ„Ó Á‡‰‡˛Ú¸Òˇ ‰Û„ËÂ Ô‡‡ÏÂÚ˚
-										;ÚÂÌËˇ Ë ÓÚÒÛÚÒÚ‚ÛÂÚ ‰ÓÏÌÓÊÂÌËÂ ËÏÔÛÎ¸Ò‡ ‰Îˇ ÔÂ‚Ó„Ó ıËÚ‡)
-ph_character_have_wounded_state = false; ËÏÂÂÚ ÎË ÔÂÒÓÌ‡Ê ÒÓÒÚÓˇÌËÂ ‡ÌÂÌ˚È
+ph_skeleton_skin_friction_start	= 0.0   ;–°—Ç–∞—Ä—Ç–æ–≤–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ —Ç—Ä–µ–Ω–∏—è –¥–ª—è –æ–±–æ–ª–æ—á–∫–∏
+ph_skeleton_skin_friction_end	= 2.0   ;–§–∏–Ω–∞–ª—å–Ω–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ —Ç—Ä–µ–Ω–∏—è –¥–ª—è –æ–±–æ–ª–æ—á–∫–∏
+ph_skeleton_skin_ddelay			= 6.0		;–í—Ä–µ–º—è –∏–∑–º–µ–Ω–µ–Ω–∏—è –∑–Ω–∞—á–µ–Ω–∏—è —Ç—Ä–µ–Ω–∏—è —Å –º–æ–º–µ–Ω—Ç–∞ —Å–æ–∑–¥–∞–Ω–∏—è —à–µ–ª–ª–∞, —Å–µ–∫.
+ph_skeleton_skin_ddelay_after_wound = 2.0 ;–í—Ä–µ–º—è –∏–∑–º–µ–Ω–µ–Ω–∏—è –∑–Ω–∞—á–µ–Ω–∏—è —Ç—Ä–µ–Ω–∏—è —Å –º–æ–º–µ–Ω—Ç–∞ —Å–æ–∑–¥–∞–Ω–∏—è —à–µ–ª–ª–∞, —Å–µ–∫.(–¥–ª—è –ø–µ—Ä—Å–æ–Ω–∞–∂–∞ –ø–æ—Å–ª–µ —Ä–∞–Ω–µ–Ω–∏—è)
+ph_pelvis_factor_low_pose_detect =0.3	;–¥–ª–∏–Ω–Ω–∞ –ª—É—á–∞ –Ω–∞ –∫–æ–ª–ª–∏–∑–∏—é —Å –∑–µ–º–ª—ë–π –∏–∑ —Ü–µ–Ω—Ç—Ä–∞ –ø–µ–ª–≤–∏—Å–∞. –ï—Å–ª–∏ –∫–æ–ª–ª–∏–∑–∏—Ç—å—Å—è, —Ç–æ –ø–µ—Ä—Å–æ–Ω–∞–∂ –Ω–∞—Ö–æ–¥–∏—Ç—å—Å—è –≤ –Ω–∏–∂–Ω–µ–π –ø–æ–∑–µ(–∏–ª–∏ —Ä–∞–Ω–µ–Ω)(–≤ —ç—Ç–æ–º —Å–ª—É—á–∞–µ –¥–ª—è –Ω–µ–≥–æ –∑–∞–¥–∞—é—Ç—å—Å—è –¥—Ä—É–≥–∏–µ –ø–∞—Ä–∞–º–µ—Ç—Ä—ã —Ç—Ä–µ–Ω–∏—è –∏ –æ—Ç—Å—É—Ç—Å—Ç–≤—É–µ—Ç –¥–æ–º–Ω–æ–∂–µ–Ω–∏–µ –∏–º–ø—É–ª—å—Å–∞ –¥–ª—è –ø–µ—Ä–≤–æ–≥–æ —Ö–∏—Ç–∞)
+ph_character_have_wounded_state = false; –∏–º–µ–µ—Ç –ª–∏ –ø–µ—Ä—Å–æ–Ω–∞–∂ —Å–æ—Å—Ç–æ—è–Ω–∏–µ —Ä–∞–Ω–µ–Ω—ã–π
+
+; –ë–∞–∑–æ–≤–∞—è –Ω–∞—á–∞–ª—å–Ω–∞—è —Å–µ–∫—Ü–∏—è
+[base]
+GroupControlSection		= spawn_group
+cform           		= skeleton
+; –ù–µ–Ω—É–∂–Ω—ã–µ –∑–Ω–∞—á–µ–Ω–∏—è, –∫–æ—Ç–æ—Ä—ã–µ —á–∏—Ç–∞—é—Ç—Å—è, –Ω–æ –≤ –ø–æ–¥–∞–≤–ª—è—é—â–µ–º –±–æ–ª—å—à–∏–Ω—Å—Ç–≤–µ –Ω–µ –∏—Å–ø–æ–ª—å–∑—É—é—Ç—Å—è
+inv_name_short			= UNUSED	; –≠—Ç–æ –∏—Å–ø–æ–ª—å–∑—É–µ—Ç—Å—è —Ç–æ–ª—å–∫–æ –Ω–∞ —Ö—É–¥–µ, –∏ –Ω—É–∂–Ω–æ –ø—Ä–æ–ø–∏—Å—ã–≤–∞—Ç—å —Ç–æ–ª—å–∫–æ –¥–ª—è –ø–∞—Ç—Ä–æ–Ω–æ–≤, –Ω–æ–∂–µ–π –∏ –≥—Ä–∞–Ω–∞—Ç
+
+; –û—Å—Ç–∞–ª—å–Ω–æ–µ
+[O_INVBOX]:base
+class				= O_INVBOX
+$spawn        		= "physics\inventory_box"
+script_binding      = bind_physic_object.init
+visual 				= equipments\item_rukzak
+radius 				= 1
+
+[II_DOC]:base, immunities
+class				= II_DOC
+
+; –ü–∞—Ç—Ä–æ–Ω—ã
+[AMMO]:base, immunities
+class				= AMMO
+belt				= true
+impair				= 1		; –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç –∏–∑–Ω–æ—Å–∞ —Å—Ç–≤–æ–ª–∞ –æ—Ç –ø—É–ª–∏
+buck_shot			= 1		; –∫–æ–ª-–≤–æ —Å–æ—Å—Ç–∞–≤–ª—è—é—â–∏—Ö –≤ –ø—É–ª–µ, > 1 —Ç–æ–ª—å–∫–æ –¥–ª—è –¥—Ä–æ–±–∏
+tracer				= off
+tracer_color_ID		= 0
+explosive			= off
+
+; –†–∞–∑–ª–∏—á–Ω—ã–µ —Å–ª—É–∂–µ–±–Ω—ã–µ –∏ –±–∞–∑–æ–≤—ã–µ —Å–µ–∫—Ü–∏–∏
+[breakable_object]
+class           		= O_BRKBL
+remove_time         	= 10      ;after remove_time seconds object will be removed after it is breaked
+hit_break_threthhold    = 0.      ;weapon impact can stand breakable_object
+collision_break_threthhold  = 2000.f  ;collision impact can stand breakable_object
+immunity_factor       	= 1.3     ;hit power multiplier
+
+[climable_object]
+class           		= O_CLMBL
+
+[ph_skeleton_object]
+class         			= P_SKELET
+remove_time       		= 120
+
+[space_restrictor]
+class         			= SPC_RS_S
+GroupControlSection   	=
+$spawn          		= "ai\space_restrictor"
+script_binding          = bind_restrictor.bind
+
+[level_changer]
+class     				= LVL_CHNG
+GroupControlSection 	=
+$spawn      			= "ai\level changer"
+script_binding  		= bind_lc.bind
+
+[script_zone]
+class     				= SCRIPTZN
+GroupControlSection 	=
+$spawn      			= "ai\script zone"
+script_binding  		= xr_zones.bind
+
+[respawn]
+GroupControlSection		=
+$spawn 					= "ai\respawn"
+class					= RE_SPAWN
+script_binding			= bind_respawn.bind
+
+[smart_terrain]
+GroupControlSection		=
+$spawn 					= "ai\smart_terrain"
+class					= SMRTTRRN
+script_binding			= bind_smart_terrain.bind
+
+[smart_terrain_stay_time]
+quick   = 2,  5
+medium  = 6,  8
+long    = 12, 14
+default = 10000, 10001
+
+[identity_immunities]:immunities
+use_aim_bullet				= false
+
+[common_ph_friction_params_on_npc_death]:friction
 
 [monster_base]:common_ph_friction_params_on_npc_death
 actor_hit_effect = effector_monster_hit

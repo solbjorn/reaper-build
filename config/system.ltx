@@ -26,38 +26,14 @@
 #include "creatures\game_relations.ltx"
 #include "creatures\vechicles.ltx"
 
-#include "mp\mp_actor.ltx"
-#include "mp\team_logo.ltx"
-#include "mp\weapons_mp\ammo_mp.ltx"
-#include "mp\weapons_mp\weapons_mp.ltx"
-#include "mp\weapons_mp\outfit_mp.ltx"
-#include "mp\weapons_mp\items_mp.ltx"
-
-;Game types
-#include "mp\SoundMessages\mp_snd_messages.ltx"
-#include "mp\SoundMessages\ahunt_snd_messages.ltx"
-#include "mp\SoundMessages\dm_snd_messages.ltx"
-#include "mp\SoundMessages\tdm_snd_messages.ltx"
-#include "mp\deathmatch_game.ltx"
-#include "mp\teamdeathmatch_game.ltx"
-#include "mp\artefacthunt_game.ltx"
+#include "mp\mp_ranks.ltx"
 
 #include "evaluation.ltx"
 #include "fonts.ltx"
 
 #include "alife.ltx"
-
-; Smart Terrain
-#include "misc\smart_terrain.ltx"
-
-; Respawns
-#include "misc\respawn.ltx"
 #include "creatures\spawn_sections.ltx"
 
-; Extra Content
-#include "extracontent.ltx"
-
-#include "localization.ltx"
 #include "blowout.ltx"
 #include "gg_kick.ltx"
 
@@ -89,30 +65,37 @@ ang_speed2  = 7.0
 ang_speed3  = 2.0
 
 ;---------------------------------------------------------------ARENA_EXTENSION_MOD------------------------------------------------------------------
+; aem_strings
 ; aem_ui_npc
 ; aem_info
 ; aem_profile
 ; aem_characters
 ;---------------------------------------------------------------ARENA_EXTENSION_MOD------------------------------------------------------------------
 
+[string_table]
+language	= rus
+font_prefix	= ;_cent ;_west
+;список xml файлов, содержащих таблицы символов
+files = ui_st_pda, ui_st_mm_mp, ui_st_inventory, string_table_tutorial, string_table_general, string_table_includes, stable_dialog_manager, stable_dialog_manager_uni, stable_task_manager, stable_treasure_manager, string_table_level_tips, string_table_items, string_table_ui, string_table_enc_zone, string_table_amk_arts_desc, string_table_outfit, stable_dialogs, stable_dialogs_escape, stable_dialogs_garbage, stable_dialogs_agroprom, stable_dialogs_deadcity, stable_dialogs_darkvalley, stable_dialogs_pripyat, stable_dialogs_labx18, stable_dialogs_bar, stable_dialogs_military, stable_dialogs_yantar, stable_dialogs_radar, stable_dialogs_aes, mp_st_speechmenu, ui_st_keybinding, ui_mp_teamdesc, ui_st_mm, stable_stories, ui_st_mapdesc, string_table_enc_social, string_table_enc_mutants, string_table_enc_weapons, string_table_enc_equipment, ui_st_mp, ui_st_other, stable_game_credits, aem_strings, stable_repair_dialogs, stable_miniquest_dialogs, amk_strings, amk_flame_dialogs, amk_reload_dialogs, sak_strings, amk_escape_dialogs, stable_dialogs_amk, stable_dialogs_new, string_table_new, stable_dialogs_linspiro, stable_dialogs_banderos, stable_dialogs_wawka, string_table_tips_freeplay, string_table_tasks_freeplay, string_table_includes, stable_dialogs_bar_freeplay, ui_st_pda_freeplay
+
 [texture_desc]
 files = ui_mp_icon_rank, ui_icons_map, ui_common, ui_old_textures, ui_ingame, ui_map_description, ui_models_multiplayer, ui_team_logo, ui_team_logo_small, ui_mainmenu, ui_mp_main, ui_statistics, ui_hud, ui_numpad, ui_inventory, ui_inventory2, ui_iconstotal, ui_pda, ui_icons_npc, ui_npc_monster, ui_npc_unique, ui_buy_menu, ui_asus_intro, aem_ui_npc, amk_ui_base
 
 [info_portions]
 ;список xml файлов, содержащих info_portions
-files = info_portions, info_portions_light, info_portions_test, info_lchanger_ico, info_level_tips, info_known_objects, info_l01escape, info_l02garbage, info_l03agroprom, info_l04agroprom_u, info_l05dark_valley, info_l06dark_valley_u, info_l07rostok, info_l08yantar, info_l08deadcity, info_l08rostok_bar, info_l09marshes, info_l09rostok_dolg, info_l10military, info_l11pripyat, info_l11yantar, info_l12yantar_u, info_l13deadcity, info_l14swamp, info_l10radar, info_l16radar_antena, info_l17monolith_control, info_l19stanciya, info_l12u_sarcofag, info_l21generators, info_l22warlab, info_stories, aem_info, info_amk_recipts, info_flamequest, info_amk_objects, info_sak_way, amk_infoportions, info_amk, info_way, info_linspiro, info_banderos, info_wawka_way, info_freeplay
+files = info_portions, info_portions_light, info_lchanger_ico, info_level_tips, info_known_objects, info_l01escape, info_l02garbage, info_l03agroprom, info_l05dark_valley, info_l06dark_valley_u, info_l07rostok, info_l08yantar, info_l08deadcity, info_l10military, info_l11pripyat, info_l10radar, info_l16radar_antena, info_l19stanciya, info_l12u_sarcofag, info_stories, aem_info, info_amk_recipts, info_flamequest, info_amk_objects, info_sak_way, amk_infoportions, info_amk, info_way, info_linspiro, info_banderos, info_wawka_way, info_freeplay
 
 [encyclopedia]
 files = encyclopedia_infos, storyline_info_to_diary, encyclopedia_weapons, encyclopedia_mutants, encyclopedia_zone, encyclopedia_social, encyclopedia_equipment, encyclopedia_tutorial, encyclopedia_new
 
 [dialogs]
-files = dialogs_test, dialogs, dialogs_escape, dialogs_garbage, dialogs_agroprom, dialogs_deadcity, dialogs_darkvalley, dialogs_pripyat, dialogs_bar, dialogs_yantar, dialogs_military, dialogs_labx18, dialogs_radar, dialogs_aes, dialogs_repair, dialogs_miniquest, dialogs_amk_recipts, dialogs_flamequest, dialogs_reload, dialogs_amk_escape, dialogs_teleport, dialogs_trading, dialogs_amk, dialogs_new, dialogs_linspiro, dialogs_banderos, dialogs_wawka, dialogs_bar_freeplay
+files = dialogs, dialogs_escape, dialogs_garbage, dialogs_agroprom, dialogs_darkvalley, dialogs_pripyat, dialogs_bar, dialogs_yantar, dialogs_military, dialogs_aes, dialogs_repair, dialogs_miniquest, dialogs_amk_recipts, dialogs_flamequest, dialogs_reload, dialogs_amk_escape, dialogs_teleport, dialogs_trading, dialogs_amk, dialogs_new, dialogs_linspiro, dialogs_banderos, dialogs_wawka, dialogs_bar_freeplay
 
 [profiles]
 ;список xml файлов, содержащих профили сталкеров и торговцев
 files =  npc_profile, aem_profile, npc_amk, npc_new
 ;список xml файлов, содержащих описания конкретных сталкеров и торговцев
-specific_characters_files = character_desc_general, character_desc_simulation,character_desc_escape, character_desc_garbage, character_desc_agroprom, character_desc_darkvalley, character_desc_deadcity, character_desc_bar, character_desc_yantar, character_desc_military, character_desc_radar, character_desc_pripyat, character_desc_aes, character_desc_kishka, character_desc_sarcofag, aem_characters, character_desc_amk, character_desc_new, character_desc_sniper
+specific_characters_files = character_desc_general, character_desc_simulation,character_desc_escape, character_desc_garbage, character_desc_agroprom, character_desc_darkvalley, character_desc_deadcity, character_desc_bar, character_desc_yantar, character_desc_military, character_desc_radar, character_desc_pripyat, character_desc_aes, character_desc_sarcofag, aem_characters, character_desc_amk, character_desc_new, character_desc_sniper
 
 [artefacts_tasks]
 ;имя скриптовой функции, которая вызывается для создания
@@ -348,30 +331,6 @@ sell_price_factor_friendly  = 1   ;коэффициент покупки при goodwill = 100
 
 ;-----------------------------------------------------------------
 
-[spawn_group_zone]
-GroupControlSection     = spawn_group_zone
-$spawn            = "ai\group zone"                 ; option for Level Editor
-class           = AI_SPGRP
-
-[spawn_group]
-GroupControlSection     = spawn_group
-$spawn            = "ai\spawn group"                ; option for Level Editor
-class           = AI_SPGRP
-
-[level_changer]
-GroupControlSection =
-$spawn      = "ai\level changer"
-;$prefetch    = 4
-class     = LVL_CHNG
-script_binding  = amk.bind_lc
-
-[script_zone]
-GroupControlSection =
-$spawn      = "ai\script zone"
-;$prefetch    = 4
-class     = SCRIPTZN
-script_binding  = xr_zones.bind
-
 [physics]
 object_damage_factor    = 1.2f
 
@@ -479,16 +438,6 @@ attach_position_offset  = 0.075, 0.066, 0.023
 attach_bone_name    = bip01_l_hand
 auto_attach       = false
 
-[breakable_object]
-class           = O_BRKBL
-remove_time         = 10      ;after remove_time seconds object will be removed after it is breaked
-hit_break_threthhold    = 0.      ;weapon impact can stand breakable_object
-collision_break_threthhold  = 2000.f  ;collision impact can stand breakable_object
-immunity_factor       = 1.3     ;hit power multiplier
-
-[climable_object]
-class           = O_CLMBL
-
 [zone_team_base]
 $spawn      = "network\team base"
 class     = Z_TEAMBS
@@ -554,19 +503,8 @@ attach_angle_offset   = 0, 0, 0
 attach_position_offset  = 0.08, 0.04, 0.03
 attach_bone_name    = bip01_r_hand
 
-[ph_skeleton_object]
-class         = P_SKELET
-remove_time       = 120
-
 [script]
 current_server_entity_version = 7
-
-[space_restrictor]
-GroupControlSection   = spawn_group_restrictor
-$spawn          = "ai\space_restrictor"
-;$prefetch        = 64
-class         = SPC_RS_S
-script_binding          = bind_restrictor.bind
 
 [collision_damage]
 bonce_damage_factor_for_objects = 1.
