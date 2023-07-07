@@ -7,38 +7,78 @@
  Last edit    : 11.11.2018
 --]]-----------------------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------------------------
+ * Fix custom statics overlap
+--]]-----------------------------------------------------------------------------------------------
+local hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
+---------------------------------------------------------------------------------------------------
+function reattach_statics()
+	local statics = { "hud_timer", "hud_timer_text", "hud_time", "hud_date", "cs_psy_danger", "cs_radiation_danger", "gun_jammed", "cant_walk", "cant_walk_weight", "gun_reload" }
+	for i = 1, #statics do
+		hud:RemoveCustomStatic(statics[i])
+	end
+	hud_interface_mgr.nextupd_200 = 0
+	hud_interface_mgr.nextupd_1000 = 0
+	hud_interface_mgr.night_vision_active = false
+end
+--[[-----------------------------------------------------------------------------------------------
  * Disable UI info portions
 --]]-----------------------------------------------------------------------------------------------
 function disable_ui_info()
-	db_actor:give_info_portion("ui_pda_hide")
-	db_actor:give_info_portion("ui_pda_dialog_hide")
-	db_actor:give_info_portion("ui_pda_task_description_hide")
-	db_actor:give_info_portion("ui_inventory_hide")
-	db_actor:give_info_portion("ui_talk_hide")
-	db_actor:give_info_portion("ui_trade_hide")
-	db_actor:give_info_portion("ui_car_body_hide")
-	db_actor:give_info_portion("ui_dead_body_hide")
+	give_info("ui_pda_hide")
+	give_info("ui_pda_dialog_hide")
+	give_info("ui_pda_task_description_hide")
+	give_info("ui_inventory_hide")
+	give_info("ui_talk_hide")
+	give_info("ui_trade_hide")
+	give_info("ui_car_body_hide")
+	give_info("ui_dead_body_hide")
 end
 --[[-----------------------------------------------------------------------------------------------
- * UI disable weapon
+ * PDA info portion fix
 --]]-----------------------------------------------------------------------------------------------
-function hiding_weapons(info_id)
-	if info_id == "ui_pda" then
-		bind_stalker.hide_weapon()
-	elseif info_id == "ui_pda_hide" then
-		bind_stalker.restore_weapon()
+function pda_info_fix(dik)
+	if has_info("ui_pda_hide") then
+		if dik == bind_to_dik(key_bindings.kMAP) then
+			give_info("ui_pda_map")
+		elseif dik == bind_to_dik(key_bindings.kACTIVE_JOBS) then
+			give_info("ui_pda_quests")
+		elseif dik == bind_to_dik(key_bindings.kCONTACTS) then
+			give_info("ui_pda_contacts")
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Scope zoom mode callback
+--]]-----------------------------------------------------------------------------------------------
+function scope_zoom_mode_callback()
+	local active_item = db_actor:active_item()
+	if active_item and active_item:is_weapon() then
+		if get_weapon_data(active_item, "zoom_mode") and get_weapon_data(active_item, "scope_enabled") and get_weapon_data(active_item, "scope_texture") and not get_weapon_data(active_item, "grenade_mode") then
+			if not actor_flags.scope_zoom_mode then
+				sa_callbacks.scope_zoom_mode(true)
+				actor_flags.scope_zoom_mode = true
+			end
+		else
+			if actor_flags.scope_zoom_mode then
+				sa_callbacks.scope_zoom_mode(false)
+				actor_flags.scope_zoom_mode = false
+			end
+		end
+	elseif actor_flags.scope_zoom_mode then
+		sa_callbacks.scope_zoom_mode(false)
+		actor_flags.scope_zoom_mode = false
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * Dead body sounds
 --]]-----------------------------------------------------------------------------------------------
 function dead_body_sounds(info_id)
-	if has_alife_info("ui_dead_body") then
+	if has_info("ui_dead_body") then
 		if info_id == "ui_car_body" then
 			play_safe_sound_object("interface\\inv_open")
 		elseif info_id == "ui_car_body_hide" then
 			play_safe_sound_object("interface\\inv_close")
-			db_actor:give_info_portion("ui_dead_body_hide")
+			give_info("ui_dead_body_hide")
 		end
 	end
 end
@@ -46,8 +86,8 @@ end
  * Yantar psy blowout
 --]]-----------------------------------------------------------------------------------------------
 function yantar_psy_blowout()
-	if not has_alife_info("yan_labx16_switcher_primary_off") then
-		if level.name() == "l08_yantar" and not actor_flags.sleep_state then
+	if not has_info("yan_labx16_switcher_3_end") then
+		if level.name() == "l08_yantar" and not (actor_flags.sleep_state or yantar_tasks.yan_scientist_raid_now()) then
 			local need_hit, khit = amk_mod.blowout_khit()
 			if db_actor:object("good_psy_helmet") then
 				khit = 0.05
@@ -58,7 +98,6 @@ function yantar_psy_blowout()
 			end
 			if khit < 0.05 then khit = 0.05 end
 			db_actor.psy_health = -khit
-
 			play_safe_sound_object([[ambient\blowout]])
 			play_safe_sound_object([[characters_voice\scenario\yantar\psy_voices_1]])
 			level.add_pp_effector("yantar_blowout.ppe", effector_ids.yantar_blowout, false)
@@ -66,7 +105,7 @@ function yantar_psy_blowout()
 			level.add_cam_effector("camera_effects\\shell_shock.anm", effector_ids.shell_shock, false, "")
 			level.add_cam_effector("camera_effects\\earthquake.anm", effector_ids.earthquake, false, "")
 		end
-		start_timer("psy_blowout_timer", "sa_main.yantar_psy_blowout()", "real", 0, math.random(5, 7))
+		timer("sa_main.yantar_psy_blowout", math.random(5 * 60 * 1000, 7 * 60 * 1000), true)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -76,7 +115,7 @@ local cooling_snd = nil
 ---------------------------------------------------------------------------------------------------
 function bunker_cooling_sound()
 	if level.name() == "l10u_bunker" then
-		if not has_alife_info("bar_deactivate_radar_done") then
+		if not has_info("bar_deactivate_radar_done") then
 			if not (cooling_snd and cooling_snd:playing()) then
 				cooling_snd = sound_object("ambient\\cooling_run")
 				cooling_snd:play_at_pos(db_actor, vector(), 0, sound_object.s2d + sound_object.looped)
@@ -87,41 +126,6 @@ function bunker_cooling_sound()
 			cooling_snd = nil
 		end
 	end
-end
---[[-----------------------------------------------------------------------------------------------
- * Radar psy zone death
---]]-----------------------------------------------------------------------------------------------
-function radar_psy_zone()
-	if level.name() == "l10_radar" and not has_alife_info("bar_deactivate_radar_done") then
-		local position = db_actor:position()
-		if position.z > 65 and position.x > 350 and position.x < 410 then
-			db_actor.psy_health = -0.004
-		end
-	end
-end
---[[-----------------------------------------------------------------------------------------------
- * PDA news
---]]-----------------------------------------------------------------------------------------------
-local news_headers = {
-	["Diary"]			= game.translate_string("st_news_diary"),
-	["Mutants"]			= game.translate_string("st_news_mutants"),
-	["Social"]			= game.translate_string("st_news_social"),
-	["Artifacts"]			= game.translate_string("st_news_artifacts"),
-	["Anomalies"]			= game.translate_string("st_news_anomalies"),
-	["Locations"]			= game.translate_string("st_news_locations"),
-	["Zone-story"]			= game.translate_string("st_news_zone_story"),
-	["Stories"]			= game.translate_string("st_news_stories"),
-	["memuars"]			= game.translate_string("st_news_memuars"),
-	["Vehicles"]			= game.translate_string("st_news_vehicles"),
-	["Found_PDA"]			= game.translate_string("st_found_new_pda"),
-	["st_operation_agroprom"]	= game.translate_string("st_news_diary"),
-	["LabX18_information"]		= game.translate_string("st_news_diary"),
-	["aes_military_task"]		= game.translate_string("st_news_diary")
-}
----------------------------------------------------------------------------------------------------
-function pda_news(group, name)
-	local header = news_headers[group] or game.translate_string("st_news_diary")
-	send_tip(game.translate_string(group).."/"..game.translate_string(name), header, nil, 5, "encyclopedia", "pda_news")
 end
 --[[-----------------------------------------------------------------------------------------------
  * Restore torch on corpses
@@ -142,33 +146,6 @@ function restore_torch(victim)
 					torch:switch_torch(true)
 				end
 			)
-		end
-	end
-end
---[[-----------------------------------------------------------------------------------------------
- * Level changer indoor locations
---]]-----------------------------------------------------------------------------------------------
-local lchanger_precond_info = {
-	["exit_to_control_monolith_01"] = "sar_finish_decoding",
-	["exit_to_stancia2_01"] = "oso_question"
-}
----------------------------------------------------------------------------------------------------
-local lchanger_precond_info_list = {}
-for k, v in pairs(lchanger_precond_info) do
-	lchanger_precond_info_list[v] = true
-end
----------------------------------------------------------------------------------------------------
-function lchanger_indoor_locations(info_id)
-	if level.indoor() and (not info_id or lchanger_precond_info_list[info_id]) then
-		local lname = level.name()
-		for i = 1, 65534 do
-			local se_obj = g_alife:object(i)
-			if se_obj and se_obj:clsid() == clsid_level_changer and level_name_by_game_vertex(se_obj.m_game_vertex_id) == lname then
-				local precond_info = lchanger_precond_info[se_obj:name()]
-				if not precond_info or has_alife_info(precond_info) then
-					level.map_add_object_spot(se_obj.id, "lchanger_indoor_location", "")
-				end
-			end
 		end
 	end
 end

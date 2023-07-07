@@ -16,8 +16,6 @@ local def_danger_inertion_time_hit		= 60000
 local def_danger_inertion_time_sound	= 15000
 local def_danger_inertion_time_ricochet	= 30000
 
-local always_ignore_danger_from = { m_car = "true" }
-
 local danger_object_bullet_ricochet = danger_object.bullet_ricochet
 local danger_object_attack_sound = danger_object.attack_sound
 local danger_object_entity_attacked = danger_object.entity_attacked
@@ -29,6 +27,12 @@ local danger_object_enemy_sound = danger_object.enemy_sound
 local game_object_enemy = game_object.enemy
 
 local db_storage = db.storage
+
+local engage_after_update 	= 5 	-- С какого апдейта схема начинает работать. Нельзя чтобы схема стартовала включенной сразу же, иначе будут застранцы без вариантов
+local count_update 			= {}		-- Счетчик апдейтов
+
+local always_ignore_danger_from = { m_car = "true" }
+
 ----------------------------------------------------------------------------------------------------------------------
 -- EVALUATORS
 ----------------------------------------------------------------------------------------------------------------------
@@ -37,12 +41,22 @@ class "evaluator_danger" (property_evaluator)
 function evaluator_danger:__init(name, storage) super (nil, name)
 	self.a = storage
 end
+
 function evaluator_danger:evaluate()
 	local self_obj = self.object
-	local npc_storage = db_storage[self_obj:id()]
+	local npc_id = self_obj:id()
+	if not self.enabled then
+		if (count_update[npc_id] or 0) <= engage_after_update then
+			table.add(count_update, npc_id)
+			return false
+		else
+			self.enabled = true
+			count_update[npc_id] = nil
+		end
+	end
+	if not self_obj:alive() then return false end
 
 	local best_danger = self_obj:best_danger()
-
 	-- проверка на денжер.
 	if best_danger == nil then
 		self.danger_time = nil
@@ -114,17 +128,16 @@ function evaluator_danger:evaluate()
 
 	-- отсеиваем по настройке combat_ignore/danger
 	local bd_obj = best_danger:object()
+	local npc_storage = db_storage[npc_id]
 	npc_storage.enemy = bd_obj
-	if bd_obj ~= nil then
+	if bd_obj ~= nil and npc_storage.active_scheme ~= nil then
 		local overrides = npc_storage.overrides
-	    if overrides and
-	    overrides.combat_ignore and
-	    npc_storage.active_scheme ~= nil and
-	    xr_logic.pick_section_from_condlist(db_actor, self_obj, overrides.combat_ignore.condlist ) ~= nil
-	    then
-		    return false
-	    end
-    end
+		if overrides and
+		   overrides.combat_ignore and
+		   overrides.combat_ignore.cached_condlist:pick_section_from_condlist(self_obj) ~= nil then
+			return false
+		end
+	end
 
 	-- инерция возврата. Только не для кемпера.
 	if self.danger_time then
@@ -152,12 +165,12 @@ function evaluator_danger:evaluate()
 	end
 
 	-- Отсеиваем по информационным рестрикторам
-	if xr_gulag.is_info_restricted(self_obj:id(), best_danger:position()) then
+	if xr_gulag.is_info_restricted(npc_id, best_danger:position()) then
 		return false
 	end
 
 	-- Отсеиваем тяжелораненых
-	if xr_wounded.is_heavy_wounded_by_id(self_obj:id()) then
+	if xr_wounded.is_heavy_wounded_by_id(npc_id) then
 		return false
 	end
 
@@ -178,7 +191,8 @@ end
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
 local stalker_ids_property_danger = stalker_ids.property_danger
-function add_to_binder_q(object, storage)
+
+function add_to_binder(object, storage)
 	local manager = object:motivation_action_manager()
 
 	manager:remove_evaluator(stalker_ids_property_danger)
@@ -209,7 +223,7 @@ function reset_danger(npc, scheme, st, section)
 	if npc:character_community() == "zombied" then st_danger.ignore_types["grenade"] = true end
 
 	if section and st_ini:section_exist(section) then
-		local t = parse_names((st_ini:line_exist(section, "danger") and st_ini:r_string(section, "danger")) or "")
+		local t = string.parse_names((st_ini:line_exist(section, "danger") and st_ini:r_string(section, "danger")) or "")
 		for k,v in pairs(t) do
 			st_danger.ignore_types[v] = true
 		end

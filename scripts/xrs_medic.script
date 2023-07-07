@@ -164,7 +164,7 @@ function action_medic:execute()
 		end
 		if self.step1 and self.step2 and self.step2<time_global() then
 
-			xr_logic.initialize_obj(wounded_npc, db.storage[wounded_npc:id()], true, db.actor, modules.stype_stalker)
+			xr_logic.initialize_obj(wounded_npc, db.storage[wounded_npc:id()], true, modules.stype_stalker)
 			--db.storage[wounded_npc:id()].wounded.wound_manager.medkit_eaten=true
 			--db.storage[wounded_npc:id()].wounded.wound_manager:update()
 
@@ -282,7 +282,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 	local operators	= {}
 	local properties  = {}
 
@@ -310,7 +310,6 @@ function add_to_binder_q(object, storage)
 	action:add_precondition(world_property(stalker_ids.property_enemy, false))
 	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
 	action:add_precondition	(world_property(properties["medic"], true))
-	--xr_motivator.addCommonPrecondition(action)
 	action:add_effect (world_property(properties["medic"], false))
 	manager:add_action (operators["medic"], action)
 
@@ -320,7 +319,6 @@ function add_to_binder_q(object, storage)
 	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
 	action:add_precondition	(world_property(properties["self_medic"], true))
 	action:add_precondition	(world_property(properties["medic"], false))
-	--xr_motivator.addCommonPrecondition(action)
 	action:add_effect (world_property(properties["self_medic"], false))
 	manager:add_action (operators["self_medic"], action)
 

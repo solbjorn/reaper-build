@@ -119,7 +119,7 @@ end
 
 function sacharov_pda_done(first_speaker, second_speaker)
 dialogs.relocate_item_section(second_speaker, "pda_vasilyev", "out")
-    news_manager.send_tip(db.actor, "Получена информация", nil, nil, 30000)
+    news_manager.send_tip("Получена информация", nil, nil, 30000)
 end
 
 function kostya_art2_have(task, objective)
@@ -154,13 +154,9 @@ dialogs.relocate_item_section(second_speaker, "device_teleport", "in")
 end
 
 function actor_has_money_100000()
-	return db_actor:money() >= reap.with_discount(100000)
+	return has_money(reap.with_discount(100000))
 end
 
-function give_money_100000(t1, t2)
-	local npc = t1
-	if npc:id() == db_actor_id then
-		npc = t2
-	end
-	dialogs.relocate_money(npc, reap.with_discount(100000), "out")
+function give_money_100000()
+	lost_money(reap.with_discount(100000))
 end

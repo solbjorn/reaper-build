@@ -8,41 +8,34 @@ on_info = %+agr_nii_rupor_off%
 [ph_sound@normal]
 snd = music_nii_day
 on_info = {+agr_nii_alarm} ph_sound@alarm
-on_info2 = {+agr_nii_rupor_off} nil
-on_info3 = {=is_agr_mor} ph_sound@morning
-on_info4 = {=is_agr_eve} ph_sound@evening
-on_info5 = {=is_agr_nig} ph_idle
-
-[ph_sound@morning]
-snd = music_nii_mor
-on_info = {+agr_nii_alarm} ph_sound@alarm
-on_info2 = {+agr_nii_rupor_off} nil
-on_info3 = {=is_agr_day} ph_sound@normal
-on_info4 = {=is_agr_eve} ph_sound@evening
-on_info5 = {=is_agr_nig} ph_idle
+on_info2 = {+agr_nii_rupor_off} ph_idle%off
+on_info3 = {=is_agr_eve} ph_sound@evening
+on_info4 = {=is_agr_nig} ph_idle
 
 [ph_sound@evening]
 snd = music_nii_eve
 on_info = {+agr_nii_alarm} ph_sound@alarm
-on_info2 = {+agr_nii_rupor_off} nil
+on_info2 = {+agr_nii_rupor_off} ph_idle%off
 on_info3 = {=is_agr_day} ph_sound@normal
-on_info4 = {=is_agr_mor} ph_sound@morning
-on_info5 = {=is_agr_nig} ph_idle
+on_info4 = {=is_agr_nig} ph_idle
 
 [ph_sound@alarm]
 snd = siren1
 looped = true
 on_info = {-agr_nii_alarm} ph_sound@normal
-on_info2 = {+agr_nii_rupor_off} nil,{=gulag_empty(agr_nii) +agr_sniper_killed_1 +agr_sniper_killed_2 +agr_sniper_killed_3} ph_sound@fade
+on_info2 = {+agr_nii_rupor_off} ph_idle%off,{=gulag_empty(agr_nii) +agr_sniper_killed_1 +agr_sniper_killed_2 +agr_sniper_killed_3} ph_sound@fade
 
 [ph_idle]
 on_info = {+agr_nii_alarm} ph_sound@alarm
-on_info2 = {+agr_nii_rupor_off} nil,{=gulag_empty(agr_nii) +agr_sniper_killed_1 +agr_sniper_killed_2 +agr_sniper_killed_3} ph_sound@fade
+on_info2 = {+agr_nii_rupor_off} ph_idle%off,{=gulag_empty(agr_nii) +agr_sniper_killed_1 +agr_sniper_killed_2 +agr_sniper_killed_3} ph_sound@fade
 on_info3 = {=is_agr_day} ph_sound@normal
-on_info4 = {=is_agr_mor} ph_sound@morning
-on_info5 = {=is_agr_eve} ph_sound@evening
+on_info4 = {=is_agr_eve} ph_sound@evening
 
 [ph_sound@fade]
 snd = siren1
 looped = true
 on_timer = 20000 | ph_sound@normal
+
+; включаем, если кто-то есть в гулаге - кто-то, кто может наш рупор починить..
+[ph_idle%off]
+on_info = {=dist_to_actor_ge(100) !gulag_empty(agr2_st_nii)} ph_sound@normal %-agr_nii_rupor_off%

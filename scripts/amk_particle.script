@@ -6,6 +6,7 @@ function amk_particle:__init(params)
 	self.len = params.len or 1
 	self.looped = params.looped or false
 	self.life_time = params.life_time or -1
+	self.obj_id=params.obj_id or nil
 	self.obj = params.obj or nil
 	self.bone = params.bone or nil
 	self.pos = params.pos or nil
@@ -28,14 +29,24 @@ function amk_particle:__init(params)
 end
 
 function amk_particle:__finalize()
-	self.particle:stop()
+	if self.particle then
+		self.particle:stop()
+	end
 end
 
 function amk_particle:start()
 	if not self.particle:playing() then
 		local pos
-		if self.bone and self.obj then
-	    pos = self.obj:bone_position(self.bone)
+		if self.bone and self.obj_id then
+			local lobj=level_object(self.obj_id)
+			if lobj then
+				pos = lobj:bone_position(self.bone)
+				self.obj=lobj
+			else
+				self.obj=nil
+			end
+		elseif self.bone and self.obj then
+			pos = self.obj:bone_position(self.bone)
 		elseif self.pos then
 			pos = self.pos
 		end
@@ -67,7 +78,7 @@ function amk_particle:update(delta)
 		end
 		local pos
 		if self.bone and self.obj then
-	    pos = self.obj:bone_position(self.bone)
+			pos = self.obj:bone_position(self.bone)
 			self.pos = pos
 		elseif self.dir then
 			self.pos = self.pos:add(self.dir:set_length(self.len/self.life_time*delta))

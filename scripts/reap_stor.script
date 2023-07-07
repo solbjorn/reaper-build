@@ -1,0 +1,118 @@
+--[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local string_byte = string.byte
+local string_char = string.char
+
+--[[---------------------------------------------------------------------------
+ * OP-2.2-like fake container storage
+--]]---------------------------------------------------------------------------
+
+local main
+
+function save(packet)
+	local data = data_dumper.DataDumper(main or { }, nil, true)
+	local crc = crc32.crc32(data)
+	data = deflate.compress_deflate(data)
+
+	local size = string.len(data)
+	packet:w_u16(size)
+	local i, t = 1, { }
+	while i <= size - 7 do
+		t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8] = string_byte(data, i, i + 7)
+		packet:w_u8(t[1])
+		packet:w_u8(t[2])
+		packet:w_u8(t[3])
+		packet:w_u8(t[4])
+		packet:w_u8(t[5])
+		packet:w_u8(t[6])
+		packet:w_u8(t[7])
+		packet:w_u8(t[8])
+		i = i + 8
+	end
+	while i <= size do
+		packet:w_u8(string_byte(data, i))
+		i = i + 1
+	end
+	packet:w_u32(crc)
+end
+
+function load(packet)
+	if packet:r_eof() then return end
+
+	local size = packet:r_u16()
+	local data = { }
+	local i, c = 1, 1
+	while i <= size - 7 do
+		data[c] = string_char(packet:r_u8(), packet:r_u8(), packet:r_u8(), packet:r_u8(),
+				      packet:r_u8(), packet:r_u8(), packet:r_u8(), packet:r_u8())
+		i = i + 8
+		c = c + 1
+	end
+	while i <= size do
+		data[c] = string_char(packet:r_u8())
+		i = i + 1
+		c = c + 1
+	end
+	data = table.concat(data)
+	local crc = packet:r_u32()
+
+	data, status = deflate.decompress_deflate(data)
+	if not data or status ~= 0 then
+		abort("reap_stor.load: failed to unpack the storage: " .. status)
+		return
+	end
+
+	local test_crc = crc32.crc32(data)
+	if test_crc ~= crc then
+		abort("reap_stor.load: storage corruption: CRC32 is " .. test_crc .. ", expected " .. crc)
+		return
+	end
+
+	if not main then
+		main = loadstring(data)()
+		after_objs_load_callback()
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Singleton for exporting the storage
+--]]---------------------------------------------------------------------------
+
+class "CContainer"
+
+function CContainer:__init()
+	self.main = main
+end
+
+function CContainer:get(var, default, delete)
+	if self.main[var] == nil then
+		self.main[var] = default
+	end
+
+	local value = self.main[var]
+	if delete then
+		self.main[var] = nil
+	end
+
+	return value
+end
+
+function CContainer:set(var, value)
+	self.main[var] = value
+end
+
+function CContainer:del(var)
+	self.main[var] = nil
+end
+
+local main_cont
+
+_G.keyvals = function()
+	if not main_cont then
+		main_cont = CContainer()
+	end
+
+	return main_cont
+end

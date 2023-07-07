@@ -3,6 +3,7 @@
 
 // #define USE_SUPER_SPECULAR
 
+#include "config.h"
 #include "SkyGRAPHICS_options.cfg"
 #include "shared\common.h"
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -28,9 +29,15 @@
 // #define USE_DISTORT                	//- shader defined
 #define USE_SUNMASK                		//- shader defined
 //#define DBG_TMAPPING
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Волны по траве
+#define USE_GRASS_WAVE								// включить "волны" от ветра по траве
+#define GRASS_WAVE_FREQ 	float(0.7)				// частота появления волн
+#define GRASS_WAVE_POWER 	float(2.0)				// "яркость", заметность волн
 //////////////////////////////////////////////////////////////////////////////////////////
 #ifndef SMAP_size
-#define SMAP_size        2048
+#define SMAP_size        4096
 #endif
 #define PARALLAX_H 0.02
 #define parallax float2(PARALLAX_H, -PARALLAX_H/2)
@@ -45,17 +52,17 @@ uniform half4                L_material;                            // 0,0,0,mid
 uniform half4                Ldynamic_color;                      // dynamic light color (rgb1)        - spot/point
 uniform half4                Ldynamic_pos;                       // dynamic light pos+1/range(w) - spot/point
 uniform half4                Ldynamic_dir;                        // dynamic light direction         - sun
-
+uniform sampler 		s_smap;		// 2D/cube shadowmap
 uniform half4                J_direct        [6];
 uniform half4                J_spot                [6];
 
 half          calc_fogging               (half4 w_pos)      { return dot(w_pos,fog_plane);         }
-half2         calc_detail                (half3 w_pos)      {
+float2         calc_detail                (half3 w_pos)      {
         float                 dtl        = distance                (w_pos,eye_position)*dt_params.w;
                               dtl        = min              (dtl*dtl, 1);
         half                  dt_mul     = 1  - dtl;        // dt*  [1 ..  0 ]
         half                  dt_add     = .5 * dtl;        // dt+  [0 .. 0.5]
-        return                half2      (dt_mul,dt_add);
+        return                float2      (dt_mul,dt_add);
 }
 float3         calc_reflection     (float3 pos_w, float3 norm_w)
 {
@@ -63,8 +70,8 @@ float3         calc_reflection     (float3 pos_w, float3 norm_w)
 }
 
 float3        calc_sun_r1                (float3 norm_w)    { return L_sun_color*saturate(dot((norm_w),-L_sun_dir_w));                 }
-float3        calc_model_hemi_r1         (float3 norm_w)    { return max(0,norm_w.y)*L_hemi_color.xyz;                                         }
-float3        calc_model_lq_lighting     (float3 norm_w)    { return L_material.x*calc_model_hemi_r1(norm_w) + L_ambient.xyz + L_material.y*calc_sun_r1(norm_w);         }
+float3        calc_model_hemi_r1         (float3 norm_w)    { return max(0,norm_w.y)*L_hemi_color;                                         }
+float3        calc_model_lq_lighting     (float3 norm_w)    { return L_material.x*calc_model_hemi_r1(norm_w) + L_ambient + L_material.y*calc_sun_r1(norm_w);         }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct         v_static                {
@@ -162,7 +169,7 @@ struct         p_bumped        {
 //////////////////////////////////////////////////////////////////////////////////////////
 struct         p_flat                  {
         float4                 hpos        : POSITION;
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+#if ((defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)) || defined(USE_GRASS_WAVE))
     float4                    tcdh        : TEXCOORD0;        // Texture coordinates,         w=sun_occlusion
 #else
     float2                    tcdh        : TEXCOORD0;        // Texture coordinates
@@ -191,17 +198,6 @@ struct                  f_deffer        		{
 struct  				p_screen                {
         float4          hpos               		: POSITION;
         float2          tc0                		: TEXCOORD0;        // Texture coordinates         (for sampling maps)
-};
-//////////////////////////////////////////////////////////////////////////////////////////
-
-struct combine {
-	float4 tc0:TEXCOORD0;
-	float4 tc1:TEXCOORD1;
-	float4 tc2:TEXCOORD2;
-	float4 tc3:TEXCOORD3;
-	float4 tc4:TEXCOORD4;
-	float4 tc5:TEXCOORD5;
-	float4 tc6:TEXCOORD6;
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 // Geometry phase / deferring               	//
@@ -262,23 +258,21 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
         low		=       half4           (rgb,           0 )	;
         high	=       half4       	(rgb/def_hdr,   0 )	;		// 8x dynamic range
 #endif
-
-//		low		= 	half4	(rgb, 0);
-//		rgb		/=	def_hdr	;
-//		high	= 	half4	(rgb, dot(rgb,0.333f)-def_hdr_clip)		;
 }
+
 float4		combine_bloom        (float3  low, float4 high)	{
         return        float4(low + high.xyz*high.a, 1.f);
 }
 
-float3	v_hemi        	(float3 n)                        	{        return L_hemi_color.xyz*(.5f + .5f*n.y);                   }
-float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color.xyz*(w + (1-w)*n.y);                   }
+float3	v_hemi        	(float3 n)                        	{        return L_hemi_color*(.5f + .5f*n.y);                   }
+float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color*(w + (1-w)*n.y);                   }
 float3	v_sun           (float3 n)                        	{        return L_sun_color*dot(n,-L_sun_dir_w);                }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
 half3   p_hemi          (float2 tc)                         {
-        half3        	t_lmh         = tex2D             	(s_hemi, tc).xyz;
+        half3        	t_lmh         = tex2D             	(s_hemi, tc);
         return  dot     (t_lmh,1.h/3.h);
 }
+
 //	contrast function
 half Contrast(half Input, half ContrastPower)
 {
@@ -289,24 +283,25 @@ half Contrast(half Input, half ContrastPower)
      Output = IsAboveHalf ? 1-Output : Output;
      return Output;
 }
-float4 convert_to_screen_space(float4 proj)
-{
-	float4 screen;
-	screen.x = (proj.x + proj.w)*0.5;
-	screen.y = (proj.w - proj.y)*0.5;
-	screen.z = proj.z;
-	screen.w = proj.w;
-	return screen;
-}
+
+	float4 convert_to_screen_space(float4 proj)
+	{
+		float4 screen;
+		screen.x = (proj.x + proj.w)*0.5;
+		screen.y = (proj.w - proj.y)*0.5;
+		screen.z = proj.z;
+		screen.w = proj.w;
+		return screen;
+	}
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
-//--- � The below code is copyright of Sky4CE ---//
+//--- © The below code is copyright of Sky4CE ---//
 //----------- mailto: Sky4CE@inbox.ru -----------//
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
 
 float2 lod(float3 eye,float2 tc,sampler2D s_base)
 {
-	half height	= tex2D(s_base, tc).w * 0.016 - 0.009;    
+	half height	= tex2D(s_base, tc).w * 0.016 - 0.009;
     return tc + height*normalize(eye);
 }
 float2 AdvancedParallax(float3 eye,float2 tc,sampler2D s_base)
@@ -356,7 +351,7 @@ float2 AdvancedParallax(float3 eye,float2 tc,sampler2D s_base)
     float delta0 = t0 - fPrevHeight;
     float4 intersect = float4(vDelta, vDelta + tc);
     for (int i=0; i<FINAL_INTERSECTION_LOOPS && abs(error) > 0.01; i++)
-    { 
+    {
       float denom = (delta1 - delta0);
       float t = (t0 * delta1 - t1 * delta0) / denom;
       offsetBest.xy = -t * intersect.xy + intersect.zw;

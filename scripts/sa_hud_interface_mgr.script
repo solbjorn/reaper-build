@@ -1,13 +1,12 @@
 --[[-----------------------------------------------------------------------------------------------
  File         : sa_hud_interface_mgr.script
- Description  : Менеджер элементов интерактивного худа
+ Description  : РњРµРЅРµРґР¶РµСЂ СЌР»РµРјРµРЅС‚РѕРІ РёРЅС‚РµСЂР°РєС‚РёРІРЅРѕРіРѕ С…СѓРґР°
  Copyright    : Shadows Addon
  Author       : Ray Twitty aka Shadows
  Date         : 17.01.2014
  Last edit    : 24.03.2019
 --]]-----------------------------------------------------------------------------------------------
 local hud_interface_mgr
-local hud = get_hud()
 --[[-----------------------------------------------------------------------------------------------
  * HUD INTERFACE MANAGER
 --]]-----------------------------------------------------------------------------------------------
@@ -16,29 +15,46 @@ function CHudInterfaceMgr:__init()
 	hud:AddCustomStatic("night_vision_static")
 	local nv = hud:GetCustomStatic("night_vision_static"):wnd()
 	nv:SetWidth(0)
-
-	self.nextupd = 0
 	self.night_vision = nv
 	self.night_vision_active = false
+	self.nextupd_200 = 0
+	self.nextupd_1000 = 0
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:update()
-	local time_ = time_global()
-	if self.nextupd < time_ then
+	if self.nextupd_200 <= time_real_ms then
+		self:reload_static()
+		self.nextupd_200 = time_real_ms + 200
+	end
+	if self.nextupd_1000 <= time_real_ms then
 		self:date_static()
-		self.nextupd = time_ + 1000
+		self.nextupd_1000 = time_real_ms + 1000
 	end
 	self:night_vision_static()
 end
 ---------------------------------------------------------------------------------------------------
+function CHudInterfaceMgr:reload_static()
+	local active_slot = db_actor:active_slot()
+	local active_item = db_actor:active_item()
+	if (active_slot == 1 or active_slot == 2) and active_item:get_ammo_in_magazine() <= round(get_weapon_data(active_item, "mag_size") / 5) then
+		hud:AddCustomStatic("gun_reload", true)
+	else
+		hud:RemoveCustomStatic("gun_reload")
+	end
+end
+---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:date_static()
-	local game_time = game.get_game_time()
-	hud:AddCustomStatic("hud_time", true):wnd():SetText(game_time:timeToString(game.CTime.TimeToMinutes))
-	hud:AddCustomStatic("hud_date", true):wnd():SetText(game_time:dateToString(game.CTime.DateToDay))
+	if is_hud_draw() then
+		hud:AddCustomStatic("hud_time", true):wnd():SetText(time_game_ct:timeToString(game.CTime.TimeToMinutes))
+		hud:AddCustomStatic("hud_date", true):wnd():SetText(time_game_ct:dateToString(game.CTime.DateToDay))
+	else
+		hud:RemoveCustomStatic("hud_time")
+		hud:RemoveCustomStatic("hud_date")
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:night_vision_static()
-	if level.has_pp_effector(effector_ids.night_vision) > 0 then
+	if level.has_pp_effector(effector_ids.night_vision) > 0 and get_actor_data("camera_type") == EActorCameras.eacFirstEye then
 		if not self.night_vision_active then
 			local rect = amk_mod.get_hud_rect()
 			self.night_vision:SetWndRect(rect.x, rect.y, rect.w, rect.h)

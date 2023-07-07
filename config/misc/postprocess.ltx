@@ -7,8 +7,6 @@ gray			= .0
 noise			= .01
 noise_scale		= 1
 noise_color		= 255,255,255,70
-;noise_color		= 200,150,40,0
-;noise_color		= 200,180,50,0
 
 [postprocess_anomaly]
 ppe_file		= radiation.ppe
@@ -18,14 +16,10 @@ blur			= 1
 gray			= .7	;.9
 noise			= .2	;.5
 noise_scale		= 1
-;noise_color		= 255,255,255,70
-;noise_color		= 100,100,100,70
 noise_color		= 155,155,155,70
-;noise_color		= 200,150,40,0
-;noise_color		= 10,10,10,0
 
 ;---------------------------------------------------------------------
-; New zone postprocess
+; Anomaly effectors
 ;---------------------------------------------------------------------
 [postprocess_new]
 ppe_file		= radiation.ppe
@@ -71,21 +65,13 @@ radius_max		= 0.9
 ppe_file		= radiation.ppe
 radius_min		= 0.2
 radius_max		= 2.7
+
 ;---------------------------------------------------------------------
-
-[effector_alcohol]
-pp_eff_name		= snd_shock.ppe; alcohol.ppe
-pp_eff_cyclic	= 1
-
-cam_eff_name	= camera_effects\drunk.anm
-cam_eff_cyclic	= 1
-
+; Hit effectors
+;---------------------------------------------------------------------
 [effector_explode_hit]
-;pp_eff_name		= fire_hit.ppe
-;pp_eff_cyclic	= 0
-
-cam_eff_cyclic	= 0
 cam_eff_name	= camera_effects\shell_shock.anm
+cam_eff_cyclic	= 0
 
 [effector_fire_hit]
 pp_eff_name		= fire_hit.ppe
@@ -116,38 +102,11 @@ cam_eff_name	= camera_effects\hit_front_right.anm
 [effector_fire_hit_7]:effector_fire_hit
 cam_eff_name	= camera_effects\hit_back_right.anm
 
-[effector_nightvision]
-pp_eff_name		= nightvision.ppe
-pp_eff_cyclic	= 0
-
-[snd_shock_effector]
-;pp_eff_name		= duality_circle.ppe
-pp_eff_name		= snd_shock.ppe
-pp_eff_cyclic	= 1
-
-[effector_radar_stop]
-;pp_eff_name		= radar_stop.ppe
-;pp_eff_cyclic	= 0
-
-cam_eff_name	= camera_effects\radar_stop.anm
-cam_eff_cyclic	= 0
-
-[effector_controller_aura]
-pp_eff_name		= controller_hit.ppe
-pp_eff_cyclic	= 0
-
-[effector_psy_health]
-pp_eff_name		= snd_shock.ppe
-pp_eff_cyclic	= 0
-;cam_eff_name	= camera_effects\radar_stop.anm ;fixme
-;cam_eff_cyclic	= 0 ; fixme
-
-[effector_controller_aura2]:effector_alcohol
-pp_eff_cyclic	= 0
-cam_eff_cyclic	= 0
-
+;---------------------------------------------------------------------
+; Monster hit effectors
+;---------------------------------------------------------------------
 [effector_monster_hit]
-;pp_eff_name		= fire_hit.ppe ; no postprocess
+;pp_eff_name		= fire_hit.ppe
 ;pp_eff_cyclic	= 0
 cam_eff_cyclic	= 0
 
@@ -175,7 +134,40 @@ cam_eff_name	= camera_effects\hit_front_right.anm
 [effector_monster_hit_7]:effector_monster_hit
 cam_eff_name	= camera_effects\hit_back_right.anm
 
-;Postprocesss
+;---------------------------------------------------------------------
+; Monster special effectors
+;---------------------------------------------------------------------
+[effector_controller_aura]
+pp_eff_name		= controller_hit.ppe
+pp_eff_cyclic	= 0
+
+[effector_controller_aura2]
+pp_eff_name		= snd_shock.ppe
+pp_eff_cyclic	= 0
+cam_eff_name	= camera_effects\drunk.anm
+cam_eff_cyclic	= 0
+
+[effector_bloodsucker_vampire_grasp]
+pp_eff_name		= attack_effects\monsters\special\vampire_grasp.ppe
+pp_eff_cyclic	= 0
+
+[effector_bloodsucker_vampire_sucking]
+pp_eff_name		= attack_effects\monsters\special\vampire_sucking.ppe
+pp_eff_cyclic	= 0
+cam_eff_name	= attack_effects\monsters\special\vampire_sucking.anm
+cam_eff_cyclic	= 0
+
+[effector_bloodsucker_vampire_fade]
+pp_eff_name		= attack_effects\monsters\special\vampire_fade.ppe
+pp_eff_cyclic	= 0
+
+;---------------------------------------------------------------------
+; Nightvision effectors
+;---------------------------------------------------------------------
+[effector_nightvision]
+pp_eff_name		= nightvision.ppe
+pp_eff_cyclic	= 1
+
 [effector_nightvision_bad]
 pp_eff_name = nightvision_bad.ppe
 pp_eff_cyclic = 1
@@ -218,3 +210,29 @@ self.base_color = 0.535, 0.493, 0.389
 pp_eff_name = bast.ppe
 pp_eff_cyclic = 1
 
+;---------------------------------------------------------------------
+; Others effectors
+;---------------------------------------------------------------------
+[effector_psy_health]
+pp_eff_name		= snd_shock.ppe
+pp_eff_cyclic	= 0
+
+[snd_shock_effector]
+pp_eff_name		= snd_shock.ppe
+pp_eff_cyclic	= 1
+
+[effector_alcohol]
+pp_eff_name		= snd_shock.ppe
+pp_eff_cyclic	= 1
+cam_eff_name	= camera_effects\drunk.anm
+cam_eff_cyclic	= 1
+
+[effector_radar_stop]
+cam_eff_name	= camera_effects\radar_stop.anm
+cam_eff_cyclic	= 0
+
+[effector_head_shot]
+pp_eff_name		= total_recall.ppe
+pp_eff_cyclic	= 0
+cam_eff_name	= camera_effects\head_shot.anm
+cam_eff_cyclic	= 0

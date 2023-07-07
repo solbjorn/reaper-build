@@ -1,61 +1,76 @@
-belt = {}
-belt_id = {}
+-- Инвентарь ГГ
+-- Refactored by RanHum
+class "CInventory"
 
--- Добавление в таблицу
-function insert_to_table(section)
-	if belt[section] == nil then
-		belt[section] = 1
-	else
-		belt[section] = belt[section] + 1
+function CInventory:__init()
+	self.sack = {}				-- Инвентарь ГГ
+	self.belt = { }
+end
+
+-- Имеем ли предметы?
+function CInventory:has(sect, count)
+	return (self.sack[sect] or 0) >= (count or 1)
+end
+
+-- Получаем предметы
+function CInventory:got(sect, count)
+	if not count then count = 1 end
+
+	for i = 1, count do
+		create(sect,xyz(0,0,0),0,0,0)
+	end
+	news_manager.relocate_item("in", sect, count)
+end
+
+-- Теряем предметы
+function CInventory:lost(sect, count)
+	if not count then count = 1 end
+
+	local cnt = 0
+	db_actor:iterate_inventory(function(dummy, item)
+		if cnt < count and item:section() == sect then
+			release(item)
+			cnt = cnt + 1
+		end
+	end)
+	if cnt > 0 then
+		news_manager.relocate_item("out", sect, cnt)
 	end
 end
 
-function remove_from_table(section)
-	if belt[section] == 1 then
-		belt[section] = nil
-	else
-		belt[section] = belt[section] - 1
+-- Передаем один предмет
+function CInventory:transfer(victim, sect, type)
+	if type == "in" then
+		victim:transfer_item(victim:object(sect), db_actor)
+	elseif type == "out" then
+		db_actor:transfer_item(db_actor:object(sect), victim)
 	end
+	news_manager.relocate_item(type, sect)
 end
 
-function on_item_belt(item)
-	insert_to_table(item:section())
-	belt_id[item:id()] = item
-
-	grenade_belt.on_item_belt(item)
+-- Калбек на поднятие предмета
+function CInventory:on_item_take(item)
+	table.add(self.sack, item:section())
+	restriction_stock.restriction_of_stock(item, 0)
 end
 
-function on_item_ruck(item)
-	if belt_id[item:id()] then
-		remove_from_table(item:section())
-		belt_id[item:id()] = nil
-	end
-
-	ammo_belt.on_item_ruck(item)
-	grenade_belt.on_item_ruck(item)
+-- Калбек на потерю предмета
+function CInventory:on_item_drop(item)
+	table.sub(self.sack, item:section())
+	restriction_stock.restriction_of_stock(item, 1)
 end
 
-function on_item_slot(item)
-	if belt_id[item:id()] then
-		remove_from_table(item:section())
-		belt_id[item:id()] = nil
-	end
-
-	grenade_belt.on_item_slot(item)
+-- Калбек на надевание на пояс
+function CInventory:on_item_belt(item)
+	table.add(self.belt, item:section())
 end
 
--- Выброс предмета
-function on_item_drop(item)
-	if belt_id[item:id()] then
-		remove_from_table(item:section())
-		belt_id[item:id()] = nil
-	end
-
-	grenade_belt.on_item_drop(item)
+-- Калбек на снятие с пояса
+function CInventory:on_item_move_from_belt(item)
+	table.sub(self.belt, item:section())
 end
 
--- Открытие/закрытие инвентаря
-function on_inventory_info(info_id)
-	ammo_belt.on_info(info_id)
-	grenade_belt.on_info(info_id)
+-- предмет на поясе
+function CInventory:on_belt(sect)
+	return self.belt[sect]
 end

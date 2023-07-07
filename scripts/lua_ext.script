@@ -1,13 +1,43 @@
 -- Расширения базовых библиотек Lua и движка
 
-local string_byte = string.byte
-local string_char = string.char
 local string_gfind = string.gfind
-local string_len = string.len
+local string_gsub = string.gsub
 local string_match = string.match
-local string_sub = string.sub
 
 -- table
+
+-- Инвертирование таблицы - ключ<->значение
+table.invert = function(tbl)
+   local result = {}
+   for key,value in pairs(tbl) do
+     result[value] = key
+   end
+   return result
+end
+
+-- Добавление в таблицу вида {[key] = count} подсчитываемого предмета
+table.add = function(tbl, key,count)
+	if not count then
+		count=1
+	end
+	if tbl[key] then
+		tbl[key] = tbl[key]+count
+	else
+		tbl[key] = count
+	end
+end
+
+-- Удаление из таблицы вида {[key] = count} подсчитываемого предмета
+table.sub = function(tbl, key)
+	if not tbl[key] then
+		return
+	end
+	if tbl[key] == 1 then
+		tbl[key] = nil
+	else
+		tbl[key] = tbl[key]-1
+	end
+end
 
 -- Выбор случайного элемента таблицы
 table.random_key=function(tbl)
@@ -18,8 +48,8 @@ table.random_key=function(tbl)
 	local keys = {}
 	local size = 0
     for key, value in pairs(tbl) do
-		keys[size + 1] = key
 		size = size + 1
+		keys[size] = key
     end
 	if size==0 then
 		abort("! ERROR table.random got unexpected data from input table")
@@ -45,51 +75,6 @@ table.size = function(tbl)
 	end
 	return count
 end
-
---[[ Упаковка таблицы в строку, ex amk.pack_array_to_string. Строки в структуре не должны содержать символов с кодами 0-31.
-	Формат упаковки:
-	table ::= subtable
-	subtable ::= keytype key valuetype ( value | subtable 0x5 )
-	keytype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
-	valuetype ::= ( 0x1 | 0x2 | 0x3 | 0x4 )
-]]
-table.to_string = function(t)
-	local type_num = 1
-	local type_string = 2
-	local type_bool = 3
-	local type_table = 4
-	local type_endtable = 5
-	local tk, tv
-	local ret = ""
-
-	for k,v in pairs(t) do
-		tk = type(k)
-		tv = type(v)
-
-		if tk == "number" then
-			ret = ret..string_char(type_num)..k
-		elseif tk == "string" then
-			ret = ret..string_char(type_string)..k
-		else
-			abort("table.to_string: unsupported key type "..tk)
-		end
-
-		if tv == "number" then
-			ret = ret..string_char(type_num)..v
-		elseif tv == "string" then
-			ret = ret..string_char(type_string)..v
-		elseif tv == "boolean" then
-			ret = ret..string_char(type_bool)..(v and "1" or "0")
-		elseif tv == "table" then
-			ret = ret..string_char(type_table)..table_to_string(v)..string_char(type_endtable)
-		else
-			abort("table.to_string: unsupported value type "..tv)
-		end
-	end
-
-	return ret
-end
-local table_to_string = table.to_string
 
 -- string
 
@@ -125,77 +110,161 @@ string.explode = function(str, div, clear)
 	return t
 end
 
--- Распаковка строки в таблицу, ex amk.unpack_array_from_string.
-string.to_table = function(s, idx)
-	if s == nil or s == "" then return {} end
+string.clear = function(str)
+	return string_gsub(str, "%p", function(s) return string_match(s, "[%.%-_]*") end )
+end
 
-	local type_num = 1
-	local type_string = 2
-	local type_bool = 3
-	local type_table = 4
-	local type_endtable = 5
-	local key,value
-	local tk, tv
-	local ret = {}
-	idx = idx or 1
+-- Парсит строку вида "ааа, ббб, ввв..." в таблицу {"ааа", "ббб", "ввв", ...}
+string.parse_names = function(s, tohash)
+	local t = {}
 
-	while true do
-		if idx > string_len(s) then
-			return ret, idx
-		end
-
-		tk, idx = get_byte(s, idx)
-		if tk == type_num then
-			key, idx = get_num(s, idx)
-		elseif tk == type_string then
-			key, idx = get_string(s, idx)
-		elseif tk == type_endtable then
-			return ret, idx
+	for name in string_gfind(s, "([%w_%-.\\]+)%p*") do
+		if tohash == true then
+			t[name] = true
 		else
-			abort("string.to_table: unsupported key type "..tk)
+			t[#t + 1] = name
 		end
+	end
 
-		tv, idx = get_byte(s, idx)
-		if tv == type_num then
-			value, idx = get_num(s, idx)
-		elseif tv == type_string then
-			value, idx = get_string(s, idx)
-		elseif tv == type_bool then
-			value, idx = get_bool(s, idx)
-		elseif tv == type_table then
-			value, idx = string_to_table(s, idx)
+	return t
+end
+
+-- разбирает строку вида "n1, n2, n3..." в таблицу {n1, n2, n3, ...} где n1, n2, n3... - числа
+string.parse_nums = function (s)
+	local t = {}
+	for value in string_gfind(s, "([^,]+)") do
+		local num=tonumber(value)
+		if not num then
+			abort("! lua_ext.parse_nums: error input value "..value..". ignoring!")
 		else
-			abort("string.to_table: unsupported value type "..tv)
+			t[#t + 1] = num
 		end
+	end
+	return t
+end
 
-		ret[key] = value
+-- разбирает строку key,value,key,value ... в таблицу t = {key = value}, value должно быть числом. Его можно не указывать, тогда будет подставляться дефолт def
+string.key_value_num = function (str, def)
+	if not str then return nil end
+	if not def then def = 1 end
+
+	local t = {}
+	local key, value
+	for name in string_gfind(str, "[%w%_%.%-%+]+") do
+		value = tonumber(name)
+		if key == nil then	-- name это key
+			key = name
+		elseif value == nil then	-- value не указано, значит это следующий key, ставим def и переносим key
+			t[key] = def
+			key = name
+		else	-- name это value
+			t[key] = value
+			key = nil
+		end
+	end
+
+	-- цепляем дефолт для последнего key
+	if key then
+		t[key] = def
+	end
+
+	return t
+end
+
+-- math
+
+math.isnan = function(value)
+	return value ~= value
+end
+
+-- ini_file, system_ini
+
+--[[ Перебирает все строки в секции ini. Использование:
+local tbl = {}
+ini:iterate_lines(section, function(result, id, value)
+	tbl[...] = ... -- любой скрипт
+end)
+--]]
+ini_file.iterate_lines = function (ini, section, f)
+	if ini:section_exist(section) then
+		for i=0,ini:line_count(section)-1 do
+			f(ini:r_line(section, i, "", ""))
+		end
 	end
 end
-local string_to_table = string.to_table
+config.iterate_lines = ini_file.iterate_lines
 
--- Вспомогательные функции
+-- Из всех значений секции возвращает таблицу t[id] = value. tonum = true - преобразовать в число
+ini_file.key_value = function (ini, section, tonum)
+	local t = {}
 
-function get_byte(str,idx)
-  return string_byte(string_sub(str,idx,idx)),idx+1
+	ini:iterate_lines(section, function(result, id, value)
+		t[id] = tonum and tonumber(value) or value
+	end)
+
+	return t
 end
+config.key_value = ini_file.key_value
 
-function get_string(str,idx)
-  local idx1=string_len(str)+1
-  for i=idx,string_len(str),1 do
-    if string_byte(string_sub(str,i,i))<32 then
-      idx1=i
-      break
-    end
-  end
-  return string_sub(str,idx,idx1-1),idx1
+-- Из всех значений секции возвращает список t = {id1, id2 ...}
+ini_file.list = function (ini, section)
+	local t = {}
+
+	ini:iterate_lines(section, function(result, id, value)
+		table.insert(t, id)
+	end)
+
+	return t
 end
+config.list = ini_file.list
 
-function get_num(str,idx)
-  local st,idx1=get_string(str,idx)
-  return st+0,idx1
+-- Из всех значений секции возвращает таблицу t[id] = true
+ini_file.key_true = function (ini, section)
+	local t = {}
+
+	ini:iterate_lines(section, function(result, id, value)
+		t[id] = true
+	end)
+
+	return t
 end
+config.key_true = ini_file.key_true
 
-function get_bool(str,idx)
-  local st,idx1=get_string(str,idx)
-  return st=="1",idx1
+-- net_packet
+
+local CTime_0 = game.CTime()
+
+-- Чтение CTime
+net_packet.r_CTime = function(p)
+	local t = game.CTime()
+
+	local year = p:r_u8()
+	if year == 0 then return t end
+
+	return t:set_table({
+		year	= year + 2000,
+		month	= p:r_u8(),
+		day	= p:r_u8(),
+		hour	= p:r_u8(),
+		["min"]	= p:r_u8(),
+		sec	= p:r_u8(),
+		msec	= p:r_u16()
+	})
+end
+reader.r_CTime = net_packet.r_CTime
+
+-- Запись CTime. Если t = nil, то запишет один нулевой байт
+net_packet.w_CTime = function(p, t)
+	if t and t ~= CTime_0 then
+		local time_table = t:get_table()
+		p:w_u8(time_table["year"]-2000)
+		p:w_u8(time_table["month"])
+		p:w_u8(time_table["day"])
+		p:w_u8(time_table["hour"])
+		p:w_u8(time_table["min"])
+		p:w_u8(time_table["sec"])
+		p:w_u16(time_table["msec"])
+	else
+		p:w_u8(0)
+	end
 end

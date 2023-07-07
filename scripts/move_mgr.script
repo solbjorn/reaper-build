@@ -123,10 +123,10 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 		self.default_state_moving2 = default_state_moving2
 		self.default_state_moving3 = default_state_moving3
 	else
-		self.default_state_standing = if_then_else(suggested_state.standing, suggested_state.standing, default_state_standing)
-		self.default_state_moving1 = if_then_else(suggested_state.moving1, suggested_state.moving1, default_state_moving1)
-		self.default_state_moving2 = if_then_else(suggested_state.moving2, suggested_state.moving2, default_state_moving2)
-		self.default_state_moving3 = if_then_else(suggested_state.moving3, suggested_state.moving3, default_state_moving3)
+		self.default_state_standing = iif(suggested_state.standing, suggested_state.standing, default_state_standing)
+		self.default_state_moving1 = iif(suggested_state.moving1, suggested_state.moving1, default_state_moving1)
+		self.default_state_moving2 = iif(suggested_state.moving2, suggested_state.moving2, default_state_moving2)
+		self.default_state_moving3 = iif(suggested_state.moving3, suggested_state.moving3, default_state_moving3)
 	end
 
 	--' С момента включения схемы должна пройти как минимум секунда, прежде чем
@@ -234,7 +234,6 @@ function validate_accessibility(npc,ppname)
 	end
 	pp_validated[ppname]=true
   if pp then
-		amk.mylog("validating "..ppname.." for "..npc:name())
     for i=0,pp:count()-1 do
 			local alist=amk_anoms.get_anomaly_list_for_pos(pp:point(i),1)
 			for j,o in ipairs(alist) do
@@ -296,8 +295,6 @@ function move_mgr:setup_movement_by_patrol_path()
 		-- Реально идем в вершину
 		self:update_movement_state()
 	end
-
-	local sect = self.object:section()
 
 	if self.use_default_sound then
 		self.default_sound = "state"

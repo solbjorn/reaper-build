@@ -1,41 +1,25 @@
 local spawn_list = {}
 
 function check_spawn(s_object)
-	local s_object_id = s_object.id
-	local spawn = spawn_list[s_object_id]
-	if spawn == nil then
-		spawn = {
-			cond = xr_logic.cfg_get_condlist(s_object:spawn_ini(), "spawner", "cond", s_object),
-			npc = nil
-		}
-		spawn_list[s_object_id] = spawn
-	end
-	if db_actor ~= nil then
-		if spawn.cond ~= nil then
-			if spawn.npc == nil then
-				spawn.npc = level.object_by_id(s_object_id)
-			end
-			if xr_logic.pick_section_from_condlist(db_actor, spawn.npc, spawn.cond.condlist) ~= nil then
-				return true
-			else
-				spawn.npc = nil
-				return false
-			end
+	local obj_id = s_object.id
+	if spawn_list[obj_id] == nil then
+		local ini = s_object:spawn_ini()
+		if ini and ini:section_exist("spawner") and ini:line_exist("spawner", "cond") then
+			spawn_list[obj_id] = xr_logic.parse_condlist(ini:r_string("spawner", "cond"))
+			spawn_list[obj_id] = reap_misc.cached_condlist(spawn_list[obj_id], 1000)
 		else
-			return true
+			spawn_list[obj_id] = false
 		end
 	end
-	spawn.npc = nil
-	return false
+
+	return ( not spawn_list[obj_id] )
+		or ( spawn_list[obj_id]:pick_section_from_condlist(s_object) ~= nil )
 end
 
 ---------------------------------------------------------------------
 class "se_car" (cse_alife_car)
 --------------------
 function se_car:__init (section) super (section)
-	--log("_bp: set_car:__init")
-	self.ini = nil
-	self.spawner_present = false
 end
 --------------------
 function se_car:can_switch_offline ()
@@ -43,15 +27,8 @@ function se_car:can_switch_offline ()
 end
 --------------------
 function se_car:can_switch_online ()
-	if self.ini == nil then
-		self.ini = self:spawn_ini()
-		self.spawner_present = self.ini:section_exist("spawner")
-	end
-
-	if self.ini == nil or self.spawner_present == false then
-		return cse_alife_car.can_switch_online(self)
-	end
-	return check_spawn(self)
+	return cse_alife_car.can_switch_online(self)
+		and check_spawn(self)
 end
 --------------------
 

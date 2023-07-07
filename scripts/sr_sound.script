@@ -43,12 +43,11 @@ function action_sound:update( delta )
 		end
 	else
 		if self.is_actor_inside then
-			--self.on_leave( actor )
 			self.is_actor_inside = false
 		end
 	end
 
-	xr_logic.try_switch_to_another_section( self.object, self.st, actor )
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function action_sound:on_enter( obj )
@@ -64,7 +63,7 @@ function action_sound:on_enter( obj )
 
 	self.snd_obj	= xr_sound.get_safe_sound_object(snd_name)
 	if self.st.play_at_actor == false then
-		 self.snd_obj:play_at_pos( obj, pos, 0 ) --self.st.delay )
+		 self.snd_obj:play_at_pos( obj, pos, 0 )
 	else
 		 self.snd_obj:play_at_pos( obj, vector ():set (0, 0, 0), 0, sound_object.s2d )
 	end
@@ -72,14 +71,14 @@ function action_sound:on_enter( obj )
 end
 
 function action_sound:deactivate ()
-    if self.snd_obj ~= nil and self.snd_obj:playing () == false then
+    if self.snd_obj then
        self.snd_obj:stop ()
        self.snd_obj = nil
     end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q( npc, storage )
+function add_to_binder( npc, storage )
 	storage.actions[action_sound(npc, storage)] = true
 end
 
@@ -90,7 +89,7 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 	st.sound_names = {}
 
 	if ini:line_exist( section, "snd" ) then
-		local t = parse_names( ini:r_string( section, "snd" ) )
+		local t = string.parse_names( ini:r_string( section, "snd" ) )
 		for i, v in pairs(t) do
 			st.sound_names[#st.sound_names + 1] = v
 		end

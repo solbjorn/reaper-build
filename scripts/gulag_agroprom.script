@@ -1,11 +1,12 @@
-
 --'--------------------------------------------------------------------------
---' AGROPROM
+--' AGROPROM and AGROPROM Underground combined
 --'--------------------------------------------------------------------------
 
 function load_job( sj, gname, type, squad, groups )
 	local t
-
+--'--------------------------------------------------------------------------
+--' AGROPROM
+--'--------------------------------------------------------------------------
 	if type == "agr_road_patrol1" then
 		for i = 1, 5 do
 			t = { section = "logic@agr_road_patrol1"..i,
@@ -428,9 +429,41 @@ function load_job( sj, gname, type, squad, groups )
 		end
 		return true
 	end
+
+--'--------------------------------------------------------------------------
+--' AGROPROM Underground
+--'--------------------------------------------------------------------------
+	if type == "agr_u_soldiers" then
+		for i = 1, 8 do
+			t = { section = "logic@agr_u_soldiers"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
+
+	if type == "agr_u_bandits" then
+		for i = 1, 7 do
+			t = { section = "logic@agr_u_bandits"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			sj[#sj+1] = t
+		end
+		return true
+	end
 end
 
-function load_states( gname, type )
+function load_states(type)
+--'--------------------------------------------------------------------------
+--' AGROPROM
+--'--------------------------------------------------------------------------
 	if type == "agr_nii" then
 		return function(gulag)
 			local actor = db.actor
@@ -578,116 +611,228 @@ function load_states( gname, type )
 	end
 
 	if type == "agr_road_patrol1" then
-		return function( gulag )
-				return 0
+		return function()
+			return 0
 		end
 	end
 
 	if type == "agr_road_patrol2" then
-		return function( gulag )
-				return 0
+		return function()
+			return 0
 		end
 	end
+--'--------------------------------------------------------------------------
+--' AGROPROM Underground
+--'--------------------------------------------------------------------------
+	if type == "agr_u_soldiers" then
+		return function()
+			return 0
+		end
+	end
+
+	if type == "agr_u_bandits" then
+		return function()
+			return 0
+		end
+	end
+
 	return nil
 end
 
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
+function load_ltx(type)
+--' AGROPROM
 	if type == "agr_road_patrol1" then
-		return load_ltx_agr_road_patrol1(gname, type)
+		return load_ltx_agr_road_patrol1()
 	end
 	if type == "agr_road_patrol2" then
-		return load_ltx_agr_road_patrol2(gname, type)
+		return load_ltx_agr_road_patrol2()
+	end
+
+--' AGROPROM Underground
+	if type == "agr_u_soldiers" then
+		return load_ltx_agr_u_soldiers()
+	end
+
+	if type == "agr_u_bandits" then
+		return load_ltx_agr_u_bandits()
 	end
 	return nil
 end
 
-function load_ltx_agr_road_patrol1(gname, type)
-    local i, res = 0, ""
+--'--------------------------------------------------------------------------
+--' AGROPROM
+--'--------------------------------------------------------------------------
+function load_ltx_agr_road_patrol1()
+	local table_concat = table.concat
+	local i, res = 0, ""
+	local res_t
+
 	for i = 1, 2 do
-	res = res .. "[logic@" .. gname .. i .. "]\n" ..
-					"active = walker1@" .. gname .. i .. "\n" ..
-					"info=info@about_rats\n" ..
+		res_t = {
+			"[logic@agr_road_patrol1",
+			i, "]\nactive = walker1@agr_road_patrol1",
+			i, "\ninfo=info@about_rats\n",
 
-					"[walker1@" .. gname .. i .. "]\n" ..
-					"team=aaa\n" ..
-					"path_walk = walk_1_" .. i .. "\n" ..
-					"path_look = look_1_" .. i .. "\n" ..
-					"danger=danger_condition@" .. gname .. "\n" ..
-					"on_signal=end_1_"..i.."|walker2@" .. gname .. i .. "\n" ..
-
-					"[walker2@" .. gname .. i .. "]\n" ..
-					"team=bbb\n" ..
-					"path_walk = walk_2_" .. i .. "\n" ..
-					"path_look = look_2_" .. i .. "\n" ..
-					"danger=danger_condition@" .. gname .. "\n" ..
-					"on_signal=end_2_"..i.."|walker1@" .. gname .. i .. "\n"
-
+			"[walker1@agr_road_patrol1",
+			i, "]\nteam=aaa\npath_walk = walk_1_",
+			i, "\npath_look = look_1_",
+			i, "\ndanger=danger_condition@agr_road_patrol1\non_signal=end_1_",
+			i, "|walker2@agr_road_patrol1",
+			i, "\n[walker2@agr_road_patrol1",
+			i, "]\nteam=bbb\npath_walk = walk_2_",
+			i, "\npath_look = look_2_",
+			i, "\ndanger=danger_condition@agr_road_patrol1\non_signal=end_2_",
+			i, "|walker1@agr_road_patrol1", i, "\n" }
+		res = res .. table_concat(res_t)
 	end
 	for i = 3, 4 do
-	res = res .. "[logic@" .. gname .. i .. "]\n" ..
-					"active = walker@" .. gname .. i .. "\n" ..
-					"info=info@about_rats\n" ..
-
-					"[walker@" .. gname ..  i .. "]\n" ..
-					"path_walk = zastava2_stand" .. i .. "\n" ..
-					"path_look = zastava2_way_look_hide\n" ..
-					"danger=danger_condition@" .. gname .. "\n"
+		res_t = {
+			"[logic@agr_road_patrol1",
+			i, "]\nactive = walker@agr_road_patrol1",
+			i, "\ninfo=info@about_rats\n[walker@agr_road_patrol1",
+			i, "]\npath_walk = zastava2_stand",
+			i, "\npath_look = zastava2_way_look_hide\ndanger=danger_condition@agr_road_patrol1\n" }
+		res = res .. table_concat(res_t)
 	end
-	for i = 5, 5 do
-	res = res .. "[logic@" .. gname .. i .. "]\n" ..
-					"active = walker@" .. gname .. i .. "\n" ..
-					"info=info@about_rats\n" ..
+	res_t = {
+		"[logic@agr_road_patrol15]\nactive = walker@agr_road_patrol15\ninfo=info@about_rats\n",
 
-					"[walker@" .. gname ..  i .. "]\n" ..
-					"path_walk = zastava2_stand" .. i .. "\n" ..
-					"path_look = zastava2_way_look\n" ..
-					"danger=danger_condition@" .. gname .. "\n"
-	end
+		"[walker@agr_road_patrol15]\npath_walk = zastava2_stand5\npath_look = zastava2_way_look\ndanger=danger_condition@agr_road_patrol1\n",
 
-	res = res ..	"[danger_condition@" .. gname .. "]\n" ..
-					"danger_expiration_time = 6000\n" ..
-					"danger_inertion_time =  9000\n" ..
-					"[info@about_rats]\n" ..
-					"in = agr_pda_soldiers_rats\n"
+		"[danger_condition@agr_road_patrol1]\ndanger_expiration_time = 6000\ndanger_inertion_time =  9000\n[info@about_rats]\nin = agr_pda_soldiers_rats\n" }
+	res = res .. table_concat(res_t)
 
 	return res
 end
 
-function load_ltx_agr_road_patrol2(gname, type)
-    local i, res = 0, ""
+function load_ltx_agr_road_patrol2()
+	local table_concat = table.concat
+	local i, res = 0, ""
+	local res_t
+
 	for i = 1, 2 do
-	res = res .. "[logic@" .. gname .. i .. "]\n" ..
-					"active = walker1@" .. gname .. i .. "\n" ..
-					"info=info@about_rats\n" ..
+		res_t = {
+			"[logic@agr_road_patrol2",
+			i, "]\nactive = walker1@agr_road_patrol2",
+			i, "\ninfo=info@about_rats\n[walker1@agr_road_patrol2",
+			i, "]\nteam=aa\npath_walk = walk",
+			i, "_1\npath_look = look",
+			i, "_1\ndanger=danger_condition@agr_road_patrol2\non_signal=end",
+			i, "_1|walker2@agr_road_patrol2",
+			i, "\n[walker2@agr_road_patrol2",
+			i, "]\nteam=bb\npath_walk = walk",
+			i, "_2\npath_look = look",
+			i, "_2\ndanger=danger_condition@agr_road_patrol2\non_signal=end",
+			i, "_2|walker1@agr_road_patrol2",
+			i, "\n" }
+		res = res .. table_concat(res_t)
+	end
+	res = res .. "[danger_condition@agr_road_patrol2]\ndanger_expiration_time = 6000\ndanger_inertion_time =  9000\n[info@about_rats]\nin = agr_pda_soldiers_rats\n"
+	return res
+end
 
-					"[walker1@" .. gname .. i .. "]\n" ..
-					"team=aa\n" ..
-					"path_walk = walk" .. i .. "_1\n" ..
-					"path_look = look" .. i .. "_1\n" ..
-					"danger=danger_condition@" .. gname .. "\n" ..
-					"on_signal=end"..i.."_1|walker2@" .. gname .. i .. "\n" ..
+--'--------------------------------------------------------------------------
+--' AGROPROM Underground
+--'--------------------------------------------------------------------------
+function load_ltx_agr_u_soldiers()
+	local table_concat = table.concat
+	local i, res = 0, ""
+	local res_t
 
-					"[walker2@" .. gname .. i .. "]\n" ..
-					"team=bb\n" ..
-					"path_walk = walk" .. i .. "_2\n" ..
-					"path_look = look" .. i .. "_2\n" ..
-					"danger=danger_condition@" .. gname .. "\n" ..
-					"on_signal=end"..i.."_2|walker1@" .. gname .. i .. "\n"
+	for i = 1, 2 do
+		res_t = {
+			"[logic@agr_u_soldiers",
+			i, "]\nactive = walker@agr_u_soldiers",
+			i, "\ncombat_ignore = combat_ignore@agr_u_soldiers\n[walker@agr_u_soldiers",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\ncombat_ignore_cond = {!fighting_actor} true \ndanger=danger_condition@agr_u_soldiers\n" }
+		res = res .. table_concat(res_t)
+	end
+	for i = 3, 6 do
+		res_t = {
+			"[logic@agr_u_soldiers",
+			i, "]\nactive = walker@agr_u_soldiers",
+			i, "\ncombat_ignore = combat_ignore@agr_u_soldiers\n[walker@agr_u_soldiers",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look", i, "\ncombat_ignore_cond = {!fighting_actor} true \non_actor_in_zone = kat_soldier_trigger2 | walker2@agr_u_soldiers",
+			i, "\ndanger=danger_condition@agr_u_soldiers\n[walker2@agr_u_soldiers",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\ndanger=danger_condition@agr_u_soldiers\n" }
+		res = res .. table_concat(res_t)
 	end
 
-	res = res ..	"[danger_condition@" .. gname .. "]\n" ..
-					"danger_expiration_time = 6000\n" ..
-					"danger_inertion_time =  9000\n" ..
-					"[info@about_rats]\n" ..
-					"in = agr_pda_soldiers_rats\n"
+	for i = 7, 8 do
+		res_t = {
+			"[logic@agr_u_soldiers",
+			i, "]\nactive = walker@agr_u_soldiers",
+			i, "\ncombat_ignore = combat_ignore@agr_u_soldiers\n[walker@agr_u_soldiers",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\ncombat_ignore_cond = {!fighting_actor} true \non_actor_in_zone = kat_soldier_trigger3 | walker2@agr_u_soldiers",
+			i, "\ndanger=danger_condition@agr_u_soldiers\n[walker2@agr_u_soldiers",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\ndanger=danger_condition@agr_u_soldiers\n" }
+		res = res .. table_concat(res_t)
+	end
 
+	res = res .. "[combat_ignore@agr_u_soldiers]\n[danger_condition@agr_u_soldiers]\ndanger_expiration_time = 60000\ndanger_inertion_time =  90000\n"
+	return res
+end
+
+
+function load_ltx_agr_u_bandits()
+	local table_concat = table.concat
+	local i, res = 0, ""
+	res_t = {
+		"[logic@agr_u_bandits1]\nactive = walker@agr_u_bandits1\ncombat_ignore = combat_ignore@agr_u_bandits\n",
+
+		"[walker@agr_u_bandits1]\npath_walk = walk1\npath_look = look1\n",
+
+		"on_actor_in_zone = kat_bandit_trigger3 | walker2@agr_u_bandits1\ndanger=danger_condition@agr_u_bandits\n",
+
+		"[walker2@agr_u_bandits1]\npath_walk = walk1\npath_look = look1\ndanger=danger_condition@agr_u_bandits\n" }
+	res = res .. table_concat(res_t)
+	for i = 2, 5 do
+		res_t = {
+			"[logic@agr_u_bandits",
+			i, "]\nactive = walker@agr_u_bandits",
+			i, "\ncombat_ignore = combat_ignore@agr_u_bandits\n[walker@agr_u_bandits",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\non_actor_in_zone = kat_bandit_trigger3 | walker2@agr_u_bandits",
+			i, "\ndanger=danger_condition@agr_u_bandits\n[walker2@agr_u_bandits",
+			i, "]\npath_walk = walk",
+			i, "\npath_look = look",
+			i, "\ndanger=danger_condition@agr_u_bandits\n" }
+		res = res .. table_concat(res_t)
+	end
+
+	res_t = {
+		"[logic@agr_u_bandits6]\nactive = walker@agr_u_bandits6\ncombat_ignore = combat_ignore@agr_u_bandits\n",
+
+		"[walker@agr_u_bandits6]\npath_walk = walk6\npath_look = look6\n",
+
+		"on_actor_in_zone = kat_bandit_trigger4 | walker2@agr_u_bandits6\ndanger=danger_condition@agr_u_bandits\n",
+
+		"[walker2@agr_u_bandits6]\npath_walk = walk6\npath_look = look6\ndanger=danger_condition@agr_u_bandits\n",
+
+		"[logic@agr_u_bandits7]\nactive = walker@agr_u_bandits7\ncombat_ignore = combat_ignore@agr_u_bandits\n",
+
+		"[walker@agr_u_bandits7]\npath_walk = walk7\npath_look = look7\ndanger=danger_condition@agr_u_bandits\n",
+
+		"[combat_ignore@agr_u_bandits]\n[danger_condition@agr_u_bandits]\ndanger_expiration_time = 60000\ndanger_inertion_time =  90000\n" }
+	res = res .. table_concat(res_t)
 	return res
 end
 
 function checkStalker( npc_community, gulag_type )
+--' AGROPROM
 	if gulag_type == "agr_nii" or
 			gulag_type == "agr_factory_assault" or
 			gulag_type == "agr_road_patrol1" or
@@ -700,9 +845,17 @@ function checkStalker( npc_community, gulag_type )
 		return npc_community == "stalker"
 	end
 
+--' AGROPROM Underground
+	if gulag_type == "agr_u_soldiers" then
+		return npc_community == "military"
+	end
+	if gulag_type == "agr_u_bandits" then
+		return npc_community == "bandit"
+	end
+
 	return false
 end
 
-function checkMonster( npc_community, gulag_type )
+function checkMonster()
 	return false
 end

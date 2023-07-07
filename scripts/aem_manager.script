@@ -1,3 +1,4 @@
+local string_parse_names = string.parse_names
 
 local time_open = 22	-- время (час) открытия арены, min = 0, max = 23
 local time_close = 7	-- время (час) закрытия, min = 0, max = 23
@@ -11,19 +12,27 @@ local perc_min = 30		-- минимальный процент дохода с суммы ставки
 local perc_max = 100	-- максимальный процент дохода с суммы ставки
 local aem_only = false	-- (!!!МЕНЯТЬ ТОЛЬКО ОДИН РАЗ!!!) false - мод активируется после прохождения оригинальной арены / true - мод активируется сразу.
 ---------------------------------------------------------------------------------------------------
-local arenaext = nil	-- объект manager
 local time_def = nil	-- время в мире на момент начала игры (CTime)
 local update_time = game.CTime()
-local actor = db.actor
-local sim = alife()
----------------------------------------------------------------------------------------------------
--- вывод отладочной информации
----------------------------------------------------------------------------------------------------
 
-function printf(fmt, ...)
-	local msg = string.format(fmt, ...)
-	local msg_no_ws = string.gsub(msg, "%s", "_")
-	get_console():execute("dbg:" .. msg_no_ws)
+local actor = db_actor
+local sim = g_alife
+local aem_storage
+
+function aem_get_value(vn, def, del)
+	local var = aem_storage[vn]
+	if var == nil then return def end
+
+	if del then aem_storage[vn] = nil end
+	return var
+end
+
+function aem_set_value(vn, val)
+	aem_storage[vn] = val
+end
+
+function aem_del_value(vn)
+	aem_storage[vn] = nil
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -54,8 +63,7 @@ function parse_place(line)
 	if line == nil then
 		abort("no value for section [place] in aem_manager.ltx")
 	end
-
-	local t = se_respawn.parse_names(line)
+	local t = string.parse_nums(line)
 	local n = table.getn(t)
 	if n ~= 5 then
 		abort("inalid value for section [place] in aem_manager.ltx")
@@ -77,10 +85,10 @@ function load_team(ini, section)
 	info.name2  = read_string(ini, section, "name2", true, "aem_" .. section .. "2")
 	info.intro  = read_string(ini, section, "intro", true, nil)
 	info.extro  = read_string(ini, section, "extro", true, nil)
-	info.spawn1 = se_respawn.parse_names(read_string(ini, section, "spawn1", true, ""))
-	info.spawn2 = se_respawn.parse_names(read_string(ini, section, "spawn2", true, ""))
-	info.place1 = se_respawn.parse_names(read_string(ini, section, "place1", false, nil))
-	info.place2 = se_respawn.parse_names(read_string(ini, section, "place2", false, nil))
+	info.spawn1 = string_parse_names(read_string(ini, section, "spawn1", true, ""))
+	info.spawn2 = string_parse_names(read_string(ini, section, "spawn2", true, ""))
+	info.place1 = string_parse_names(read_string(ini, section, "place1", false, nil))
+	info.place2 = string_parse_names(read_string(ini, section, "place2", false, nil))
 	info.humans_min = read_number(ini, section, "humans_min", true, 6)
 	info.humans_max = read_number(ini, section, "humans_max", true, 6)
 	info.mutants_min = read_number(ini, section, "mutants_min", true, 6)
@@ -96,22 +104,22 @@ function load_group(ini, section)
 		info.title  = read_string(ini, section, "title", true, "aem_" .. section)
 		info.info   = read_string(ini, section, "info", true, "aem_" .. section .. "_info")
 		info.done   = read_string(ini, section, "done", true, "aem_" .. section .. "_done")
-		info.teams  = se_respawn.parse_names(read_string(ini, section, "teams", false, nil))
-		info.fights = se_respawn.parse_names(read_string(ini, section, "fights", false, nil))
+		info.teams  = string_parse_names(read_string(ini, section, "teams", false, nil))
+		info.fights = string_parse_names(read_string(ini, section, "fights", false, nil))
 		info.dlg_size = 100 + 100 * (table.getn(info.teams) * (table.getn(info.teams) - 1))
 	elseif section == "stakes" then
 		info.title  = read_string(ini, section, "title", true, "aem_" .. section)
 		info.info   = read_string(ini, section, "info", true, "aem_" .. section .. "_info")
 		info.done   = read_string(ini, section, "done", true, "aem_" .. section .. "_done")
-		info.teams1 = se_respawn.parse_names(read_string(ini, section, "teams1", false, nil))
-		info.teams2 = se_respawn.parse_names(read_string(ini, section, "teams2", false, nil))
-		info.fights = se_respawn.parse_names(read_string(ini, section, "fights", false, nil))
+		info.teams1 = string_parse_names(read_string(ini, section, "teams1", false, nil))
+		info.teams2 = string_parse_names(read_string(ini, section, "teams2", false, nil))
+		info.fights = string_parse_names(read_string(ini, section, "fights", false, nil))
 		info.dlg_size = 100 + 100 * (table.getn(info.teams1) * table.getn(info.teams2))
 	else
 		info.title  = read_string(ini, section, "title", true, "aem_" .. section)
 		info.info   = read_string(ini, section, "info", true, "aem_" .. section .. "_info")
 		info.done   = read_string(ini, section, "done", true, "aem_" .. section .. "_done")
-		info.fights = se_respawn.parse_names(read_string(ini, section, "fights", false, nil))
+		info.fights = string_parse_names(read_string(ini, section, "fights", false, nil))
 		info.dlg_size = 100
 	end
 
@@ -143,8 +151,8 @@ function load_fight(ini, section, group)
 		info.done  = read_string(ini, section, "done", true, "aem_" .. section .. "_done")
 		info.intro = read_string(ini, section, "intro", true, nil)
 		info.extro = read_string(ini, section, "extro", true, nil)
-		info.spawn = se_respawn.parse_names(read_string(ini, section, "spawn", false, nil))
-		info.place = se_respawn.parse_names(read_string(ini, section, "place", false, nil))
+		info.spawn = string_parse_names(read_string(ini, section, "spawn", false, nil))
+		info.place = string_parse_names(read_string(ini, section, "place", false, nil))
 		info.money = read_number(ini, section, "money", false, 0)
 		info.bonus_5s = read_number(ini, section, "bonus_5s", true, 0)
 		info.bonus_10s = read_number(ini, section, "bonus_10s", true, 0)
@@ -169,84 +177,54 @@ end
 
 class "CArenaext"
 function CArenaext:__init()
-	--printf("CArenaext:__init")
 	local i, j, n, n2, id, id2, value, info
 
-	time_def = time_get_start()
+	time_def = game.get_start_time()
+	aem_storage = container:get("aem", { })
 
 	self.nextupd = 0
 	-- время последнего обновления (update)
-	self.lt = xr_logic.pstor_retrieve(actor, "aem_lt", 0)
+	self.lt = aem_get_value("aem_lt", 0)
 	-- время последнего/следующего открытия арены
-	self.nt = xr_logic.pstor_retrieve(actor, "aem_nt", 0)
+	self.nt = aem_get_value("aem_nt", 0)
 	-- время последней реальной активации (reinit)
-	self.it = xr_logic.pstor_retrieve(actor, "aem_it", 0)
+	self.it = aem_get_value("aem_it", 0)
 	-- время последнего сражения с монстрами
-	self.mt = xr_logic.pstor_retrieve(actor, "aem_mt", 0)
+	self.mt = aem_get_value("aem_mt", 0)
 
 	-- битовая маска уничтоженных группировок
-	self.mk = xr_logic.pstor_retrieve(actor, "aem_mk", 0)
+	self.mk = aem_get_value("aem_mk", 0)
 	self.mk_all = 0
 
 	-- чтение LTX
 	local ini = ini_file("misc\\aem_manager.ltx")
 
 	-- вещи, которые нельзя выносить с арены (удаляются при выходе с арены)
-	self.arena_items = {}
-	if ini:section_exist("arena_items") then
-		n = ini:line_count("arena_items")
-		for i=0,n-1 do
-			result, id, value = ini:r_line("arena_items",i,"",nil)
-			--printf(" arena_items: '%s'", id)
-			self.arena_items[id] = true
-		end
-	end
-
+	self.arena_items = ini:key_true("arena_items")
+	
 	-- запрещённые для боя на арене вещи
-	self.remove_items = {}
-	if ini:section_exist("remove_items") then
-		n = ini:line_count("remove_items")
-		for i=0,n-1 do
-			result, id, value = ini:r_line("remove_items",i,"",nil)
-			--printf(" remove_items: '%s'", id)
-			self.remove_items[id] = true
-		end
-	end
+	self.remove_items = ini:key_true("remove_items")
 
 	-- вещи оставляемые ГГ во время тотализатора
-	self.keep_items = {}
-	if ini:section_exist("keep_items") then
-		n = ini:line_count("keep_items")
-		for i=0,n-1 do
-			result, id, value = ini:r_line("keep_items",i,"",nil)
-			--printf(" keep_items: '%s'", id)
-			self.keep_items[id] = true
-		end
-	end
+	self.keep_items = ini:key_true("keep_items")
 
 	-- чтение списка стартовых позиций
 	if not ini:section_exist("places") then
 		abort("no section [places] in aem_manager.ltx")
 	end
 	self.places = {}
-	n = ini:line_count("places")
-	for i=0,n-1 do
-		result, id, value = ini:r_line("places",i,"",nil)
-		--printf(" places: '%s'-'%s'", id, value)
+	ini:iterate_lines("places", function(result, id, value)
 		self.places[id] = parse_place(value)
-	end
+	end)
 
 	-- чтение команд
 	if not ini:section_exist("teams") then
 		abort("no section [teams] in aem_manager.ltx")
 	end
 	self.teams = {}
-	n = ini:line_count("teams")
-	for i=0,n-1 do
-		result, id, value = ini:r_line("teams",i,"",nil)
-		--printf(" teams: '%s'-'%s'", id, value)
+	ini:iterate_lines("teams", function(result, id, value)
 		self.teams[id] = load_team(ini, id)
-	end
+	end)
 
 	-- чтение груп и боёв
 	if not ini:section_exist("groups") then
@@ -254,7 +232,7 @@ function CArenaext:__init()
 	end
 	self.groups = {}
 	self.fights = {}
-	self.groups_order = se_respawn.parse_names(read_string(ini, "groups", "order", false, nil))
+	self.groups_order = string_parse_names(read_string(ini, "groups", "order", false, nil))
 	n = table.getn(self.groups_order)
 	local bit = 1
 	for i=1,n do
@@ -337,7 +315,7 @@ end
 -- возвращает имя текущего боя
 -------
 function CArenaext:current()
-	return xr_logic.pstor_retrieve(actor, "aem_cr")
+	return aem_get_value("aem_cr")
 end
 
 -------
@@ -359,15 +337,15 @@ end
 -- выиграла ли ставка
 -------
 function CArenaext:is_stake_win()
-	return	((actor:has_info("aem_stake_team1") and xr_logic.pstor_retrieve(actor, "aem_team1") > 0) or
-		 (actor:has_info("aem_stake_team2") and xr_logic.pstor_retrieve(actor, "aem_team2") > 0))
+	return	((actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
+		 (actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0))
 end
 
 -------
 -- сколько времени (часов) прошло после последнего боя с мутантами
 -------
 function CArenaext:get_mutants_time()
-	return (time_get_curr() - self.mt)
+	return (time_game_hours - self.mt)
 end
 
 -------
@@ -403,12 +381,12 @@ function CArenaext:is_extro_name(name)
 	end
 	-- для тотализатора две озвучки, в зависимости от результата
 	if info.group == "stakes" or info.group == "turnament" then
-		if xr_logic.pstor_retrieve(actor, "aem_team1") > 0 then
-			local team = xr_logic.pstor_retrieve(actor, info.team2, "")
+		if aem_get_value("aem_team1") > 0 then
+			local team = aem_get_value(info.team2, "")
 			aem_lights.win_team1()
 			return self.teams[team].extro == name
-		elseif xr_logic.pstor_retrieve(actor, "aem_team2") > 0 then
-			local team = xr_logic.pstor_retrieve(actor, info.team1, "")
+		elseif aem_get_value("aem_team2") > 0 then
+			local team = aem_get_value(info.team1, "")
 			aem_lights.win_team2()
 			return self.teams[team].extro == name
 		end
@@ -428,10 +406,10 @@ function CArenaext:on_death(npc, team)
 	end
 
 	-- уменьшаем счётчик команды
-	local cnt = xr_logic.pstor_retrieve(actor, "aem_" .. team, 0)
+	local cnt = aem_get_value("aem_" .. team, 0)
 	if cnt > 0 then
 		cnt = cnt - 1
-		xr_logic.pstor_store(actor, "aem_" .. team, cnt)
+		aem_set_value("aem_" .. team, cnt)
 	end
 
 	if actor:has_info("aem_timeover") then
@@ -459,22 +437,22 @@ function CArenaext:on_done_fight()
 	-- запрещаем бой для диалога
 	actor:give_info_portion(info.done)
 
-	local cnt_t1 = xr_logic.pstor_retrieve(actor, "aem_team1")
-	local cnt_t2 = xr_logic.pstor_retrieve(actor, "aem_team2")
+	local cnt_t1 = aem_get_value("aem_team1")
+	local cnt_t2 = aem_get_value("aem_team2")
 
 	-- выход в следующий круг для турнира
 	if info.group == "turnament" then
 		if info.winer ~= nil and info.winer ~= "" then
 			local winer
 			if cnt_t1 > 0 then
-				winer = xr_logic.pstor_retrieve(actor, info.team1, "")
+				winer = aem_get_value(info.team1, "")
 			elseif cnt_t2 > 0 then
-				winer = xr_logic.pstor_retrieve(actor, info.team2, "")
+				winer = aem_get_value(info.team2, "")
 			else
 				-- !!! ничья, что будем делать?
-				winer = xr_logic.pstor_retrieve(actor, info.team1, "")
+				winer = aem_get_value(info.team1, "")
 			end
-			xr_logic.pstor_store(actor, info.winer, winer)
+			aem_set_value(info.winer, winer)
 		end
 	end
 
@@ -483,15 +461,15 @@ function CArenaext:on_done_fight()
 	if cnt_t1 == 0 then
 		if info.group == "mutants" then
 			-- запоминаем дату последнего уничтожения мутантов
-			self.mt = time_get_curr()
-			xr_logic.pstor_store(actor, "aem_mt", self.mt)
+			self.mt = time_game_hours
+			aem_set_value("aem_mt", self.mt)
 		else
 			-- запоминаем уничтоженние актёром крупных команд группировок
 			local group = self.groups[info.group]
 			if group.mk ~= nil then
 				if table.getn(info.spawn) == 6 then
 					self.mk = bit_or(self.mk, group.mk)
-					xr_logic.pstor_store(actor, "aem_mk", self.mk)
+					aem_set_value("aem_mk", self.mk)
 					--printf("mk=%x", self.mk)
 				end
 			end
@@ -556,7 +534,7 @@ function CArenaext:startup()
 		actor:give_info_portion("aem_startup")
 
 		local ct = level.get_time_minutes()
-		xr_logic.pstor_store(actor, "aem_ct", ct)
+		aem_set_value("aem_ct", ct)
 
 		-- очистка ящичка
 		local box = level_object_by_sid(574)
@@ -567,7 +545,7 @@ function CArenaext:startup()
 		end
 
 		-- удаление 'деревянного' долговца
-		local obj = sim:object("level_prefix_physic_object_0004")
+		local obj = sim:object("bar_physic_object_stalker_0004")
 		if obj ~= nil then
 			sim:release(obj)
 		end
@@ -582,7 +560,7 @@ function CArenaext:startup()
 end
 
 function CArenaext:timeup()
-	self.lt = time_get_curr()
+	self.lt = time_game_hours
 	self.nt = time_get_next(self.lt + 12)	-- хотя бы 12 часов обождать
 	if aem_only == true then
 		self.it = self.nt
@@ -615,11 +593,11 @@ function CArenaext:timeup()
 --	self.it = self.nt
 --	actor:disable_info_portion(self.groups["special"].done)
 
-	xr_logic.pstor_store(actor, "aem_lt", self.lt)
-	xr_logic.pstor_store(actor, "aem_nt", self.nt)
-	xr_logic.pstor_store(actor, "aem_it", self.it)
-	xr_logic.pstor_store(actor, "aem_mt", self.mt)
-	xr_logic.pstor_store(actor, "aem_mk", self.mk)
+	aem_set_value("aem_lt", self.lt)
+	aem_set_value("aem_nt", self.nt)
+	aem_set_value("aem_it", self.it)
+	aem_set_value("aem_mt", self.mt)
+	aem_set_value("aem_mk", self.mk)
 end
 
 -------
@@ -637,14 +615,7 @@ function CArenaext:cleanup()
 	aem_lights.turn_arena_lamps_on()
 
 	-- создание списка удаляемых инфопоршинов
-	local info = {}
-	if ini:section_exist("info") then
-		n = ini:line_count("info")
-		for i=0,n-1 do
-			result, id, value = ini:r_line("info",i,"",nil)
-			table.insert(info, id)
-		end
-	end
+	local info = ini:list("info")
 	for id, value in pairs(self.groups) do
 		table.insert(info, value.done)
 	end
@@ -653,22 +624,13 @@ function CArenaext:cleanup()
 	end
 
 	-- создание списка удаляемых переменных
-	local pstor = {}
-	if ini:section_exist("pstor") then
-		n = ini:line_count("pstor")
-		for i=0,n-1 do
-			result, id, value = ini:r_line("pstor",i,"",nil)
-			table.insert(pstor, id)
-		end
-	end
+	local pstor = ini:list("pstor")
 	for id, value in pairs(self.fights) do
 		if value.group == "stakes" or value.group == "turnament" then
 			table.insert(pstor, value.team1)
 			table.insert(pstor, value.team2)
 		end
 	end
-
-	local storage = db.storage[actor:id()].pstor
 
 	-- удаление инфопоршинов
 	for id, value in pairs(info) do
@@ -677,10 +639,11 @@ function CArenaext:cleanup()
 
 	-- удаление переменных
 	for id, value in pairs(pstor) do
-		if storage[value] ~= nil then
-			storage[value] = nil
-		end
+		aem_del_value(value)
 	end
+
+	aem_storage = nil
+	container:del("aem")
 
 	-- удаление объектов
 	for id=0, 65535 do
@@ -691,7 +654,7 @@ function CArenaext:cleanup()
 			end
 		end
 	end
-	news_manager.send_tip(db.actor, "%c[25,240,25,25]МОД УДАЛЁН", nil, nil, 30000)
+	news_manager.send_tip("%c[25,240,25,25]МОД УДАЛЁН", nil, nil, 30000)
 end
 
 -------
@@ -754,16 +717,16 @@ function CArenaext:reinit()
 		if i <= nn then
 			cnt = table.getn(t)
 			rnd = math.random(cnt)
-			xr_logic.pstor_store(actor, fight.team1, t[rnd])
+			aem_set_value(fight.team1, t[rnd])
 			table.remove(t, rnd)
 			cnt = table.getn(tt)
 			rnd = math.random(cnt)
-			xr_logic.pstor_store(actor, fight.team2, tt[rnd])
+			aem_set_value(fight.team2, tt[rnd])
 			table.remove(tt, rnd)
 			actor:disable_info_portion(fight.done)
 		else
-			xr_logic.pstor_store(actor, fight.team1, "")
-			xr_logic.pstor_store(actor, fight.team2, "")
+			aem_set_value(fight.team1, "")
+			aem_set_value(fight.team2, "")
 			actor:give_info_portion(fight.done)
 		end
 	end
@@ -779,16 +742,16 @@ function CArenaext:reinit()
 		fight = self.fights[info.fights[i]]
 		cnt = table.getn(t)
 		rnd = math.random(cnt)
-		xr_logic.pstor_store(actor, fight.team1, t[rnd])
+		aem_set_value(fight.team1, t[rnd])
 		table.remove(t, rnd)
 		rnd = math.random(cnt-1)
-		xr_logic.pstor_store(actor, fight.team2, t[rnd])
+		aem_set_value(fight.team2, t[rnd])
 		table.remove(t, rnd)
 		actor:disable_info_portion(fight.done)
 	end
 	fight = self.fights[info.fights[3]]
-	xr_logic.pstor_store(actor, fight.team1, "")
-	xr_logic.pstor_store(actor, fight.team2, "")
+	aem_set_value(fight.team1, "")
+	aem_set_value(fight.team2, "")
 	actor:disable_info_portion(fight.done)
 
 	-- инициализация остальных групп и боёв
@@ -851,12 +814,12 @@ function CArenaext:reinit()
 	sim:create("aem_timer", vector():set(150.14, -14.16, 74.03), actor:level_vertex_id(), actor:game_vertex_id())
 
 	self.it = self.nt
-	xr_logic.pstor_store(actor, "aem_it", self.it)
+	aem_set_value("aem_it", self.it)
 	actor:give_info_portion("aem_ready")
 end
 
 -------
--- update() вызывается из "bind_stalker.script" <actor_binder:update(delta)>
+-- update() вызывается из "bind_actor.script" <actor_binder:update(delta)>
 -------
 function CArenaext:update_slow(curr)
 	local id, npc, ctm, rt, ct
@@ -866,7 +829,7 @@ function CArenaext:update_slow(curr)
 		startup()
 	end
 
-	id = xr_logic.pstor_retrieve(actor, "aem_id", 0)
+	id = aem_get_value("aem_id", 0)
 
 	-- удаляем Арни и создаём его клона
 	if id == 0 then
@@ -882,7 +845,7 @@ function CArenaext:update_slow(curr)
 				-- живой
 				local obj = sim:create("aem_arny", vector():set(149.561569213867,0.429975032806396,69.2308807373047), 40035, 1180)
 				-- сохранение id
-				xr_logic.pstor_store(actor, "aem_id", obj.id)
+				aem_set_value("aem_id", obj.id)
 			end
 		else
 			actor:give_info_portion("aem_arny_spread_out")
@@ -898,7 +861,7 @@ function CArenaext:update_slow(curr)
 		update_time = game.get_game_time() + idle_time
 		--printf("CArenaext:update(30sec_update_done)")
 		if id > 0 then
-			id = xr_logic.pstor_retrieve(actor, "aem_id")
+			id = aem_get_value("aem_id")
 			npc = sim:object(id)
 			if npc ~= nil and npc:clsid() == clsid.script_stalker then
 				if npc:alive() ~= true then
@@ -946,7 +909,7 @@ function CArenaext:update_slow(curr)
 
 	-- выдача сообщения о восстановлении работы арены
 	-- инициализация спавна админа
-	rt = xr_logic.pstor_retrieve(actor, "aem_rt")
+	rt = aem_get_value("aem_rt")
 	if rt ~= nil then
 		if (curr + rt >= self.nt) and (self.lt + rt < self.nt) then
 			msg("aem_restore")
@@ -956,12 +919,12 @@ function CArenaext:update_slow(curr)
 			actor:disable_info_portion("aem_admin_spread_out")
 			actor:give_info_portion("aem_spam")
 			admin_spawn()
-			db.storage[db.actor:id()].pstor["aem_rt"] = nil
+			aem_del_value("aem_rt")
 		end
 	end
 
 	-- 5 мин. после закрытия арены: сообщение + info для смены рестрикта
-	ct = xr_logic.pstor_retrieve(actor, "aem_ct")
+	ct = aem_get_value("aem_ct")
 	if ct ~= nil then
 		ctm = level.get_time_minutes()
 
@@ -979,21 +942,20 @@ function CArenaext:update_slow(curr)
 				msg(txt[rnd])
 			end
 			actor:give_info_portion("aem_go_bar")
-			db.storage[db.actor:id()].pstor["aem_ct"] = nil
+			aem_del_value("aem_ct")
 		end
 	end
 
 	self.lt = curr
-	xr_logic.pstor_store(actor, "aem_lt", self.lt)
+	aem_set_value("aem_lt", self.lt)
 end
 
 function CArenaext:update()
-	local curr = time_get_curr()
-	local time_ = time_global()
+	local curr = time_game_hours
 
-	if self.nextupd < time_ then
+	if self.nextupd < time_real_ms then
 		self:update_slow(curr)
-		self.nextupd = time_ + 1000
+		self.nextupd = time_real_ms + 1000
 	end
 
 	if actor:has_info("aem_startup") then
@@ -1001,7 +963,7 @@ function CArenaext:update()
 			if actor:has_info("aem_done") then
 				--printf("CArenaext:update(~aem_open)")
 				self.nt = time_get_next(curr + 1) -- хотя бы часовой перерыв
-				xr_logic.pstor_store(actor, "aem_nt", self.nt)
+				aem_set_value("aem_nt", self.nt)
 				actor:disable_info_portion("aem_done")
 				actor:disable_info_portion("aem_open")
 				actor:disable_info_portion("aem_ready")
@@ -1013,14 +975,14 @@ function CArenaext:update()
 				--aem_lights.shield_off()
 				-- запомним время закрытия арены
 				local ct = level.get_time_minutes()
-				xr_logic.pstor_store(actor, "aem_ct", ct)
+				aem_set_value("aem_ct", ct)
 			elseif time_need_close(curr, self.nt) and
 				actor:dont_has_info("bar_arena_fight") and
 				actor:dont_has_info("aem_fight_wait")
 			then
 				--printf("CArenaext:update(~aem_open)")
 				self.nt = time_get_next(curr + 1) -- хотя бы часовой перерыв
-				xr_logic.pstor_store(actor, "aem_nt", self.nt)
+				aem_set_value("aem_nt", self.nt)
 				actor:disable_info_portion("aem_open")
 				actor:disable_info_portion("aem_ready")
 				if actor:has_info("aem_spam") then
@@ -1031,7 +993,7 @@ function CArenaext:update()
 				--aem_lights.shield_off()
 				-- запомним время закрытия арены
 				local ct = level.get_time_minutes()
-				xr_logic.pstor_store(actor, "aem_ct", ct)
+				aem_set_value("aem_ct", ct)
 			end
 		else
 			if curr >= self.nt then
@@ -1087,22 +1049,22 @@ function CArenaext:start(phr_id)
 	--printf("CArenaext:start('%s')", name)
 
 	-- запоминаем имя боя
-	xr_logic.pstor_store(actor, "aem_cr", name)
+	aem_set_value("aem_cr", name)
 
 	-- запомним группировку ГГ
-	xr_logic.pstor_store(actor, "aem_cm", actor:character_community())
+	aem_set_value("aem_cm", actor:character_community())
 
 	local info = self.fights[name]
 
 	if info.group == "stakes" then
 
 		-- спавн первой команды - мутанты
-		local team1 = self.teams[xr_logic.pstor_retrieve(actor, info.team1, "")]
+		local team1 = self.teams[aem_get_value(info.team1, "")]
 		local a1 = team1.mutants_min
 		local b1 = team1.mutants_max
 		local n1 = math.random(a1,b1)
 
-		xr_logic.pstor_store(actor, "aem_team1", n1)
+		aem_set_value("aem_team1", n1)
 		for i=1, n1 do
 			local spawn = team1.spawn1[i]
 			local place = self.places[team1.place1[i]]
@@ -1110,12 +1072,12 @@ function CArenaext:start(phr_id)
 		end
 
 		-- спавн второй команды - люди
-		local team2 = self.teams[xr_logic.pstor_retrieve(actor, info.team2, "")]
+		local team2 = self.teams[aem_get_value(info.team2, "")]
 		local a2 = team1.humans_min
 		local b2 = team1.humans_max
 		local n2 = math.random(a2,b2)
 
-		xr_logic.pstor_store(actor, "aem_team2", n2)
+		aem_set_value("aem_team2", n2)
 		for i=1, n2 do
 			local spawn = team2.spawn2[i]
 			local place = self.places[team2.place2[i]]
@@ -1137,9 +1099,9 @@ function CArenaext:start(phr_id)
 	elseif info.group == "turnament" then
 
 		-- спавн первой команды
-		local team1 = self.teams[xr_logic.pstor_retrieve(actor, info.team1, "")]
+		local team1 = self.teams[aem_get_value(info.team1, "")]
 		local n1 = table.getn(team1.spawn1)
-		xr_logic.pstor_store(actor, "aem_team1", n1)
+		aem_set_value("aem_team1", n1)
 		for i=1, n1 do
 			local spawn = team1.spawn1[i]
 			local place = self.places[team1.place1[i]]
@@ -1147,9 +1109,9 @@ function CArenaext:start(phr_id)
 		end
 
 		-- спавн второй команды
-		local team2 = self.teams[xr_logic.pstor_retrieve(actor, info.team2, "")]
+		local team2 = self.teams[aem_get_value(info.team2, "")]
 		local n2 = table.getn(team2.spawn2)
-		xr_logic.pstor_store(actor, "aem_team2", n2)
+		aem_set_value("aem_team2", n2)
 		for i=1, n2 do
 			local spawn = team2.spawn2[i]
 			local place = self.places[team2.place2[i]]
@@ -1172,7 +1134,7 @@ function CArenaext:start(phr_id)
 
 		-- спавн участников
 		local n = table.getn(info.spawn)
-		xr_logic.pstor_store(actor, "aem_team1", n)
+		aem_set_value("aem_team1", n)
 		for i=1, n do
 			local spawn = info.spawn[i]
 			local place = self.places[info.place[i]]
@@ -1241,9 +1203,9 @@ function CArenaext:finish()
 	bar_arena_teleport_2_tp(actor)
 
 	-- ГГ покидает ряды торговцев
-	local community = xr_logic.pstor_retrieve(actor, "aem_cm")
+	local community = aem_get_value("aem_cm")
 	actor:set_character_community(community,0,0)
-	db.storage[db.actor:id()].pstor["aem_cm"] = nil
+	aem_del_value("aem_cm")
 
 	-- удаление оружия, незаконно вынесеного с арены
 	if info.group ~= "turnament" or info.group ~= "stakes" then
@@ -1259,7 +1221,7 @@ function CArenaext:finish()
 
 	-- массовое убийство врагов, оставшихся на арене после выхода ГГ
 	local bot
-	for id=0, 65535 do
+	for id=1, 65534 do
 		bot = level.object_by_id(id)
 		if bot ~= nil and bot:alive() == true then
 			if string.find(bot:out_restrictions(),"bar_arena_restrictor") then
@@ -1278,8 +1240,8 @@ function CArenaext:close()
 	local info = self.fights[name]
 
 	if info.group == "turnament" or info.group == "stakes" then
-		if (actor:has_info("aem_stake_team1") and xr_logic.pstor_retrieve(actor, "aem_team1") > 0) or
-		   (actor:has_info("aem_stake_team2") and xr_logic.pstor_retrieve(actor, "aem_team2") > 0) then
+		if (actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
+		   (actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0) then
 			local money = 0
 			if actor:has_info("aem_stake1") then
 				money = stake1 + math.random(stake1*perc_min/100, stake1*perc_max/100)
@@ -1349,9 +1311,9 @@ function CArenaext:close()
 	aem_lights.remove_all_aem_lamps()
 
 	actor:disable_info_portion("aem_fight_done")
-	db.storage[db.actor:id()].pstor["aem_cr"] = nil
-	db.storage[db.actor:id()].pstor["aem_team1"] = nil
-	db.storage[db.actor:id()].pstor["aem_team2"] = nil
+	aem_del_value("aem_cr")
+	aem_del_value("aem_team1")
+	aem_del_value("aem_team2")
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -1451,51 +1413,25 @@ end
 ---------------------------------------------------------------------------------------------------
 
 -------
--- Added by DEXXX
--- Проверяем версию игры и подставляем нужный тип данных
--------
-function chk_ver(pid)
-	if tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 then
-		return pid
-	else
-		if pid == -1 then
-			return ""
-		else
-			return tostring(pid)
-		end
-	end
-end
-
-function chk_ver_back(ph_curr)
-	if tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 then
-		return ph_curr
-	else
-		return tonumber(ph_curr)
-	end
-end
-
--------
 -- создаётся диалог актера, в котором будут выдаваться задания
 -------
 function CArenaext:dlg_init(dlg)
-	--printf("CArenaext:dlg_init(...)")
-
-	local phr = dlg:AddPhrase("aem_job_quest", chk_ver(0), chk_ver(-1), -10000)
+	local phr = dlg:AddPhrase("aem_job_quest", "0", "", -10000)
 	local phr_script = phr:GetPhraseScript()
 
-	phr = dlg:AddPhrase("aem_job_closed", chk_ver(1), chk_ver(0), -10000)
+	phr = dlg:AddPhrase("aem_job_closed", "1", "0", -10000)
 	phr_script = phr:GetPhraseScript()
 	phr_script:AddDontHasInfo("aem_ready")
 
-	phr = dlg:AddPhrase("aem_job_select", chk_ver(2), chk_ver(0), -10000)
+	phr = dlg:AddPhrase("aem_job_select", "2", "0", -10000)
 	phr_script = phr:GetPhraseScript()
 	phr_script:AddHasInfo("aem_ready")
 
-	phr = dlg:AddPhrase("aem_job_extra", chk_ver(3), chk_ver(2), -10000)
+	phr = dlg:AddPhrase("aem_job_extra", "3", "2", -10000)
 	phr_script = phr:GetPhraseScript()
 	phr_script:AddPrecondition("aem_manager.is_stakes_or_turnament_valid")
 
-	phr = dlg:AddPhrase("aem_job_extra_info", chk_ver(4), chk_ver(3), -10000)
+	phr = dlg:AddPhrase("aem_job_extra_info", "4", "3", -10000)
 
 	self:dlg_init_stakes(dlg, 4)
 	self:dlg_init_turnament(dlg, 4)
@@ -1506,9 +1442,9 @@ function CArenaext:dlg_init(dlg)
 		self:dlg_init_group(dlg, self.groups_order[i], 2)
 	end
 
-	dlg:AddPhrase("aem_job_extra_reject", chk_ver(5), chk_ver(4), -10000)
+	dlg:AddPhrase("aem_job_extra_reject", "5", "4", -10000)
 
-	dlg:AddPhrase("aem_job_reject", chk_ver(6), chk_ver(2), -10000)
+	dlg:AddPhrase("aem_job_reject", "6", "2", -10000)
 end
 
 -------
@@ -1837,8 +1773,8 @@ end
 -------
 function CArenaext:turnament_phrase_id(name)
 	local info = self.fights[name]
-	local name1 = xr_logic.pstor_retrieve(actor, info.team1, "")
-	local name2 = xr_logic.pstor_retrieve(actor, info.team2, "")
+	local name1 = aem_get_value(info.team1, "")
+	local name2 = aem_get_value(info.team2, "")
 	return self.turnament_phrase[name1 .. name2]
 end
 
@@ -1847,8 +1783,8 @@ end
 -------
 function CArenaext:stakes_phrase_id(name)
 	local info = self.fights[name]
-	local name1 = xr_logic.pstor_retrieve(actor, info.team1, "")
-	local name2 = xr_logic.pstor_retrieve(actor, info.team2, "")
+	local name1 = aem_get_value(info.team1, "")
+	local name2 = aem_get_value(info.team2, "")
 	return self.stakes_phrase[name1 .. name2]
 end
 
@@ -1895,27 +1831,6 @@ function CArenaext:fight_by_phrase(phr_id)
 end
 
 ---------------------------------------------------------------------------------------------------
--- функции для управления manager-ом
----------------------------------------------------------------------------------------------------
-
--------
--- получить и проинициализировать объект класса
--------
-function get_aem()
-	if arenaext == nil then
-		arenaext = CArenaext()
-	end
-	return arenaext
-end
-
--------
--- удалить объект класса
--------
-function clear_aem()
-	arenaext = nil
-end
-
----------------------------------------------------------------------------------------------------
 -- функции для работы с инвентарём и ящиком
 ---------------------------------------------------------------------------------------------------
 
@@ -1924,16 +1839,11 @@ end
 -- void put_items_to_box(game_object box, {["section1"]=true, ["section2"]=true, ...} items)
 -------
 function put_items_to_box(box, items)
-	--printf("put_items_to_box('%s')", box:name())
-	local obj
-	local cnt = actor:object_count()
-	for i=0, cnt-1 do
-		obj = actor:object(i)
-		if items[obj:section()] == true then
-			--printf(" section='%s'", obj:section())
-			actor:transfer_item(obj, box)
+	db_actor:iterate_inventory(function(arg, item) 
+		if items[item:section()] == true then
+			db_actor:transfer_item(item, box)
 		end
-	end
+	end)
 end
 
 -------
@@ -1941,18 +1851,11 @@ end
 -- void put_items_to_box_exept(game_object box, {["section1"]=true, ["section2"]=true, ...} exept)
 -------
 function put_items_to_box_exept(box, exept)
-	--printf("put_items_to_box_exept('%s')", box:name())
-	local obj
-	local cnt = actor:object_count()
-	for i=0, cnt-1 do
-		obj = actor:object(i)
-		if obj:clsid() ~= clsid.equ_stalker_s then -- оставить ГГ костюм
-			if exept[obj:section()] ~= true then
-				--printf(" section='%s'", obj:section())
-				actor:transfer_item(obj, box)
-			end
+	db_actor:iterate_inventory(function(arg, item) 
+		if exept[item:section()] ~= true then
+			db_actor:transfer_item(item, box)
 		end
-	end
+	end)
 end
 
 -------
@@ -1960,16 +1863,11 @@ end
 -- void clear_items({["section1"]=true, ["section2"]=true, ...} items)
 -------
 function clear_items(items)
-	--printf("clear_items()")
-	local obj
-	local cnt = actor:object_count()
-	for i=0, cnt-1 do
-		obj = actor:object(i)
-		if items[obj:section()] == true then
-			--printf(" section='%s'", obj:section())
-			sim:release(sim:object(obj:id()), true)
+	db_actor:iterate_inventory(function(arg, item) 
+		if items[item:section()] == true then
+			release(item)
 		end
-	end
+	end)
 end
 
 -------
@@ -2066,11 +1964,10 @@ end
 function manage_money(num, type)
 	if actor then
 		if type == "in" then
-			actor:give_money(num)
+			got_money(num)
 		elseif type == "out" then
-			actor:give_money(-num)
+			lost_money(num)
 		end
-		news_manager.relocate_money(actor, type, num)
 	end
 end
 
@@ -2086,7 +1983,7 @@ function msg(text)
 		who = game.translate_string("aem_barman")
 		icon = Frect():set(332,235,84,45)
 	else
-		npc = sim:object(xr_logic.pstor_retrieve(actor, "aem_id"))
+		npc = sim:object(aem_get_value("aem_id"))
 		if npc ~= nil and npc:alive() == true then
 			if npc:profile_name() == "aem_arny" then
 				who = game.translate_string("bar_arny_name")
@@ -2110,24 +2007,6 @@ end
 ---------------------------------------------------------------------------------------------------
 -- функции для работы со временем
 ---------------------------------------------------------------------------------------------------
-
--------
--- время начала игры (по хорошему нужно прочесть из ltx игры)
--------
-function time_get_start()
-	local t = game.CTime()
-	t:set(2012,5,1, 0,0,0,0)
-	return t
-end
-
--------
--- время в часах, прошедшее от начала игры
--------
-function time_get_curr()
-	local t = game.get_game_time()
-	local s = t:diffSec(time_def)
-	return math.floor(s/3600)
-end
 
 -------
 -- время следующего открытия
@@ -2165,7 +2044,7 @@ end
 -- создание диалога выдачи боёв
 ---------------------------------------------------------------------------------------------------
 function dlg_init(dlg, npc)
-	get_aem():dlg_init(dlg)
+	aem:dlg_init(dlg)
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -2176,35 +2055,30 @@ end
 -- проверка возможности показа в диалоге ветки дополнительных боёв
 -------
 function is_stakes_or_turnament_valid()
-	local arena = get_aem()
-	return	actor:dont_has_info(arena.groups["stakes"].done) or
-		actor:dont_has_info(arena.groups["turnament"].done)
+	return	actor:dont_has_info(aem.groups["stakes"].done) or
+		actor:dont_has_info(aem.groups["turnament"].done)
 end
 
 -------
 -- проверка возможности показа в диалоге боя 'stakes'
 -------
 function is_stakes_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
-	phr_curr = chk_ver_back(phr_curr)
-	local arena = get_aem()
-	name = arena:fight_by_phrase(phr_curr)
+	name = aem:fight_by_phrase(tonumber(phr_curr))
 	if name == "" then
 		return false
 	end
-	return actor:dont_has_info(arena.fights[name].done)
+	return actor:dont_has_info(aem.fights[name].done)
 end
 
 -------
 -- проверка возможности показа в диалоге боя 'turnament'
 -------
 function is_turnament_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
-	phr_curr = chk_ver_back(phr_curr)
-	local arena = get_aem()
-	name = arena:fight_by_phrase(phr_curr)
+	name = aem:fight_by_phrase(tonumber(phr_curr))
 	if name == "" then
 		return false
 	end
-	return actor:dont_has_info(arena.fights[name].done)
+	return actor:dont_has_info(aem.fights[name].done)
 end
 
 -------
@@ -2233,25 +2107,25 @@ end
 -- ставка выиграла
 --
 function is_reward_stake_win()
-	if not get_aem():is_stake() then
+	if not aem:is_stake() then
 		return false
 	end
-	return get_aem():is_stake_win()
+	return aem:is_stake_win()
 end
 
 -- ставка проиграла
 --
 function is_reward_stake_fail()
-	if not get_aem():is_stake() then
+	if not aem:is_stake() then
 		return false
 	end
-	return not get_aem():is_stake_win()
+	return not aem:is_stake_win()
 end
 
 -- бой без ограничения времени
 --
 function is_reward_nostake_unlimit()
-	if get_aem():is_stake() then
+	if aem:is_stake() then
 		return false
 	end
 	if actor:has_info("aem_bonus") then
@@ -2263,7 +2137,7 @@ end
 -- бой с ограничением времени - победа
 --
 function is_reward_nostake_bonus()
-	if get_aem():is_stake() then
+	if aem:is_stake() then
 		return false
 	end
 	if actor:dont_has_info("aem_bonus") then
@@ -2275,7 +2149,7 @@ end
 -- бой с ограничением времени - ничья
 --
 function is_reward_nostake_timeover()
-	if get_aem():is_stake() then
+	if aem:is_stake() then
 		return false
 	end
 	if actor:dont_has_info("aem_bonus") or actor:dont_has_info("aem_timeover") then
@@ -2287,7 +2161,7 @@ end
 -- бой с ограничением времени - фолл
 --
 function is_reward_nostake_foul()
-	if get_aem():is_stake() then
+	if aem:is_stake() then
 		return false
 	end
 	if actor:dont_has_info("aem_bonus") or actor:dont_has_info("aem_timeover") then
@@ -2303,7 +2177,7 @@ end
 -- первая активация
 --
 function is_init_first()
-	return get_aem().init_t == 0
+	return aem.init_t == 0
 end
 
 -- не первая активация
@@ -2315,7 +2189,7 @@ end
 -- сборная
 --
 function is_init_stalkers()
-	return get_aem():is_stalkers_evil()
+	return aem:is_stalkers_evil()
 end
 
 -- не сборная
@@ -2327,7 +2201,7 @@ end
 -- мутанты
 --
 function is_init_mutants()
-	return get_aem():get_mutants_time() >= delay_mut*24
+	return aem:get_mutants_time() >= delay_mut*24
 end
 
 -- не мутанты
@@ -2344,17 +2218,17 @@ end
 -- инициализация мода
 -------
 function startup()
-	get_aem():startup()
+	aem:startup()
 end
 
 function timeup()
-	get_aem():timeup()
+	aem:timeup()
 end
 -------
 -- удаление мода
 -------
 function cleanup()
-	get_aem():cleanup()
+	aem:cleanup()
 end
 
 -------
@@ -2375,7 +2249,7 @@ end
 -- 'суточная' переинициализация боёв
 -------
 function reinit()
-	get_aem():reinit()
+	aem:reinit()
 end
 
 -------
@@ -2402,16 +2276,14 @@ function start_fight(npc1, npc2, dlg_name, phr_curr)
 		return
 	end
 
-	phr_curr = chk_ver_back(phr_curr)
-
-	get_aem():start(phr_curr)
+	aem:start(tonumber(phr_curr))
 end
 
 -------
 -- закрытие боя и получение награды, если она есть
 -------
 function close_fight()
-	get_aem():close()
+	aem:close()
 end
 
 -------
@@ -2440,8 +2312,8 @@ function admin_dead()
 	actor:disable_info_portion("aem_megafone")
 
 	rt = math.random(5,11)
-	xr_logic.pstor_store(actor, "aem_rt", rt)
-	xr_logic.pstor_store(actor, "aem_id", -1)
+	aem_set_value("aem_rt", rt)
+	aem_set_value("aem_id", -1)
 end
 
 -------
@@ -2451,5 +2323,5 @@ function admin_spawn()
 	local obj = sim:create("aem_admin", vector():set(153.451, -0.00164, 42.0269), 40777, 1230)
 
 	-- сохранение id нового админа
-	xr_logic.pstor_store(actor, "aem_id", obj.id)
+	aem_set_value("aem_id", obj.id)
 end

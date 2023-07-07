@@ -72,9 +72,8 @@ function send_tip(news_text, header, timeout, showtime, sender, sound)
   return true
 end
 
-function IsHuman(object, class_id)
-	local id = class_id or (object and object:clsid()) or 0
-	return id == clsid_actor or id == clsid_script_stalker or id == clsid_script_trader
+function IsHuman(object)
+	return object:is_stalker() or object:is_trader()
 end
 
 function IsGameObject(obj)
@@ -211,6 +210,9 @@ function get_local_time(gtime)
 	if ghours > 0 then
 		res = res .. tostring(ghours) .. "ч"
 	end
+	if res == "" then
+		res = "менее часа"
+	end
 
 	return trim(res)
 end
@@ -314,11 +316,9 @@ function recharge_gps(item, box)
 	labels[boxId].wi = 0 -- не предупреждали о разряде цветом
 	labels[boxId].wt = warning_time
 	labels[boxId].wit = warning_icons_time
-	labels[boxId].gt = amk.game_hours()
-	labels[boxId].upd = amk.game_minutes()
+	labels[boxId].gt = game.hours()
+	labels[boxId].upd = game.minutes()
 	labels[boxId].wh = 0 -- не предупреждали о гибели npc
-
-	amk.save_table("gps_labels", labels)
 end
 
 -- Обновляем список хабара, зная или предмет или ящик
@@ -372,13 +372,11 @@ end
 
 function update_gps_stalker(box, boxId, is_new_metka)
 	local gps_count = get_gps_count(boxId)
-	local is_save_table = false
-
 	if gps_count > 0 then
 		local fl_send_tip_msg = false
 		local text_metki = ""
-		local gm = amk.game_minutes()
-		local gh = amk.game_hours()
+		local gm = game.minutes()
+		local gh = game.hours()
 
 		-- новая метка, добавляем в таблицу
 		if not labels[boxId] then
@@ -389,7 +387,6 @@ function update_gps_stalker(box, boxId, is_new_metka)
 
 			fl_send_tip_msg = true -- надо сообщить что ставим новую метку
 			labels[boxId] = {wr = 0, wi = 0, gt = gh, wt = warning_time, at = activity_time, wit = warning_icons_time, upd = gm, wh = 0}
-			is_save_table = true
 		end
 
 		local npc_name = get_npc_name(box)
@@ -398,7 +395,6 @@ function update_gps_stalker(box, boxId, is_new_metka)
 		local aobj = alife():object(boxId)
 		if is_warning_on_death and aobj and get_health(aobj) <= 0 and labels[boxId].wh == 0 then
 			labels[boxId].wh = 1
-			is_save_table = true
 			send_tip(game.translate_string("%c[255,255,128,128]Погиб сталкер " .. npc_name .. " с GPS-маячком"), nil, nil, 5)
 		end
 
@@ -420,11 +416,6 @@ function update_gps_stalker(box, boxId, is_new_metka)
 	else
 		remove_all_spots(boxId)
 		remove_label(boxId)
-		is_save_table = true
-	end
-
-	if is_save_table then
-		amk.save_table("gps_labels", labels)
 	end
 end
 
@@ -474,30 +465,19 @@ function get_color(secName)
 	return "%c[default]"
 end
 
-function spawn_m_inv()
-	local sim = alife()
-	for i = 1, 65534 do
-		aobj =  sim:object(i)
-		if aobj and aobj.section_name and aobj:section_name() == "m_inventory_box" then
-			amk.add_spot_on_map(aobj.id, "red_location", "рюкзак")
-		end
-	end
-end
-
 function update_gps_habar(boxId)
 	-- если в тайнике есть метка, апдейтим или ставим список. иначе снимаем маркер
 	local gps_count = get_gps_count(boxId)
 	if gps_count > 0 then
 		local fl_send_tip_msg = false
 		local text_metki = ""
-		local gm = amk.game_minutes()
-		local gh = amk.game_hours()
+		local gm = game.minutes()
+		local gh = game.hours()
 
 		-- новая метка, добавляем в таблицу
 		if not labels[boxId] then
 			fl_send_tip_msg = true -- надо сообщить что ставим новую метку
 			labels[boxId] = {wr = 0, wi = 0, gt = gh, wt = warning_time, at = activity_time, wit = warning_icons_time, upd = gm, wh = 0}
-			amk.save_table("gps_labels", labels)
 		end
 
 		--составляем список предметов
@@ -622,18 +602,16 @@ function update_gps_habar(boxId)
 	else
 		remove_all_spots(boxId)
 		remove_label(boxId)
-		amk.save_table("gps_labels", labels)
 	end
 end
 
 function update_gps_state()
 	local aobj, lvname
-	local is_save_table = false
 
 	-- если юзаем режим разряда маячков
 	if habar_list_mode then
-		local gm = amk.game_minutes()
-		local gh = amk.game_hours()
+		local gm = game.minutes()
+		local gh = game.hours()
 		local graph = game_graph()
 		local sim = alife()
 
@@ -648,7 +626,6 @@ function update_gps_state()
 
 				v.wr = 1
 				send_tip(game.translate_string("%c[255,255,128,128]Через ".. tostring(gh - v.gt) .. " ч. на маячке на локации " .. lvname .. " надо сменить батарею."), nil, nil, 5)
-				is_save_table = true
 			end
 
 			-- апдейтим информацию каждые 3 минуты или если надо предупредить о разряде сменой иконок
@@ -659,7 +636,6 @@ function update_gps_state()
 				if not is_gps_update_in_process then
 					update_gps(nil, nil, i)
 				end
-				is_save_table = true
 			end
 
 			-- если время вышло, выключаем метку
@@ -673,13 +649,8 @@ function update_gps_state()
 
 				remove_all_spots(i)
 				remove_label(i)
-				is_save_table = true
 			end
 		end
-	end
-
-	if is_save_table then
-		amk.save_table("gps_labels", labels)
 	end
 end
 
@@ -728,7 +699,7 @@ function on_game_load()
 	is_warning_on_death = toboolean(gps_ini:r_string("amk_metka", "warning_on_death"))
 
 	-- загружаем таблицу привязки ящиков к меткам.
-	labels = amk.load_table("gps_labels")
+	labels = container:get("gps_labels", { })
 end
 
 --колбэк на взятие предмета в инвентарь ГГ

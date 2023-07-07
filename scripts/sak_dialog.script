@@ -2,7 +2,7 @@
 -- —€ковы диалоги
 -------------------------------------------------------------------------------------------------------
 function repair_box_not_have()
-	return sak.have_item_namber("repair_box_outfit",1) == false
+	return not has("repair_box_outfit")
 end
 function add_abakan(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_abakan", "in")
@@ -10,88 +10,88 @@ end
 function add_mp5(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_mp5", "in")
 end
-function give_10conserva(first_speaker, second_speaker)
-	sak.out_item_namber("conserva",10)
+function give_10conserva()
+	lost("conserva",10)
 end
-function give_5kolbasa(first_speaker, second_speaker)
-	sak.out_item_namber("kolbasa",5)
+function give_5kolbasa()
+	lost("kolbasa",5)
 end
-function give_kolbasa(first_speaker, second_speaker)
-	sak.out_item_namber("kolbasa",1)
+function give_kolbasa()
+	lost("kolbasa")
 end
 function kolbasa_have()
-  	return sak.have_item_namber("kolbasa",1) ~= false
+	return has("kolbasa")
 end
 function conserva10_have()
-  	return sak.have_item_namber("conserva",10) ~= false
+	return has("conserva",10)
 end
 function kolbasa5_have()
-  	return sak.have_item_namber("kolbasa",5) ~= false
+	return has("kolbasa",5)
 end
-function give_2conserva(first_speaker, second_speaker)
-	sak.out_item_namber("conserva",2)
+function give_2conserva()
+	lost("conserva",2)
 end
-function give_2kolbasa(first_speaker, second_speaker)
-	sak.out_item_namber("kolbasa",2)
+function give_2kolbasa()
+	lost("kolbasa",2)
 end
-function give_2drink(first_speaker, second_speaker)
-	sak.out_item_namber("energy_drink",2)
+function give_2drink()
+	lost("energy_drink",2)
 end
-function give_3drink(first_speaker, second_speaker)
-	sak.out_item_namber("energy_drink",3)
+function give_3drink()
+	lost("energy_drink",3)
 end
-function give_5bread(first_speaker, second_speaker)
-	sak.out_item_namber("bread",5)
+function give_5bread()
+	lost("bread",5)
 end
-function give_10bread(first_speaker, second_speaker)
-	sak.out_item_namber("bread",10)
+function give_10bread()
+	lost("bread",10)
 end
 function conserva2_have()
-  	return sak.have_item_namber("conserva",2) ~= false
+	return has("conserva",2)
 end
 function kolbasa2_have()
-  	return sak.have_item_namber("kolbasa",2) ~= false
+	return has("kolbasa",2)
 end
 function drink2_have()
-  	return sak.have_item_namber("energy_drink",2) ~= false
+	return has("energy_drink",2)
 end
 function drink3_have()
-  	return sak.have_item_namber("energy_drink",3) ~= false
+	return has("energy_drink",3)
 end
 function bread5_have()
-  	return sak.have_item_namber("bread",5) ~= false
+	return has("bread",5)
 end
 function bread10_have()
-  	return sak.have_item_namber("bread",10) ~= false
+	return has("bread",10)
 end
 function has_soldiers_bribe(actor, npc)
-	return sak.have_item_namber("vodka",1) ~= false
+	return has("vodka")
 end
 function give_soldiers_bribe(actor, npc)
-	sak.out_item_namber("vodka",1)
+	lost("vodka")
 end
 function have_krysyk_goods()
-  	return sak.have_item_namber("af_electra_moonlight",3) ~= false and sak.have_item_namber("af_dummy_glassbeads",1) ~= false
+	return has("af_electra_moonlight",3) and has("af_dummy_glassbeads")
 end
 function give_krysyk_goods()
-	sak.out_item_namber("af_electra_moonlight",3)
-	sak.out_item_namber("af_dummy_glassbeads",1)
+	lost("af_electra_moonlight",3)
+	lost("af_dummy_glassbeads")
 end
 function give_pda_krysyka()
-	sak.out_item_namber("pda_krysyka",1)
+	lost("pda_krysyka")
 end
 function have_repair_box()
-  	return sak.have_item_namber("repair_box_outfit",1) ~= false
+	return has("repair_box_outfit")
 end
 function have_pda_krysyka()
-  	return sak.have_item_namber("pda_krysyka",1) ~= false
+	return has("pda_krysyka")
 end
 function give_borov_11()
-	sak.out_item_namber("scaintist_docs",1)
-	sak.out_item_namber("inventory_sakbox_05",1)
+	lost("scaintist_docs")
+	lost("inventory_sakbox_05")
 end
 function have_borov_11()
-  	return sak.have_item_namber("scaintist_docs",1) ~= false and sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("scaintist_docs") and has("inventory_sakbox_05")
 end
 function add_wpn_svd(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_svd", "in")
@@ -115,61 +115,49 @@ function add_dolg_black_exoskeleton(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "dolg_black_exoskeleton", "in")
 end
 function add_4ammo_vog_25s(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_vog-25",3)
-	dialogs.relocate_item_section(first_speaker, "ammo_vog-25", "in")
+	got("ammo_vog-25",4)
 end
 function add_3ammo_vog_25p(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_vog-25p",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_vog-25p", "in")
+	got("ammo_vog-25p",3)
 end
 function add_2ammo_762x54_7h1(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x54_7h1",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_7h1", "in")
+	got("ammo_7.62x54_7h1", 2)
 end
 function add_2ammo_762x54_ap(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x54_ap",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_ap", "in")
+	got("ammo_7.62x54_ap", 2)
 end
 function add_1ammo_762x54_7h14(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_7h14", "in")
 end
 function add_3ammo_7_62_fmj(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x39_fmj",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x39_fmj", "in")
+	got("ammo_7.62x39_fmj",3)
 end
 function add_2ammo_762x39_ap(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x39_ap",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x39_ap", "in")
+	got("ammo_7.62x39_ap", 2)
 end
 function add_5antirad(first_speaker, second_speaker)
-	sak.create_items(db.actor,"antirad",4)
-	dialogs.relocate_item_section(first_speaker, "antirad", "in")
+	got("antirad",5)
 end
 function add_repair_box(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "repair_box_outfit", "in")
 end
 function add_4medkit_scientic(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit_scientic",3)
-	dialogs.relocate_item_section(first_speaker, "medkit_scientic", "in")
+	got("medkit_scientic",4)
 end
 function add_3medkit_scientic(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit_scientic",2)
-	dialogs.relocate_item_section(first_speaker, "medkit_scientic", "in")
+	got("medkit_scientic",3)
 end
 function add_3medkit_army(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit_army",2)
-	dialogs.relocate_item_section(first_speaker, "medkit_army", "in")
+	got("medkit_army",3)
 end
 function add_2medkit_army(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit_army",1)
-	dialogs.relocate_item_section(first_speaker, "medkit_army", "in")
+	got("medkit_army", 2)
 end
 function add_ammo_f1(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
 end
 function add_ammo_f2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"grenade_f1",1)
-	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+	got("grenade_f1", 2)
 end
 function add_ammo_rgd1(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "grenade_rgd5", "in")
@@ -181,12 +169,10 @@ function add_ammo_762x54r(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54r", "in")
 end
 function add_ammo_762x54r2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x54r",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54r", "in")
+	got("ammo_7.62x54r", 2)
 end
 function add_ammo_5_7x28_ss1904(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.7x28_ss190",3)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.7x28_ss190", "in")
+	got("ammo_5.7x28_ss190",4)
 end
 function add_military_outfit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "military_outfit", "in")
@@ -213,23 +199,19 @@ function add_fn2000(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_fn2000", "in")
 end
 function add_2ammo_12x76_zhekan(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x76_zhekan",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_12x76_zhekan", "in")
+	got("ammo_12x76_zhekan", 2)
 end
 function add_3ammo_12x76_dart(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x76_dart",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_12x76_dart", "in")
+	got("ammo_12x76_dart",3)
 end
 function add_5ammo_12x70_buck(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x70_buck",4)
-	dialogs.relocate_item_section(first_speaker, "ammo_12x70_buck", "in")
+	got("ammo_12x70_buck",5)
 end
 function add_protection_outfit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "protection_outfit", "in")
 end
 function add_ammo_super_gauss(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_super_gauss",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_super_gauss", "in")
+	got("ammo_super_gauss",3)
 end
 function add_ammo_gauss(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ammo_gauss", "in")
@@ -258,308 +240,307 @@ end
 function take_krisyk_spot()
 	sak.add_spot_of_docent(9508)
 end
-function give_docent_5pda(first_speaker, second_speaker)
-	sak.out_item_namber("device_pda_npc",5)
+function give_docent_5pda()
+	lost("device_pda_npc",5)
 end
-function give_2mica(first_speaker, second_speaker)
-	sak.out_item_namber("af_ameba_mica",2)
+function give_2mica()
+	lost("af_ameba_mica",2)
 end
-function give_3mica(first_speaker, second_speaker)
-	sak.out_item_namber("af_ameba_mica",3)
+function give_3mica()
+	lost("af_ameba_mica",3)
 end
 function docent_5pda_have()
-  	return sak.have_item_namber("device_pda_npc",5) ~= false
+	return has("device_pda_npc",5)
 end
-function give_docent_hand_kontroler(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_hand_kontroler",1)
-	sak.out_item_namber("device_pda_npc",30)
+function give_docent_hand_kontroler()
+	lost("mutant_hand_kontroler")
+	lost("device_pda_npc",30)
 end
 function docent_hand_kontroler_have()
-  	return sak.have_item_namber("mutant_hand_kontroler",1) ~= false and sak.have_item_namber("device_pda_npc",30) ~= false
+	return has("mutant_hand_kontroler") and has("device_pda_npc",30)
 end
-function give_docent_psevdogigant_hand(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_psevdogigant_hand",2)
-	sak.out_item_namber("device_pda_npc",15)
+function give_docent_psevdogigant_hand()
+	lost("mutant_psevdogigant_hand",2)
+	lost("device_pda_npc",15)
 end
 function docent_psevdogigant_hand_have()
-  	return sak.have_item_namber("mutant_psevdogigant_hand",2) ~= false and sak.have_item_namber("device_pda_npc",15) ~= false
+	return has("mutant_psevdogigant_hand",2) and has("device_pda_npc",15)
 end
-function give_docent_krovosos_jaw(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_krovosos_jaw",2)
-	sak.out_item_namber("device_pda_npc",20)
+function give_docent_krovosos_jaw()
+	lost("mutant_krovosos_jaw",2)
+	lost("device_pda_npc",20)
 end
 function docent_krovosos_jaw_have()
-  	return sak.have_item_namber("mutant_krovosos_jaw",2) ~= false and sak.have_item_namber("device_pda_npc",20) ~= false
+	return has("mutant_krovosos_jaw",2) and has("device_pda_npc",20)
 end
 function docent_have_done()
 	if (db.actor:has_info("docent_detector1_done")) and (db.actor:has_info("docent_detector2_done")) and (db.actor:has_info("docent_detector3_done")) then
-  	return false
+	return false
 	else
 	return true
 	end
 end
 function docent_have_have()
 	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
-  	return true
+	return true
 	else
 	return false
 	end
 end
-function give_medkit_scientic(first_speaker, second_speaker)
-	sak.out_item_namber("medkit_scientic", 1)
+function give_medkit_scientic()
+	lost("medkit_scientic")
 end
 function medkit_scientic_have()
-	return sak.have_item_namber("medkit_scientic",1) ~= false
+	return has("medkit_scientic")
 end
-function give_medkit_army(first_speaker, second_speaker)
-	sak.out_item_namber("medkit_army", 1)
+function give_medkit_army()
+	lost("medkit_army")
 end
 function medkit_army_have()
-	return sak.have_item_namber("medkit_army",1) ~= false
+	return has("medkit_army")
 end
-function give_2medkit(first_speaker, second_speaker)
-	sak.out_item_namber("medkit",2)
+function give_2medkit()
+	lost("medkit",2)
 end
 function medkit2_have()
-	return sak.have_item_namber("medkit",2) ~= false
+	return has("medkit",2)
 end
 function medkit_have()
-	return sak.have_item_namber("medkit",1) ~= false
+	return has("medkit")
 end
-function give_antirad(first_speaker, second_speaker)
-	sak.out_item_namber("antirad", 1)
+function give_antirad()
+	lost("antirad")
 end
 function antirad_have()
-	return sak.have_item_namber("antirad",1) ~= false
+	return has("antirad")
 end
-function give_fuzz_kolobok(first_speaker, second_speaker)
-	sak.out_item_namber("af_fuzz_kolobok", 1)
+function give_fuzz_kolobok()
+	lost("af_fuzz_kolobok")
 end
 function fuzz_kolobok_have()
-	return sak.have_item_namber("af_fuzz_kolobok",1) ~= false
+	return has("af_fuzz_kolobok")
 end
-function give_dummy_3glassbeads(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_glassbeads",3)
+function give_dummy_3glassbeads()
+	lost("af_dummy_glassbeads",3)
 end
 function dummy_3glassbeads_have()
-	return sak.have_item_namber("af_dummy_glassbeads",3) ~= false
+	return has("af_dummy_glassbeads",3)
 end
-function give_dummy_pellicle(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_pellicle", 1)
+function give_dummy_pellicle()
+	lost("af_dummy_pellicle")
 end
 function dummy_pellicle_have()
-	return sak.have_item_namber("af_dummy_pellicle",1) ~= false
+	return has("af_dummy_pellicle")
 end
-function give_dummy_battery(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_battery", 1)
+function give_dummy_battery()
+	lost("af_dummy_battery")
 end
 function dummy_battery_have()
-	return sak.have_item_namber("af_dummy_battery",1) ~= false
+	return has("af_dummy_battery")
 end
-function give_dummy_dummy(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_dummy", 1)
+function give_dummy_dummy()
+	lost("af_dummy_dummy")
 end
 function dummy_dummy_have()
-	return sak.have_item_namber("af_dummy_dummy",1) ~= false
+	return has("af_dummy_dummy")
 end
-function give_dummy_spring(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_spring", 1)
+function give_dummy_spring()
+	lost("af_dummy_spring")
 end
 function dummy_spring_have()
-	return sak.have_item_namber("af_dummy_spring",1) ~= false
+	return has("af_dummy_spring")
 end
-function give_3rusty_sea_urchin(first_speaker, second_speaker)
-	sak.out_item_namber("af_rusty_sea-urchin", 3)
+function give_3rusty_sea_urchin()
+	lost("af_rusty_sea-urchin", 3)
 end
 function rusty_sea_urchin_3have()
-	return sak.have_item_namber("af_rusty_sea-urchin",3) ~= false
+	return has("af_rusty_sea-urchin",3)
 end
-function give_rusty_sea_urchin(first_speaker, second_speaker)
-	sak.out_item_namber("af_rusty_sea-urchin", 1)
+function give_rusty_sea_urchin()
+	lost("af_rusty_sea-urchin")
 end
 function rusty_sea_urchin_have()
-	return sak.have_item_namber("af_rusty_sea-urchin",1) ~= false
+	return has("af_rusty_sea-urchin")
 end
-function give_rusty_kristall(first_speaker, second_speaker)
-	sak.out_item_namber("af_rusty_kristall", 1)
+function give_rusty_kristall()
+	lost("af_rusty_kristall")
 end
 function rusty_kristall_have()
-	return sak.have_item_namber("af_rusty_kristall",1) ~= false
+	return has("af_rusty_kristall")
 end
-function give_rusty_thorn(first_speaker, second_speaker)
-	sak.out_item_namber("af_rusty_thorn", 1)
+function give_rusty_thorn()
+	lost("af_rusty_thorn")
 end
 function rusty_thorn_have()
-	return sak.have_item_namber("af_rusty_thorn",1) ~= false
+	return has("af_rusty_thorn")
 end
-function give_ameba_slug(first_speaker, second_speaker)
-	sak.out_item_namber("af_ameba_slug", 1)
+function give_ameba_slug()
+	lost("af_ameba_slug")
 end
 function ameba_slug_have()
-	return sak.have_item_namber("af_ameba_slug",1) ~= false
+	return has("af_ameba_slug")
 end
-function give_ameba_slime(first_speaker, second_speaker)
-	sak.out_item_namber("af_ameba_slime", 1)
+function give_ameba_slime()
+	lost("af_ameba_slime")
 end
 function ameba_slime_have()
-	return sak.have_item_namber("af_ameba_slime",1) ~= false
+	return has("af_ameba_slime")
 end
-function give_2fireball(first_speaker, second_speaker)
-	sak.out_item_namber("af_fireball",2)
+function give_2fireball()
+	lost("af_fireball",2)
 end
 function fireball2_have()
-	return sak.have_item_namber("af_fireball",2) ~= false
+	return has("af_fireball",2)
 end
-function give_fireball(first_speaker, second_speaker)
-	sak.out_item_namber("af_fireball", 1)
+function give_fireball()
+	lost("af_fireball")
 end
 function fireball_have()
-	return sak.have_item_namber("af_fireball",1) ~= false
+	return has("af_fireball")
 end
-function give_night_star(first_speaker, second_speaker)
-	sak.out_item_namber("af_night_star", 1)
+function give_night_star()
+	lost("af_night_star")
 end
 function night_star_have()
-	return sak.have_item_namber("af_night_star",1) ~= false
+	return has("af_night_star")
 end
-function give_electra_sparkler(first_speaker, second_speaker)
-	sak.out_item_namber("af_electra_sparkler", 1)
+function give_electra_sparkler()
+	lost("af_electra_sparkler")
 end
 function electra_sparkler_have()
-	return sak.have_item_namber("af_electra_sparkler",1) ~= false
+	return has("af_electra_sparkler")
 end
 function fox_pay_money(actor, npc)
-	treasure_manager.get_treasure_manager():give_treasure("esc_secret_truck_goods")
+	treasure:give_treasure("esc_secret_truck_goods")
 end
 function give_vodka()
-	sak.out_item_namber("vodka", 1)
+	lost("vodka")
 end
 function give_2vodka()
-	sak.out_item_namber("vodka",2)
+	lost("vodka",2)
 end
 function give_3vodka()
-	sak.out_item_namber("vodka",3)
+	lost("vodka",3)
 end
 function give_5vodka()
-	sak.out_item_namber("vodka",5)
+	lost("vodka",5)
 end
 function give_6vodka()
-	sak.out_item_namber("vodka",6)
+	lost("vodka",6)
 end
 function give_7vodka()
-	sak.out_item_namber("vodka",7)
+	lost("vodka",7)
 end
 function give_8vodka()
-	sak.out_item_namber("vodka",8)
+	lost("vodka",8)
 end
 function give_10vodka()
-	sak.out_item_namber("vodka",10)
+	lost("vodka",10)
 end
 function give_20vodka()
-	sak.out_item_namber("vodka",20)
+	lost("vodka",20)
 end
 function give_15vodka()
-	sak.out_item_namber("vodka",15)
+	lost("vodka",15)
 end
 function give_40vodka()
-	sak.out_item_namber("vodka",40)
+	lost("vodka",40)
 end
 function have_vodka()
-	return sak.have_item_namber("vodka",1) ~= false
+	return has("vodka")
 end
 function have_2vodka()
-	return sak.have_item_namber("vodka",2) ~= false
+	return has("vodka",2)
 end
 function have_3vodka()
-	return sak.have_item_namber("vodka",3) ~= false
+	return has("vodka",3)
 end
 function have_5vodka()
-	return sak.have_item_namber("vodka",5) ~= false
+	return has("vodka",5)
 end
 function have_6vodka()
-	return sak.have_item_namber("vodka",6) ~= false
+	return has("vodka",6)
 end
 function have_7vodka()
-	return sak.have_item_namber("vodka",7) ~= false
+	return has("vodka",7)
 end
 function have_8vodka()
-	return sak.have_item_namber("vodka",8) ~= false
+	return has("vodka",8)
 end
 function have_10vodka()
-	return sak.have_item_namber("vodka",10) ~= false
+	return has("vodka",10)
 end
 function have_15vodka()
-	return sak.have_item_namber("vodka",15) ~= false
+	return has("vodka",15)
 end
 function have_20vodka()
-	return sak.have_item_namber("vodka",20) ~= false
+	return has("vodka",20)
 end
 function have_40vodka()
-	return sak.have_item_namber("vodka",40) ~= false
+	return has("vodka",40)
 end
-function give_drops(first_speaker, second_speaker)
-	sak.out_item_namber("af_drops", 1)
+function give_drops()
+	lost("af_drops")
 end
 function drops_have()
-	return sak.have_item_namber("af_drops",1) ~= false
+	return has("af_drops")
 end
-function give_blood(first_speaker, second_speaker)
-	sak.out_item_namber("af_blood", 1)
+function give_blood()
+	lost("af_blood")
 end
 function blood_have()
-	return sak.have_item_namber("af_blood",1) ~= false
+	return has("af_blood")
 end
-function give_electra_flash(first_speaker, second_speaker)
-	sak.out_item_namber("af_electra_flash", 1)
+function give_electra_flash()
+	lost("af_electra_flash")
 end
 function electra_flash_have()
-	return sak.have_item_namber("af_electra_flash",1) ~= false
+	return has("af_electra_flash")
 end
-function give_mincer_meat(first_speaker, second_speaker)
-	sak.out_item_namber("af_mincer_meat", 1)
+function give_mincer_meat()
+	lost("af_mincer_meat")
 end
 function mincer_meat_have()
-	return sak.have_item_namber("af_mincer_meat",1) ~= false
+	return has("af_mincer_meat")
 end
-function give_vyvert(first_speaker, second_speaker)
-	sak.out_item_namber("af_vyvert", 1)
+function give_vyvert()
+	lost("af_vyvert")
 end
 function vyvert_have()
-	return sak.have_item_namber("af_vyvert",1) ~= false
+	return has("af_vyvert")
 end
-function give_cristall_flower(first_speaker, second_speaker)
-	sak.out_item_namber("af_cristall_flower", 1)
+function give_cristall_flower()
+	lost("af_cristall_flower")
 end
 function cristall_flower_have()
-	return sak.have_item_namber("af_cristall_flower",1) ~= false
+	return has("af_cristall_flower")
 end
-function give_medusa(first_speaker, second_speaker)
-	sak.out_item_namber("af_medusa", 1)
+function give_medusa()
+	lost("af_medusa")
 end
 function medusa_have()
-	return sak.have_item_namber("af_medusa",1) ~= false
+	return has("af_medusa")
 end
-function give_10medusa(first_speaker, second_speaker)
-	sak.out_item_namber("af_medusa", 10)
+function give_10medusa()
+	lost("af_medusa", 10)
 end
 function medusa10_have()
-	return sak.have_item_namber("af_medusa",10) ~= false
+	return has("af_medusa",10)
 end
-function give_7medusa(first_speaker, second_speaker)
-	sak.out_item_namber("af_medusa", 7)
+function give_7medusa()
+	lost("af_medusa", 7)
 end
 function medusa7_have()
-	return sak.have_item_namber("af_medusa",7) ~= false
+	return has("af_medusa",7)
 end
-function give_gravi(first_speaker, second_speaker)
-	sak.out_item_namber("af_gravi", 1)
+function give_gravi()
+	lost("af_gravi")
 end
 function gravi_have()
-	return sak.have_item_namber("af_gravi",1) ~= false
+	return has("af_gravi")
 end
 function add_5vodka(first_speaker, second_speaker)
-	sak.create_items(db.actor,"vodka",4)
-	dialogs.relocate_item_section(first_speaker, "vodka", "in")
+	got("vodka",5)
 end
 function add_vodka(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "vodka", "in")
@@ -568,12 +549,10 @@ function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "medkit", "in")
 end
 function add_5medkit(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit",4)
-	dialogs.relocate_item_section(first_speaker, "medkit", "in")
+	got("medkit",5)
 end
 function add_10medkit(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit",9)
-	dialogs.relocate_item_section(first_speaker, "medkit", "in")
+	got("medkit",10)
 end
 function add_ak74u(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_ak74u", "in")
@@ -588,122 +567,106 @@ function add_wpn_ak47(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_ak47", "in")
 end
 function add_5ammo_9x39_pab9(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_9x39_pab9",4)
-	dialogs.relocate_item_section(first_speaker, "ammo_9x39_pab9", "in")
+	got("ammo_9x39_pab9",5)
 end
 function add_4ammo_9x39_sp5(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_9x39_sp5",3)
-	dialogs.relocate_item_section(first_speaker, "ammo_9x39_sp5", "in")
+	got("ammo_9x39_sp5",4)
 end
 function add_3ammo_9x39_ap(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_9x39_ap",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_9x39_ap", "in")
+	got("ammo_9x39_ap",3)
 end
 function add_5ammo_556x45_ss190(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.56x45_ss190",4)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.56x45_ss190", "in")
+	got("ammo_5.56x45_ss190",5)
 end
 function add_3ammo_556x45_ap(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.56x45_ap",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.56x45_ap", "in")
+	got("ammo_5.56x45_ap",3)
 end
 function add_3ammo_545x39_ap(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.45x39_ap",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_ap", "in")
+	got("ammo_5.45x39_ap",3)
 end
 function add_5ammo_5_45_fmj(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.45x39_fmj",4)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_fmj", "in")
+	got("ammo_5.45x39_fmj",5)
 end
 function add_ammo_5_45_fmj(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_fmj", "in")
 end
 function add_ammo_5_45_fmj2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_5.45x39_fmj",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_fmj", "in")
+	got("ammo_5.45x39_fmj", 2)
 end
 function add_ammo_7_62_fmj2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x39_fmj",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x39_fmj", "in")
+	got("ammo_7.62x39_fmj", 2)
 end
 function add_ammo_7_62_ap3(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x39_ap",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x39_ap", "in")
+	got("ammo_7.62x39_ap",3)
 end
 function add_ammo_7_62_ap(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_ap", "in")
 end
 function add_ammo_7_62_ap2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_7.62x54_ap",1)
-	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_ap", "in")
+	got("ammo_7.62x54_ap", 2)
 end
 function add_ammo_rgd2(first_speaker, second_speaker)
-	sak.create_items(db.actor,"grenade_rgd5",1)
-	dialogs.relocate_item_section(first_speaker, "grenade_rgd5", "in")
+	got("grenade_rgd5", 2)
 end
 function add_ammo_rgd3(first_speaker, second_speaker)
-	sak.create_items(db.actor,"grenade_rgd5",2)
-	dialogs.relocate_item_section(first_speaker, "grenade_rgd5", "in")
+	got("grenade_rgd5",3)
 end
 function add_ammo_rgd5(first_speaker, second_speaker)
-	sak.create_items(db.actor,"grenade_rgd5",4)
-	dialogs.relocate_item_section(first_speaker, "grenade_rgd5", "in")
+	got("grenade_rgd5",5)
 end
 function add_ammo_16cal_buck3(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_16cal_buck",2)
-	dialogs.relocate_item_section(first_speaker, "ammo_16cal_buck", "in")
+	got("ammo_16cal_buck",3)
 end
 function add_ammo_12x70_buck5(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x70_buck",4)
-	dialogs.relocate_item_section(first_speaker, "ammo_12x70_buck", "in")
+	got("ammo_12x70_buck",5)
 end
-function give_strelok_pda(first_speaker, second_speaker)
-	sak.out_item_namber("strelok_pda",1)
+function give_strelok_pda()
+	lost("strelok_pda")
 end
 function strelok_pda_have()
-	return sak.have_item_namber("strelok_pda",1) ~= false
+	return has("strelok_pda")
 end
-function give_rad_kontainer(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_05",1)
+function give_rad_kontainer()
+	lost("inventory_sakbox_05")
 end
 function rad_kontainer_have()
-	return sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("inventory_sakbox_05")
 end
 function scintist_pda_have()
-	return sak.have_item_namber("scaintist_pda",1) ~= false
+	return has("scaintist_pda")
 end
-function give_scintist_pda(first_speaker, second_speaker)
-	sak.out_item_namber("scaintist_pda",1)
+function give_scintist_pda()
+	lost("scaintist_pda")
 end
-function give_bar_ivancov_playboy(first_speaker, second_speaker)
-	sak.out_item_namber("playboy10",1)
+function give_bar_ivancov_playboy()
+	lost("playboy10")
 end
 function bar_ivancov_playboy_have()
-	return sak.have_item_namber("playboy10",1) ~= false
+	return has("playboy10")
 end
 function strelok_pda2_have()
-	return sak.have_item_namber("af_medusa_green",1) ~= false
+	return has("af_medusa_green")
 end
-function give_strelok_pda2(first_speaker, second_speaker)
-	sak.out_item_namber("af_medusa_green",1)
+function give_strelok_pda2()
+	lost("af_medusa_green")
 end
-function give_chimera_kogot(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_chimera_kogot",7)
+function give_chimera_kogot()
+	lost("mutant_chimera_kogot",7)
 end
 function chimera_kogot_have()
-	return sak.have_item_namber("mutant_chimera_kogot",7) ~= false
+	return has("mutant_chimera_kogot",7)
 end
-function give_five_teil(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_dog_tail",5)
+function give_five_teil()
+	lost("mutant_dog_tail",5)
 end
 function five_teil_have()
-	return sak.have_item_namber("mutant_dog_tail",5) ~= false
+	return has("mutant_dog_tail",5)
 end
 function escape_lager_volk_document_have()
-	return sak.have_item_namber("sak_document2",1) ~= false
+	return has("sak_document2")
 end
 function give_sescape_lager_volk_document(first_speaker, second_speaker)
-	sak.out_item_namber("sak_document2", 1)
+	lost("sak_document2")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function take_agr_saiga(first_speaker, second_speaker)
@@ -713,43 +676,43 @@ function give_yan_scientist_teleport_01(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "sak_resiver_yantar", "in")
 end
 function mil_volk_resiver_have()
-	return sak.have_item_namber("sak_resiver",1) ~= false
+	return has("sak_resiver")
 end
-function give_mil_volk_resiver(first_speaker, second_speaker)
-	sak.out_item_namber("sak_resiver", 1)
+function give_mil_volk_resiver()
+	lost("sak_resiver")
 end
 function notebook_have()
-	return sak.have_item_namber("notebook",1) ~= false
+	return has("notebook")
 end
-function give_notebook(first_speaker, second_speaker)
-	sak.out_item_namber("notebook", 1)
+function give_notebook()
+	lost("notebook")
 end
-function give_doktor_book(first_speaker, second_speaker)
-	sak.out_item_namber("sak_book4", 1)
+function give_doktor_book()
+	lost("sak_book4")
 end
 function dummy_battery_red_have()
-	return sak.have_item_namber("af_dummy_battery_red",1) ~= false
+	return has("af_dummy_battery_red")
 end
-function give_dummy_battery_red(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_battery_red", 1)
+function give_dummy_battery_red()
+	lost("af_dummy_battery_red")
 end
 function dummy_pellicle_red_have()
-	return sak.have_item_namber("af_dummy_pellicle_red",1) ~= false
+	return has("af_dummy_pellicle_red")
 end
-function give_dummy_pellicle_red(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_pellicle_red", 1)
+function give_dummy_pellicle_red()
+	lost("af_dummy_pellicle_red")
 end
 function simbiont_have()
-	return sak.have_item_namber("af_simbion",1) ~= false
+	return has("af_simbion")
 end
-function give_simbiont(first_speaker, second_speaker)
-	sak.out_item_namber("af_simbion", 1)
+function give_simbiont()
+	lost("af_simbion")
 end
 function dummy_spring_red_have()
-	return sak.have_item_namber("af_dummy_spring_red",1) ~= false
+	return has("af_dummy_spring_red")
 end
-function give_dummy_spring_red(first_speaker, second_speaker)
-	sak.out_item_namber("af_dummy_spring_red", 1)
+function give_dummy_spring_red()
+	lost("af_dummy_spring_red")
 end
 function take_dummy_spring_red(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "af_dummy_spring_red", "in")
@@ -758,19 +721,19 @@ function take_soul(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "af_soul", "in")
 end
 function diplomat_have()
-	return sak.have_item_namber("diplomat",1) ~= false
+	return has("diplomat")
 end
-function give_diplomat(first_speaker, second_speaker)
-	sak.out_item_namber("diplomat", 1)
+function give_diplomat()
+	lost("diplomat")
 end
 function take_mica(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "af_ameba_mica", "in")
 end
 function computer_have()
-	return sak.have_item_namber("computer",1) ~= false
+	return has("computer")
 end
-function give_computer(first_speaker, second_speaker)
-	sak.out_item_namber("computer", 1)
+function give_computer()
+	lost("computer")
 end
 function take_moonlight(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "af_electra_moonlight", "in")
@@ -779,14 +742,14 @@ function take_sescape_lager_volk_ak(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_mp5", "in")
 end
 function esc_petruha_toz_have()
-	return sak.have_item_namber("wpn_toz34",1) ~= false
+	return has("wpn_toz34")
 end
 function give_esc_petruha_toz(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "wpn_toz34", "out")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
-function give_yan_kruglov_green_art(first_speaker, second_speaker)
-	sak.out_item_namber("af_blood_green", 1)
+function give_yan_kruglov_green_art()
+	lost("af_blood_green")
 end
 function take_new_decoder(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "detector_elite_sak", "in")
@@ -795,98 +758,97 @@ function take_playboy(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "playboy", "in")
 end
 function yan_kruglov_green_art_have()
-	return sak.have_item_namber("af_blood_green",1) ~= false
+	return has("af_blood_green")
 end
-function give_playboy(first_speaker, second_speaker)
-	sak.out_item_namber("playboy", 1)
+function give_playboy()
+	lost("playboy")
 end
-function give_esc_shustryi_medusa(first_speaker, second_speaker)
-	sak.out_item_namber("af_medusa", 1)
+function give_esc_shustryi_medusa()
+	lost("af_medusa")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function esc_shustryi_medusa_have()
-	return sak.have_item_namber("af_medusa",1) ~= false
+	return has("af_medusa")
 end
 function gar_dram_novice_mp5_m1_have()
-	return sak.have_item_namber("wpn_mp5_m1",1) ~= false
+	return has("wpn_mp5_m1")
 end
 function give_gar_dram_novice_mp5_m1(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "wpn_mp5_m1", "out")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function gar_dram_novice_burer_hand_have()
-	return sak.have_item_namber("mutant_burer_hand",1) ~= false
+	return has("mutant_burer_hand")
 end
-function give_gar_dram_novice_burer_hand(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_burer_hand", 1)
+function give_gar_dram_novice_burer_hand()
+	lost("mutant_burer_hand")
 end
 function gar_hellcar_outfit_have()
-	return sak.have_item_namber("stalker_outfit_m3",1) ~= false
+	return has("stalker_outfit_m3")
 end
 function give_gar_hellcar_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_blackwhiteplus", 1)
+	lost("stalker_outfit_m3_blackwhiteplus")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function agr_krot_PDA_have()
-	return sak.have_item_namber("agroprom_pda",1) ~= false
+	return has("agroprom_pda")
 end
 function give_agr_krot_PDA(first_speaker, second_speaker)
-	sak.out_item_namber("agroprom_pda", 1)
+	lost("agroprom_pda")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 
 function gar_dolg_flesh_eye_have()
-	return sak.have_item_namber("mutant_flesh_eye",4) ~= false
+	return has("mutant_flesh_eye",4)
 end
 
 function give_gar_dolg_flesh_eye(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_flesh_eye",4)
+	lost("mutant_flesh_eye",4)
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 
 function gar_dolg_krovosos_jaw_have()
-	return sak.have_item_namber("mutant_krovosos_jaw",3) ~= false
+	return has("mutant_krovosos_jaw",3)
 end
 
-function give_gar_dolg_krovosos_jaw(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_krovosos_jaw",3)
+function give_gar_dolg_krovosos_jaw()
+	lost("mutant_krovosos_jaw",3)
 end
 
 function gar_dolg_psevdodog_tail_have()
-	return sak.have_item_namber("mutant_psevdodog_tail",5) ~= false
+	return has("mutant_psevdodog_tail",5)
 end
 
 function give_gar_dolg_psevdodog_tail(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_psevdodog_tail",5)
+	lost("mutant_psevdodog_tail",5)
 	dialogs.relocate_item_section(first_speaker, "af_babka_3", "in")
 end
 
 function bar_dolg_base_guard_art_have()
-	return sak.have_item_namber("af_vyvert_green",1) ~= false
+	return has("af_vyvert_green")
 end
 
 function give_bar_dolg_base_guard_art(first_speaker, second_speaker)
-	sak.out_item_namber("af_vyvert_green",1)
+	lost("af_vyvert_green")
 	dialogs.relocate_item_section(first_speaker, "af_spirit_4", "in")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 
 function esc_bridge_vodka_have()
-	return sak.have_item_namber("vodka",10) ~= false
+	return has("vodka",10)
 end
 
-function give_esc_bridge_vodka(first_speaker, second_speaker)
-	sak.out_item_namber("vodka",10)
+function give_esc_bridge_vodka()
+	lost("vodka",10)
 end
 function give_esc_bridge_ammo(first_speaker, second_speaker)
-	dialogs.relocate_item_section(first_speaker, "ammo_5.45x39_ap", "in")
-	sak.create_items(db.actor,"ammo_5.45x39_ap",2)
+	got("ammo_5.45x39_ap",3)
 end
 function esc_fox_medkit_have()
-	return sak.have_item_namber("medkit",10) ~= false
+	return has("medkit",10)
 end
-function give_esc_fox_medkit(first_speaker, second_speaker)
-	sak.out_item_namber("medkit",10)
+function give_esc_fox_medkit()
+	lost("medkit",10)
 end
 ----------------------------**********************************43
 function take_mil_Svoboda_trader_ammo(first_speaker, second_speaker)
@@ -894,116 +856,115 @@ function take_mil_Svoboda_trader_ammo(first_speaker, second_speaker)
 end
 
 function give_esc_trader_ammo(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_05", 1)
+	lost("inventory_sakbox_05")
 	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_01", "in")
 end
 
-function give_mil_Svoboda_trader_ammo(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_01", 1)
+function give_mil_Svoboda_trader_ammo()
+	lost("inventory_sakbox_01")
 end
 
 function esc_trader_ammo_have()
-  	return sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("inventory_sakbox_05")
 end
 
 function mil_Svoboda_trader_ammo_have()
-  	return sak.have_item_namber("inventory_sakbox_01",1) ~= false
+	return has("inventory_sakbox_01")
 end
 ----------------------------**********************************45
 function give_ratcatcher_food(first_speaker, second_speaker)
-	sak.out_item_namber("bread",20)
-	sak.out_item_namber("conserva",20)
-	sak.out_item_namber("kolbasa",20)
-	sak.out_item_namber("vodka",5)
+	lost("bread",20)
+	lost("conserva",20)
+	lost("kolbasa",20)
+	lost("vodka",5)
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 
-function give_mil_Svoboda_trader_plan(first_speaker, second_speaker)
-	sak.out_item_namber("sak_plan", 1)
+function give_mil_Svoboda_trader_plan()
+	lost("sak_plan")
 end
 
 function ratcatcher_food_have()
-  	return sak.have_item_namber("bread",20) ~= false and sak.have_item_namber("conserva",20) ~= false and sak.have_item_namber("vodka",5) ~= false and sak.have_item_namber("kolbasa",20) ~= false
+	return has("bread",20) and has("conserva",20) and has("vodka",5) and has("kolbasa",20)
 end
 function tushkano_have()
-  	return sak.have_item_namber("mutant_face_tushkano",10) ~= false and sak.have_item_namber("vodka",10) ~= false
+	return has("mutant_face_tushkano",10) and has("vodka",10)
 end
-function give_tushkano(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_face_tushkano",10)
-	sak.out_item_namber("vodka",10)
+function give_tushkano()
+	lost("mutant_face_tushkano",10)
+	lost("vodka",10)
 end
 function mil_Svoboda_trader_plan_have()
-  	return sak.have_item_namber("sak_plan",1) ~= false
+	return has("sak_plan")
 end
 --------------------**********************************************41
 function mil_Svoboda_trader_outfit_have()
-	return sak.have_item_namber("soldier_outfit",2) ~= false
+	return has("soldier_outfit",2)
 end
 
-function give_mil_Svoboda_trader_outfit(first_speaker, second_speaker)
-sak.out_item_namber("soldier_outfit", 1)
-
+function give_mil_Svoboda_trader_outfit()
+	lost("soldier_outfit")
 end
 -------------------**********************************************42
 function take_val_pula_ammo(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_01", "in")
 end
 
-function give_gar_hellcar_ammo(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_01", 1)
+function give_gar_hellcar_ammo()
+	lost("inventory_sakbox_01")
 end
 
 function val_pula_ammo_have()
-  	return sak.have_item_namber("inventory_sakbox_01",1) ~= false
+	return has("inventory_sakbox_01")
 end
 
 -------------------**********************************************83
 function give_val_pula_boar_leg(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_boar_leg",8)
-	sak.out_item_namber("vodka",8)
+	lost("mutant_boar_leg",8)
+	lost("vodka",8)
 	dialogs.relocate_item_section(first_speaker, "af_dummy_pellicle_red", "in")
 end
 
 function val_pula_boar_leg_have()
-  	return sak.have_item_namber("mutant_boar_leg",8) ~= false and sak.have_item_namber("vodka",8) ~= false
+	return has("mutant_boar_leg",8) and has("vodka",8)
 end
 
 -------------------**********************************************84
 function give_ratcatcher_order(first_speaker, second_speaker)
-	sak.out_item_namber("rad_document7",1)
+	lost("rad_document7")
 	dialogs.relocate_item_section(first_speaker, "af_dummy_battery_red", "in")
 end
 
 function ratcatcher_order_have()
-  	return sak.have_item_namber("rad_document7",1) ~= false
+	return has("rad_document7")
 end
 -------------------**********************************************46
 
 function val_escort_PDA_have()
-	return sak.have_item_namber("und_pda",1) ~= false
+	return has("und_pda")
 end
 
 function give_val_escort_PDA(first_speaker, second_speaker)
-	sak.out_item_namber("und_pda",1)
+	lost("und_pda")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 -------------------**********************************************35
 
 function bar_dolg_petrenko_gaussgan_have()
-	return sak.have_item_namber("wpn_gungauss",1) ~= false
+	return has("wpn_gungauss")
 end
 
 function give_bar_dolg_petrenko_gaussgan(first_speaker, second_speaker)
-	sak.out_item_namber("wpn_gungauss",1)
+	lost("wpn_gungauss")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 -------------------**********************************************55
 function bar_dolg_petrenko_electra_flash_have()
-	return sak.have_item_namber("af_electra_flash",1) ~= false
+	return has("af_electra_flash")
 end
 
-function give_bar_dolg_petrenko_electra_flash(first_speaker, second_speaker)
-	sak.out_item_namber("af_electra_flash",1)
+function give_bar_dolg_petrenko_electra_flash()
+	lost("af_electra_flash")
 end
 ----------------------------**********************************66
 function take_bar_dolg_petrenko_exo(first_speaker, second_speaker)
@@ -1011,21 +972,21 @@ function take_bar_dolg_petrenko_exo(first_speaker, second_speaker)
 end
 
 function give_yan_scientist_exo(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_05", 1)
+	lost("inventory_sakbox_05")
 	dialogs.relocate_item_section(first_speaker, "exo_outfit", "in")
 	dialogs.relocate_item_section(first_speaker, "exo_outfit", "in")
 end
 
-function give_bar_dolg_petrenko_exo(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit",2)--
+function give_bar_dolg_petrenko_exo()
+	lost("exo_outfit",2)
 end
 
 function yan_scientist_exo_have()
-  	return sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("inventory_sakbox_05")
 end
 
 function bar_dolg_petrenko_exo_have()
-  	return sak.have_item_namber("exo_outfit",2) ~= false
+	return has("exo_outfit",2)
 end
 ----------------------------**********************************52
 function take_sak_repair_box(first_speaker, second_speaker)
@@ -1033,24 +994,24 @@ function take_sak_repair_box(first_speaker, second_speaker)
 end
 
 function give_esc_trader_sak_repair(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_05", 1)
+	lost("inventory_sakbox_05")
 	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_02", "in")
 end
 
-function give_sak_repair_box(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_02", 1)
+function give_sak_repair_box()
+	lost("inventory_sakbox_02")
 end
 
 function esc_trader_repair_box_have()
-  	return sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("inventory_sakbox_05")
 end
 
 function sak_repair_box_have()
-  	return sak.have_item_namber("inventory_sakbox_02",1) ~= false
+	return has("inventory_sakbox_02")
 end
 -------------------**********************************************63
 function sak_find_seif_have()
-	return sak.have_item_namber("inventory_sakbox_03",1) ~= false
+	return has("inventory_sakbox_03")
 end
 
 function give_sak_find_seif(first_speaker, second_speaker)
@@ -1058,11 +1019,11 @@ function give_sak_find_seif(first_speaker, second_speaker)
 end
 -------------------**********************************************56
 function sak_gold_fish_have()
-	return sak.have_item_namber("af_gold_fish",1) ~= false
+	return has("af_gold_fish")
 end
 
-function give_sak_gold_fish(first_speaker, second_speaker)
-	sak.out_item_namber("af_gold_fish", 1)
+function give_sak_gold_fish()
+	lost("af_gold_fish")
 end
 -------------------**********************************************65
 
@@ -1071,118 +1032,118 @@ function take_sak_reward_outfit(first_speaker, second_speaker)
 end
 
 function give_mil_trader_sak_reward_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("quest_manycase_01", 1)
+	lost("quest_manycase_01")
 	dialogs.relocate_item_section(first_speaker, "militaryspec_outfit_bast", "in")
 end
-function give_sak_reward_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_bast", 1)
+function give_sak_reward_outfit()
+	lost("militaryspec_outfit_bast")
 end
 function mil_trader_sak_reward_outfit_have()
-  	return sak.have_item_namber("quest_manycase_01",1) ~= false
+	return has("quest_manycase_01")
 end
 function sak_reward_outfit_have()
-  	return sak.have_item_namber("militaryspec_outfit_bast",1) ~= false
+	return has("militaryspec_outfit_bast")
 end
 function sak_have_start()
 	if db.actor:has_info("sak_gold_fish_start") or db.actor:has_info("sak_find_seif_start") or db.actor:has_info("sak_repair_box_start") or db.actor:has_info("sak_reward_outfit_start") then
-  	return true
+	return true
 	else
 	return false
 	end
 end
 function sak_have_have()
 	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
-  	return true
+	return true
 	else
 	return false
 	end
 end
 function yan_scientist_books_have()
-	return sak.have_item_namber("sak_book1",1) ~= false and sak.have_item_namber("sak_book2",1) ~= false and sak.have_item_namber("sak_book3",1) ~= false
+	return has("sak_book1") and has("sak_book2") and has("sak_book3")
 end
-function give_yan_scientist_books(first_speaker, second_speaker)
-	sak.out_item_namber("sak_book1",1)
-	sak.out_item_namber("sak_book2",1)
-	sak.out_item_namber("sak_book3",1)
+function give_yan_scientist_books()
+	lost("sak_book1")
+	lost("sak_book2")
+	lost("sak_book3")
 end
 function yan_kruglov_decoder_have()
-	return sak.have_item_namber("decoder1",1) ~= false
+	return has("decoder1")
 end
-function give_yan_kruglov_decoder(first_speaker, second_speaker)
-	sak.out_item_namber("decoder1",1)
+function give_yan_kruglov_decoder()
+	lost("decoder1")
 end
 function take_yan_kruglov_art(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_05", "in")
 end
 function give_esc_trader_yan_kruglov_art(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_05", 1)
+	lost("inventory_sakbox_05")
 	dialogs.relocate_item_section(first_speaker, "quest_manycase_01", "in")
 end
-function give_yan_kruglov_art(first_speaker, second_speaker)
-	sak.out_item_namber("quest_manycase_01", 1)
+function give_yan_kruglov_art()
+	lost("quest_manycase_01")
 end
 function esc_trader_yan_kruglov_art_have()
-  	return sak.have_item_namber("inventory_sakbox_05",1) ~= false
+	return has("inventory_sakbox_05")
 end
 function yan_kruglov_art_have()
-  	return sak.have_item_namber("quest_manycase_01",1) ~= false
+	return has("quest_manycase_01")
 end
 function take_bar_ivancov_rg6(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_rg-6", "in")
 end
 function give_mil_trader_bar_ivancov_rg6(first_speaker, second_speaker)
-	sak.out_item_namber("wpn_rg-6", 1)
+	lost("wpn_rg-6")
 	dialogs.relocate_item_section(first_speaker, "quest_manycase_01", "in")
 end
 function give_bar_ivancov_rg6(first_speaker, second_speaker)
-	sak.out_item_namber("quest_manycase_01", 1)
+	lost("quest_manycase_01")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function mil_trader_bar_ivancov_rg6_have()
-  	return sak.have_item_namber("wpn_rg-6",1) ~= false
+	return has("wpn_rg-6")
 end
 function bar_ivancov_rg6_have()
-  	return sak.have_item_namber("quest_manycase_01",1) ~= false
+	return has("quest_manycase_01")
 end
 function take_blockpost_case(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "quest_case_01", "in")
 end
-function give_blockpost_case(first_speaker, second_speaker)
-	sak.out_item_namber("quest_case_01", 1)
+function give_blockpost_case()
+	lost("quest_case_01")
 end
 function blockpost_case_have()
-  	return sak.have_item_namber("quest_case_01",1) ~= false
+	return has("quest_case_01")
 end
 function esc_find_groza_have()
-  	return sak.have_item_namber("wpn_groza",1) ~= false
+	return has("wpn_groza")
 end
 function give_find_groza(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "wpn_groza", "out")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
-function give_find_af_dummy_glassbeads(first_speaker, second_speaker)
-	sak.out_item_namber("af_babka_3", 1)
+function give_find_af_dummy_glassbeads()
+	lost("af_babka_3")
 end
 function yan_scientist_find_af_dummy_glassbeads_have()
-  	return sak.have_item_namber("af_babka_3",1) ~= false
+	return has("af_babka_3")
 end
-function give_find_dinamit(first_speaker, second_speaker)
-	sak.out_item_namber("dynamite", 1)
+function give_find_dinamit()
+	lost("dynamite")
 end
 function mil_lukash_find_dinamit_have()
-  	return sak.have_item_namber("dynamite",1) ~= false
+	return has("dynamite")
 end
-function give_find_case(first_speaker, second_speaker)
-	sak.out_item_namber("quest_case_06", 1)
+function give_find_case()
+	lost("quest_case_06")
 end
 function yan_scientist_find_case_have()
-  	return sak.have_item_namber("quest_case_06",1) ~= false
+	return has("quest_case_06")
 end
-function give_find_2case(first_speaker, second_speaker)
-	sak.out_item_namber("quest_case_05", 1)
+function give_find_2case()
+	lost("quest_case_05")
 end
 function bar_dolg_leader_find_case_have()
-  	return sak.have_item_namber("quest_case_05",1) ~= false
+	return has("quest_case_05")
 end
 local armor_profit_margin = 5
 function sak_repair_precond(trader, actor)
@@ -1207,7 +1168,7 @@ function sak_repiar_armor_s6(trader, actor)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
-		dialogs.relocate_money(actor, item_repair_cost, 1)
+		lost_money(item_repair_cost)
 	end
 end
 function repair_costs(first_speaker, second_speaker)
@@ -1228,16 +1189,11 @@ function repair_costs(first_speaker, second_speaker)
 end
 
 function actor_has_money(num)
-	return db_actor:money() >= reap.with_discount(num)
+	return has_money(reap.with_discount(num))
 end
 
-function give_money(t1, t2, num)
-	local npc = t1
-	if npc:id() == db_actor_id then
-		npc = t2
-	end
-
-	relocate_money(npc, reap.with_discount(num), 1)
+function give_money(num)
+	lost_money(reap.with_discount(num))
 end
 
 function actor_has_money_30000()
@@ -1245,7 +1201,7 @@ function actor_has_money_30000()
 end
 
 function give_money_30000(t1, t2)
-	give_money(t1, t2, 30000)
+	give_money(30000)
 end
 
 function actor_has_money_50000()
@@ -1253,7 +1209,7 @@ function actor_has_money_50000()
 end
 
 function give_money_50000(t1, t2)
-	give_money(t1, t2, 50000)
+	give_money(50000)
 end
 
 function actor_has_money_100000()
@@ -1261,7 +1217,7 @@ function actor_has_money_100000()
 end
 
 function give_money_100000(t1, t2)
-	give_money(t1, t2, 100000)
+	give_money(100000)
 end
 
 function actor_has_money_150000()
@@ -1269,7 +1225,7 @@ function actor_has_money_150000()
 end
 
 function give_money_150000(t1, t2)
-	give_money(t1, t2, 150000)
+	give_money(150000)
 end
 
 function actor_has_money_400000()
@@ -1277,40 +1233,29 @@ function actor_has_money_400000()
 end
 
 function give_money_400000(t1, t2)
-	give_money(t1, t2, 400000)
-end
-
-function relocate_money(victim, num, type)
-	if db_actor and victim then
-		if type == "in" then
-			db_actor:give_money(num)
-		elseif type == 1 then
-			db_actor:give_money(-num)
-		end
-		news_manager.relocate_money(db_actor, type, num)
-	end
+	give_money(400000)
 end
 
 function soul_have()
-	return sak.have_item_namber("af_soul",1) ~= false
+	return has("af_soul")
 end
 function soul3_have()
-	return sak.have_item_namber("af_soul",3) ~= false
+	return has("af_soul",3)
 end
 function kristall_have()
-	return sak.have_item_namber("af_cristall",1) ~= false
+	return has("af_cristall")
 end
 function moonlight_have()
-	return sak.have_item_namber("af_electra_moonlight",1) ~= false
+	return has("af_electra_moonlight")
 end
 function mica2_have()
-	return sak.have_item_namber("af_ameba_mica",2) ~= false
+	return has("af_ameba_mica",2)
 end
 function mica3_have()
-	return sak.have_item_namber("af_ameba_mica",3) ~= false
+	return has("af_ameba_mica",3)
 end
 function mica_have()
-	return sak.have_item_namber("af_ameba_mica",1) ~= false
+	return has("af_ameba_mica")
 end
 function actor_2500_have()
   return db.actor:money()>=2500
@@ -1333,69 +1278,41 @@ end
 function actor_30000_have()
   return db.actor:money()>=30000
 end
-function give_soul(first_speaker, second_speaker)
-	sak.out_item_namber("af_soul", 1)
+function give_soul()
+	lost("af_soul")
 end
-function give_3soul(first_speaker, second_speaker)
-	sak.out_item_namber("af_soul", 3)
+function give_3soul()
+	lost("af_soul", 3)
 end
-function give_kristall(first_speaker, second_speaker)
-	sak.out_item_namber("af_cristall", 1)
+function give_kristall()
+	lost("af_cristall")
 end
-function give_moonlight(first_speaker, second_speaker)
-	sak.out_item_namber("af_electra_moonlight", 1)
+function give_moonlight()
+	lost("af_electra_moonlight")
 end
-function give_mica(first_speaker, second_speaker)
-	sak.out_item_namber("af_ameba_mica", 1)
+function give_mica()
+	lost("af_ameba_mica")
 end
-function give_2500_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,2500,1)
+function give_2500_money()
+	lost_money(2500)
 end
-function give_10000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,10000,1)
+function give_10000_money()
+	lost_money(10000)
 end
-function give_15000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,15000,1)
+function give_15000_money()
+	lost_money(15000)
 end
-function give_5000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,5000,1)
+function give_5000_money()
+	lost_money(5000)
 end
-function give_20000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,20000,1)
+function give_20000_money()
+	lost_money(20000)
 end
-function give_9000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,9000,1)
+function give_9000_money()
+	lost_money(9000)
 end
-function give_30000_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  relocate_money(npc,30000,1)
+function give_30000_money()
+	lost_money(30000)
 end
 
 --'---

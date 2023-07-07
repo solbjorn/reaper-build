@@ -19,11 +19,11 @@ function mob_death:death_callback(victim, who)
 	end
 	death.killer = (who and who:id()) or -1
 	death.killer_name = (who and who:name()) or nil
-	xr_logic.try_switch_to_another_section(victim, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(victim, self.st)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ mob_death(npc, storage) ] = true
 end
 

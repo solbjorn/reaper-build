@@ -1,3 +1,19 @@
+function k_predicate_m(obj_info)
+	return obj_info.profile_name == "esc_killer_master"
+end
+function k_predicate_s(obj_info)
+	return obj_info.profile_name == "esc_killer_specnaz"
+end
+function a_predicate_a1(obj_info)
+	return obj_info.name == "esc_novice_attacker1"
+end
+function a_predicate_a2(obj_info)
+	return obj_info.name == "esc_novice_attacker2"
+end
+function a_predicate_a3(obj_info)
+	return obj_info.name == "esc_novice_attacker3"
+end
+
 function load_job(sj, gname, type, squad, groups)
 	local t
 
@@ -9,6 +25,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 --- svalka лагерь ---
@@ -20,6 +37,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 --- bar лагерь ---
@@ -31,6 +49,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 --- as лагерь ---
@@ -42,6 +61,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 --- pripyat лагерь ---
@@ -53,6 +73,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 --'--------------------------------------------------------------------------
@@ -230,6 +251,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "escape_blockpost_zone"
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	--' Спецназ на блокпосте
@@ -312,6 +334,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	--' Лагерь новичков на Escape
@@ -494,9 +517,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 16, state = {2},
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_lager_defend10",
@@ -532,6 +553,7 @@ function load_job(sj, gname, type, squad, groups)
 						end
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	--' Бандиты на фабрике
@@ -620,6 +642,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	--' Солдаты на мосту
@@ -688,6 +711,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "escape_bridge_zone"
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	--' Наемники, атакующие новичков.
@@ -697,15 +721,14 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {4},
 			in_rest = "", out_rest = "",
 			online = true,
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_killer_master"
-			            end
+			predicate = k_predicate_m
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_killer1_raid",
 			idle = 0,
 			prior = 8, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -713,6 +736,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -720,6 +744,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 7, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = "",
 		}
 		sj[#sj+1] = t
@@ -727,6 +752,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 7, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = "",
 		}
 		sj[#sj+1] = t
@@ -734,6 +760,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 7, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = "",
 		}
 		sj[#sj+1] = t
@@ -741,6 +768,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 7, state = {4},
 			online = true,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = "",
 		}
 		sj[#sj+1] = t
@@ -751,15 +779,14 @@ function load_job(sj, gname, type, squad, groups)
 			online = true,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
 			position_threshold = 400,
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_killer_master"
-			            end
+			predicate = k_predicate_m
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_killer_fight",
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -768,6 +795,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -776,6 +804,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -784,6 +813,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -792,6 +822,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -800,6 +831,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -808,6 +840,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {1},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
@@ -818,14 +851,13 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 15, state = {2},
 			in_rest = "", out_rest = "",
 			position_threshold = 400,
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_killer_master"
-			            end
+			predicate = k_predicate_m
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -833,6 +865,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -840,6 +873,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -847,6 +881,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -854,6 +889,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -861,6 +897,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -868,6 +905,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_killer_kamp",
 			idle = 0,
 			prior = 5, state = {2},
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -877,6 +915,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -885,6 +924,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -893,6 +933,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -903,15 +944,14 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "",
 			online = true,
 			position_threshold = 400,
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_killer_master"
-			            end
+			predicate = k_predicate_m
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_killer_kamp_wait",
 			idle = 0,
 			prior = 5, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -920,6 +960,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -928,6 +969,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -936,6 +978,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {3},
 			online = true,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -945,6 +988,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_m,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -952,6 +996,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -959,6 +1004,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -966,6 +1012,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -973,6 +1020,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -980,6 +1028,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -987,6 +1036,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
@@ -995,10 +1045,12 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 			online = false,
+			predicate = k_predicate_s,
 			position_threshold = 400,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_dogs_to_fox" then
@@ -1112,6 +1164,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "esc_dogs_fox_attack"
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_dogs_swarm" then
@@ -1327,6 +1380,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_boars_dogs" then
@@ -1471,6 +1525,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_ambush" then
@@ -1486,6 +1541,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = "esc_ambush_out_restrictor"
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_corps" then
@@ -1509,6 +1565,7 @@ function load_job(sj, gname, type, squad, groups)
 						end
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_assault" then
@@ -1516,6 +1573,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {1},
 			online = true,
+			predicate = a_predicate_a3,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -1524,9 +1582,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 9, state = {1},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker2"
-						end
+			predicate = a_predicate_a2
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault3",
@@ -1534,15 +1590,14 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {1},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault1",
 			idle = 0,
 			prior = 8, state = {0},
 			online = false,
+			predicate = a_predicate_a3,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -1551,9 +1606,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 9, state = {0},
 			online = false,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker2"
-						end
+			predicate = a_predicate_a2
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault3",
@@ -1561,9 +1614,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {0},
 			online = false,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
 
@@ -1571,6 +1622,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {2},
 			online = true,
+			predicate = a_predicate_a3,
 			position_threshold = 100,
 			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor"
 		}
@@ -1581,9 +1633,7 @@ function load_job(sj, gname, type, squad, groups)
 			online = true,
 			position_threshold = 100,
 			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker2"
-						end
+			predicate = a_predicate_a2
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_fight3",
@@ -1592,9 +1642,7 @@ function load_job(sj, gname, type, squad, groups)
 			online = true,
 			position_threshold = 100,
 			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
 
@@ -1602,6 +1650,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {3},
 			online = true,
+			predicate = a_predicate_a3,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -1610,9 +1659,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 9, state = {3},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker2"
-						end
+			predicate = a_predicate_a2
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_home_leader",
@@ -1620,9 +1667,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {3},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
 
@@ -1630,6 +1675,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 8, state = {4},
 			online = true,
+			predicate = a_predicate_a3,
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
@@ -1638,9 +1684,7 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 9, state = {4},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker2"
-						end
+			predicate = a_predicate_a2
 		}
 		sj[#sj+1] = t
 		t = { section = "logic@esc_assault_kamp",
@@ -1648,11 +1692,10 @@ function load_job(sj, gname, type, squad, groups)
 			prior = 10, state = {4},
 			online = true,
 			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			predicate = a_predicate_a1
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_zombie_1" then
@@ -1692,6 +1735,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_zombie_2" then
@@ -1815,6 +1859,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_flesh_1" then
@@ -1836,6 +1881,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_flesh_2" then
@@ -1857,6 +1903,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_bridge_boar" then
@@ -1890,6 +1937,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home1" then
@@ -1905,6 +1953,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home2" then
@@ -1920,6 +1969,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home3" then
@@ -1941,6 +1991,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home4" then
@@ -1956,6 +2007,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home5" then
@@ -1971,6 +2023,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_small_home6" then
@@ -1986,6 +2039,7 @@ function load_job(sj, gname, type, squad, groups)
 			in_rest = "", out_rest = ""
 		}
 		sj[#sj+1] = t
+		return true
 	end
 
 	if type == "esc_stalker_camp" then
@@ -2021,18 +2075,17 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@esc_stalker_camp1",
 			idle = 0,
 			prior = 8, state = {1},
-			online = false,
 			in_rest = "", out_rest = "",
 			predicate = function(obj_info)
 			            	return obj_info.profile_name == "esc_fox"
 			            end
 		}
 		sj[#sj+1] = t
+		return true
 	end
 end
 
-function load_states(gname, type)
-
+function load_states(type)
 	--- новый лагерь ---
 	if type == "esc_new_lager" then
 		return function (gulag)
@@ -2329,12 +2382,8 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
-	return nil
-end
 
-function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
-
+function checkStalker(npc_community, gulag_type, se_obj)
 	--- новый лагерь ---
 	if gulag_type == "esc_new_lager" then
 		return se_obj:profile_name() == "esc_kostya"
@@ -2404,7 +2453,6 @@ function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
 end
 
 function checkMonster(npc_community, gulag_type)
-
 	if gulag_type == "esc_dogs_to_fox" then
 		return npc_community == "dog"
 	end

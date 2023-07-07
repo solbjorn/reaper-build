@@ -13,8 +13,7 @@ local callback_patrol_path_in_point = callback.patrol_path_in_point
 local table_insert = table.insert
 
 function bind(obj)
-	local new_binder = generic_object_binder(obj)
-	obj:bind_object(new_binder)
+	obj:bind_object(generic_object_binder(obj))
 end
 
 ------------------------------------------------------------------------------------
@@ -23,9 +22,8 @@ class "generic_object_binder" (object_binder)
 function generic_object_binder:__init(obj) super(obj)
 	self.loaded = false
 	self.chtime = 0
-	self.last_update = 0
+	self.next_update = 0
 	self.particles = {}
-	self.is_trader = obj:clsid() == clsid_script_trader
 	self.death_recorded = false
 end
 
@@ -36,10 +34,7 @@ end
 function generic_object_binder:reinit()
 	object_binder.reinit(self)
 
-	-- У торговца нет поддержки перемещения
-	if not self.is_trader then
-		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
-	end
+	self.object:set_patrol_extrapolate_callback(self.extrapolate_callback, self)
 
 	self.st = { }
 	db.storage[self.object:id()] = self.st
@@ -89,11 +84,6 @@ function generic_object_binder:update(delta)
 
 	if self.death_recorded then return end
 
-	-- Апдейт торговли
-	if self.is_trader then
-		trade_manager.update(self.object)
-	end
-
 	if self.object:alive() then
 		if self.object:is_talk_enabled() then
 			self.object:set_tip_text("character_use")
@@ -107,13 +97,9 @@ function generic_object_binder:update(delta)
 
     self:anomaly_evade()
 
-	local act_scheme = db.storage[self.object:id()].active_section or ""
-	local is_fake = string.find(act_scheme, "mob_fake_death") or false
-
-	if self.chtime<time_global() then
-		self.chtime=time_global()+2000
+	if self.chtime < time_real_ms then
+		self.chtime = time_real_ms + 2000
 		if self.object:clsid()==clsid.controller_s and self.object:alive() then
-			amk.mylog("zombifying")
 			local npc=self.object:get_enemy()
 			if npc then
 				if npc:id()~=db_actor_id and npc:clsid()==clsid.script_stalker and self.object:see(npc) and
@@ -121,15 +107,13 @@ function generic_object_binder:update(delta)
 
 					local sobj=alife():object( npc:id() )
 					if sobj and sobj.online then
-						local zomb=amk.load_table("zombies")
+						local zomb = container:get("zombies", { })
 						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(db_actor)}
-						amk.save_table("zombies",zomb)
 						npc:set_character_community("zombied",0,0)
 						local orgtbl=amk.read_stalker_params(sobj)
 						if (not string.find(orgtbl.profile,"_zombi")) then
 							orgtbl.profile=orgtbl.profile.."_zombi"
 						end
-						amk.mylog("zombied "..npc:name().." profile "..orgtbl.profile)
 						amk.write_stalker_params(orgtbl,sobj)
 					end
 				end
@@ -170,8 +154,8 @@ function generic_object_binder:update(delta)
 	end
 -- TAG : end
 
-    if IsMonster(self.object) and time_global() - self.last_update > 1000 and not is_fake then
-		if self.object:alive() and self.object.health>0.03 then
+	if time_real_ms > self.next_update then
+		if self.object.health>0.03 then
 			if self.object:see(db_actor) and db_actor:position():distance_to(self.object:position())<40 then
 				amk.enemy_see_actor(self.object,"monster")
 			end
@@ -179,7 +163,7 @@ function generic_object_binder:update(delta)
 				amk.actor_see_enemy(self.object,"monster")
 			end
 		end
-		self.last_update = time_global()
+		self.next_update = time_real_ms + 1000
 	end
 
 	local blowout=amk.load_variable("blowout",0)
@@ -239,19 +223,16 @@ function generic_object_binder:waypoint_callback(obj, action_type, index)
 end
 
 function generic_object_binder:death_callback(victim, who)
-	if (self.object == nil) then
-		return
-	end
+	if not self.object then return end
 
 	if who:id() == db_actor_id then
 		xr_statistic.addKillCount(self.object)
-		xr_statistic_freeplay.get_freeplay_statistic():check_monster_killed_count(self.object)
+		freeplay_stats:check_monster_killed_count(self.object)
 
 		-------------------------------------------------------------
-		if arc_main then
-			arc_main.on_monster_kill(victim,who)
-		end
+		arc_main.on_monster_kill(victim,who)
 		-----------------------------------------------------------
+		news_main.check_microquest(self.object)
 	end
 
 	if self.st.mob_death then
@@ -276,20 +257,20 @@ function generic_object_binder:death_callback(victim, who)
 
 	local mob=self.object
 	if mob:clsid()==clsid.controller_s then
-		local zomb=amk.load_table("zombies")
+		local zomb = container:get("zombies", { })
+		local id = mob:id()
 		for k,v in pairs(zomb) do
-			if v.master==mob:id() then
+			if v.master == id then
 				if amk_mod.dezombify(k,v) then
 				zomb[k]=nil
 				end
 			end
 		end
-    amk.save_table("zombies",zomb)
 	end
 
-	if table.getn(self.particles)>0 then
+	if #self.particles > 0 then
 		for kk,vv in pairs(self.particles) do
-				vv:on_death()
+			vv:on_death()
 		end
 	end
 
@@ -308,6 +289,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
+
 	if self.st.hit then
 		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
@@ -326,11 +308,10 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
   -- end of addition
 
 -- TAG коррекция э-химеры
-	if obj:section()=="electro_chimera" and time_global()>(self.charge_time or 0) then
+	if obj:section()=="electro_chimera" and time_real_ms>(self.charge_time or 0) then
 	amk_particle_amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
 
 	local dist = db_actor:position():distance_to(obj:bone_position("bip01_spine"))
-        local tag_weather = amk.load_variable("dynweather","?")
 
  	-- эл.химера поражает ГГ ударом и э.шоком ближе 20м
 	if dist > 0.2 and dist < 20 then
@@ -348,8 +329,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 	    h.type = hit.strike
 	    db_actor:hit(h)
 
---            amk.send_tip (tag_weather,nil,nil,5)
-            if (string.find(tag_weather,"rain") or string.find(tag_weather,"groza")) then
+            if level.rain_factor() > 0.02 then
   	       h.direction = vector():set(0,-1,0)
                h.impulse = 500*h.power
 				tag_m = math.random(15, 25)
@@ -375,9 +355,8 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
     local n = 0
     local t1,t2
     local hit_sound, hit_txt, h_t1, h_t2, h_t3
-    for i, k in pairs(db.storage) do -- ищем НПС в онлайновых обьектах (tnx Kolmogor)
-        local hitobj=level.object_by_id(i)
-        if hitobj and _g.IsStalker(hitobj) and hitobj:id() ~= db_actor_id then
+    for i, hitobj in pairs(db.creatures) do -- ищем НПС в онлайновых обьектах (tnx Kolmogor)
+        if hitobj:is_stalker() and hitobj:id() ~= db_actor_id then
            dist = hitobj:position():distance_to(self.object:bone_position("bip01_spine"))
            if dist<20 then
                 local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
@@ -413,10 +392,10 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
     end --for
  end --поражаем НПС
 ----
-	if string.find(tag_weather,"groza") then
-	       self.charge_time=time_global() + 2000
+	if string.find(amk.load_variable("dynweather","?"),"groza") then
+	       self.charge_time=time_real_ms + 2000
         else
- 	       self.charge_time=time_global() + (100 * math.random(30,40))
+ 	       self.charge_time=time_real_ms + (100 * math.random(30,40))
         end -- next blast
     end -- "electro_chimera"
 --TAG : end
@@ -437,17 +416,19 @@ function generic_object_binder:net_spawn(sobject)
 
 	amk.on_net_spawn(self.object)
 
-	local particle_param = utils.cfg_get_string(system_ini(), self.object:section(), "bones_particles", null, false, false, nil)
-	if particle_param and system_ini():section_exist(particle_param) then
-		local tmp=amk.parse_ini_section_to_array(system_ini(),particle_param)
+	local particle_param = config:r_string_cache(self.object:section(), "bones_particles")
+	if particle_param and config:section_exist(particle_param) then
+		local tmp=amk.parse_ini_section_to_array(config, particle_param)
 		for k,v in pairs(tmp) do
-			local t = amk.parse_ini_section_to_array(system_ini(), v)
+			local t = amk.parse_ini_section_to_array(config, v)
 			t.obj = self.object
 			if not t.stop_on_death or self.object:alive() then
 				play_particle(self.object, t)
 			end
 		end
 	end
+
+	sa_callbacks.monster_net_spawn(self.object)
 
 	return true
 end
@@ -461,31 +442,27 @@ function generic_object_binder:net_destroy()
 			end
 		end
 	end
-	amk.on_monster_go_offline(self.object)
 
 	self.object:set_callback(callback_death,				nil)
 	self.object:set_callback(callback_patrol_path_in_point, nil)
 	self.object:set_callback(callback_hit,					nil)
 	self.object:set_callback(callback_use_object, nil)
 
-	local st = db.storage[self.object:id()]
+	local obj_id = self.object:id()
+	local st = db.storage[obj_id]
 	if st and st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
 
 	db.del_obj(self.object)
-	db.storage[self.object:id()] = nil
-
 	-- отрегистрация в схеме биорадара
 	biodetector.remove_obj(self.object)
 
-	-- АМК. Очистка рестрикторов
-	local id=self.object:id()
-
 	object_binder.net_destroy(self)
 
-	local sobj=alife():object(id)
-	if sobj and IsMonster(sobj) then
+	-- АМК. Очистка рестрикторов
+	local sobj = server_object(obj_id)
+	if sobj then
 		local tbl=amk.read_monster_params(sobj)
 		tbl.crvu32u16u2={}
 		amk.write_monster_params(tbl,sobj)
@@ -500,9 +477,6 @@ function generic_object_binder:save(packet)
 	object_binder.save(self, packet)
 
 	xr_logic.save_obj(self.object, packet)
-	if self.is_trader then
-		trade_manager.save(self.object, packet)
-	end
 end
 
 function generic_object_binder:load(reader)
@@ -516,9 +490,6 @@ function generic_object_binder:load(reader)
 	end
 
 	xr_logic.load_obj(self.object, reader)
-	if self.is_trader then
-		trade_manager.load(self.object, reader)
-	end
 end
 
 function play_particle(obj,params)

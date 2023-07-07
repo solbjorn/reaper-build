@@ -37,11 +37,6 @@ end
 function aem_mob_binder:update(delta)
 	object_binder.update(self, delta)
 
-	-- Апдейт торговли
-	if self.object:clsid() == clsid.script_trader then
-		trade_manager.update(self.object)
-	end
-
 	if self.object:alive() then
 		if self.object:is_talk_enabled() then
 			self.object:set_tip_text("character_use")
@@ -120,6 +115,7 @@ function aem_mob_binder:net_spawn(sobject)
 	self.object:add_restrictions("bar_arena_restrictor","")
 
 	db.add_obj(self.object)
+	biodetector.add_obj(self.object)
 
 	xr_gulag.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded )
 
@@ -137,7 +133,7 @@ function aem_mob_binder:net_destroy()
 	end
 
 	db.del_obj(self.object)
-	db.storage[self.object:id()] = nil
+	biodetector.remove_obj(self.object)
 
 	object_binder.net_destroy(self)
 end
@@ -157,14 +153,9 @@ function aem_mob_binder:save(packet)
 	object_binder.save(self, packet)
 
 	xr_logic.save_obj(self.object, packet)
-	if self.object:clsid() == clsid.script_trader then
-		trade_manager.save(self.object, packet)
-	end
 end
 
 function aem_mob_binder:load(reader)
-	self.loaded = true
-
 	--printf("aem_mob_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load(self, reader)
 
@@ -174,7 +165,6 @@ function aem_mob_binder:load(reader)
 	end
 
 	xr_logic.load_obj(self.object, reader)
-	if self.object:clsid() == clsid.script_trader then
-		trade_manager.load(self.object, reader)
-	end
+
+	self.loaded = true
 end

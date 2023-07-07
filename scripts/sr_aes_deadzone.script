@@ -29,12 +29,10 @@ function action_postprocess:__init (obj, storage)
 	self.object         = obj
 	self.st             = storage
 	self.actor_inside   = false
-	self.disabled       = false
 end
 -------------------
 function action_postprocess:reset_scheme ()
 	self.actor_inside = false
-	self.disabled     = has_alife_info("strelok_pda_have")
 -- ----------------------------------------------------------------------------------------
 -- postprocess
 -- ----------------------------------------------------------------------------------------
@@ -64,11 +62,8 @@ function action_postprocess:reset_scheme ()
 end
 -------------------
 function action_postprocess:deactivate()
-	if self.state == state_inside then
-       self.pp:finish 	    ()
-	   level.set_snd_volume (self.snd_volume)
-	   self:zone_leave      ()
-	end
+	-- Ray Twitty aka Shadows: убираем хвосты sr_psy_antenna и просто останавливаем эффектор при переключении схемы
+	self.pp:finish()
 end
 -------------------
 function action_postprocess:update_params ()
@@ -102,12 +97,10 @@ function action_postprocess:update_params ()
 end
 -------------------
 function action_postprocess:update (delta)
-	if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section (self.object, self.st) then
 		return
 	end
-	if self.disabled == true then
-		return
-	end
+
 	self.actor_inside = self.object:inside(db_actor:position())
 
 	self:update_hit (delta)
@@ -137,13 +130,13 @@ function action_postprocess:update_hit		(delta)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_postprocess( npc, storage ) ] = true
 end
 ---------------------------------------------------------------------------------------------------------------------
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	local function get_field_number(field, default)
-		return (ini:line_exist(section, field) and ini:r_float(section, field)) or default or 0 -- 0 prevents "nil + number" crash
+		return (ini:line_exist(section, field) and ini:r_float(section, field)) or default or 0
 	end
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)

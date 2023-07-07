@@ -1,22 +1,22 @@
 --' Мы отказываемся вступить в осознание, нас переносит на вторую станцию
 function osoznanie_decline(npc, actor)
-    db.actor:disable_info_portion("oso_init_dialog")
+	disable_info("oso_init_dialog")
+	give_info("sar2_monolith_miracle")
 	npc:stop_talk()
-    actor:stop_talk()
-	xr_effects.enable_ui(db.actor, nil)
+	actor:stop_talk()
+	xr_effects.enable_ui()
 	local point = patrol("con_way_if_reject_to_st2")
-	db.actor:set_actor_position(point:point(0))
+	db_actor:set_actor_position(point:point(0))
 	local dir = point:point(1):sub(point:point(0))
-	db.actor:set_actor_direction(-dir:getH())
-	reap.start_timer("xr_effects.enable_ui(db_actor, nil)", 10, timer_types.real)
+	db_actor:set_actor_direction(-dir:getH())
+	timer("xr_effects.enable_ui", 10, true)
 end
 
 --' Мы соглашаемся вступить в осознание, конец игры.
 function osoznanie_agree(npc, actor)
-	db.actor:disable_info_portion("oso_init_dialog")
+	disable_info("oso_init_dialog")
 	npc:stop_talk()
-    actor:stop_talk()
-	xr_effects.enable_ui(db.actor, nil)
+	actor:stop_talk()
+	xr_effects.enable_ui()
 	game.start_tutorial("mov_join_osoznanie")
-
 end

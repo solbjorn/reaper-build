@@ -144,11 +144,11 @@ end
 
 -- удал€ем телепорт от нычки —трелка
 function delete_teleport(story_id)
-local se_obj = alife():story_object(9881)
-if se_obj then
-alife():release(se_obj)
-news_manager.send_tip(db.actor, "“елепорт удален", nil, nil, 30000)
-end
+	local se_obj = alife():story_object(9881)
+	if se_obj then
+		alife():release(se_obj)
+		news_manager.send_tip("“елепорт удален", nil, nil, 30000)
+	end
 end
 
 -- удал€ем устройство удалени€ телепорта
@@ -167,33 +167,26 @@ local obj = alife():create("item_delete1",vector():set(-79.929679870605,-6.87431
 end
 
 function delete_teleport4(story_id)
-local obj_id = xr_logic.pstor_retrieve(db.actor, "m_teleport_27", -1)
-local se_obj = alife() : object(obj_id)
-if se_obj then
-  alife():release(se_obj, true)
-end
+	release_teleport("m_teleport_27")
 end
 
 -- янтарь
 function spawn_teleport28()
-   if has_alife_info("kostya_yantar_taynik_start3") then
-    local se_obj = alife():create("m_teleport_28",vector():set(85.153335571289,0.39142534136772,13.81423664093),84106,1512)
-xr_logic.pstor_store(db.actor, "m_teleport_28", se_obj.id)
-   end
+	if has_info("kostya_yantar_taynik_start3") then
+		create_teleport("m_teleport_28", xyz(85.153335571289, 0.39142534136772, 13.81423664093), 84106, 1512)
+	end
 end
 
 function spawn_teleport29()
-   if has_alife_info("kostya_yantar_taynik_start3") then
-    local se_obj = alife():create("m_teleport_29",vector():set(62.281566619873,-0.77602916955948,-5.6362829208374),71385,1508)
-xr_logic.pstor_store(db.actor, "m_teleport_29", se_obj.id)
-   end
+	if has_alife_info("kostya_yantar_taynik_start3") then
+		create_teleport("m_teleport_29", xyz(62.281566619873, -0.77602916955948, -5.6362829208374), 71385, 1508)
+	end
 end
 
 function spawn_teleport30()
-   if has_alife_info("kostya_yantar_taynik_start3") then
-    local se_obj = alife():create("m_teleport_30",vector():set(60.858924865723,-0.7739382982254,5.8862371444702),71385,1508)
-xr_logic.pstor_store(db.actor, "m_teleport_30", se_obj.id)
-   end
+	if has_alife_info("kostya_yantar_taynik_start3") then
+		create_teleport("m_teleport_30", xyz(60.858924865723, -0.7739382982254, 5.8862371444702), 71385, 1508)
+	end
 end
 
 ---------------

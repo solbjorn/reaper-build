@@ -1,0 +1,134 @@
+[meet@ignore_abuse]
+use             = true
+use_wpn         = false
+abuse           = false
+
+[meet@val_rob_warn]
+meet_state     = 1| {+val_rob_buying} threat@threat_back, wait
+meet_state_wpn = 25| threat@{+val_rob_buying} val_rob_guard_jeer, threat_back
+victim         = 20| actor
+victim_wpn     = 25| actor
+use            = true
+use_wpn        = false
+zone           = val_rob_warn_zone| {+val_rob_buying} threat@ {+val_rob_buying} val_rob_guard_jeer | val_rob_kill_zone| {+val_rob_buying} true
+
+[kamp@val_rob_kamp]
+center_point    = kamp
+meet            = meet@val_rob_warn
+
+;--------------------------------------------------------------------------
+; the scam artist/leader
+;--------------------------------------------------------------------------
+[logic@val_rob_leader]
+active = walker@val_rob_leader_start
+on_death = death@val_rob_leader
+
+[death@val_rob_leader]
+on_info = {=killed_by_actor} %+val_rob_leader_dead%
+;--------------------------------------------------------------------------
+; стартовый диалог
+;--------------------------------------------------------------------------
+[meet@val_rob_start]
+meet_dialog     = val_rob_dialog
+meet_state      = 30|wait
+meet_state_wpn  = 30|threat@threat_weap
+victim          = 30|actor
+victim_wpn      = 30|actor
+use             = true
+use_wpn         = false
+
+;--------------------------------------------------------------------------
+; игнорирование игрока
+;--------------------------------------------------------------------------
+[meet@val_rob_ignore]
+meet_state      = 0|wait
+meet_state_wpn  = 0|wait
+victim          = 0|actor
+victim_wpn      = 0|actor
+use             = false
+use_wpn         = false
+
+;--------------------------------------------------------------------------
+[walker@val_rob_leader_start]
+path_walk           = leader_walk
+path_look           = leader_look
+on_info             = {-val_rob_no_thanx +val_rob_actor_enter} remark@val_rob_leader_call
+on_info2            = {+val_rob_no_thanx} remark@val_rob_leader_ignore %-val_rob_buying%
+meet                = meet@ignore_abuse ;meet@val_rob_start
+
+[remark@val_rob_leader_call]
+anim                = wait
+snd                 = val_rob_leader_call
+tips                = val_rob_leader_call
+target              = actor
+on_actor_dist_ge_nvis = 35 | walker@val_rob_leader_start
+on_actor_dist_le_nvis = 10 | remark@val_rob_leader_talk
+meet                = meet@ignore_abuse ;meet@val_rob_start
+
+[remark@val_rob_leader_talk]
+anim                = wait
+target              = actor
+on_info             = {+val_rob_buying} remark@val_rob_leader_wait_to_go %+val_rob_no_thanx%
+on_actor_dist_ge    = 35 | walker@val_rob_leader_start
+meet                = meet@val_rob_start
+
+[remark@val_rob_leader_wait_to_go]
+anim                = wait
+on_timer            = 4500 | walker@val_rob_leader_to_kamp
+meet                = meet@val_rob_start
+
+[walker@val_rob_leader_to_kamp]
+path_walk           = leader_kamp_walk
+path_look           = leader_kamp_look
+def_state_moving1   = run
+def_state_moving2   = run
+def_state_moving3   = run
+on_signal           = arrived | remark@val_rob_leader_jeer
+meet                = no_meet
+
+[remark@val_rob_leader_jeer]
+anim                = wait_na
+snd                 = val_rob_leader_jeer
+tips                = val_rob_leader_jeer_1
+on_signal           = sound_end | kamp@val_rob_kamp
+meet                = no_meet ;meet@val_rob_ignore
+
+[remark@val_rob_leader_ignore]
+path_walk           = leader_walk
+path_look           = leader_look
+on_actor_dist_le_nvis = 35 | walker@val_rob_leader_to_kamp_no_jeer
+meet                = no_meet ;meet@val_rob_ignore
+
+[walker@val_rob_leader_to_kamp_no_jeer]
+path_walk           = leader_kamp_walk
+path_look           = leader_kamp_look
+def_state_moving1   = walk
+def_state_moving2   = walk
+def_state_moving3   = walk
+on_signal           = arrived | kamp@val_rob_kamp
+meet                = no_meet
+
+;--------------------------------------------------------------------------
+; the farmstead guard positions
+;--------------------------------------------------------------------------
+[logic@val_rob_guard1]
+active = walker@val_rob_guard1
+
+[walker@val_rob_guard1]
+path_walk = guard1_walk
+path_look = guard1_look
+meet      = meet@val_rob_warn
+
+[logic@val_rob_guard2]
+active = walker@val_rob_guard2
+
+[walker@val_rob_guard2]
+path_walk = guard2_walk
+path_look = guard2_look
+meet      = meet@val_rob_warn
+
+;--------------------------------------------------------------------------
+; the rest of the farmstead guys
+;--------------------------------------------------------------------------
+[logic@val_rob_kamp]
+active = kamp@val_rob_kamp

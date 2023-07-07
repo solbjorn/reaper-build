@@ -24,7 +24,7 @@ function evaluator_need_trade:__init(storage, name) super (nil, name)
 end
 
 function evaluator_need_trade:is_vip()
-	return (self.object:character_community()=="stalker" and self.object:relation(db.actor) == game_object.friend) or (self.object:story_id() ~= 4294967296 and self.object:story_id() ~= 424)
+	return (self.object:character_community()=="stalker" and self.object:relation(db.actor) == game_object.friend) or (self.object:is_story_object() and self.object:story_id() ~= 424)
 end
 
 function evaluator_need_trade:evaluate()
@@ -53,7 +53,7 @@ function action_punch_activity:initialize()
 	self.object:set_desired_direction()
 	local obj = alife():object(self.object:id())
 	--story NPCs will not run but will call Mecheniy
-	self.is_story = obj.m_story_id and obj.m_story_id ~= 4294967296
+	self.is_story = obj:is_story_object()
 	self.desired_vx = nil
 
 	self.state = state_looking
@@ -186,7 +186,7 @@ function addCommonPrecondition_tm(action)
 	action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
 end
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local operators    = {}
 	local properties  = {}
 

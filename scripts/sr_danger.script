@@ -10,14 +10,14 @@ function danger_territory:__init(obj, storage)
 	self.st = storage
 end
 function danger_territory:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 function danger_territory:deactivate(delta)
 	if sr_danger.territory ~= nil then sr_danger.territory[self.object:name()] = nil end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(obj, storage)
+function add_to_binder(obj, storage)
 	storage.actions[danger_territory(obj, storage)] = true
 end
 

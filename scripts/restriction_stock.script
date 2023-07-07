@@ -32,8 +32,8 @@ function restriction_of_stock(ItemObj,Fix)
 	local sect = ItemObj:section()
 	local size = overrides[sect]
 	if not size then
-		local w = read_line(sect, "inv_grid_width")
-		local h = read_line(sect, "inv_grid_height")
+		local w = config:r_u32_cache(sect, "inv_grid_width")
+		local h = config:r_u32_cache(sect, "inv_grid_height")
 		size = w * h
 	end
 
@@ -42,7 +42,7 @@ function restriction_of_stock(ItemObj,Fix)
 		if InvStat > InvMax then
 			amk.send_tip(msg[math.random(#msg)],nil,nil,5)
 			amk.drop_item(db_actor, ItemObj)
-			if isWeapon(ItemObj) then
+			if ItemObj:is_weapon() then
 				ammo_discharge(ItemObj)
 			end
 		end

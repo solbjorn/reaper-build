@@ -2,6 +2,7 @@
 -- Mob Jump
 ----------------------------------------------------------------------------------------------------
 -- Разработчик: Jim
+-- Доработано для рандомного выбора из нескольких точек прыжка
 ----------------------------------------------------------------------------------------------------
 
 local STATE_START_LOOK		= 1
@@ -41,7 +42,7 @@ function mob_jump:reset_scheme()
 		return
 	end
 
-	self.point = self.jump_path:point(0):add(self.st.offset)
+	self.point = vector().add(self.jump_path:point(math.random(0,self.jump_path:count()-1)), self.st.offset)
 
 	self.state_current  = STATE_START_LOOK
 end
@@ -51,7 +52,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function mob_jump:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
 	end
 
@@ -71,6 +72,7 @@ function mob_jump:update(delta)
 	end
 
 	if self.state_current == STATE_JUMP then
+		self.point = vector().add(self.jump_path:point(math.random(0,self.jump_path:count()-1)), self.st.offset)
 		self.object:jump(self.point, self.st.ph_jump_factor)
 		self.st.signals["jumped"] = true
 		xr_logic.mob_release(self.object)
@@ -80,7 +82,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- ADD_TO_BINDER
 ----------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	storage.actions[ mob_jump( npc, storage ) ] = true
 end
@@ -99,7 +101,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	local offset_str		= utils.cfg_get_string(ini, section, "offset",			npc, true, "")
 
-	local elems				= parse_names(offset_str)
+	local elems				= string.parse_names(offset_str)
 
 	storage.offset			= vector():set(tonumber(elems[1]), tonumber(elems[2]), tonumber(elems[3]))
 

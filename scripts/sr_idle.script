@@ -14,11 +14,11 @@ function action_idle:reset_scheme()
 end
 
 function action_idle:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[action_idle(npc, storage)] = true
 end
 

@@ -2,6 +2,22 @@
 Зоны пси-излучения. Отыгрывают постпроцесс и фантомов по настройкам из custom_data
 --------------------------------------------------------------------------------------------------]]
 
+--[[
+Ray Twitty aka Shadows, 25.05.2023
+
+Комплекс исправлений схемы:
+1. Добавлена возможность установить зону как укрытие от пси-излучения. В этой зоне не будет наноситься урон, а все другие эффекты практически сведены к нулю.
+Для настройки укрытия необходимо прописать новый параметр "shelter" в секцию логики sr_psy_antenna и задать ему значение true. По умолчанию этот параметр установлен как false.
+Другие параметры схемы для укрытия прописывать не нужно.
+2. Разблокировано сохранение и загрузка информации в зоне о том, что ГГ находится внутри.
+Это исправляет косяк с накоплением счетчика эффектов воздействия, если сохраниться в зоне несколько раз.
+3. Вследствие предыдущего пункта возникла проблема с возвращением ГГ на уровень с зоной, если она не была отключена по сюжету (эффекты просто не включались).
+Поэтому была добавлена проверка загруженной информации о наличии активных эффектов в ГГ. Если эффектов нет, они создаются заново.
+4. Исправлено неотображение постпроцесса при появлении ГГ непосредственно в зоне (например, если переход на локацию находится внутри этой зоны).
+5. Исправлено неотображение постпроцесса при повторном входе в зону (в некоторых случаях, из-за особенностей сравнения вещественных чисел в Lua, постпроцесс не восстанавливался).
+6. Тип урона заменен на удар по пси-здоровью.
+]]
+
 class "PsyAntenna"
 function PsyAntenna:__init				()
 -- ----------------------------------------------------------------------------------------
@@ -27,6 +43,9 @@ function PsyAntenna:__init				()
 	self.sound_intensity_base			= 0	-- базовая интенсивность. к ней стремится текущая со скоростью self.intensity_inertion
 	self.postprocess_count				= 0  --'счетчик зарегистрированных постпроцессов
 	self.postprocess					= {} --'контейнер постпроцессов
+	-- Ray Twitty aka Shadows: дополнительные параметры
+	self.data_loaded					= false -- маркер произведенной загрузки данных ГГ
+	self.disabled						= false -- блокировка воздействия на ГГ (прежде всего для укрытий)
 
 -- ----------------------------------------------------------------------------------------
 -- sound
@@ -47,10 +66,8 @@ end
 function PsyAntenna:construct			()
 end
 function PsyAntenna:update_psy_hit(dt)
-	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("cs_psy_danger")
-	if self.hit_intensity > 0.01 then
-		sa_main.radar_psy_zone()
+	if self.hit_intensity > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: убираем статик, если заблокировано
 		if custom_static == nil then
 			custom_static = hud:AddCustomStatic("cs_psy_danger", true)
 			custom_static:wnd():SetTextST("st_psy_danger")
@@ -64,7 +81,7 @@ function PsyAntenna:update_psy_hit(dt)
 		self.hit_time					= time_global()
 
 		local power						= self.hit_amplitude*self.hit_intensity
-		if power > 0.01 then
+		if power > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: игнорируем урон, если заблокировано
 			local psy_hit 				= hit()
 			psy_hit.power 				= power
 			psy_hit.direction 			= vector():set( 0, 0, 0 )
@@ -86,7 +103,7 @@ function PsyAntenna:generate_phantoms()
 	if time_global() - self.phantom_time > self.phantom_idle then
 		self.phantom_time				= time_global()
 		self.phantom_idle = math.random(5000,10000)
-		if math.random() < self.phantom_spawn_probability then
+		if math.random() < self.phantom_spawn_probability and not self.disabled then -- Ray Twitty aka Shadows: запрещаем спавн новых фантомов, если заблокировано
 			if phantom_manager:phantom_count() < self.phantom_max then
 				local radius = self.phantom_spawn_radius * ( math.random()/2.0+0.5 )
 				local ang    = self.phantom_fov * math.random() - self.phantom_fov * 0.5
@@ -117,6 +134,12 @@ function PsyAntenna:update_sound()
 	self.sound_obj_right.volume = 1 / vol - 1
 end
 function PsyAntenna:update_postprocess(pp)
+	-- Ray Twitty aka Shadows: если движок уже удалил постпроцесс, то при входе в зону его надо будет восстановить
+	if level.has_pp_effector(pp.idx) == 0 then
+		self.postprocess_count = self.postprocess_count - 1
+		return false
+	end
+
 	if pp.intensity == 0 then
 		self.postprocess_count = self.postprocess_count - 1
 		level.remove_pp_effector(pp.idx)
@@ -127,7 +150,17 @@ function PsyAntenna:update_postprocess(pp)
 	return true
 end
 function PsyAntenna:update(dt)
+	-- Ray Twitty aka Shadows: в первый апдейт ГГ дельта всегда 0, что приводило к некорректной работе алгоритма и отсутствию постпроцесса
+	if dt == 0 then
+		dt = 1
+	end
+
 	function update_intensity(intensity_base, intensity)
+		-- Ray Twitty aka Shadows: если заблокировано, то уменьшаем эффект до минимально возможного, чтобы его не подчистил движок
+		if self.disabled then
+			intensity_base = 0.001
+		end
+
 		local di = self.intensity_inertion * dt * 0.001
 		local ii = intensity_base
 		if math.abs(intensity_base - intensity) >= di then
@@ -172,13 +205,13 @@ function PsyAntenna:save(p)
 		p:w_float(v.intensity_base)
 		p:w_u16(v.idx)
 	end
+	-- Ray Twitty aka Shadows: сохраняем новые данные
+	p:w_bool(self.disabled)
 end
 function PsyAntenna:load(p)
-	local unused = p:r_float()
-	self.hit_intensity = 0
-	self.sound_intensity = p:r_float()
-	unused = p:r_float()
-	self.sound_intensity_base = 0
+	self.hit_intensity  = p:r_float()
+	self.sound_intensity  = p:r_float()
+	self.sound_intensity_base = p:r_float()
 	self.mute_sound_threshold = p:r_float()
 
 	self.postprocess_count = p:r_u8()
@@ -187,12 +220,15 @@ function PsyAntenna:load(p)
 	for i=1, self.postprocess_count do
 		local k = p:r_stringZ()
 		local ii = p:r_float()
-		unused = p:r_float()
+		local ib = p:r_float()
 		local idx = p:r_u16()
-		self.postprocess[k] = {intensity_base = 0, intensity = ii, idx = idx}
+		self.postprocess[k] = {intensity_base = ib, intensity = ii, idx = idx}
 		level.add_pp_effector(k, idx, true)
 		level.set_pp_effector_factor(idx, ii)
 	end
+	-- Ray Twitty aka Shadows: загружаем новые данные и ставим маркер
+	self.disabled = p:r_bool()
+	self.data_loaded = true
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -212,33 +248,38 @@ function action_psy_antenna:__init( obj, storage )
 	self.state  = state_void --' еще не ясно, в зоне он, или нет
 end
 function action_psy_antenna:reset_scheme( loading )
+	-- Ray Twitty aka Shadows: включаем загрузку состояния зоны с проверкой загруженной информации об эффектах в ГГ
+	if loading and psy_antenna.data_loaded then
+		self.state = xr_logic.pstor_retrieve( self.object, "inside"  )
+	else
 		if self.state == state_inside then
 			self:zone_leave()
 		end
 
 		self.state = state_void
 
-		self:switch_state(db_actor)
+		self:switch_state()
+	end
 end
 function action_psy_antenna:deactivate()
 	if self.state == state_inside then
 		self:zone_leave()
 	end
 end
-function action_psy_antenna:update( delta )
-	if xr_logic.try_switch_to_another_section( self.object, self.st, db_actor ) then
+function action_psy_antenna:update()
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
 	end
-	self:switch_state( actor )
+	self:switch_state()
 end
-function action_psy_antenna:switch_state( actor )
+function action_psy_antenna:switch_state()
 	if self.state ~= state_inside then
-		if self.object:inside( actor:position() ) then
+		if self.object:inside( db_actor:position() ) then
 			self:zone_enter()
 			return
 		end
 	else
-		if not self.object:inside( actor:position() ) then
+		if not self.object:inside( db_actor:position() ) then
 			self:zone_leave()
 			return
 		end
@@ -251,6 +292,11 @@ function action_psy_antenna:zone_enter()
 	psy_antenna.mute_sound_threshold = psy_antenna.mute_sound_threshold + self.st.mute_sound_threshold
 	psy_antenna.hit_intensity  = psy_antenna.hit_intensity  + self.st.hit_intensity
 	psy_antenna.phantom_spawn_probability = psy_antenna.phantom_spawn_probability + self.st.phantom_prob
+
+	-- Ray Twitty aka Shadows: заходим в укрытие
+	if self.st.shelter then
+		psy_antenna.disabled = true
+	end
 
 	local postproc = self.st.postprocess
 	if postproc == "nil" then
@@ -275,18 +321,22 @@ function action_psy_antenna:zone_leave()
 
 	psy_antenna.phantom_spawn_probability = psy_antenna.phantom_spawn_probability - self.st.phantom_prob
 
+	-- Ray Twitty aka Shadows: выходим из укрытия
+	if self.st.shelter then
+		psy_antenna.disabled = false
+	end
+
 	local postproc = self.st.postprocess
 	if postproc == "nil" then
 		return
 	end
 
 	if psy_antenna.postprocess[postproc] ~= nil then
-		local new_base = psy_antenna.postprocess[postproc].intensity_base - self.st.intensity
-		if new_base < 0.001 then new_base = 0 end
-		psy_antenna.postprocess[postproc].intensity_base = new_base
+		psy_antenna.postprocess[postproc].intensity_base = psy_antenna.postprocess[postproc].intensity_base - self.st.intensity
 	end
 end
 function action_psy_antenna:save()
+	xr_logic.pstor_store( self.object, "inside", self.state ) -- Ray Twitty aka Shadows: сохраняем информацию о том, находимся в зоне или нет
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -316,7 +366,7 @@ function load(p)
 	end
 end
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	if not psy_antenna then
 		psy_antenna = PsyAntenna()
 		psy_antenna:construct()
@@ -334,13 +384,19 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 
-	if ini:section_exist(section) then
-		st.intensity     = get_field_number("eff_intensity") * 0.01
-		st.postprocess   = (ini:line_exist(section, "postprocess") and ini:r_string(section, "postprocess")) or "psy_antenna.ppe"
+	if not ini:section_exist(section) then return end
 
-		st.hit_intensity = get_field_number("hit_intensity") * 0.01
-		st.phantom_prob  = get_field_number("phantom_prob", 0) * 0.01
+	st.postprocess   = (ini:line_exist(section, "postprocess") and ini:r_string(section, "postprocess")) or "psy_antenna.ppe"
+	st.phantom_prob  = get_field_number("phantom_prob", 0) * 0.01
+	st.mute_sound_threshold   = get_field_number("mute_sound_threshold", 0)
 
-		st.mute_sound_threshold   = get_field_number("mute_sound_threshold", 0)
+	-- Ray Twitty aka Shadows: читаем параметры укрытия
+	st.shelter				= ini:r_bool_ex(section, "shelter", false)
+	if st.shelter then
+		st.intensity		= 0
+		st.hit_intensity	= 0
+	else
+		st.intensity		= get_field_number("eff_intensity") * 0.01
+		st.hit_intensity	= get_field_number("hit_intensity") * 0.01
 	end
 end

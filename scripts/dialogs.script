@@ -1,26 +1,3 @@
-local quest_section = {
-	["gunslinger_flash"]	= true,
-	["af_blood_tutorial"]	= true,
-	["esc_wounded_flash"]	= true,
-	["quest_case_02"]	= true,
-	["dar_document1"]	= true,
-	["dar_document2"]	= true,
-	["dar_document3"]	= true,
-	["dar_document4"]	= true,
-	["dar_document5"]	= true,
-	["kruglov_flash"]	= true,
-	["lab_x16_documents"]	= true,
-	["good_psy_helmet"]	= true,
-	["bad_psy_helmet"]	= true,
-	["decoder"]		= true,
-	["dynamite"]		= true,
-	["quest_case_01"]	= true,
-	["hunters_toz"]		= true,
-	["bar_ecolog_flash"]	= true,
-	["bar_tiran_pda"]	= true,
-	["bar_lucky_pda"]	= true
-}
-
 function allow_break_dialog(first_speaker, second_speaker, id)
 	if second_speaker:profile_name() == "osoznanie" then
 		return false
@@ -42,8 +19,6 @@ function disable_talk_victim(first_speaker, second_speaker)
 end
 
 function punch(first_speaker, second_speaker)
-	--abort("KICK ASS !!!!")
-	--xr_punch.punch[first_speaker:id()] = second_speaker
 	db.storage[second_speaker:id()].punch.enabled = true
 end
 
@@ -61,32 +36,37 @@ function is_wounded(first_speaker, second_speaker)
 
 	return xr_wounded.is_wounded(first_speaker)
 end
+
 function is_opp_wounded(first_speaker, second_speaker, dialog_id)
     if db.storage[second_speaker:id()].wounded ~= nil and
        db.storage[second_speaker:id()].wounded.wound_manager.can_use_medkit == true
     then
         return false
     end
-	return	xr_wounded.is_wounded(second_speaker)
+	return xr_wounded.is_wounded(second_speaker)
 end
+
 function is_not_wounded(first_speaker, second_speaker)
-	return not this.is_wounded(first_speaker, second_speaker)
+	return not is_wounded(first_speaker, second_speaker)
 end
+
 function actor_have_medkit(first_speaker, second_speaker)
 	return first_speaker:object("medkit") ~= nil or
 		   first_speaker:object("medkit_army") ~= nil or
 		   first_speaker:object("medkit_scientic") ~= nil
 end
+
 function actor_have_bandage(first_speaker, second_speaker)
 	return first_speaker:object("bandage") ~= nil
 end
+
 function transfer_medkit(first_speaker, second_speaker)
 	if first_speaker:object("medkit") ~= nil then
-		dialogs.relocate_item_section(second_speaker, "medkit", "out")
+		transfer(second_speaker, "medkit", "out")
 	elseif first_speaker:object("medkit_army") ~= nil then
-		dialogs.relocate_item_section(second_speaker, "medkit_army", "out")
+		transfer(second_speaker, "medkit_army", "out")
 	else
-		dialogs.relocate_item_section(second_speaker, "medkit_scientic", "out")
+		transfer(second_speaker, "medkit_scientic", "out")
 	end
 
 	--' Тут надо анлочить аптечку для использования.
@@ -108,56 +88,20 @@ function transfer_medkit(first_speaker, second_speaker)
 	end
 end
 function transfer_bandage(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "bandage", "out")
+	transfer(second_speaker, "bandage", "out")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
 function kill_yourself(npc, actor)
 	npc:kill(actor)
 end
 
---' Obsolete, do not use!!!
-function relocate_item(victim, obj, type)
-	if db.actor and victim then
-		if type == "in" then
-			victim:transfer_item(obj, db.actor)
-		elseif type == "out" then
-			db.actor:transfer_item(obj, victim)
-		end
-		--'news_manager.relocate_item(db.actor, type, obj)
-	end
-end
---' Use this function instead.
 function relocate_item_section(victim, section, type)
-	if db.actor and victim then
-		if type == "in" then
-
-			--' Трансферить нужно только квестовые предметы.
-			if quest_section[section] == true and
-			   victim:object(section) ~= nil
-			then
-				victim:transfer_item(victim:object(section), db.actor)
-			else
-				alife():create(section,
-					    db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-			end
-		elseif type == "out" then
-			db.actor:transfer_item(db.actor:object(section), victim)
-		end
-		news_manager.relocate_item(db.actor, type, section)
-	end
-end
-
-function relocate_money(victim, num, type)
-	if db.actor and victim then
-		if type == "in" then
-			db.actor:give_money(num)
-		elseif type == "out" then
-			db.actor:transfer_money(num, victim)
-		end
-		news_manager.relocate_money(db.actor, type, num)
+	if quest_section[section] then
+		transfer(victim, section, type)
+	elseif type == "in" then
+		got(section)
+	else
+		lost(section)
 	end
 end
 
@@ -203,7 +147,7 @@ function level_garbage(first_speaker, second_speaker)
 end
 
 function level_agroprom(first_speaker, second_speaker)
-	return level.name() == "l03_agroprom_ai2" or level.name() == "l03_agroprom"
+	return level.name() == "l03_agroprom"
 end
 
 -----------------------------------------------------------------------------------
@@ -251,29 +195,4 @@ end
 -----------------------------------------------------------------------------------
 function has_2000_money(first_speaker, second_speaker)
 	return first_speaker:money() >= 2000
-end
-
------------------------------------------------------------------------------------
--- TRADE
------------------------------------------------------------------------------------
---' Инициализация торговли
-function trade_init(seller, buyer)
-	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
-	xr_position.setPosition(db.storage[seller:id()].meet.Seller,
-							db.storage[seller:id()].meet.Seller:level_vertex_id())
-	db.storage[seller:id()].meet.Buyer = buyer
-end
-
-function want_trade(seller, buyer)
-	if seller:relation(buyer) == game_object.friend or
-		seller:relation(buyer) == game_object.neutral
-	then
-		return true
-	else
-		return false
-	end
-end
-
-function dont_want_trade(seller, buyer)
-	return not want_trade(seller,buyer)
 end

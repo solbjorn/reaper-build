@@ -1,89 +1,154 @@
-local trade_manager = {}
-
-local generic_ltx = "misc\\trade_generic.ltx"
-local generic_ini = ini_file(generic_ltx)
-
-function trade_init(npc, cfg)
-	local section = "trader"
-	local tt = {}
-	trade_manager[npc:id()] = tt
-	local ini
-
-	if cfg == nil then
-		ini = generic_ini
-		tt.cfg_ltx = generic_ltx
-		npc:disable_trade()
-	else
-		ini = ini_file(cfg)
-		tt.cfg_ltx = cfg
-	end
-	tt.config = ini
-
-	if ini:section_exist(section) then
-		if not ini:line_exist(section, "buy_condition") or not ini:line_exist(section, "sell_condition") then
-			abort("Incorrect trader settings. Missing buy_condition or missing sell_condition. [%s]->[%s]", npc:name(), cfg)
-			return
-		end
-		local str = ini:r_string(section, "buy_condition")
-		tt.buy_condition = xr_logic.parse_condlist_q(str)
-
-		str = ini:r_string(section, "sell_condition")
-		tt.sell_condition = xr_logic.parse_condlist_q(str)
-
-		-- список закупки
-		str = ini:line_exist(section, "buy_supplies") and ini:r_string(section, "buy_supplies")
-		if str then
-			tt.buy_supplies = xr_logic.parse_condlist_q(str)
-		end
-	end
-end
-
+local math_random = math.random
 local xr_logic_pick_section_from_condlist = xr_logic.pick_section_from_condlist
 
-function update(npc)
-	local tt = trade_manager[npc:id()]
+-- game hours
+local DEF_RESUPPLY_TIME = 50
+local DEF_RESUPPLY_RND = 20
 
-	if tt == nil then
-		return
-	end
+local trade_manager_tbl = {}
 
-	if not tt.update_time then
-		tt.update_time = 0
-		if not npc:is_trade_enabled() then npc:enable_trade() end
-	end
-	if time_global() < tt.update_time then return end
-	tt.update_time = time_global() + 3600000
+local generic_ltx = "misc\\trade_generic.ltx"
+local generic_tt
 
-	local str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.buy_condition)
-	if tt.current_buy_condition ~= str then
-		npc:buy_condition(tt.config, str)
-		tt.current_buy_condition = str
-	end
+local traders = {
+	['amk_vitek_voron']        = { val = "voron_enough",    cnt = 5 }, -- Витёк Ворон
+	['mil_freedom_member0018'] = { val = "maks_enough",     cnt = 4 }, -- Макс
+	['escape_trader']          = { val = "sidor_enough",    cnt = 3 }, -- Сидорович
+	['bar_barman']             = { val = "barman_enough",   cnt = 5 }, -- Бармен
+	['bar_dolg_petrenko']      = { val = "petrenko_enough", cnt = 4 }, -- Петренко
+	['mil_freedom_member0021'] = { val = "skraga_enough",   cnt = 3 }, -- Скряга
+	['yantar_ecolog_general']  = { val = "sakharov_enough", cnt = 5 }, -- Сахаров
+	['Sak']                    = { val = "sak_enough",      cnt = 5 }, -- Сяк
+	['doktor']                 = { val = "doktor_enough",   cnt = 4 }, -- Доктор в Припяти
+	['sak_military_stalker']   = { val = "sherstyk_enough", cnt = 3 }, -- Шерстюк
+	['val_bandit_trader']      = { val = "jlob_enough",     cnt = 3 }, -- Жила
+	['esc_bridge_soldier5']    = { val = "kuznezov_enough", cnt = 4 }, -- Кузнецов
+	['esc_dan']                = { val = "dan_enough",      cnt = 5 }  -- Дэн
+}
 
-	str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.sell_condition)
-	if tt.current_sell_condition ~= str then
-		npc:sell_condition(tt.config, str)
-		tt.current_sell_condition = str
-	end
+local checklist = { "amk_mini_bar_kulinar", "ecolog_linspiro", "trader_banderos" }
+for name, _ in pairs(traders) do
+	checklist[#checklist + 1] = name
+end
 
-	if tt.buy_supplies == nil then
-		trade_manager[npc:id()] = nil
-		return
-	end
+function trade_init_generic()
+	local ini = ini_file(generic_ltx)
 
-	str = xr_logic_pick_section_from_condlist(db_actor, npc, tt.buy_supplies)
-	if tt.current_buy_supplies ~= str then
-		if tt.resuply_time ~= nil and tt.resuply_time > time_global() then
-			return
+	generic_tt = {
+		config		= ini,
+		buy_condition	= xr_logic.parse_condlist(ini:r_string("trader", "buy_condition")),
+		sell_condition	= xr_logic.parse_condlist(ini:r_string("trader", "sell_condition"))
+	}
+end
+
+function trade_init(npc, cfg)
+	npc:disable_trade()
+
+	if not cfg or cfg == generic_ltx then
+		if not generic_tt then
+			trade_init_generic()
 		end
-		npc:buy_supplies(tt.config, str)
-		tt.current_buy_supplies = str
-		tt.resuply_time = time_global() + 24*3600000
+
+		return
+	end
+
+	local tt = trade_manager_tbl[npc:id()]
+	if tt then return end
+
+	local ini = ini_file(cfg)
+	local section = "trader"
+
+	if not ini:line_exist(section, "buy_condition") or
+	   not ini:line_exist(section, "sell_condition") or
+	   not ini:line_exist(section, "buy_supplies") then
+		abort("Incorrect trader settings. Missing buy_condition or  sell_condition or buy_supplies. [%s]->[%s]", npc:name(), cfg)
+		return
+	end
+
+	trade_manager_tbl[npc:id()] = {
+		config		= ini,
+
+		-- коэфициенты покупки
+		buy_condition	= xr_logic.parse_condlist(ini:r_string(section, "buy_condition")),
+		-- коэфициенты продажи
+		sell_condition	= xr_logic.parse_condlist(ini:r_string(section, "sell_condition")),
+		-- список закупки
+		buy_supplies	= ini:r_string(section, "buy_supplies"),
+
+		resupply_time	= ini:r_float_ex(section, "resupply_time", DEF_RESUPPLY_TIME),
+		resupply_rnd	= ini:r_float_ex(section, "resupply_rnd", DEF_RESUPPLY_RND)
+	}
+end
+
+function first_update(npc)
+	npc:enable_trade()
+
+	local tt = trade_manager_tbl[npc:id()] or generic_tt
+	if not tt then return end
+
+	local str = xr_logic_pick_section_from_condlist(npc, tt.buy_condition)
+	if str then
+		npc:buy_condition(tt.config, str)
+	end
+
+	str = xr_logic_pick_section_from_condlist(npc, tt.sell_condition)
+	if str then
+		npc:sell_condition(tt.config, str)
+	end
+
+	if tt.buy_supplies or traders[npc:name()] then
+		resupply(npc)
 	end
 end
 
-function save(obj, packet)
+function resupply(npc)
+	local sobj = server_object(npc)
+	local next_resupply = sobj.resupply_time
+	if next_resupply > time_game_hours then return end
+
+	local tt = trade_manager_tbl[sobj.id] or generic_tt
+	if tt.buy_supplies then
+		local str = xr_logic.parse_condlist(tt.buy_supplies)
+		str = xr_logic_pick_section_from_condlist(npc, str)
+		if str then
+			npc:buy_supplies(tt.config, str)
+		end
+	end
+
+	local lim = traders[npc:name()]
+	if lim then
+		del_value(lim.val)
+	end
+
+	local resupply_time = tt.resupply_time or DEF_RESUPPLY_TIME
+	local resupply_rnd = tt.resupply_rnd or DEF_RESUPPLY_RND
+	next_resupply = next_resupply - time_game_hours
+	while next_resupply <= 0 do
+		next_resupply = next_resupply + resupply_time + math_random(-resupply_rnd, resupply_rnd)
+	end
+	sobj.resupply_time = time_game_hours + next_resupply
 end
 
-function load(obj, packet)
+function check_supplies()
+	local sobj, obj
+	for i = 1, #checklist do
+		sobj = server_object(checklist[i])
+		if sobj and sobj.resupply_time ~= 0 and sobj.resupply_time <= time_game_hours and
+		   sobj:alive() then
+			obj = level_object(sobj.id)
+			if obj and obj:binded_object() then
+				resupply(obj)
+			else
+				sobj.resupply_time = 0
+			end
+
+			news_main.send_resupply(sobj)
+		end
+	end
+
+	timer("trade_manager.check_supplies", 5 * 60 * 1000, true)
+end
+
+function new_game()
+	timer("trade_manager.check_supplies", 5 * 60 * 1000, true)
 end

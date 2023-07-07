@@ -118,7 +118,7 @@ function evaluator_crazy_grenadier:evaluate()
 
 	if self.a.testing then
 		if not self.a.test_grenades.hi or not self.a.test_grenades.lo or
-			not alife():object(self.a.test_grenades.hi) or not alife():object(self.a.test_grenades.hi) or
+			not alife():object(self.a.test_grenades.hi) or not alife():object(self.a.test_grenades.lo) or
 			not level_object_by_id(self.a.test_grenades.hi) or not level_object_by_id(self.a.test_grenades.lo)
 			then
 			self.a.testing = false
@@ -138,7 +138,7 @@ function evaluator_crazy_grenadier:evaluate()
 				self.a.test_begun = true
 				return false
 			end
-			if self.a.test_begun and not self.a.test_running and get_grenade(self.a.test_grenades.hi) and get_grenade(self.a.test_grenades.lo) then
+			if not self.a.test_running and get_grenade(self.a.test_grenades.hi) and get_grenade(self.a.test_grenades.lo) then
 
 				throw(self.a.test_grenades.hi,'hi',self.a.target_point)
 				--level.map_add_object_spot(self.a.test_grenades.hi, "green_location", 1)
@@ -237,15 +237,17 @@ function evaluator_crazy_grenadier:check_grenade(section)
 	--далеко кидать никак, мы ж не атлеты...
 	if throw_dist>grenade_max_dist then return false end
 
-	local throw_dir=be:position():sub(np)
 	-- если накроет взрывом - не будем кидать
-	if throw_dist<self.a.grenades[section].radius then return false end
---[[
+	if throw_dist<self.a.grenades[section].radius then return false
+	-- ƒымовые гранаты нет смысла кидать в мутантов
+	elseif section=="grenade_gd-05" and not be:is_stalker() then return false
+	end
+
 	--теперь проверим, чтоб не задеть своих и нейтралов
 	local function check_item(obj)
 		obj=obj:object()
 		if obj==nil or obj.clsid==nil then return false end
-		if not obj:clsid() == clsid.actor and not obj:clsid() == clsid.script_stalker then return false end
+		if not obj:is_stalker() then return false end
 		if npc:relation(obj) ~= game_object_enemy then
 			local d=bp:distance_to(obj:position())
 			if d<self.a.grenades[section].radius then return true end
@@ -256,6 +258,7 @@ function evaluator_crazy_grenadier:check_grenade(section)
 	for o in npc:memory_visible_objects() do
 		if check_item(o) then return false end
 	end
+--[[
 	for o in npc:memory_sound_objects() do
 		if check_item(o) then return false end
 	end
@@ -352,13 +355,12 @@ function action_fire_in_the_hole:execute()
 
 			local en_inj,fr_inj = false,false
 			local r = self.a.grenades[lobj_grenade:section()].radius
-			local obj, od
-			for k,v in pairs(db.storage) do
-				obj = level_object_by_id(k)
-				if obj and obj:alive() then
+			local od
+			for k, obj in pairs(db.creatures) do
+				if obj:alive() then
 					od=self.a.target_point:distance_to(obj:position())
 					if od<r then
-						if IsStalker(obj) then
+						if obj:is_stalker() then
 							if npc:relation(obj) == game_object_enemy then
 								en_inj=true
 							else
@@ -367,7 +369,7 @@ function action_fire_in_the_hole:execute()
 									break
 								end
 							end
-						elseif IsMonster(obj) then
+						elseif obj:is_monster() then
 							en_inj=true
 						end
 					end
@@ -394,7 +396,7 @@ function action_fire_in_the_hole:execute()
 			snd:play_no_feedback(npc, sound_object.s3d, 0, npc:position(), 1.0)
 
 			self.start_time = time_global()
-			self.throw_time = self.start_time + 1000
+			self.throw_time = self.start_time + snd:length()
 			self.end_time = self.throw_time + 300
 
 			grenadiers[npc:id()]=self.a.grenade
@@ -407,7 +409,7 @@ function action_fire_in_the_hole:execute()
 		npc:set_desired_position(self.a.from_pos)
 		npc:clear_animations()
 		local be = npc:best_enemy()
-		if be and npc:see(be) then
+		if be and be:alive() and npc:see(be) then
 			npc:set_sight(look.point,be:position())
 			npc:set_desired_direction(be:position():sub(npc:position()))
 		end
@@ -511,7 +513,7 @@ local xr_actions_id_alife = xr_actions_id.alife
 local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
 local stalker_ids_action_danger_planner = stalker_ids.action_danger_planner
 
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 		local manager = object:motivation_action_manager()
 
 		local zombi=object:character_community()=="ecolog" or object:character_community()=="zombied" or object:character_community()=="trader" or
@@ -574,16 +576,14 @@ end
 
 function get_grenade_radius(section)
 	local r,t = 1000,0
-	local ini = system_ini()
-	local br = utils.cfg_get_number(ini, section, "blast_r", false, false, false, 1000)
-	local fr = utils.cfg_get_number(ini, section, "frags_r", false, false, false, 1000)
-	t = utils.cfg_get_number(ini, section, "destroy_time", false, false, false, 0)
+	local br = config:r_float_cache(section, "blast_r", 1000)
+	local fr = config:r_float_cache(section, "frags_r", 1000)
+	t = config:r_float_cache(section, "destroy_time", 0)
 	r = math.max(br,fr)
 	return r,t
 end
 
 function update(delta)
-
 	for k,v in pairs(pseudo_grenades) do
 		local sobj = alife():object(k)
 		if sobj then
@@ -655,13 +655,8 @@ function death_callback(npc)
 end
 
 function check_enemy(npc,be)
-	if not be then return false end
-	local be_clsid = be:clsid()
-	return npc:alive() and (
-		be_clsid == clsid_script_stalker or
-		be_clsid == clsid_actor or
-		(be_clsid >= clsid_bloodsucker_s and be_clsid <= clsid_zombie_s)
-		) and be:alive() and not be:wounded() and npc:see(be)
+	return be and npc:alive() and (be:is_stalker() or be:is_monster())
+		and be:alive() and not be:wounded() and npc:see(be)
 		and be:position():distance_to(level.vertex_position(be:level_vertex_id()))<2 --из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
 end
 

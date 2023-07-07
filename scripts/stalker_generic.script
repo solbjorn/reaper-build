@@ -21,9 +21,9 @@ function get_infos_from_data(npc, s)
 	local t = {}
 	if s then
 		for name in string_gfind( s, "(%|*[^%|]+%|*)%p*" ) do
-			local condlist = xr_logic.parse_condlist_q(name)
+			local condlist = xr_logic.parse_condlist(name)
 			if condlist then
-				t[#t+1] = xr_logic.pick_section_from_condlist(actor, npc, condlist)
+				t[#t+1] = xr_logic.pick_section_from_condlist(npc, condlist)
 			end
 		end
 	end
@@ -64,27 +64,8 @@ function reset_threshold_and_show_spot(npc, scheme, st, section)
 -- STALKER MAP SHOW
 ----------------------------------------------------------------------------------------------------------------------
 
-	local sim = alife()
-	local obj = sim and sim:object(npc:id())
-	if not obj then return end
-
-	local spot
-	if npc:character_community() ~= "zombied" then
-		spot = get_field_string("show_spot")
-		if spot then
-			spot = xr_logic.pick_section_from_condlist(actor, npc, xr_logic.parse_condlist_q(spot))
-		else
-			spot = "true"
-		end
-	else
-		spot = "false"
-	end
-
-	if spot == "false" then
-		-- пр€чем
-		obj:visible_for_map(false)
-	else
-		-- ставим
-		obj:visible_for_map(true)
+	local obj = server_object(npc)
+	if obj then
+		obj:visible_for_map(npc:character_community() ~= "zombied")
 	end
 end

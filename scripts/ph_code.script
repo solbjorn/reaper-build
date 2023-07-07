@@ -16,9 +16,6 @@ function codepad:reset_scheme()
     self.object:set_nonscript_usable(false)
 end
 
-function codepad:update(delta)
-end
-
 function codepad:use_callback(obj, who)
     local numpad = ui_numpad.numpad(self)
     level.start_stop_menu(numpad,true)
@@ -28,13 +25,13 @@ function codepad:OnNumberReceive(text)
     if self.st.code then
         if tonumber(text) == self.st.code then
             if self.st.on_code then
-                xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.on_code.condlist)
+                xr_logic.pick_section_from_condlist(self.object, self.st.on_code.condlist)
             end
         end
     else
         local condlist = self.st.on_check_code[text]
         if condlist then
-            xr_logic.pick_section_from_condlist(db_actor, self.object, condlist)
+            xr_logic.pick_section_from_condlist(self.object, condlist)
         end
     end
 end
@@ -43,7 +40,7 @@ function codepad:deactivate()
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[codepad(npc, storage)] = true
 end
 

@@ -1,18 +1,18 @@
+local day_night = {
+	["af_electra_flash"]		= true,
+	["af_electra_moonlight"]	= true,
+	["af_electra_sparkler"]		= true,
+	["af_night_star"]		= true,
+	["af_gold_fish"]		= true,
+	["af_soul"]			= true,
+	["af_dummy_pellicle"]		= true
+}
+
 class "se_artefact"	(cse_alife_item_artefact)
 
 function se_artefact:__init (section) super (section)
-    if section == "af_electra_flash" or
-       section == "af_electra_moonlight" or
-       section == "af_electra_sparkler" or
-	   section == "af_night_star" or
-	   section == "af_gold_fish" or
-	   section == "af_soul" or
-	   section == "af_dummy_pellicle" then
-       self.is_day_night = true
-    else
-       self.is_day_night = false
-    end
-    self.already_taken = false
+	self.is_day_night = day_night[section] or false
+	self.already_taken = false
 end
 --------------------
 function se_artefact:can_switch_offline ()
@@ -38,17 +38,20 @@ function se_artefact:can_switch_online ()
 
     if self.online == true then --обработаем ситуацию, когда артефакт в онлайне
        --если ночь (или актера нет или он дал дуба, то мы в онлайне и остаемся
-       if utils.electro_art_enabled () == true then
-          return true
-       end
+		local hours = level.get_time_hours()
+		if hours >= 0 and hours < 5 then
+			return true
+		end
+
        if not amk_offline_alife.sobj_is_far(self, 50) then
           return true  --если актер слишком близко, то оставляем все как есть
        end
        return false -- актер далеко - в оффлайн.
     else --обработаем ситуацию, когда арефакт в оффлайне
-       if utils.electro_art_enabled () == false then --если день, то ничего не делаем
-          return false
-       end
+		local hours = level.get_time_hours()
+		if not (hours >= 0 and hours < 5) then --если день, то ничего не делаем
+			return false
+		end
 
        if not amk_offline_alife.sobj_is_far(self, 50) then
           return false  --если актер слишком близко, то оставляем все как есть
@@ -60,7 +63,7 @@ end
 function se_artefact:STATE_Write(packet)
     cse_alife_item_artefact.STATE_Write(self, packet)
 
-    packet:w_bool(self.already_taken)
+	packet:w_bool(self.already_taken)
 end
 --------------------
 function se_artefact:STATE_Read(packet, size)
@@ -70,6 +73,6 @@ function se_artefact:STATE_Read(packet, size)
       return
     end
 
-    self.already_taken = packet:r_bool()
+	self.already_taken = packet:r_bool()
 end
 --------------------

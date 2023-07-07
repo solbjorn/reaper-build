@@ -1,17 +1,15 @@
-#include "ogse_config.h"
-#include "ogse_sunshafts.h"
+#define ECB_AA
 #include "common.h"
-#include "mblur.h"
 
 struct 	v2p
 {
   float4 tc0: 		TEXCOORD0;	// Center
-  float4 tc1: 		TEXCOORD1;	// LT 		 
+  float4 tc1: 		TEXCOORD1;	// LT
   float4 tc2: 		TEXCOORD2;	// RB
-  float4 tc3: 		TEXCOORD3;	// RT 
+  float4 tc3: 		TEXCOORD3;	// RT
   float4 tc4: 		TEXCOORD4;	// LB
-  float4 tc5:		TEXCOORD5;	// Left	/ Right	
-  float4 tc6:		TEXCOORD6;	// Top  / Bottom 
+  float4 tc5:		TEXCOORD5;	// Left	/ Right
+  float4 tc6:		TEXCOORD6;	// Top  / Bottom
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +17,9 @@ uniform sampler2D 	s_distort;
 uniform half4 		e_barrier;	// x=norm(.8f), y=depth(.1f), z=clr
 uniform half4 		e_weights;	// x=norm, y=depth, z=clr
 uniform half4 		e_kernel;	// x=norm, y=depth, z=clr
+
+#define ecb_rd
+#include "mblur.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
@@ -40,7 +41,7 @@ half4 	main		( v2p I )	: COLOR
   float4 tc6r 		=  I.tc6.wzyx;
 
   // Depth filter : compute gradiental difference: (c-sample1)+(c-sample1_opposite)
-  half4 dc		=  tex2D 	(s_position, I.tc0); 
+  half4 dc		=  tex2D 	(s_position, I.tc0);
   half4 dd;
 	dd.x 		=  (half)tex2D(s_position,I.tc1).z + (half)tex2D(s_position,I.tc2).z;
 	dd.y 		=  (half)tex2D(s_position,I.tc3).z + (half)tex2D(s_position,I.tc4).z;
@@ -69,12 +70,8 @@ half4 	main		( v2p I )	: COLOR
   half4 	s1 	=  tex2D	(s_image, offset + I.tc2*w);
   half4 	s2 	=  tex2D	(s_image, offset + I.tc3*w);
   half4 	s3 	=  tex2D	(s_image, offset + I.tc4*w);
-  float3 img = (s0+s1+s2+s3)/4.h;
 
-	float3 pp_sunshafts = calc_sunshafts(center, img);	
-	img += pp_sunshafts;
-
-	half3 	final	=  mblur	(center, dc, img);
+	half3 	final	=  mblur	(center, dc, (s0+s1+s2+s3)/4.h);
 
   return combine_bloom(final,tex2D	(s_bloom, I.tc0));
 }

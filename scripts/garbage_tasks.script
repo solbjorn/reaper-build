@@ -4,7 +4,7 @@ function proceed()
 		has_alife_info("agr_can_ask_krot_about_gunslinger")
 	then
 		db_actor:give_info_portion("agr_krot_band_start")
-		news_manager.send_tip(db_actor, "gar_seryi_info")
+		news_manager.send_tip("gar_seryi_info")
 	end
 end
 
@@ -43,7 +43,7 @@ function process_info_portion(info_id)
 		return true
 
 	elseif info_id == "gar_wounded_help" then
-		news_manager.send_tip(actor, "val_sos_pda", nil, "stalker", nil)
+		news_manager.send_tip("val_sos_pda", nil, "stalker", nil)
 		level_tasks.add_location(109, "green_location", "gar_wounded_help", 1)
 		return true
 	elseif info_id == "gar_wounded_fight" then
@@ -52,8 +52,8 @@ function process_info_portion(info_id)
 
 	elseif info_id == "gar_distance_shooting" then
 		if not has_alife_info("gar_seryi_actor_enter") then --level.name() == "l02_garbage" then --checked above
-			news_manager.send_tip(actor, "tips_gar_seryi_help_1", 5, "stalker", nil)
-			news_manager.send_tip(actor, "tips_gar_seryi_help_2", 12, "stalker", nil)
+			news_manager.send_tip("tips_gar_seryi_help_1", 5, "stalker", nil)
+			news_manager.send_tip("tips_gar_seryi_help_2", 12, "stalker", nil)
 		end
 		return true
 

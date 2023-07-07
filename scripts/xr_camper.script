@@ -57,8 +57,9 @@ function evaluator_close_combat:evaluate()
 		return true
 	end
 
-	if self.object:best_enemy() == nil then
-		return self.close_combat  -- Тут возможно нужно просто устанавливать FALSE и возвращать FALSE
+	local be = self.object:best_enemy()
+	if be == nil then
+		return self.close_combat
 	end
 
 	if self.close_combat == false then
@@ -66,7 +67,7 @@ function evaluator_close_combat:evaluate()
 	end
 
 	if self.close_combat == true then
-		local a = self.object:memory_time(self.object:best_enemy())
+		local a = self.object:memory_time(be)
 		if a then
 			if time_global() - a > 20000 then
 				self.close_combat = false
@@ -157,7 +158,7 @@ end
 function action_patrol:execute()
 	action_base.execute (self)
 
-	if xr_logic.try_switch_to_another_section (self.object, self.a, db_actor) then
+	if xr_logic.try_switch_to_another_section (self.object, self.a) then
 		return
 	end
 
@@ -488,7 +489,7 @@ local wp_stalker_ids_property_danger_false = world_property(stalker_ids_property
 local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.property_anomaly,false)
 local wp_stalker_ids_property_enemy_false = world_property(stalker_ids_property_enemy, false)
 
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 	local manager = object:motivation_action_manager()
 
 	manager:add_evaluator (prop_end, evaluator_end("camper_end", storage))
@@ -501,7 +502,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition (wp_prop_can_fight_true)
 	action:add_precondition (wp_stalker_ids_property_danger_false)
 	action:add_precondition (wp_stalker_ids_property_anomaly_false)
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_effect (wp_prop_end_true)
 	action:add_effect (wp_stalker_ids_property_enemy_false)
 	manager:add_action (operator_patrol, action)

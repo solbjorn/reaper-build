@@ -86,7 +86,7 @@ function action_particle:update (delta)
 
 	self:is_end ()
 
-	xr_logic.try_switch_to_another_section (self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 ------------------------
 function action_particle:is_end ()
@@ -153,7 +153,7 @@ function action_particle:deactivate ()
 end
 
 -----------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_particle(npc, storage) ] = true
 end
 -----------------------------------------------------------------------------------------------------

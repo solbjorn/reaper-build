@@ -11,7 +11,7 @@ function eva_state_mgr_weapon:evaluate()
 	end
 
 	local bestweapon = self.object:best_weapon()
-	if not isWeapon(bestweapon) then
+	if not (bestweapon and bestweapon:is_weapon()) then
 		return true
 	end
 	local activeitem = self.object:active_item()
@@ -68,7 +68,7 @@ function eva_state_mgr_weapon_strapped_now:__init(name) super (nil, name)
 end
 function eva_state_mgr_weapon_strapped_now:evaluate()
 	local wpn = self.object:best_weapon()
-	if not isWeapon(wpn) then
+	if not wpn:is_weapon() then
 		return true
 	end
 
@@ -238,12 +238,12 @@ function strappable_weapon(obj)
 
 	if strappable_clsids == nil then
 		strappable_clsids = {
-			[clsid_wpn_ak74_s] = true,
+			[clsid.wpn_ak74_s] = true,
 			[clsid.wpn_lr300_s] = true,
 			[clsid.wpn_groza_s] = true,
 			[clsid.wpn_val_s] = true,
 			[clsid.wpn_shotgun_s] = true,
-			[clsid_wpn_bm16_s] = true,
+			[clsid.wpn_bm16_s] = true,
 			[clsid.wpn_svd_s] = true,
 			[clsid.wpn_svu_s] = true,
 			[clsid.wpn_rpg7_s] = true,

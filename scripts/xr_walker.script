@@ -51,7 +51,7 @@ function action_walker_activity:execute()
 	action_base.execute(self)
 
 	self.move_mgr:update()
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function action_walker_activity:finalize()
@@ -74,7 +74,7 @@ local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.propert
 local wp_prop_need_walker_true = world_property(prop_need_walker, true)
 local wp_prop_need_walker_false = world_property(prop_need_walker, false)
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local manager = npc:motivation_action_manager()
 
 	-- // evaluators
@@ -86,7 +86,7 @@ function add_to_binder_q(npc, storage)
 	new_action:add_precondition(wp_stalker_ids_property_enemy_false)
 	new_action:add_precondition(wp_stalker_ids_property_anomaly_false)
 	new_action:add_precondition(wp_prop_need_walker_true)
-	xr_motivator.addCommonPrecondition(new_action)
+	bind_stalker.addCommonPrecondition(new_action)
 	new_action:add_effect(wp_prop_need_walker_false)
 	manager:add_action(operator_action_walker, new_action)
 

@@ -10,7 +10,7 @@
    после строки 1001 : amk.del_variable("blowout")
    добавляем         : tag_spb.zombie_team()
 
-   в файл bind_stalker.script :
+   в файл bind_actor.script :
    после строки : amk_utils.actor_item_drop(obj)
    добавляем    : tag_spb.refresh_zombie_team (self.object,obj)
    и добавлены строки 369-387 (еда от радиации)
@@ -49,9 +49,8 @@ function zombie_team (z_m)
    elseif db.actor:character_rank()>500 then zombie_max = zombie_max * 2
    end
    -- ищем подходящих покойников на уровне и пишем их в табличку
-     for j,i in pairs (db.storage) do
-        trup = level.object_by_id(j)
-        if trup and IsStalker(trup) and not trup:alive() then
+     for j,trup in pairs (db.creatures) do
+        if trup:is_stalker() and not trup:alive() then
            trup_name = trup:name()
         else
            trup_name = nil
@@ -83,14 +82,18 @@ end
 
 ----------------------- если актер сьел аптечку на "опасном" уровне...
 
-function refresh_zombie_team (npc,item)
-    if tag_z_total < 3 and math.random() < 0.7 and
-       npc and npc:id() == db.actor:id() and
-       item and string.find(item:section(),"medkit") and
-       string.find("03040607",string.sub(level.name(),2,3)) and
-       amk.load_variable("blowout",-1)==-1 then
-       zombie_team (2)
-    end
+local refresh_levels = {
+	l03_agroprom	= true,
+	l04_darkvalley	= true,
+	l06_rostok	= true,
+	l07_military	= true
+}
+
+function refresh_zombie_team(item)
+	if tag_z_total < 3 and item:is_medkit() and refresh_levels[level.name()] and
+	   math.random() < 0.7 and get_value("blowout", -1) == -1 then
+		zombie_team(2)
+	end
 end
 
 ------------------------------------------------ собственно волшебство
@@ -258,9 +261,8 @@ function tag_im_alone(trup, mode)
             end
        end
       if i<2 or i>130 then return false end
-      for j,i in pairs (db.storage) do
-        k = level.object_by_id(j)
-        if k and k:alive() and k.id~=trup.id and -- _g.IsStalker(k) and
+      for j,k in pairs (db.creatures) do
+        if k:alive() and k:id() ~= trup:id() and
            trup:position():distance_to(k:position())<2 then
            return false
         end

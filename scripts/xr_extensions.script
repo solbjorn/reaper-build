@@ -1,0 +1,143 @@
+RvP()	-- init Lua extension
+
+set_static_rescale_factor(device().height / device().width / 0.75)
+
+-- X-ray extensions callbacks
+-- CActor
+callback.on_key_press                 = 123
+callback.on_key_release               = 124
+callback.on_belt                      = 130
+callback.on_ruck                      = 131
+callback.on_slot                      = 132
+-- CTorch
+callback.on_switch_torch              = 134
+-- CEntityAlive
+callback.entity_alive_before_hit      = 152
+
+-- Некоторые недостающие key_bindings
+key_bindings.kACTIVE_JOBS	= 53
+key_bindings.kMAP			= 54
+key_bindings.kCONTACTS		= 55
+
+-- Флаги для включения работы каллбэков
+_G.extensions_flags = {
+	key_press        = 1,
+	key_release      = 2,
+	all              = 31
+}
+
+_G.inventory_slots = {
+	-- active_slot возвращает 4294967296, а в activate_slot передавать надо 4294967295
+	NO_ACTIVE_SET	= 4294967295,
+	NO_ACTIVE_GET	= 4294967296,
+	KNIFE		= 0,
+	PISTOL		= 1,
+	RIFLE		= 2,
+	GRENADE		= 3,
+	APPARATUS	= 4,
+	BOLT		= 5,
+	OUTFIT		= 6,
+	PDA		= 7,
+	DETECTOR	= 8,
+	TORCH		= 9,
+	ARTEFACT	= 10,
+	TOTAL		= 11
+}
+
+--// table
+-- преобразование массива в хэш: [значение] = true
+table.tohash = function ( tbl )
+	local ret = {}
+	for i = 1, #tbl do
+		ret[ tbl[i] ] = true
+	end
+	return ret
+end
+
+-- class 'ini_file'
+ini_file.r_string_ex = function (ini, section, line, def)
+	if ini:line_exist(section, line) then
+		return ini:r_string(section, line)
+	end
+	return def
+end
+ini_file.r_u32_ex = function (ini, section, line, def)
+	if ini:line_exist(section, line) then
+		return ini:r_u32(section, line)
+	end
+	return def
+end
+ini_file.r_float_ex = function (ini, section, line, def)
+	if ini:line_exist(section, line) then
+		return ini:r_float(section, line)
+	end
+	return def
+end
+ini_file.r_bool_ex = function (ini, section, line, def)
+	if ini:line_exist(section, line) then
+		return ini:r_bool(section, line)
+	end
+	return def
+end
+ini_file.r_list = function (ini, section, line, to_hash)
+	if ini:line_exist(section, line) then
+		local ret = string.explode( (ini:r_string(section, line) or ""), ",", true )
+		if to_hash then
+			return table.tohash(ret)
+		else
+			return ret
+		end
+	end
+	return nil
+end
+
+-- class 'CUIScriptWnd'
+local wnd_id        = 1
+local registered_windows = {}
+CUIScriptWnd.AddCallbackEx = function ( self, ui_name, ui_event, func, ... )
+	local id = self.__CUIScriptWnd_id
+	if id == nil then
+		id = wnd_id
+		wnd_id = wnd_id + 1
+		self.__CUIScriptWnd_id = id
+		registered_windows[ id ] = {}
+		registered_windows[ id ]["__window"] = self
+	end
+	if registered_windows[ id ][ ui_name ] == nil then
+		registered_windows[ id ][ ui_name ] = {}
+	end
+	registered_windows[ id ][ ui_name ][ ui_event ] = { ... }
+
+	self:AddCallback( ui_name, ui_event,
+		function ( i )
+			local t = registered_windows[ i ]
+			if t then
+				local wnd = t["__window"]
+				local p = t[ ui_name ][ ui_event ]
+				func( wnd, unpack( p ) )
+			else
+				log( "[CUIScriptWnd]: ignore callback for unregistered window %s: ui_name = %s, ui_event = %s",
+					i, ui_name, ui_event )
+			end
+		end,
+	id )
+end
+CUIScriptWnd.ClearCallbacks = function ( self )
+	local id = self.__CUIScriptWnd_id
+	if id == nil then
+	--	log( "~ CUIScriptWnd.ClearCallbacks : __CUIScriptWnd_id not found" )
+	elseif registered_windows[ id ] == nil then
+		log( "~ CUIScriptWnd.ClearCallbacks : CUIScriptWnd with id %s is already unregistered", id )
+	else
+		if self.__reg_childs then
+			for i, v in ipairs( self.__reg_childs ) do
+				registered_windows[ v ]["__window"] = nil
+				registered_windows[ v ] = nil
+			end
+			self.__reg_childs = nil
+		end
+		registered_windows[ id ]["__window"] = nil
+		registered_windows[ id ] = nil
+	end
+--	log("CUIScriptWnd.ClearCallbacks [%s]: registered windows count [%d]", tostring(id), table.size(registered_windows) )
+end

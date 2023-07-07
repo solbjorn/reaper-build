@@ -27,7 +27,7 @@ function amk_music:play()
     return
   end
   amk.oau_reason="play pre dir"
-	local dir = device().cam_right:set_length(0.1)
+	local dir = screen.cam_right:set_length(0.1)
   amk.oau_reason="play post dir"
 	dir.y=0
   amk.oau_reason="play pre play right "..type(self.right)
@@ -42,7 +42,7 @@ function amk_music:play()
   amk.oau_reason="play pre length"
 	self.end_time = time_global() + self.left:length()
   amk.oau_reason="play pre return"
-  self:set_volume(get_console():get_float('snd_volume_music'))
+  self:set_volume(console:get_float('snd_volume_music'))
 	return self.end_time
 end
 
@@ -53,7 +53,7 @@ function amk_music:play_at_time(time)
   if not db.actor then
     return
   end
-	local dir = device().cam_right:set_length(0.1)
+	local dir = screen.cam_right:set_length(0.1)
 	dir.y=0
 	self.right:play_at_pos(db.actor,dir, (time - time_global())/1000, sound_object.s2d)
 --	self.right:play_no_feedback(db.actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
@@ -62,7 +62,7 @@ function amk_music:play_at_time(time)
 	self.left:play_at_pos(db.actor,dir,  (time - time_global())/1000, sound_object.s2d)
 --	self.left:play_no_feedback(db.actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
 	self.end_time = time + self.left:length()
-	self:set_volume(get_console():get_float('snd_volume_music'))
+	self:set_volume(console:get_float('snd_volume_music'))
 	return self.end_time
 end
 
@@ -72,19 +72,19 @@ end
 
 function amk_music:update()
 	if self:playing() then
-		local dir = device().cam_right:set_length(0.1)
+		local dir = screen.cam_right:set_length(0.1)
 		dir.y=0
 		self.right:set_position(dir)
 		dir.x=-dir.x
 		dir.z=-dir.z
 		self.left:set_position(dir)
-		self:set_volume(get_console():get_float('snd_volume_music'))
+		self:set_volume(console:get_float('snd_volume_music'))
 	end
 end
 
 function amk_music:stop()
-	if self.right:playing() then self.right:stop() end
-	if self.left:playing() then self.left:stop() end
+	if self.right and self.right:playing() then self.right:stop() end
+	if self.left and self.left:playing() then self.left:stop() end
 end
 
 function amk_music:length()
@@ -97,4 +97,3 @@ function amk_music:set_volume(num)
 		self.right.volume=num
 	end
 end
-

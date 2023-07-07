@@ -58,7 +58,7 @@ local need_to_repack = false
 function check_ammo(obj)
 	if obj:is_ammo() then
 		local section = obj:section()
-		local box_size = read_line(section, "box_size")
+		local box_size = config:r_u32_cache(section, "box_size")
 		if box_size > 1 and get_ammo_data(obj, "box_size") < box_size then
 			ammo_sections[section] = {}
 			ammo_sections[section].box_size = box_size
@@ -108,7 +108,7 @@ function repack_ammo()
 				repack(k, v.box_size, item_place.belt)
 			end
 		end
-		clear_table(ammo_sections)
+		ammo_sections = { }
 		need_to_repack = false
 	end
 end

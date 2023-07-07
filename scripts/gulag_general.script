@@ -1,35 +1,19 @@
 local ltx
 
-function load_job(sj, gname, type, squad, groups, st)
+function load_job(sj, gname, type, squad, groups)
 	local t
-
-	ltx = "[meet@generic_lager_guard]\n"..
-		  "meet_state		= 10|wait@wait\n"..
-		  "meet_state_wpn	= 4|backoff@threat_weap\n"..
-		  "victim			= 10|actor\n"..
-		  "victim_wpn		= 10|actor\n"..
-		  "use				= true\n"..
-		  "use_wpn			= false\n"..
-		  "syndata			= backoff@threat_weap\n"..
-		  "precond			= visibility\n"..
-
-		  "[meet@generic_lager_patrol]\n"..
-		  "meet_state		= 5|wait@wait\n"..
-		  "meet_state_wpn	= 10|backoff@threat_weap\n"..
-		  "victim			= 5|actor\n"..
-		  "victim_wpn		= 10|actor\n"..
-		  "use				= true\n"..
-		  "use_wpn			= false\n"..
-		  "syndata			= backoff@threat_weap\n"..
-		  "precond			= visibility\n"
-
+	local way_name
+	local table_concat = table.concat
+	local sf = string.format
 	-- УНИВЕРСАЛЬНЫЙ ЛАГЕРЬ СТАЛКЕРОВ
+
 	if type == "general_lager" then
+		ltx = "[meet@generic_lager_guard]\nmeet_state = 10|wait@wait\nmeet_state_wpn = 4|backoff@threat_weap\nvictim = 10|actor\nvictim_wpn = 10|actor\nuse = true\nuse_wpn = false\nsyndata = backoff@threat_weap\nprecond = visibility\n[meet@generic_lager_patrol]\nmeet_state = 5|wait@wait\nmeet_state_wpn = 10|backoff@threat_weap\nvictim = 5|actor\nvictim_wpn = 10|actor\nuse = true\nuse_wpn = false\nsyndata = backoff@threat_weap\nprecond = visibility\n"
 		-- Проверяем наличие кампов.
 		local it = 1
-		while level.patrol_path_exists(gname.."_kamp_"..it) do
+		way_name = sf("%s_kamp_%d",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_kamp_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 			local job_count = 5
@@ -49,22 +33,28 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = kamp@"..way_name.."\n"..
-
-							"[kamp@"..way_name.."]\n"..
-							"center_point = kamp_"..it.."\n"..
-							"soundgroup = "..way_name.."\n"
-
-			ltx = ltx..job_ltx
+			local job_ltx = {"[logic@",way_name,"]\nactive = kamp@",way_name,"\n[kamp@",way_name,
+				"]\ncenter_point = kamp_",it,"\nsoundgroup = ",way_name,"\n"}
+			if wp_prop.radius ~= nil then
+				job_ltx[#job_ltx+1] = "radius = "
+				job_ltx[#job_ltx+1] = wp_prop.radius
+				job_ltx[#job_ltx+1] = "\n"
+				if wp_prop.avoid_pos ~= nil then
+					job_ltx[#job_ltx+1] = "avoid_pos = "
+					job_ltx[#job_ltx+1] = wp_prop.avoid_pos
+					job_ltx[#job_ltx+1] = "\n"
+				end
+			end
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_kamp_%d",gname,it)
 		end
 
 		-- Проверяем наличие путей для сна.
 		it = 1
-		while level.patrol_path_exists(gname.."_sleep_"..it) do
+		way_name = sf("%s_sleep_%d",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_sleep_"..it
 
 			-- добавляем должность
 			t = { section = "logic@"..way_name,
@@ -76,21 +66,18 @@ function load_job(sj, gname, type, squad, groups, st)
 			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = sleeper@"..way_name.."\n"..
-
-							"[sleeper@"..way_name.."]\n"..
-							"path_main = sleep_"..it.."\n"
-
-			ltx = ltx..job_ltx
+			local job_ltx = {"[logic@",way_name,"]\nactive = sleeper@",way_name,"\n[sleeper@",way_name,
+				"]\npath_main = sleep_",it,"\n"}
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_sleep_%d",gname,it)
 		end
 
 		-- Проверяем наличие путей брожения внутри лагеря.
 		it = 1
-		while level.patrol_path_exists(gname.."_walker_"..it.."_walk") do
+		way_name = sf("%s_walker_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_walker_"..it.."_walk"
 
 			-- добавляем должность
 			t = { section = "logic@"..way_name,
@@ -102,26 +89,23 @@ function load_job(sj, gname, type, squad, groups, st)
 			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = walker@"..way_name.."\n"..
-
-							"[walker@"..way_name.."]\n"..
-							"sound_idle = state\n"..
-							"path_walk = walker_"..it.."_walk\n"
-
-			if level.patrol_path_exists(gname.."_walker_"..it.."_look") then
-				job_ltx = job_ltx.."path_look = walker_"..it.."_look\n"
+			local job_ltx = {"[logic@",way_name,"]\nactive = walker@",way_name,"\n[walker@",way_name,
+				"]\nsound_idle = state\npath_walk = walker_",it,"_walk\n"}
+			if level.patrol_path_exists(sf("%s_walker_%d_look",gname,it)) then
+				job_ltx[#job_ltx+1] = "path_look = walker_"
+				job_ltx[#job_ltx+1] = it
+				job_ltx[#job_ltx+1] = "_look\n"
 			end
-
-			ltx = ltx..job_ltx
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_walker_%d_walk",gname,it)
 		end
 
 		-- Проверяем наличие путей брожения внутри лагеря(без таймаута).
 		it = 1
-		while level.patrol_path_exists(gname.."_walker2_"..it.."_walk") do
+		way_name = sf("%s_walker2_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_walker2_"..it.."_walk"
 
 			-- добавляем должность
 			t = { section = "logic@"..way_name,
@@ -133,26 +117,23 @@ function load_job(sj, gname, type, squad, groups, st)
 			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = walker@"..way_name.."\n"..
-
-							"[walker@"..way_name.."]\n"..
-							"sound_idle = state\n"..
-							"path_walk = walker2_"..it.."_walk\n"
-
-			if level.patrol_path_exists(gname.."_walker2_"..it.."_look") then
-				job_ltx = job_ltx.."path_look = walker2_"..it.."_look\n"
+			local job_ltx = {"[logic@",way_name,"]\nactive = walker@",way_name,"\n[walker@",way_name,
+				"]\nsound_idle = state\npath_walk = walker2_",it,"_walk\n"}
+			if level.patrol_path_exists(sf("%s_walker2_%d_look",gname,it)) then
+				job_ltx[#job_ltx+1] = "path_look = walker2_"
+				job_ltx[#job_ltx+1] = it
+				job_ltx[#job_ltx+1] = "_look\n"
 			end
-
-			ltx = ltx..job_ltx
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_walker2_%d_walk",gname,it)
 		end
 
 		-- Проверяем наличие патрулей обхода в лагере.
 		it = 1
-		while level.patrol_path_exists(gname.."_patrol_"..it.."_walk") do
+		way_name = sf("%s_patrol_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_patrol_"..it.."_walk"
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 			local job_count = 3
@@ -172,28 +153,24 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = patrol@"..way_name.."\n"..
-
-							"[patrol@"..way_name.."]\n"..
-							"meet = meet@generic_lager_patrol\n"..
-							"formation = back\n"..
-							"path_walk = patrol_"..it.."_walk\n"..
-							"on_signal = end| %=search_gulag_job%\n"
-
-			if level.patrol_path_exists(gname.."_patrol_"..it.."_look") then
-				job_ltx = job_ltx.."path_look = patrol_"..it.."_look\n"
+			local job_ltx = {"[logic@",way_name,"]\nactive = patrol@",way_name,"\n[patrol@",way_name,
+				"]\nmeet = meet@generic_lager_patrol\nformation = back\npath_walk = patrol_",it,
+				"_walk\non_signal = end| %=search_gulag_job%\n"}
+			if level.patrol_path_exists(sf("%s_patrol_%d_look",gname,it)) then
+				job_ltx[#job_ltx+1] = "path_look = patrol_"
+				job_ltx[#job_ltx+1] = it
+				job_ltx[#job_ltx+1] = "_look\n"
 			end
-
-			ltx = ltx..job_ltx
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_patrol_%d_walk",gname,it)
 		end
 
 		-- Проверяем наличие часовых в лагере.
 		it = 1
-		while level.patrol_path_exists(gname.."_guard_"..it.."_walk") do
+		way_name = sf("%s_guard_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_guard_"..it.."_walk"
 
 			-- добавляем должность
 			t = { section = "logic@"..way_name,
@@ -205,26 +182,23 @@ function load_job(sj, gname, type, squad, groups, st)
 			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = camper@"..way_name.."\n"..
-
-							"[camper@"..way_name.."]\n"..
-							"meet = meet@generic_lager_guard\n"..
-							"path_walk = guard_"..it.."_walk\n"
-
-			if level.patrol_path_exists(gname.."_guard_"..it.."_look") then
-				job_ltx = job_ltx.."path_look = guard_"..it.."_look\n"
+			local job_ltx = {"[logic@",way_name,"]\nactive = camper@",way_name,"\n[camper@",way_name,
+				"]\nmeet = meet@generic_lager_guard\npath_walk = guard_",it,"_walk\n"}
+			if level.patrol_path_exists(sf("%s_guard_%d_look",gname,it)) then
+				job_ltx[#job_ltx+1] = "path_look = guard_"
+				job_ltx[#job_ltx+1] = it
+				job_ltx[#job_ltx+1] = "_look\n"
 			end
-
-			ltx = ltx..job_ltx
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_guard_%d_walk",gname,it)
 		end
 
 		-- Проверяем наличие снайперов в лагере.
 		it = 1
-		while level.patrol_path_exists(gname.."_sniper_"..it.."_walk") do
+		way_name = sf("%s_sniper_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_sniper_"..it.."_walk"
 
 			-- добавляем должность
 			t = { section = "logic@"..way_name,
@@ -239,24 +213,19 @@ function load_job(sj, gname, type, squad, groups, st)
 			sj[#sj+1] = t
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = camper@"..way_name.."\n"..
-
-							"[camper@"..way_name.."]\n"..
-							"path_walk = sniper_"..it.."_walk\n"..
-							"path_look = sniper_"..it.."_look\n"..
-							"sniper = true\n"
-
-			ltx = ltx..job_ltx
+			local job_ltx = {"[logic@",way_name,"]\nactive = camper@",way_name,"\n[camper@",way_name,
+				"]\npath_walk = sniper_",it,"_walk\npath_look = sniper_",it,"_look\n"}
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_sniper_%d_walk",gname,it)
 		end
 
 		-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
 		it = 1
 		local job_count = 5
-		while level.patrol_path_exists(gname.."_raid_"..it.."_walk") do
+		way_name = sf("%s_raid_%d_walk",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_raid_"..it.."_walk"
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 			if wp_prop.count ~= nil then
@@ -276,28 +245,24 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = patrol@"..way_name.."\n"..
-
-							"[patrol@"..way_name.."]\n"..
-							"meet = meet@generic_lager_patrol\n"..
-							"formation = around\n"..
-							"path_walk = raid_"..it.."_walk\n"
-
-			if level.patrol_path_exists(gname.."_raid_"..it.."_look") then
-				job_ltx = job_ltx.."path_look = raid_"..it.."_look\n"
+			local job_ltx = {"[logic@",way_name,"]\nactive = patrol@",way_name,"\n[patrol@",way_name,
+				"]\nmeet = meet@generic_lager_patrol\nformation = around\npath_walk = raid_",it,"_walk\n"}
+			if level.patrol_path_exists(sf("%s_raid_%d_look",gname,it)) then
+				job_ltx[#job_ltx+1] = "path_look = raid_"
+				job_ltx[#job_ltx+1] = it
+				job_ltx[#job_ltx+1] = "_look\n"
 			end
-
-			ltx = ltx..job_ltx
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_raid_%d_walk",gname,it)
 		end
 	-- УНИВЕРСАЛЬНОЕ ЛОГОВО МОНСТРОВ
 	elseif type == "general_lair" then
 		-- Проверяем наличие моб_хом.
 		local it = 1
-		while level.patrol_path_exists(gname.."_home_"..it) do
+		way_name = sf("%s_home_%d",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_home_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 			local job_count = 10
@@ -317,18 +282,10 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = mob_home@"..way_name.."\n"..
-
-							"[mob_combat@"..way_name.."]\n"..
-							"on_timer = ".. math.random(30000,60000) .." | mob_home@"..way_name.."\n"..
-
-							"[mob_home@"..way_name.."]\n"..
-							"on_signal = sig_attacked | mob_combat@"..way_name.."\n"..
-							"path_home = home_"..it.."\n"
-
-			ltx = ltx..job_ltx
+			local job_ltx = {"[logic@",way_name,"]\nactive = mob_home@",way_name,"\n[mob_combat@",way_name,"]\non_timer = ",math.random(30000,60000)," | mob_home@",way_name,"\n[mob_home@",way_name,"]\non_signal = sig_attacked | mob_combat@",way_name,"\npath_home = home_",it,"\n"}
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_home_%d",gname,it)
 		end
 
 		-- Необходим fake_death с патрульным путем
@@ -337,9 +294,9 @@ function load_job(sj, gname, type, squad, groups, st)
 		-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
 		it = 1
 		local job_count = 5
-		while level.patrol_path_exists(gname.."_raid_"..it) do
+		way_name = sf("%s_raid_%d",gname,it)
+		while level.patrol_path_exists(way_name) do
 			-- Необходимо вычитать количество работ из названия точки пути.
-			local way_name = gname.."_raid_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 			if wp_prop.count ~= nil then
@@ -359,28 +316,22 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			-- добавляем описание должности в лтх.
-			local job_ltx = "[logic@"..way_name.."]\n"..
-							"active = mob_home@"..way_name.."\n"..
-
-							"[mob_home@"..way_name.."]\n"..
-							"path_home = raid_"..it.."\n"..
-							"aggressive_home\n"
-
-			ltx = ltx..job_ltx
+			local job_ltx = {"[logic@",way_name,"]\nactive = mob_home@",way_name,"\n[mob_home@",way_name,"]\npath_home = raid_",it,"\naggressive_home\n"}
+			ltx = ltx..table_concat(job_ltx)
 			it = it + 1
+			way_name = sf("%s_raid_%d",gname,it)
 		end
-
 	end
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "general_lager" then
 		return function(gulag)
 			if gulag.state == 0 then
 				if gulag.population_comed == 0 then
 					return 0
 				end
-				if gulag.state_switch_1 and xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_1) ~= nil then
+				if gulag.state_switch_1 and gulag.state_switch_1:pick_section_from_condlist(gulag.smrttrn) ~= nil then
 					return 1
 				end
 				return 0
@@ -397,7 +348,7 @@ function load_states(gname, type)
 				if gulag:get_population_comed() == 0 then
 					return 0
 				end
-				if gulag.state_switch_0 and xr_logic.pick_section_from_condlist(db_actor, gulag.smrttrn, gulag.state_switch_0) ~= nil then
+				if gulag.state_switch_0 and gulag.state_switch_0:pick_section_from_condlist(gulag.smrttrn) ~= nil then
 					return 0
 				end
 				return 1
@@ -408,7 +359,7 @@ function load_states(gname, type)
 			if gulag.state == 0 then
 				if gulag.population_comed == 0 then
 					return 0
-				elseif gulag.state_switch_1 and xr_logic.pick_section_from_condlist(db_actor, gulag.Object, gulag.state_switch_1) ~= nil then
+				elseif gulag.state_switch_1 and gulag.state_switch_1:pick_section_from_condlist(gulag.Object) ~= nil then
 					return 1
 				end
 				return 0
@@ -419,7 +370,7 @@ function load_states(gname, type)
 				if gulag:get_population_comed() == 0 then
 					return 0
 				end
-				if gulag.state_switch_0 and xr_logic.pick_section_from_condlist(db_actor, gulag.Object, gulag.state_switch_0) ~= nil then
+				if gulag.state_switch_0 and gulag.state_switch_0:pick_section_from_condlist(gulag.Object) ~= nil then
 					return 0
 				end
 				return 1
@@ -439,7 +390,7 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
+function load_ltx(type)
 	if type == "general_lager" then
 		return ltx
 	end

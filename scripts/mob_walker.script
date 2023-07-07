@@ -18,7 +18,7 @@ function set_state(obj, state)
 		return
 	end
 
-	if get_clsid(obj) == clsid_bloodsucker_s then
+	if obj and obj:clsid() == clsid_bloodsucker_s then
 		if state == "invis" then
 			obj:set_invisible(true)
 			return
@@ -147,7 +147,7 @@ function mob_walker:update(delta)
 	end
 
 	if self:arrived_to_first_waypoint() then
-		if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+		if xr_logic.try_switch_to_another_section(self.object, self.st) then
 			return
 		end
 	end
@@ -304,7 +304,7 @@ function mob_walker:look_at_waypoint(pt)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	storage.actions[ mob_walker(npc, storage) ] = true
 end

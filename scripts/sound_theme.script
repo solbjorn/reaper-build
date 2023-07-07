@@ -3,6 +3,12 @@
 --	автор:  Диденко Руслан  (Stohe)
 --	update: Чугай Александр (Chugai)
 ----------------------------------------------------------------------------------------------------------------------
+
+local snd_type_talk = snd_type.talk
+local string_sub = string.sub
+local xr_sound_db_sound = xr_sound.db_sound
+local xr_sound_get_safe_sound_object = xr_sound.get_safe_sound_object
+
 local const rmk_chatter   = 0
 local const rmk_react     = 1
 local const rmk_muse      = 2
@@ -13,7 +19,7 @@ local const rmk_priority  = 6
 
 nstl = 64
 
-snd_ini = ini_file("misc\\script_sound.ltx")
+local snd_ini = ini_file("misc\\script_sound.ltx")
 
 ph_snd_themes = {
   ["music"] = {  "characters_voice\\scenario\\megafon\\megafon_music_1",
@@ -224,7 +230,88 @@ ph_snd_themes = {
 								"characters_voice\\scenario\\bar\\radio_music\\sidor\\megafon_music_9",
 								"characters_voice\\scenario\\bar\\radio_music\\sidor\\megafon_music_10"
 },
-
+	["radio_april_full"] = {
+		[[music\radio_april\april_001]],
+		[[music\radio_april\april_002]],
+		[[music\radio_april\april_003]],
+		[[music\radio_april\april_004]],
+		[[music\radio_april\april_005]],
+		[[music\radio_april\april_006]],
+		[[music\radio_april\april_007]],
+		[[music\radio_april\april_008]],
+		[[music\radio_april\april_009]],
+		[[music\radio_april\april_010]],
+		[[music\radio_april\april_011]],
+		[[music\radio_april\april_012]],
+		[[music\radio_april\april_013]],
+		[[music\radio_april\april_014]],
+		[[music\radio_april\april_015]],
+		[[music\radio_april\april_016]],
+		[[music\radio_april\april_017]],
+		[[music\radio_april\april_018]],
+		[[music\radio_april\april_019]],
+		[[music\radio_april\april_020]],
+		[[music\radio_april\april_021]],
+		[[music\radio_april\april_022]],
+		[[music\radio_april\april_023]],
+		[[music\radio_april\april_024]],
+		[[music\radio_april\april_025]],
+		[[music\radio_april\april_026]],
+		[[music\radio_april\april_027]],
+		[[music\radio_april\april_028]],
+		[[music\radio_april\april_029]],
+		[[music\radio_april\april_030]],
+		[[music\radio_april\april_031]],
+		[[music\radio_april\april_032]],
+		[[music\radio_april\april_033]],
+		[[music\radio_april\april_034]],
+		[[music\radio_april\april_035]],
+		[[music\radio_april\april_036]],
+		[[music\radio_april\april_037]],
+		[[music\radio_april\april_038]],
+		[[music\radio_april\april_039]],
+		[[music\radio_april\april_040]],
+		[[music\radio_april\april_041]],
+		[[music\radio_april\april_042]],
+		[[music\radio_april\april_043]],
+		[[music\radio_april\april_044]],
+		[[music\radio_april\april_045]],
+		[[music\radio_april\april_046]],
+		[[music\radio_april\april_047]],
+		[[music\radio_april\april_048]],
+		[[music\radio_april\april_049]],
+		[[music\radio_april\april_050]],
+		[[music\radio_april\april_051]],
+		[[music\radio_april\april_052]],
+		[[music\radio_april\april_053]],
+		[[music\radio_april\april_054]],
+		[[music\radio_april\april_055]],
+		[[music\radio_april\april_056]],
+		[[music\radio_april\april_057]],
+		[[music\radio_april\april_058]],
+		[[music\radio_april\april_059]],
+		[[music\radio_april\april_060]],
+		[[music\radio_april\april_061]],
+		[[music\radio_april\april_062]],
+		[[music\radio_april\april_063]],
+		[[music\radio_april\april_064]],
+		[[music\radio_april\april_065]],
+		[[music\radio_april\april_066]],
+		[[music\radio_april\april_067]],
+		[[music\radio_april\april_068]],
+		[[music\radio_april\april_069]],
+		[[music\radio_april\april_070]],
+		[[music\radio_april\april_071]],
+		[[music\radio_april\april_072]],
+		[[music\radio_april\april_073]],
+		[[music\radio_april\april_074]],
+		[[music\radio_april\april_075]],
+		[[music\radio_april\april_076]],
+		[[music\radio_april\april_077]],
+		[[music\radio_april\april_078]],
+		[[music\radio_april\april_079]],
+		[[music\radio_april\april_080]]
+	},
   ["radio_music_bandit"] = {"characters_voice\\scenario\\dv\\borov_music_1",
 									"characters_voice\\scenario\\dv\\borov_music_2",
 									"characters_voice\\scenario\\dv\\borov_music_3",
@@ -462,19 +549,11 @@ ph_snd_themes = {
 --	Theme  functions
 -----------------------------------------------------------------------------------------------------------------------------------
 function weather_class(avail_types, npc)
-	if level.rain_factor() < 0.07 then
-		return "weather_good"
-	end
-	return "weather_bad"
+	return level.rain_factor() < 0.07 and "weather_good" or "weather_bad"
 end
 
 function combat_class(avail_types, npc)
-	if npc:best_enemy() ~= nil or
-	   npc:best_danger() ~= nil
-	then
-		return ""
-	end
-	return "state"
+	return (npc:best_enemy() or npc:best_danger()) and "" or "state"
 end
 
 -------------------------------------------------------------------------
@@ -513,6 +592,7 @@ theme = {
 
 	-- ожидание
 	wait				= {rmk_type = rmk_chatter, into_id = id(), max_ids = {}},
+	moveout				= {rmk_type = rmk_chatter, into_id = id(), max_ids = {}},
 
 	-- speech
     speech				= {rmk_type = rmk_once, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -524,19 +604,29 @@ theme = {
 	threat_stop			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
 	-- реакции
+	reac_hear				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	reac_see				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
+	reac_crps_monstr		= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
+	reac_crps_enemy			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
+	reac_crps_neutral		= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
+	reac_crps_friend		= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	reac_nothing			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	reac_box				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	reac_music				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 	reac_joke				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 
 	-- болтовня
-	talk_hello				= {rmk_type = rmk_chatter, rnd_id = id(), max_ids = {}},
-	talk_hello_friend		= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
+	talk_hello				= {rmk_type = rmk_greet, min_snd = 5, max_snd = 7, into_id = id(), max_ids = {}},
+	talk_hello_friend		= {rmk_type = rmk_muse, into_id = id(), max_ids = {}},
 	talk_bye				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	talk_accept				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	talk_reject				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	talk_abuse				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
+
+	-- обшаривание трупов
+	loot_good				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
+	loot_bad				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
+	loot_begin				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
 
 	-- реакции на юзание
 	use_yes_fight			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
@@ -888,9 +978,6 @@ theme = {
     mil_cherep_hi                  = {rmk_type = rmk_greet, min_snd = 15, max_snd = 30, into_id = id(), max_ids = {}}
 }
 
-local xr_sound_get_safe_sound_object = xr_sound.get_safe_sound_object
-local xr_sound_db_sound = xr_sound.db_sound
-
 --' В темах для игрока интервал задается в миллисекундах!!!
 actor_theme = {
 	level_border_detector = {min_snd = 10, max_snd = 100,
@@ -905,109 +992,125 @@ actor_theme = {
 									   xr_sound_get_safe_sound_object([[detectors\geiger_6]]) }}
 }
 
-function select_sound_from_ltx(obj, section, ltx)
+function preload_sound_from_ltx(name, tbl)
+	tbl.exist_rnd = tbl.rnd_id and snd_ini:section_exist(name .. "_rnd") or false
+
+	if not tbl.into_id then return end
+
+	tbl.exist_seq = snd_ini:section_exist(name .. "_seq") or nil
+	tbl.exist_single = snd_ini:section_exist(name .. "_single") or nil
+end
+
+function decache_sound(tbl, section, line)
+	local cache = tbl.cache
+	if not cache then
+		cache = { }
+		tbl.cache = cache
+	end
+
+	local sect = cache[section]
+	if not sect then
+		sect = { }
+		cache[section] = sect
+	end
+
+	local val = sect[line]
+	if val then
+		return val[1], val[2]
+	end
+
+	val = snd_ini:line_exist(section, line) and snd_ini:r_string(section, line) or nil
+	if val then
+		val = { string_sub(val, 1, 1) == "0", string_sub(val, 3) }
+	else
+		val = { nil, nil }
+	end
+	sect[line] = val
+
+	return val[1], val[2]
+end
+
+function select_sound_from_ltx(obj, section, tbl)
 --	1. проверка по story_id
 	local c = obj:story_id()
-	if c <= 65535 then
+	if c <= 1100 then
 		c = tostring(c)
-		if ltx:line_exist(section, c) then
-			return ltx:r_string(section, c)
+		if snd_ini:line_exist(section, c) then
+			return decache_sound(tbl, section, c)
 		end
 	end
 
 --	2. проверка по npc_profile
 	c = obj:profile_name()
-	if ltx:line_exist(section, c) then
-		return ltx:r_string(section, c)
+	if snd_ini:line_exist(section, c) then
+		return decache_sound(tbl, section, c)
 	end
 
 --	3. проверка по character_community
-	c = obj:character_community()
-	if ltx:line_exist(section, c) then
-		return ltx:r_string(section, c)
+	local pfx, path = decache_sound(tbl, section, obj:character_community())
+	if path then
+		return pfx, path
 	end
 
 --	4. загрузка дефолта
-	if ltx:line_exist(section, "stalker") then
-		return ltx:r_string(section, "stalker")
-	else
-		return nil
-	end
+	return decache_sound(tbl, section, "stalker")
 end
 
 -----------------------------------------------------------------------------------------------------------------------------------
 local default_prefix = "characters_voice\\"
-local string_sub_l = string.sub
-local snd_type_talk = snd_type.talk
-function check_prefix(s)
-	local flag = string_sub_l(s, 1, 1)
-	return flag, string_sub_l(s, 3)
-end
 
 function load_sound(obj)
-	local string_sub = string_sub_l
 	local obj_id = obj:id()
 
 	local function load_sound_from_ltx(name, tbl)
-		local name_ext = name.."_rnd"
-		local s, flag, path, character_prefix
-		tbl.max_ids[obj_id] = {}
-		if tbl.rnd_id and snd_ini:section_exist(name_ext) then
-			s = select_sound_from_ltx(obj, name_ext, snd_ini)
-			if s then
-				flag = string_sub(s, 1, 1) == "0"
-				path = string_sub(s, 3)
-				if flag then
+		local character_prefix, path
+		local mid = { }
+		tbl.max_ids[obj_id] = mid
+		if tbl.exist_rnd == nil then preload_sound_from_ltx(name, tbl) end
+		if tbl.exist_rnd then
+			character_prefix, path = select_sound_from_ltx(obj, name .. "_rnd", tbl)
+			if path then
+				if character_prefix then
 					character_prefix = obj:sound_prefix()
 					obj:sound_prefix(default_prefix)
 				end
 
-				tbl.max_ids[obj_id].rnd_max = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.rnd_id)
+				mid.rnd_max = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.rnd_id)
 
-				if flag then
+				if character_prefix then
 					obj:sound_prefix(character_prefix)
 				end
 			end
 		end
-		if tbl.into_id then
-			name_ext = name.."_seq"
-			if snd_ini:section_exist(name_ext) then
-				s = select_sound_from_ltx(obj, name_ext, snd_ini)
-				if s then
-					flag = string_sub(s, 1, 1) == "0"
-					path = string_sub(s, 3)
-					if flag then
-						character_prefix = obj:sound_prefix()
-						obj:sound_prefix(default_prefix)
-					end
-
-					local max_count = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.into_id)
-					tbl.max_ids[obj_id].into_max = max_count
-					if max_count > 1 then tbl.max_ids[obj_id].into_cycled = true end
-
-					if flag then
-						obj:sound_prefix(character_prefix)
-					end
+		if tbl.exist_seq then
+			character_prefix, path = select_sound_from_ltx(obj, name .. "_seq", tbl)
+			if path then
+				if character_prefix then
+					character_prefix = obj:sound_prefix()
+					obj:sound_prefix(default_prefix)
 				end
-			else
-				name_ext = name.."_single"
-				if snd_ini:section_exist(name_ext) then
-					s = select_sound_from_ltx(obj, name_ext, snd_ini)
-					if s then
-						flag = string_sub(s, 1, 1) == "0"
-						path = string_sub(s, 3)
-						if flag then
-							character_prefix = obj:sound_prefix()
-							obj:sound_prefix(default_prefix)
-						end
 
-						tbl.max_ids[obj_id].into_max = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.into_id)
-						tbl.max_ids[obj_id].into_cycled = false
+				local max_count = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.into_id)
+				mid.into_max = max_count
+				if max_count > 1 then mid.into_cycled = true end
 
-						if flag then
-							obj:sound_prefix(character_prefix)
-						end
-					end
+				if character_prefix then
+					obj:sound_prefix(character_prefix)
+				end
+			end
+		elseif tbl.exist_single then
+			character_prefix, path = select_sound_from_ltx(obj, name .. "_single", tbl)
+			if path then
+				if character_prefix then
+					character_prefix = obj:sound_prefix()
+					obj:sound_prefix(default_prefix)
+				end
+
+				mid.into_max = obj:add_sound(path, nstl, snd_type_talk, 2, 1, tbl.into_id)
+				mid.into_cycled = false
+
+				if character_prefix then
+					obj:sound_prefix(character_prefix)
 				end
 			end
 		end

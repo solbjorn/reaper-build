@@ -1,5 +1,4 @@
 #include "common.h"
-#include "ogse_config.h"
 #include "shared\waterconfig.h"
 #include "shared\watermove.h"
 

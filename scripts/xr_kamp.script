@@ -73,7 +73,7 @@ function evaluator_see_deadman:evaluate()
 	local function check_item(o)
 			local obj=o:object()
 			--если есть рядом с костром труп сталкера или монстра, его еще никто не прихватил себе и трупец нигде не застрял, то забираем его...
-			if (IsStalker(obj) or IsMonster(obj)) and not obj:alive() and (not deadmansids[obj:id()] or not level.object_by_id(deadmansids[obj:id()]) or not level.object_by_id(deadmansids[obj:id()]):alive()) and obj:position():distance_to(patrol(self.a.center_point):point(0))<10 then
+			if (obj:is_stalker() or obj:is_monster()) and not obj:alive() and (not deadmansids[obj:id()] or not level_object(deadmansids[obj:id()]) or not level_object(deadmansids[obj:id()]):alive()) and obj:position():distance_to(patrol(self.a.center_point):point(0))<10 then
 				if not deadmansidsuses[obj:id()] or deadmansidsuses[obj:id()]<3 then
 					deadmansids[obj:id()]=npc:id()
 					self.a.choosed_deadman=obj:id()
@@ -177,7 +177,7 @@ end
 function action_go_position:execute ()
 	action_base.execute (self)
 
-	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a, db_actor) then
+	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
 		return
 	end
 
@@ -222,13 +222,13 @@ function action_wait:initialize()
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
 
-	kamps[self.a.center_point]:increasePops(self.object)
+	kamps[self.a.center_point]:increasePops()
 end
 function action_wait:activate_scheme()
 end
 function action_wait:execute()
 	action_base.execute (self)
-	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a, db_actor) then
+	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
 		return
 	end
 	local state, sound, substate = kamps[self.a.center_point]:updateNpc(self.object)
@@ -248,7 +248,7 @@ function action_wait:finalize()
 		end
 	end
 	xr_sound.set_sound(self.object, nil, stop_sound)
-	kamps[self.a.center_point]:decreasePops(self.object)
+	kamps[self.a.center_point]:decreasePops()
 	action_base.finalize (self)
 end
 function action_wait:deactivate(npc)
@@ -675,8 +675,6 @@ function CKampManager:proceedRole(npc, director)
 	return state, sound
 end
 
-local particle_smoke
-
 function CKampManager:updateNpc(npc)
 	-- Просим лагерь выбрать текущее состояние. Менять состояние лагеря
 	-- имеет право только режиссер.
@@ -721,10 +719,7 @@ function CKampManager:updateNpc(npc)
 		substate = 1
 		xr_kamp.kamp_stalkers[npc_id] = false
 	elseif state == "eat_sigaret" then
-		if not particle_smoke then
-			particle_smoke = particles_object("weapons\\generic_sigarets")
-		end
-		particle_smoke:play_at_pos((npc:object("sigaret")):position())
+		particles_object("weapons\\generic_sigarets"):play_at_pos((npc:object("sigaret")):position())
 	elseif state == "declarate" then
 		if camp_npc.new == true then
 			if sound == "pre_joke" then
@@ -956,10 +951,10 @@ function CKampManager:removeNpc(npc)
 		self.npc[npc_id] = nil
 	end
 end
-function CKampManager:increasePops(npc)
+function CKampManager:increasePops()
 	self.population = self.population + 1
 end
-function CKampManager:decreasePops(npc)
+function CKampManager:decreasePops()
 	self.population = self.population - 1
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -986,7 +981,7 @@ local wp_prop_see_deadman_false = world_property(prop_see_deadman, false)
 local wp_prop_can_move_deadman_true = world_property(prop_can_move_deadman, true)
 local wp_prop_can_move_deadman_false = world_property(prop_can_move_deadman, false)
 
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 	local manager = object:motivation_action_manager()
 
 	-- Evaluators
@@ -1010,7 +1005,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_stalker_ids_property_enemy_false)
 	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
 	action:add_precondition		(wp_prop_see_deadman_false)
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_precondition		(wp_prop_on_position_true)
 	action:add_effect 		(wp_prop_kamp_end_true)
 	manager:add_action (operator_wait, action)
@@ -1022,7 +1017,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_stalker_ids_property_enemy_false)
 	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
 	action:add_precondition		(wp_prop_see_deadman_false)
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_precondition		(wp_prop_kamp_end_false)
 	action:add_effect		(wp_prop_on_position_true)
 	manager:add_action (operator_go_position, action)

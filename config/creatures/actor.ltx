@@ -11,7 +11,7 @@ cform                   = skeleton
 class                   = O_ACTOR
 money					= 40;
 rank					= 3;
-script_binding			= bind_stalker.actor_init
+script_binding			= bind_actor.init
 visual					= actors\hero\stalker_novice.ogf
 destroyed_vis_name		= physics\Dead_Body\skelet_crash
 
@@ -169,7 +169,7 @@ explosion_immunity 			= 1.0
 fire_wound_immunity  		= 1.0
 
 [actor_condition]
-satiety_v					= 0.000005				;скорость уменьшения сытости со временем
+satiety_v					= 0.000025				;скорость уменьшения сытости со временем
 radiation_v					= 0.0001				;скорость уменьшения радиации
 satiety_power_v				= 0.000055				;увеличение силы при уменьшении сытости
 satiety_health_v			= 0.0001				;увеличение здоровья при уменьшении сытости
@@ -229,9 +229,6 @@ cant_walk_power_end   =	0.10	;порог силы больше которого актер сможет двигаться
 
 cant_sprint_power_begin =	0.20	;порог силы меньше которого актер не может бежать в спринте
 cant_sprint_power_end   =	0.30	;порог силы больше которого актер сможет бежать в спринте
-
-can_sleep_callback			= dream.can_sleep_callback
-sleep_video_name_callback	= dream.sleep_video_name_callback
 
 [actor_damage]
 ;bone_name		 = <hit_scale>,<fwd_damage_anim_index>,<wound_scale>

@@ -377,14 +377,14 @@ function load_job(sj, gname, type, squad, groups)
 	end
 end
 
-function load_states(gname, type)
+function load_states(type)
     if type == "yantar_zombies" then
-		return function(gulag)
+		return function()
 			return 0
 		end
     end
     if type == "yan_scientist" then
-		return function(gulag)
+		return function()
 			local t
 
 			if 	has_alife_info("bar_heli_scene_professor_die") then
@@ -405,7 +405,7 @@ function load_states(gname, type)
     end
 
 	if type == "yan_tonnel_snorks" then
-		return function(gulag)
+		return function()
 			return 0
 		end
 	end
@@ -414,9 +414,6 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx()
-	return nil
-end
 
 function checkStalker(npc_community, gulag_type)
 	if gulag_type == "yantar_zombies" then

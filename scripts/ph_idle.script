@@ -11,20 +11,23 @@ function action_idle:__init(obj, storage)
 end
 function action_idle:reset_scheme()
 	self.object:set_nonscript_usable(self.st.nonscript_usable)
+	if self.st.on_use then
+		self.object:set_callback(callback.use_object, self.use_callback, self)
+	end
 end
 function action_idle:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 function action_idle:hit_callback(obj, amount, local_direction, who, bone_index)
 	if self.st.hit_on_bone[bone_index] ~= nil then
-		xr_logic.switch_to_section(obj, self.st, xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.hit_on_bone[bone_index].state))
+		xr_logic.switch_to_section(obj, self.st, xr_logic.pick_section_from_condlist(self.object, self.st.hit_on_bone[bone_index].state))
 		return
 	end
 end
 function action_idle:use_callback(obj, actor)
 	if self.st.on_use then
 		if xr_logic.switch_to_section(self.object, self.st,
-		   xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.on_use.condlist)) then
+		   xr_logic.pick_section_from_condlist(self.object, self.st.on_use.condlist)) then
 			return true
 		end
 	end
@@ -33,7 +36,7 @@ function action_idle:deactivate()
 	self.object:set_tip_text("")
 end
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_idle(npc, storage) ] = true
 end
 

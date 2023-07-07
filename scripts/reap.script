@@ -1,92 +1,125 @@
 --[[---------------------------------------------------------------------------
- * Shortcuts
---]]---------------------------------------------------------------------------
-
-local string_match = string.match
-local utils_r_CTime = utils.r_CTime
-local utils_w_CTime = utils.w_CTime
-
---[[---------------------------------------------------------------------------
- * Globals
---]]---------------------------------------------------------------------------
-
-_G.hit_mob_types = {
-	npc			= 0,
-	monster			= 1,
-	generic			= 2
-}
-
-_G.object_flags = {
-	UsedAI_Locations	= 128
-}
-
-_G.timer_types = {
-	game			= 0,
-	real			= 1
-}
-
---[[---------------------------------------------------------------------------
  * Callbacks
 --]]---------------------------------------------------------------------------
 
+local start = true
+local pause_menu_init = true
+
+local load_slot_act
+load_del_bolt = nil
+
 local next_update_200 = 0
+local next_update_1000 = 0
 
 function net_spawn()
-	set_timer_tick()
 	bolt_ending.net_spawn()
+	reap_misc.net_spawn()
 end
 
 function net_destroy()
 	bolt_ending.net_destroy()
 end
 
+function actor_death(victim, who)
+	dream_:stopper()
+	reap_misc.kill_online_controllers()
+
+	news_main.on_death(victim, who)
+end
+
 function update()
+	if start then
+		level_tasks.check_lchanger_location()
+		load_slot_hide()
+
+		start = false
+	end
+	if pause_menu_init and screen.precache_frame <= 1 then
+		load_slot_restore()
+
+		console:execute("main_menu 1")
+		pause_menu_init = false
+	end
+
 	update_timers()
 	bolt_ending.update()
 
-	local time_ = time_global()
-
-	if next_update_200 < time_ then
+	if next_update_200 <= time_real_ms then
 		safe_place()
 
-		next_update_200 = time_ + 200
+		next_update_200 = time_real_ms + 200
+	end
+
+	if next_update_1000 <= time_real_ms then
+		update_fires()
+
+		next_update_1000 = time_real_ms + 1000
 	end
 end
 
 function item_take(obj)
+	local sect = obj:section()
+	if screen.precache_frame <= 1 and db_actor:is_in_slot(obj) and
+	   config:r_bool_cache(sect, "default_to_ruck", true) then
+		db_actor:move_to_ruck(obj)
+	end
+
+	inv:on_item_take(obj)
 	bolt_ending.on_item_take(obj)
 
 	if obj:is_artefact() then
 		art_hit.hit_by_art(obj)
 	end
-	if obj:section() == "val_zapis_1" and not has_info("coll_tele1_on") then
+	if sect == "val_zapis_1" and not has_info("coll_tele1_on") then
 		valerich_treasures.spawn_next(1)
 	end
 end
 
 function item_drop(obj)
+	inv:on_item_drop(obj)
 	bolt_ending.on_item_drop(obj)
+	grenade_belt.on_item_drop(obj)
 end
 
 function item_drop_from_belt(obj)
+	inv:on_item_move_from_belt(obj)
+	if obj:section() == "bioradar" then
+		biodetector.switch(inv:on_belt("bioradar") ~= nil)
+	end
+
 	bolt_ending.on_item_drop_from_belt(obj, true)
 end
 
 function item_belt(obj)
-	inventory.on_item_belt(obj)
+	inv:on_item_belt(obj)
+	if obj:section() == "bioradar" then
+		biodetector.switch(true)
+	end
+
 	bolt_ending.on_item_belt(obj)
+	grenade_belt.on_item_belt(obj)
 end
 
 function item_move_from_belt(obj)
+	inv:on_item_move_from_belt(obj)
+	if obj:section() == "bioradar" then
+		biodetector.switch(inv:on_belt("bioradar") ~= nil)
+	end
+
 	bolt_ending.on_item_drop_from_belt(obj)
 end
 
 function item_ruck(obj)
-	inventory.on_item_ruck(obj)
+	ammo_belt.on_item_ruck(obj)
+	grenade_belt.on_item_ruck(obj)
 end
 
 function item_slot(obj)
-	inventory.on_item_slot(obj)
+	grenade_belt.on_item_slot(obj)
+end
+
+function item_use(obj)
+	amk.item_use(obj)
 end
 
 function take_item_from_box(box, item)
@@ -98,33 +131,85 @@ function take_item_from_box(box, item)
 		sim:release(sim:object(box:id()))
 	end
 
-	local name, id = string_match(item:section(), "(val_zapis_)(%d+)")
-	if name and id then
-		valerich_treasures.spawn_next(tonumber(id))
+	local sect = item:section()
+	if string.sub(sect, 1, 10) == "val_zapis_" then
+		local name, id = string.match(sect, "(val_zapis_)(%d+)")
+		if name and id then
+			valerich_treasures.spawn_next(tonumber(id))
+		end
 	end
 end
 
+function info(info_id)
+	process_ui_info(info_id)
+end
+
 function new_game()
-	bolt_ending.del_bolt()
+	level_tasks.add_lchanger_location()
+	load_del_bolt = true
+
 	dmx_sleep_binder.place_of_sleep_spawn()
+	spawn_dynamic_fires()
+
+	news_main.new_game()
+	trade_manager.new_game()
+
+	wake_up()
 end
 
-function save(packet)
-	save_timers(packet)
+function actor_save(packet)
+	local flags = 0
+	if db_actor:active_slot() < 10 then
+		flags = bit_or(flags, 1)
+	end
+
+	packet:w_u8(flags)
 end
 
-function load(reader)
-	load_timers(reader)
+function actor_load(reader)
+	local flags = reader:r_u8()
+
+	if bit_and(flags, 1) ~= 0 then
+		load_slot_act = true
+	end
 end
 
 --[[---------------------------------------------------------------------------
- * HUD
+* Active slot management
 --]]---------------------------------------------------------------------------
 
-local gg_kick = read_line("gg_kick", "enabled") > 0
+local load_slot_item
 
-local hud = get_hud()
-local sleep_cs = nil
+function load_slot_hide()
+	if load_del_bolt then
+		bolt_ending.del_bolt()
+		load_del_bolt = nil
+
+		if db_actor:active_slot() == inventory_slots.BOLT then
+			return
+		end
+	end
+
+	load_slot_item = db_actor:active_item()
+	if load_slot_item then
+		db_actor:move_to_ruck(load_slot_item)
+		load_slot_item = load_slot_item:id()
+	end
+end
+
+function load_slot_restore()
+	if not load_slot_item then return end
+	load_slot_item = level_object(load_slot_item)
+	if not load_slot_item then return end
+
+	if load_slot_act then
+		db_actor:move_to_slot_and_activate(load_slot_item)
+	else
+		db_actor:move_to_slot(load_slot_item)
+	end
+	load_slot_item = nil
+	load_slot_act = nil
+end
 
 function drop_weapon(punch)
 	local actor = db_actor
@@ -132,9 +217,8 @@ function drop_weapon(punch)
 	if active_item then
 		local active_sect = active_item:section()
 		if active_sect == "wpn_knife" then
-			if punch and punch == true then
-				actor:move_to_ruck(active_item)
-				actor:move_to_slot(active_item)
+			if punch == true then
+				actor:activate_slot(-1)
 			else
 				actor:drop_item(active_item)
 			end
@@ -146,7 +230,88 @@ function drop_weapon(punch)
 	end
 end
 
-function hit_effectors(mob_type, obj, amount)
+function wpn_show_enable(info_id)
+	ammo_belt.on_info(info_id)
+	grenade_belt.on_info(info_id)
+
+	db_actor:restore_weapon()
+	local act = get_value("last_slot", 10, true)
+	if act < 10 then
+		level.parked_call(function()
+			db_actor:activate_slot(act)
+		end)
+	end
+end
+
+function wpn_hide_disable(info_id)
+	local act = db_actor:active_slot()
+	if act < 10 then
+		if (act == 1 or act == 2) and db_actor:active_item():get_ammo_in_magazine() == 0 then
+			level.parked_call(function()
+				db_actor:activate_slot(-1)
+			end)
+		else
+			db_actor:activate_slot(-1)
+		end
+		set_value("last_slot", act)
+	end
+	db_actor:hide_weapon()
+
+	ammo_belt.on_info(info_id)
+	grenade_belt.on_info(info_id)
+end
+
+local info_fn = {
+	ui_car_body		= wpn_hide_disable,
+	ui_car_body_hide	= wpn_show_enable,
+	ui_inventory		= wpn_hide_disable,
+	ui_inventory_hide	= wpn_show_enable,
+	ui_pda			= wpn_hide_disable,
+	ui_pda_hide		= wpn_show_enable,
+
+	ui_talk = function()
+		if has_info("ui_trade_hide") then
+			wpn_hide_disable()
+		end
+	end,
+	ui_talk_hide = function()
+		if not level.main_input_receiver() then
+			wpn_show_enable()
+		end
+	end,
+	ui_trade = function(info_id)
+		if db_actor:is_talking() then
+			ammo_belt.on_info(info_id)
+			grenade_belt.on_info(info_id)
+		else
+			wpn_hide_disable()
+		end
+	end,
+	ui_trade_hide = function(info_id)
+		if has_info("ui_talk") then
+			ammo_belt.on_info(info_id)
+			grenade_belt.on_info(info_id)
+		else
+			wpn_show_enable()
+		end
+	end
+}
+
+function process_ui_info(info_id)
+	local fn = info_fn[info_id]
+	if fn then
+		fn(info_id)
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * HUD
+--]]---------------------------------------------------------------------------
+
+local gg_kick = config:r_u32_ex("gg_kick", "enabled", 0) > 0
+local sleep_cs = nil
+
+function hit_effectors(amount)
 	if gg_kick ~= true or amount <= 0.05 or not db_actor:alive() then
 		return
 	end
@@ -165,6 +330,14 @@ function hit_effectors(mob_type, obj, amount)
 	if math.random() < (amount / 2) then
 		drop_weapon()
 	end
+end
+
+function wake_up()
+	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+	level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
+	level.add_pp_effector("total_recall.ppe", 2008, false)
+	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
+	level.add_cam_effector("camera_effects\\fatigue.anm", 27, false, "")
 end
 
 function safe_place()
@@ -188,64 +361,44 @@ end
 --]]---------------------------------------------------------------------------
 
 local timer_res = 100
-local timer_tick
+local timer_tick = game.CTime():set_table({ msec = timer_res * base_time_factor })
 
-local timers = { }
-local timer_nextup
+local timers = container:get("timers", { })
+local timer_nextup = #timers > 0 and game.get_game_time() or nil
 
-function set_timer_tick()
-	timer_tick = game.CTime()
-	timer_tick:setHMSms(0, 0, 0, timer_res * base_time_factor)
+function timer_cmp(t1, t2)
+	return t1.time > t2.time
 end
 
-function start_timer(event, delay, type)
+_G.timer = function(event, delay, real, ...)
 	if not event or not delay then return false end
-	if not string_match(event, "(.+)[(].*[)]") then return false end
 
-	if type and type == timer_types.real then
+	if real == true then
 		delay = delay * base_time_factor
 	end
 
-	local exp = game.CTime()
-	exp:setHMSms(0, 0, 0, delay)
-	local now = game.get_game_time()
+	local exp = game.CTime():set_table({ msec = delay })
+	local args = { ... }
 
-	local tm = {
+	table.insert(timers, {
 		event	= event,
-		time	= now + exp
-	}
-	table.insert(timers, tm)
+		time	= time_game_ct + exp,
+		args	= #args > 0 and args or nil
+	})
+	table.sort(timers, timer_cmp)
 
 	if not timer_nextup then
-		timer_nextup = now
+		timer_nextup = time_game_ct
 	end
 
 	return true
 end
 
-function has_timer(event)
-	if not timer_nextup or not event then return false end
-
-	local func = string_match(event, "(.+)[(].*[)]")
-	if not func then return false end
-
-	local i = 1
-	while i <= #timers do
-		local tm = timers[i]
-		if string_match(tm.event, "(.+)[(].*[)]") == func then
-			return true
-		else
-			i = i + 1
-		end
-	end
-
-	return false
-end
-
 function stop_timer(idx)
 	table.remove(timers, idx)
-
-	if #timers == 0 then
+	if #timers > 0 then
+		table.sort(timers, timer_cmp)
+	else
 		timer_nextup = nil
 	end
 end
@@ -253,51 +406,277 @@ end
 function update_timers()
 	if not timer_nextup then return end
 
-	local now = game.get_game_time()
-	if timer_nextup > now then return end
-	timer_nextup = now + timer_tick
+	if timer_nextup > time_game_ct then return end
+	timer_nextup = time_game_ct + timer_tick
 
-	local tm, func
-	local i = 1
-	while i <= #timers do
+	local funcs = { }
+	local tm
+	for i = #timers, 1, -1 do
 		tm = timers[i]
-		if tm.time <= now then
-			func = loadstring(tm.event)
+		if tm.time <= time_game_ct then
+			funcs[#funcs + 1] = tm
 			stop_timer(i)
-
-			if type(func) == "function" then
-				pcall(func)
-			end
 		else
-			i = i + 1
+			break
+		end
+	end
+
+	for i = 1, #funcs do
+		tm = funcs[i]
+		if type(tm.event) == "string" then
+			loadstring("return function(args) " .. tm.event .. "(unpack(args or { })) end")()(tm.args)
+		else
+			tm.event(unpack(tm.args or { }))
 		end
 	end
 end
 
-function save_timers(packet)
-	local num = #timers
-	packet:w_u16(num)
+--[[---------------------------------------------------------------------------
+ * Dynamic fires (former Dynamic Campfire)
+--]]---------------------------------------------------------------------------
 
-	local tm
-	for i = 1, num do
-		tm = timers[i]
-		packet:w_stringZ(tm.event)
-		utils_w_CTime(packet, tm.time)
+local remove_ammo = table.tohash({
+	"val_ammo_9x19_pbp_0000", "val_ammo_5.56x45_ap_0000", "val_ammo_5.56x45_ss190_0000",
+	"val_ammo_5.45x39_fmj_0001", "val_ammo_5.45x39_fmj_0003", "mil_wpn_pm_0000",
+	"mil_wpn_pm", "mil_ammo_5.56x45_ss0000", "mil_ammo_5.56x45_ss0002",
+	"mil_ammo_11.43x23_hydro0000", "mil_ammo_11.43x23_hydro0001"
+})
+
+local fire_excl = {
+	l06_rostok = {
+		zone_flame_0000		= "yantar_scientists_talk",
+		zone_flame_0001		= "yantar_scientists_talk",
+		zone_flame_0002		= "yantar_scientists_talk",
+		zone_flame_small_0005	= "yantar_scientists_talk",
+		zone_flame_small_0006	= "yantar_scientists_talk",
+		zone_flame_small_0007	= "yantar_scientists_talk",
+		zone_flame_small_0008	= "yantar_scientists_talk",
+		zone_flame_small_0010	= "yantar_scientists_talk"
+	}
+}
+
+local level_flames
+local level_lights
+
+function cache_level_fires()
+	local ammo = curr_level == "l04_darkvalley" or curr_level == "l07_military"
+	local level_excl = fire_excl[curr_level]
+
+	level_flames = { }
+	level_lights = { }
+	local static = { }
+
+	local obj, sect, exc
+	for i = 1, 65534 do
+		obj = level_object(i)
+		if obj then
+			sect = obj:section()
+			if sect == "zone_dynamic_fire_light" then
+				release(obj)
+			elseif sect == "zone_flame_small" then
+				exc = level_excl and level_excl[obj:name()]
+				if not exc then
+					level_flames[#level_flames + 1] = i
+				elseif has_info(exc) then
+					obj:disable_anomaly()
+				else
+					static[#static + 1] = i
+				end
+			elseif sect == "lights_hanging_lamp" then
+				if string.find(obj:name(), "r1_r2") then
+					level_lights[#level_lights + 1] = i
+				end
+			elseif sect == "zone_flame" then
+				exc = level_excl and level_excl[obj:name()]
+				if exc and has_info(exc) then
+					obj:disable_anomaly()
+				end
+			elseif ammo and remove_ammo[obj:name()] then
+				release(obj)
+			end
+		end
+	end
+
+	for i = 1, #static do
+		obj = level_object(static[i])
+		create("zone_dynamic_fire_light", obj:position(),
+		       obj:level_vertex_id(), obj:game_vertex_id())
 	end
 end
 
-function load_timers(reader)
-	local num = reader:r_u16()
-	timers = { }
+function bind_dynamic_fire(obj)
+	obj:bind_object(dynamic_fire(obj))
+end
 
-	for i = 1, num do
-		timers[i] = {
-			event	= reader:r_stringZ(),
-			time	= utils_r_CTime(reader)
-		}
+class "dynamic_fire" (object_binder)
+
+function dynamic_fire:__init(obj)
+	super(obj)
+end
+
+function dynamic_fire:reload(section)
+	object_binder.reload(self, section)
+end
+
+function dynamic_fire:reinit()
+	object_binder.reinit(self)
+end
+
+function dynamic_fire:net_destroy()
+	dyn_offline(self.object:name())
+	object_binder.net_destroy(self)
+end
+
+function dynamic_fire:net_save_relevant()
+	return true
+end
+
+function dynamic_fire:update(delta)
+	object_binder.update(self, delta)
+
+	if self.nextup > time_real_ms then return end
+
+	if self.nextup == 0 then
+		local obj
+		for i = 1, #level_flames do
+			obj = level_object(level_flames[i])
+			if obj and (obj:position()):distance_to_sqr(self.object:position()) < 1 then
+				self.flame = obj
+				break
+			end
+		end
+		for i = 1, #level_lights do
+			obj = level_object(level_lights[i])
+			if obj and (obj:position()):distance_to_sqr(self.object:position()) < 1 then
+				self.light = obj
+				break
+			end
+		end
+
+		self.flame:disable_anomaly()
+		if self.light then
+			self.light:get_hanging_lamp():turn_off()
+		end
 	end
 
-	timer_nextup = (num > 0 and game.get_game_time()) or nil
+	local active = false
+	for k, v in pairs(db.creatures) do
+		if v:is_stalker() and (v:position()):distance_to(self.object:position()) < 4 then
+			active = true
+			break
+		end
+	end
+
+	if active and not self.active then
+		dyn_ignite(self)
+		self.active = true
+	elseif not active and self.active then
+		dyn_extinguish(self)
+		self.active = false
+	end
+
+	self.nextup = time_real_ms + 1000
+end
+
+function dynamic_fire:net_spawn(data)
+	if not object_binder.net_spawn(self, data) then
+		return false
+	end
+
+	self.active = false
+	self.nextup = 0
+
+	return true
+end
+
+function spawn_dynamic_fires()
+	local obj, exc
+	for i = 1, 65534 do
+		obj = server_object(i)
+		if obj and obj:section_name() == "zone_flame_small" then
+			exc = fire_excl[obj:name()]
+			if not exc or exc ~= object_level_name(obj) then
+				create("zone_dynamic_fire", obj.position, obj.m_level_vertex_id,
+				       obj.m_game_vertex_id)
+			end
+		end
+	end
+end
+
+local transitions = { }
+local spawned_lights = { }
+
+function dyn_ignite(obj)
+	transitions[obj.object:name()] = {
+		flame		= obj.flame,
+		light		= obj.light,
+		["time"]	= time_real_ms
+	}
+end
+
+function dyn_extinguish(obj)
+	transitions[obj.object:name()] = {
+		flame		= obj.flame,
+		light		= obj.light,
+		["time"]	= time_real_ms,
+		prtcl		= particles_object("dyn_kfire\\dyingfire")
+	}
+end
+
+function dyn_offline(name)
+	release(spawned_lights[name])
+	spawned_lights[name] = nil
+
+	transitions[name] = nil
+end
+
+function update_fires()
+	if not level_flames then
+		cache_level_fires()
+	end
+
+	for name, v in pairs(transitions) do
+		if v.prtcl == nil then
+			if v.state == nil then
+				v.state = 1
+				v.flame:enable_anomaly()
+			end
+
+			if v.time + 5000 <= time_real_ms then
+				if v.light then
+					v.light:get_hanging_lamp():turn_on()
+				end
+				release(spawned_lights[name])
+				spawned_lights[name] = create("zone_dynamic_fire_light",
+							      v.flame:position(),
+							      v.flame:level_vertex_id(),
+							      v.flame:game_vertex_id())
+				transitions[name] = nil
+			end
+		else
+			if v.state == nil and v.time + 10000 <= time_real_ms then
+				v.state = 1
+				release(spawned_lights[name])
+				spawned_lights[name] = nil
+				v.prtcl:play_at_pos(v.flame:position())
+			end
+
+			if v.time + 15000 <= time_real_ms then
+				v.flame:disable_anomaly()
+			end
+
+			if v.time + 48000 <= time_real_ms then
+				if v.light then
+					v.light:get_hanging_lamp():turn_off()
+				end
+			end
+
+			if v.time + 120000 <= time_real_ms then
+				v.prtcl:stop()
+				transitions[name] = nil
+			end
+		end
+	end
 end
 
 --[[---------------------------------------------------------------------------
@@ -305,5 +684,10 @@ end
 --]]---------------------------------------------------------------------------
 
 function with_discount(num)
-	return math.floor(num * xr_statistic_freeplay.get_freeplay_statistic():get_found_pda_discount())
+	return math.floor(num * freeplay_stats:get_found_pda_discount())
+end
+
+function story_name(sid)
+	local sobj = sid and story_object(tonumber(sid))
+	return sobj and sobj:get_netpk("character_name")
 end

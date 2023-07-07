@@ -1,5 +1,4 @@
 #include "common.h"
-#include "ogse_config.h"
 #include "shared\waterconfig.h"
 #include "shared\watermove.h"
 
@@ -39,7 +38,7 @@ vf main (v_vert v)
 	o.v2point = P - eye_position;
 	o.tbase = unpack_tc_base(v.uv,v.T.w,v.B.w);                // copy tc
 
-#ifndef WATER_NO_MOVE	
+#ifndef WATER_NO_MOVE
 	o.tnorm0 = watermove_tc(o.tbase*W_DISTORT_BASE_TILE_0, P.xz, W_DISTORT_AMP_0);
 	o.tnorm1 = watermove_tc(o.tbase*W_DISTORT_BASE_TILE_1, P.xz, W_DISTORT_AMP_1);
 #else
@@ -75,7 +74,7 @@ vf main (v_vert v)
 	o.fog = saturate(calc_fogging(v.P));
 	o.c0 = float4(L_final,o.fog);
 	o.hpos = mul(m_VP, P);
-	
+
 #ifdef	USE_SOFT_WATER
 	o.tctexgen = convert_to_screen_space(o.hpos);
 	float3	Pe	= mul		(m_V,  P);

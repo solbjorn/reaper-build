@@ -72,7 +72,7 @@ end
 function action_wait:execute ()
     action_base.execute (self)
 
-	if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section (self.object, self.st) then
 		return
 	end
 
@@ -116,7 +116,7 @@ function action_follow:execute ()
        self:reset_scheme()
     end
 
-    if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+    if xr_logic.try_switch_to_another_section (self.object, self.st) then
        self.st.leader_id = nil
        return
     end
@@ -300,7 +300,7 @@ function action_follow:free ()
           xr_gulag.resetJob (self.object)
        end
     else
-       xr_logic.try_switch_to_another_section (self.object, self.st, db_actor)
+       xr_logic.try_switch_to_another_section (self.object, self.st)
     end
 end
 --------
@@ -326,7 +326,7 @@ local stalker_ids_property_alive = stalker_ids.property_alive
 local stalker_ids_property_danger = stalker_ids.property_danger
 local stalker_ids_property_enemy = stalker_ids.property_enemy
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local manager = npc:motivation_action_manager ()
 
 	manager:add_evaluator (prop_attendant_leader, this.evaluator_leader ("attendant_leader", storage))

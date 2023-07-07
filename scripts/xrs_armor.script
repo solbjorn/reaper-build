@@ -2,7 +2,7 @@
 -- made by xStream 03.2008
 ----------------------------------
 
-local amk_game_minutes = amk.game_minutes
+local game_minutes = game.minutes
 local math_random = math.random
 local string_find = string.find
 local table_remove = table.remove
@@ -93,7 +93,10 @@ local armors_by_visuals = {
 		stalker_usa_killer_antigas = 3
 	},
 	green = {
-		stalker_rus_spec = 3
+		hunter5 = 3,
+		hunter4 = 3,
+		hunter1 = 3,
+		hunter3 = 3
 	},
 	dolg = {
 		stalker_do_mask = 1,
@@ -1450,11 +1453,10 @@ end
 function check_armor(npc, item, just_report)
 	local com = npc:character_community()
 	local section = item:section()
-	local sini = system_ini()
-	local vis = utils.cfg_get_string(sini, section, "visual", false, false, false, "")
-	if vis ~= "" then
-		vis = xrs_utils.str_explode("\\",vis)
-		vis = xrs_utils.str_explode(".",vis[2])
+	local vis = config:section_exist(section) and config:r_string(section, "visual")
+	if vis then
+		vis = string.explode(vis, "\\")
+		vis = string.explode(vis[2], ".")
 		vis = vis[1]
 		if suits_to_visuals[com][vis] then
 			if just_report then
@@ -1484,14 +1486,13 @@ function get_npc_level(id)
 end
 
 function get_npc_current_visual_level(id)
-	local se_obj = alife():object(id)
-	local t = xrs_utils.read_stalker_params(se_obj)
+	local t = server_object(id):get_netpk()
 	local sect
 	if t then
-		local vis = t.visual
+		local vis = t.visual_name
 		if vis then
-			vis = xrs_utils.str_explode("\\",vis)
-			vis = xrs_utils.str_explode(".",vis[3])
+			vis = string.explode(vis, "\\")
+			vis = string.explode(vis[3], ".")
 			vis = vis[1]
 	-- bandit
 			if string_find(vis,"stalker_bandit") then sect = "bandit_outfit" end
@@ -1591,10 +1592,10 @@ function get_npc_current_visual_level(id)
 			if vis == "stalker_france_killer_antigas" then sect = "stalker_france_killer_gaz" end
 		end
 	end
-	local vis_suit = read_if_exist_str(system_ini(),sect,"visual",nil)
+	local vis_suit = config:section_exist(sect) and config:r_string(sect, "visual")
 	if vis_suit then
-		vis_suit = xrs_utils.str_explode("\\",vis_suit)
-		vis_suit = xrs_utils.str_explode(".",vis_suit[2])
+		vis_suit = string.explode(vis_suit, "\\")
+		vis_suit = string.explode(vis_suit[2], ".")
 		vis_suit = vis_suit[1]
 		if armor_levels[vis_suit] then
 			return armor_levels[vis_suit]
@@ -1603,17 +1604,9 @@ function get_npc_current_visual_level(id)
 	return 0
 end
 
-function read_if_exist_str(ltx, section, value, default)
-	if ltx:line_exist(section,value) then
-		return ltx:r_string(section,value)
-	else
-		return default
-	end
-end
 -------------
 
 function change_vis(id, suit_vis, lvl, now)
-
 	if look_for_armor(id,suit_vis) then
 		if now then
 			local npc = level.object_by_id(id)
@@ -1635,13 +1628,13 @@ function look_for_armor(id,vis)
 	if vis then
 		local sobj = alife():object(id)
 		if sobj:health()<0.3 then return false end
-		local t = xrs_utils.read_stalker_params(sobj)
-		t.visual = vis
-		xrs_utils.write_stalker_params(t,sobj)
+		sobj:modify_netpk("visual_name", vis)
 		return true
 	end
 	return false
 end
+
+local next_armor_min
 
 function update()
 	local sim = alife()
@@ -1666,16 +1659,19 @@ function update()
 
 	--armor upgrade part
 	if auto_upgrades==true then
-	    local time = amk_game_minutes()
-		if xr_logic.pstor_retrieve(db.actor,"xrs_armor_t",nil)==nil then
-			xr_logic.pstor_store(db.actor,"xrs_armor_t", time+upgrade_delta)
+		local time_ = game_minutes()
+		if not next_armor_min then
+			next_armor_min = get_value("xrs_armor_t")
+			if not next_armor_min then
+				next_armor_min = time_ + upgrade_delta
+				set_value("xrs_armor_t", next_armor_min)
+			end
 		end
-		if time>xr_logic.pstor_retrieve(db.actor,"xrs_armor_t",0) then
-			local actor_id=db.actor:id()
+		if time_ > next_armor_min then
 			stalkers={}
-			for a=0,65535 do
+			for a=1,65534 do
 				local sobj = sim:object(a)
-				if a~=actor_id and sobj and IsStalker(sobj) and sobj:alive() and not sobj.wounded and not excluded_npcs[sobj:name()] then
+				if sobj and sobj:is_stalker() and sobj:alive() and not sobj.wounded and not excluded_npcs[sobj:name()] then
 					if sobj.m_game_vertex_id and game_graph():valid_vertex_id(sobj.m_game_vertex_id) then
 						local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 						if map and upgrade_top_lvl[map]~=nil then
@@ -1713,7 +1709,8 @@ function update()
 					end
 				end
 			end
-			xr_logic.pstor_store(db.actor,"xrs_armor_t",time+upgrade_delta)
+			next_armor_min = time_ + upgrade_delta
+			set_value("xrs_armor_t", next_armor_min)
 		end
 	end
 end
@@ -1784,7 +1781,7 @@ function evaluator_see_useful_armor:evaluate()
 		obj=obj:object()
 		if obj==nil or obj.clsid==nil or obj.id==nil then return false end
 		if exclusions[npc:id().."_"..obj:id()]==true then return false end
-		if obj:clsid() == clsid.equ_stalker and obj:position():distance_to(npc:position())<pickupdist and npc:accessible(obj:level_vertex_id()) and level.vertex_position(obj:level_vertex_id()):distance_to(obj:position())<1 then
+		if obj:is_outfit() and obj:position():distance_to(npc:position())<pickupdist and npc:accessible(obj:level_vertex_id()) and level.vertex_position(obj:level_vertex_id()):distance_to(obj:position())<1 then
 			if check_armor(npc, obj, true)==true then
 				return obj:id()
 			else
@@ -1862,7 +1859,7 @@ function action_get_useful_armor:finalize()
 end
 
 --binder
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 	local operators	= {}
 	local properties  = {}
 
@@ -1886,7 +1883,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition(world_property(stalker_ids.property_enemy, false))
 	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
 
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:remove_precondition(properties["armor"])
 	action:add_precondition	(world_property(properties["armor"], true))
 

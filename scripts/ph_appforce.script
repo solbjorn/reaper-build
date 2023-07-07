@@ -19,7 +19,7 @@ function ph_force:reset_scheme ()
 end
 ----------------
 function ph_force:update (delta)
-	if xr_logic.try_switch_to_another_section (self.object, self.st, db.actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 	   return
 	end
 
@@ -39,7 +39,7 @@ function ph_force:update (delta)
 	self.process = true
 end
 ----------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ph_force(npc, storage)] = true
 end
 ----------------

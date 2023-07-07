@@ -126,12 +126,12 @@ function PatrolManager:get_commander   (npc)
     --закешируем айдишник непися
     local npc_id = npc:id ()
     --проверка непися на присутсвие в списке
-    if self.npc_list[npc:id ()] == nil then
+    if self.npc_list[npc_id] == nil then
        abort ("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.path_name)
     end
     --проверка, чтобы командир не вздумал задавать глупых вопросов
-    if npc:id () == self.commander_id then
-       abort ("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
+    if npc_id == self.commander_id then
+       abort ("Patrol commander called function PatrolManager:get_commander in PatrolManager[%s]", self.path_name)
     end
     --получим данные командира
     local commander = self.npc_list[self.commander_id].soldier
@@ -290,7 +290,7 @@ end
 function action_commander:execute()
 	action_base.execute(self)
 	self.move_mgr:update()
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
        return
     end
     patrols[self.st.path_walk]:set_command (self.object, state_mgr.get_state (self.object), self.st.formation)
@@ -321,7 +321,7 @@ function action_commander:callback (mode, number, index)
        self.st.formation = "line"
     elseif number == 1 then
        self.st.formation = "around"
-    elseif number == 1 then
+    elseif number == 2 then
        self.st.formation = "back"
     end
 end
@@ -356,7 +356,7 @@ end
 function action_patrol:execute()
 	action_base.execute (self)
 
-	if xr_logic.try_switch_to_another_section (self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section (self.object, self.st) then
        return
 	end
 
@@ -420,7 +420,7 @@ local wp_prop_patrol_end_false = world_property(prop_patrol_end, false)
 local wp_prop_patrol_comm_true = world_property(prop_patrol_comm, true)
 local wp_prop_patrol_comm_false = world_property(prop_patrol_comm, false)
 
-function add_to_binder_q(object, storage)
+function add_to_binder(object, storage)
 	local manager = object:motivation_action_manager ()
 
 	-- Evaluators
@@ -434,7 +434,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_stalker_ids_property_danger_false)
 	action:add_precondition		(wp_stalker_ids_property_enemy_false)
 	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
-	xr_motivator.addCommonPrecondition (action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_precondition		(wp_prop_patrol_end_false)
 	action:add_precondition		(wp_prop_patrol_comm_true)
 	action:add_effect (wp_prop_patrol_end_true)
@@ -446,7 +446,7 @@ function add_to_binder_q(object, storage)
 	action:add_precondition		(wp_stalker_ids_property_danger_false)
 	action:add_precondition		(wp_stalker_ids_property_enemy_false)
 	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_precondition		(wp_prop_patrol_end_false)
 	action:add_precondition		(wp_prop_patrol_comm_false)
 	action:add_effect (wp_prop_patrol_end_true)

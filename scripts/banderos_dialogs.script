@@ -47,8 +47,6 @@ local nagrad = {
  }
 }
 
-local amk_utils_inventory_search = amk_utils.inventory_search
-
 --20 БУТЫЛОК ВОДКИ
 function prines_vodku(first_speaker, second_speaker)
 	local actor, trader
@@ -60,7 +58,7 @@ function prines_vodku(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("vodka", 20)
+	return has("vodka", 20)
 end
 function otdal_vodku(first_speaker, second_speaker)
 	local item = ""
@@ -73,7 +71,7 @@ function otdal_vodku(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
-	flamethrower.relocate_n_items_section(trader, "vodka", "out", 20)
+	lost("vodka", 20)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 
@@ -88,7 +86,7 @@ function malo_vodki(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("vodka", 10)
+	return has("vodka", 10)
 end
 function otdal_malo_vodki(first_speaker, second_speaker)
 	local item = ""
@@ -102,18 +100,18 @@ function otdal_malo_vodki(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
-	flamethrower.relocate_n_items_section(trader, "vodka", "out", 10)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("vodka", 10)
+	got(item, count)
 end
 
 --награда за три арта
 function prines_art(first_speaker, second_speaker)
-    		dialogs.relocate_money(second_speaker, 20000, "in")
-		dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
-	end
+	got_money(20000)
+	dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
+end
 
 --проверяем наличие артов у ГГ артов
-	function est_li_art(first_speaker, second_speaker)
+function est_li_art(first_speaker, second_speaker)
 	local actor, trader
 	if db.actor and db.actor:id() == first_speaker:id() then
 		actor = first_speaker
@@ -123,7 +121,7 @@ function prines_art(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("banderos_art", 3)
+	return has("banderos_art", 3)
 end
 --отдаём арты Сахару
 function otdat_art(first_speaker, second_speaker)
@@ -135,7 +133,7 @@ function otdat_art(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	flamethrower.relocate_n_items_section(trader, "banderos_art", "out", 3)
+	lost("banderos_art", 3)
 end
 
 --вызываем функцию из таска при появлении (взятии) арта в инвентаре
@@ -148,23 +146,23 @@ end
 
 --награда за РГ-6
 function prines_rg(first_speaker, second_speaker)
-    		dialogs.relocate_money(second_speaker, 10000, "in")
-		dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
-		dialogs.relocate_item_section(second_speaker, "af_babka_1", "in")
-	end
+	got_money(10000)
+	dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
+	dialogs.relocate_item_section(second_speaker, "af_babka_1", "in")
+end
 
 --проверяем наличие РГ у ГГ
-	function est_li_rg_u_gg(stalker, player)
-  		return stalker:object ("wpn_rg6_m1") ~= nil
-	end
+function est_li_rg_u_gg(stalker, player)
+	return stalker:object ("wpn_rg6_m1") ~= nil
+end
 
 --отдаём РГ
-	function otdat_rg(first_speaker, second_speaker)
-		dialogs.relocate_item_section(second_speaker, "wpn_rg6_m1", "out")
-	end
+function otdat_rg(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "wpn_rg6_m1", "out")
+end
 
 --вызываем функцию из таска при появлении (взятии) РГ в инвентаре
-	function vzial_rg(task, objective)
+function vzial_rg(task, objective)
 	if db.actor ~= nil then
 		return db.actor:object("wpn_rg6_m1") ~= nil
 	end
@@ -172,8 +170,7 @@ function prines_rg(first_speaker, second_speaker)
 end
 
 --вступление в Свободу
-	function actor_set_freedom(actor, npc)
-	printf("ACTOR NOW IN [FREEDOM] COMMUNITY")
+function actor_set_freedom(actor, npc)
 	if db.actor then
 		db.actor:set_character_community("actor_freedom", 0, 0)
 	end
@@ -186,7 +183,7 @@ function novobranets(first_speaker, second_speaker)
 		dialogs.relocate_item_section(second_speaker, "wpn_lr300", "in")
 		dialogs.relocate_item_section(second_speaker, "ammo_5.56x45_ap", "in")
 		relation_registry.set_community_goodwill ("freedom", actor, 500)
-	end
+end
 
 --###################################################################################
 --#				КВЕСТЫ С КПК ДЛЯ ДОЛГА			    	    #
@@ -203,7 +200,7 @@ function have_pda_svoboda(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("device_freedom_pda", 3)
+	return has("device_freedom_pda", 3)
 end
 --отдаём КПК и получаем награду
 function out_pda_svoboda(first_speaker, second_speaker)
@@ -217,7 +214,7 @@ function out_pda_svoboda(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
-	flamethrower.relocate_n_items_section(trader, "device_freedom_pda", "out", 3)
+	lost("device_freedom_pda", 3)
 	dialogs.relocate_item_section(second_speaker, item , "in")
 	relation_registry.set_community_goodwill ("dolg", actor, 70)
 end
@@ -258,7 +255,7 @@ function have_pda_dolg(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 
-	return amk_utils_inventory_search("device_dolg_pda", 3)
+	return has("device_dolg_pda", 3)
 end
 function out_pda_dolg(first_speaker, second_speaker)
 	local item = ""
@@ -271,7 +268,7 @@ function out_pda_dolg(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
-	flamethrower.relocate_n_items_section(trader, "device_dolg_pda", "out", 3)
+	lost("device_dolg_pda", 3)
 	dialogs.relocate_item_section(second_speaker, item , "in")
 	relation_registry.set_community_goodwill ("freedom", actor, 70)
 end

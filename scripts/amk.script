@@ -8,31 +8,20 @@ Copyright © AMK TEAM 2007-2008
 
 ]]
 
-local math_floor = math.floor
 local string_explode = string.explode
 local string_find = string.find
 local string_gfind = string.gfind
 local string_gsub = string.gsub
 local string_trim = string.trim
-local string_to_table = string.to_table
-local table_to_string = table.to_string
-
-local actor_pstor
 
 ----------------
-local npc_spawner={}  --служебный массив, работает автоматически - не трогать шаловливыми русками
 
 local markers={}  --хранит маркеры на карте
 local x_objs={}     --хранит ИДшники объектов
 convert_npc={}
-local StartTime
 
-ver = "0"
 oau_watchdog=0
 oau_reason=""
-
-function mylog(msg)
-end
 
 --показываем типс
 function send_tip(news_text, header, timeout, showtime, sender, sound)
@@ -53,74 +42,61 @@ function add_spot_on_map(obj_id,type,text)
     if text==nil then text=" " end
     -- Ставим метку на серверный объект чтобы её не пришлось обновлять
     level.map_add_object_spot_ser(obj_id, type, text)
---    save_variable("x_marker_type_"..obj_id, type)
---    save_variable("x_marker_text_"..obj_id, text)
   end
 end
 
 function remove_spot_from_map(obj_id,type)
   if obj_id and level.map_has_object_spot(obj_id, type)~= 0 then
     level.map_remove_object_spot(obj_id, type)
---    del_variable("x_marker_type_"..obj_id)
---    del_variable("x_marker_text_"..obj_id)
   end
+end
+
+--[[---------------------------------------------------------------------------
+ * Item use callback
+--]]---------------------------------------------------------------------------
+
+local item_use_acts
+function init_item_use_acts()
+	item_use_acts = {
+		["energy_drink"]	= amk_mod.test_for_need_sleep_nrg,
+		["matras"]		= amk_mod.test_for_need_sleep_matras,
+		["treasure_item"]	= news_main.create_treasurebox,
+		["vodka"]		= amk_alcohol.drink_vodka
+	}
+end
+
+function item_use(obj)
+	local fn = item_use_acts[obj:section()]
+	if fn then
+		fn(obj)
+		return
+	end
+
+	spawn_level_changer.teleport_start(obj)
+	tag_spb.refresh_zombie_team(obj)
 end
 
 --[[---------------------------------------------------------------------------
  * Legacy timer handlers
 --]]---------------------------------------------------------------------------
 
-function outfit_cond(params)
-	local arr = string_to_table(params)
-	local grade = arr[1]
-	local id = arr[2]
-	local rnd, add
-	local a
-
-	rnd = grade * 10 + 10
-	add = 65 - grade * 10
-
-	a = level.object_by_id(id)
-	if a then
-		a:set_condition((math.random(rnd) + add) / 100)
-	end
-end
-
-function smski_besu_handler(params)
-	wawka.smski_besu(tonumber(params))
-end
-
 function block_sleep_menu_handler()
-	save_variable("block_sleep_menu", 0)
-end
-
-function af_transform_handler(params)
-	amk_mod.af_transform_end(string_to_table(params_string))
+	set_value("block_sleep_menu", 0)
 end
 
 function amk_freeplay_handler()
-	if load_variable("freeplay", 0) == 1 and level.name() == "l12_stancia_2" then
+	if get_value("freeplay", 0) == 1 and level.name() == "l12_stancia_2" then
 		xr_effects.game_credits()
 	end
 end
 
-function healing_enemies_handler(params)
-	local arr = string_to_table(params)
-	local npc_id = arr[1]
-	local npc_com = arr[2]
-	local npc = level.object_by_id(npc_id)
+function healing_enemies_handler(id, com)
+	local npc = level_object(id)
 	if math.random(1,100) > 80 then
-		npc:set_character_community(npc_com)
+		npc:set_character_community(com)
 		npc:set_relation(game_object.enemy, db_actor)
 	else
 		xr_wounded.custom_change(npc)
-	end
-end
-
-function timer_drop_obj_teleport_handler(params)
-	local tbl = string_to_table(params)
-	if not alife():object(tbl.obj_id) then
-		spawn_level_changer.teleport_start(tbl.obj_sect)
 	end
 end
 
@@ -128,7 +104,7 @@ local legacy_acts = {
 	["tag_trup_to_zombie"]		= "tag_spb.trup_to_zombie",
 	["sms_new"]			= "braad_test.sms_new",
 	["sms_new1"]			= "braad_test.sms_new1",
-	["sms"]				= "amk.smski_besu_handler",
+	["sms"]				= "wawka.smski_besu",
 	["smska_borova"]		= "wawka.smska_borova",
 	["smska_volka"]			= "wawka.smska_volka",
 	["smska_shurupa"]		= "wawka.smska_shurupa",
@@ -137,82 +113,34 @@ local legacy_acts = {
 	["smska_barmana"]		= "wawka.smska_barmana",
 	["show_news"]			= "amk_mod.show_news",
 	["gg_need_sleep"]		= "amk_mod.test_for_need_sleep",
-	["sleep_nrg"]			= "amk_mod.test_for_need_sleep_nrg",
-	["sleep_med"]			= "amk_mod.test_for_need_sleep_med",
-	["sleep_matras"]		= "amk_mod.test_for_need_sleep_matras",
-	["sleep_tr_item"]		= "amk_mod.test_for_need_sleep_tr_item",
-	["sleep_notebook"]		= "amk_mod.test_for_need_sleep_notebook",
 	["block_sleep_menu"]		= "amk.block_sleep_menu_handler",
-	["af_transform"]		= "amk.af_transform_handler",
+	["af_transform"]		= "amk_mod.af_transform_end",
 	["amk_freeplay"]		= "amk.amk_freeplay_handler",
 	["blowout"]			= "amk_mod.Blowout_pp",
-	["test"]			= "amk_mod.Run_Blowout_pp",
 	["blowout_ss"]			= "amk_mod.blowout_scary_sounds",
 	["blow_shift"]			= "amk_mod.Run_Blowout_pp",
-	["sleep_repbox"]		= "amk_mod.repair_weapon",
-	["repbox_cond"]			= "amk_mod.after_repair_weapon",
 	["collect_anomalies_info"]	= "amk_anoms.collect_info",
 	["news_check"]			= "news_main.check_news",
 	["healing_enemies"]		= "amk.healing_enemies_handler",
-	["nano_health_start"]		= "skunk.nano_health_s",
-	["timer_drop_obj_teleport"]	= "amk.timer_drop_obj_teleport_handler"
+	["nano_health_start"]		= "skunk.nano_health_s"
 }
 
 --старт таймера в реальном времени
-function start_timer(call, delay, params)
+function start_timer(call, delay, ...)
 	if not call or not delay then return false end
 
 	call = legacy_acts[call] or call
-	call = call .. "(\"" .. (params or "") .. "\")"
-
-	return reap.start_timer(call, delay * 1000, timer_types.real)
+	return timer(call, delay * 1000, true, ...)
 end
 
 --старт таймера в игровом времени
-function g_start_timer(call, delay_d, delay_h, delay_m, params, delay_s)
+function g_start_timer(call, delay_d, delay_h, delay_m, ...)
 	if not call or not delay_d or not delay_h or not delay_m then return false end
-	local delay = (((delay_d * 60 * 24 + delay_h * 60 + delay_m) * 60) + (delay_s or 0)) * 1000
 
+	local delay = ((delay_d * 60 * 24 + delay_h * 60 + delay_m) * 60) * 1000
 	call = legacy_acts[call] or call
-	call = call .. "(\"" .. (params or "") .. "\")"
 
-	return reap.start_timer(call, delay)
-end
-
-function has_timer(name)
-	if not name then return false end
-	name = legacy_acts[name] or name
-
-	return reap.has_timer(name)
-end
-
-function has_g_timer(name)
-	if not name then return false end
-	name = legacy_acts[name] or name
-
-	return reap.has_timer(name)
-end
-
--- Временное хранилище для переменных удалённых из pstor
-local emerg_store
--- Удаляем переменные из pstor. Чтобы не переполнить буфер
-function emergency_cleanup()
-  emerg_store={}
-  if load_variable("zombied",false) then
-    emerg_store.zombied=load_table("zombied")
-    del_variable("zombied")
-  end
-  save_variable("emerg",true)
-end
-
--- Восстанавливаем удалённые переменные
-function emergency_restore()
-  for k,v in pairs(emerg_store) do
-    if k=="zombied" then
-      save_table(k,v)
-    end
-  end
-  del_variable("emerg")
+	return timer(call, delay, false, ...)
 end
 
 --------------------------------------------------------------------------------------------------------------------
@@ -333,13 +261,6 @@ function remove_item_from_inventory(remove_item,npc)
   return false
 end
 
---создаем "ожидатели" для неписей нужно для корректной работы с объектами, созданными внутри скрипта
-function create_waiter_for_npc(npc,select_string)--неписи
-  npc_spawner[npc.id]=select_string
-  save_variable("x_npc_spawner",pack_array_to_string(npc_spawner) )
-end
---
-
 --очищаем инвентарь непися, можно ГГ, использует следующую фунцию для удаления предмета
 function clear_npc_inventory(npc)
     npc:iterate_inventory(__del_item, npc)
@@ -364,33 +285,11 @@ function check_game()
 end
 
 --записываем переменную
-function save_variable(vn, val)
-	if val == nil then
-		actor_pstor[vn] = nil
-		return
-	end
-
-	local tv = type(val)
-	if tv == "string" or tv == "number" or tv == "boolean" then
-		actor_pstor[vn] = val
-	else
-		abort("amk.save_variable(): unregistered type '%s' encountered (corrupted save?)", tv)
-	end
-end
-
+save_variable = set_value
 --загружаем переменную
-function load_variable(vn, def, del)
-	local var = actor_pstor[vn]
-	if var == nil then return def end
-
-	if del then actor_pstor[vn] = nil end
-	return var
-end
-
+load_variable = get_value
 --удаляем переменную
-function del_variable(vn)
-	actor_pstor[vn] = nil
-end
+del_variable = del_value
 
 --определяем находится ли ГГ в определенной зоне
 function check_npc_in_box(npc, p1,p2,p3)
@@ -445,20 +344,6 @@ function sub(v1,v2)
   newvec.z = v1.z-v2.z
   return newvec
 end
-----------------------------
-
---инвентарное название объекта
-function get_inv_name(section)
-	return read_line(section, "inv_name")
-end
-
-function pack_array_to_string(array)
-	return table_to_string(array)
-end
-
-function unpack_array_from_string(str)
-	return string_to_table(str)
-end
 
 ---------------------------------------------
 --callback section
@@ -486,12 +371,21 @@ end
 function on_item_drop(obj)
 gps_habar.on_item_drop(obj) --idler++--
 	amk_mod.check_for_af_drop(obj)
-	amk_mod.check_sleep_item(obj)
 	amk_mod.check_beacon_drop(obj)
-  --!!! alcohol modification by Terrapack
-  amk_alcohol.drink_vodka(obj)
-  --
+
 	flamethrower.on_item()
+end
+
+-- offline - online для применения различных изменений, серверный объект на входе
+function convert(sobj)
+	local obj = level_object(sobj.id)
+	if obj then
+		if sobj:is_stalker() then
+			obj:stop_talk()
+		end
+		convert_npc[sobj.id] = true
+		switch_offline(obj)
+	end
 end
 
 local next_50 = 0
@@ -500,15 +394,13 @@ local next_1000 = 0
 
 --колбэк на апдейт ГГ (удобно для проверки условий, так как вызывается постоянно, нельзя перегружать, а то будут лаги)
 function on_actor_upade(delta)
-	local time_ = time_global()
-
-	if next_1000 < time_ then
+	if next_1000 <= time_real_ms then
 		oau_watchdog=100
 		braad_test.check_npc_dead()
 		braad_test.check_ecolog_dead()
 	end
 
-	if next_100 < time_ then
+	if next_100 <= time_real_ms then
 		oau_watchdog=99
 		amk_mod.blowout_phantoms()
 	end
@@ -518,22 +410,22 @@ function on_actor_upade(delta)
 	oau_watchdog=96
 	amk_mod.check_hud()
 
-	if next_1000 < time_ then
+	if next_1000 <= time_real_ms then
 		oau_watchdog=95
 		amk_mod.weather_manager()
 	end
 
-	if next_50 < time_ then
+	if next_50 <= time_real_ms then
 		oau_watchdog=94
 		amk_mod.check_armor()
 		oau_watchdog=93
 		amk_mod.interactive_music()
 		amk_mod.firebat_ammo()
 
-		next_50 = time_ + 50
+		next_50 = time_real_ms + 50
 	end
 
-	if next_1000 < time_ then
+	if next_1000 <= time_real_ms then
 		--!!! alcohol modification by Terrapack
 		oau_watchdog=931
 		amk_alcohol.check_alcohol()
@@ -563,7 +455,7 @@ function on_actor_upade(delta)
 		end
 	end
 
-	if next_1000 < time_ then
+	if next_1000 <= time_real_ms then
 		oau_watchdog=89
 		amk_offline_alife.update()
 		oau_watchdog=86
@@ -571,49 +463,25 @@ function on_actor_upade(delta)
 		oau_watchdog=85
 		gps_habar.update_gps_state() --idler++--
 
-		next_1000 = time_ + 1000
+		next_1000 = time_real_ms + 1000
 	end
 
-	if next_100 < time_ then
+	if next_100 <= time_real_ms then
 		oau_watchdog=84
 		skunk.nano_update()
 
-		next_100 = time_ + 100
+		next_100 = time_real_ms + 100
 	end
 
 	oau_watchdog=0
 	oau_reason=""
 end
 
---колбэк на создание непися (точнее на его переход в онлайн), использует следующую за ним функцию для выбора действия
+--колбэк на создание непися (точнее на его переход в онлайн)
 function on_npc_spawn(npc)
-  if npc == nil then return end
-	if (news_main and news_main.on_spawn) then
-		news_main.on_spawn(npc)
-	end
-  for k,v in pairs(npc_spawner) do
-    if k==npc:id() then
-      __npc_spawn_case(npc,v)
-      npc_spawner[k]=nil
-    save_variable("x_npc_spawner",pack_array_to_string(npc_spawner) )
-      return
-    end
-  end
+	news_main.on_spawn(npc)
 end
-function __npc_spawn_case(npc,select_string)
-  --[[
-  здесь описываем вызовы, оформялять в виде
 
-  if select_string=="название условия" then
-    <вызов сторонних функций>
-    -- можно передавать npc как параметр
-  end
-
-  ]]
---user area
------------
-end
------------------------
 function on_net_spawn(obj)
 	amk_mod.build_btrs_table(obj)
 end
@@ -621,25 +489,15 @@ end
 --колбэк на удаление непися (точнее на его переход в оффлайн), использует следующую за ним функцию для выбора действия
 function on_npc_go_offline(npc)
 	amk_anoms.unreg_in_anom_manager(npc)
-  if amk_target then
-    amk_target.net_destroy(npc)
-  end
-	if amk_offline_alife then
-		if check_game()==true then
+
+	if check_game()==true then
 		local sobj = g_alife:object(npc:id())
 		if sobj then
 			amk_offline_alife.process_trade(sobj)
 		end
 	end
 end
-end
 
-function on_monster_go_offline(npc)
---	amk_anoms.unreg_in_anom_manager(npc)
-  if amk_target then
-    amk_target.net_destroy(npc)
-  end
-end
 -----------------------
 
 --колбэк на юзание объекта
@@ -692,13 +550,7 @@ end
 
 --загружаем все переменные, которые нужно, вызывается загрузке игры, автоматически; вручную не вызывать
 function on_game_load()
-  if db.storage[db_actor_id].pstor == nil then
-    db.storage[db_actor_id].pstor = {}
-  end
-	actor_pstor = db.storage[db_actor_id].pstor
-
-  npc_spawner=unpack_array_from_string(load_variable("x_npc_spawner","") )
-
+	amk_alcohol.init()
 	amk_mod.first_run()
 
 --user area
@@ -708,48 +560,13 @@ function on_game_load()
 	gps_habar.on_game_load() --idler++--
 end
 
---записываем все переменные, которые нужно, вызывается присохранении игры, автоматически; вручную не вызывать
-function on_game_save()
-
-end
-
 -- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db_actor недоступен!
 function on_game_start()
+	init_item_use_acts()
 	amk_mod.on_game_start()
-	ver = get_ver()
-	getStartTime()
-end
-
-function getStartTime()
-  local strTime = system_ini():r_string("alife", "start_time")
-  local t = str_explode(":", strTime, true)
-  local d = str_explode(".",  system_ini():r_string("alife", "start_date"), true)
-  StartTime = game.CTime()
-  StartTime:set(d[3], d[2], 1, 0, 0, 0, 0)
-  local temp = game.CTime()
-  temp:setHMS(24,0,0)
-  StartTime = StartTime - temp
 end
 
 --------------------- user function section---------------
-function load_table(name)
-  local var=load_variable(name)
-  return (var==nil and {}) or unpack_array_from_string(var)
-end
-
-function save_table(name,tbl)
-  save_variable(name,pack_array_to_string(tbl))
-end
-
-function update_table(name,id,val)
-  local tbl=load_table(name)
-  tbl[id]=val
-  save_table(name,tbl)
-  return tbl
-end
-
-function bind_lc(obj)
-end
 
 function readvu32u8(packet)
   local v={}
@@ -1049,11 +866,9 @@ function read_stalker_params(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
-  local tbl=amk.parse_stalker_packet({},stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
+  local tbl=parse_stalker_packet({},stpk,uppk,size)
   return tbl
 end
 
@@ -1066,7 +881,7 @@ function read_monster_params(sobj)
   local size1=uppk:w_tell()
   stpk:r_seek(0)
   uppk:r_seek(0)
-  local tbl=amk.parse_se_monster_packet({},stpk,uppk,size)
+  local tbl=parse_se_monster_packet({},stpk,uppk,size)
   return tbl
 end
 
@@ -1074,17 +889,16 @@ end
 function write_stalker_params(tbl,sobj,noconvert)
   local stpk=net_packet()
   local uppk=net_packet()
-  amk.fill_stalker_packet(tbl,stpk,uppk)
+  fill_stalker_packet(tbl,stpk,uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
   sobj:UPDATE_Read(uppk)
   local npc=level.object_by_id(sobj.id)
   if npc and (not noconvert) then
-    amk.convert_npc[sobj.id]=true
+    convert_npc[sobj.id]=true
 		npc:stop_talk()
     switch_offline(npc)
   end
@@ -1093,19 +907,13 @@ end
 function write_monster_params(tbl,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
-  amk.fill_se_monster_packet(tbl,stpk,uppk)
+  fill_se_monster_packet(tbl,stpk,uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
   sobj:UPDATE_Read(uppk)
-  -- local npc=level.object_by_id(sobj.id)
-  -- if npc then
-    -- amk.convert_npc[sobj.id]=true
-    -- switch_offline(npc)
-  -- end
 end
 
 function get_anomaly_data(sobj)
@@ -1118,8 +926,8 @@ function get_anomaly_data(sobj)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_shape_packet(t,stpk,uppk,size)
+	parse_object_packet(t,stpk,uppk,size)
+  parse_shape_packet(t,stpk,uppk,size)
 
 	t.restrictor_type = stpk:r_u8()
 
@@ -1145,8 +953,8 @@ function set_anomaly_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_shape_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_shape_packet(t,stpk,uppk)
 
 	stpk:w_u8(t.restrictor_type)
 
@@ -1231,7 +1039,7 @@ function get_lc_data(obj)
 	t.story_id = packet:r_s32()
 	t.spawn_story_id = packet:r_s32()
 
-	amk.parse_shape_packet(t,packet)
+	parse_shape_packet(t,packet)
 
 	t.restrictor_type = packet:r_u8()
 	t.dest_game_vertex_id = packet:r_u16()
@@ -1260,7 +1068,7 @@ function set_lc_data(t,obj)
 	packet:w_s32(t.story_id)
 	packet:w_s32(t.spawn_story_id)
 
-	amk.fill_shape_packet(t,packet)
+	fill_shape_packet(t,packet)
 
 	packet:w_u8(t.restrictor_type)
 	packet:w_u16(t.dest_game_vertex_id)
@@ -1314,9 +1122,9 @@ function get_breakable_data(sobj)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  amk.parse_object_physic_packet(t,stpk,uppk,size)
+	parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
+  parse_object_physic_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1324,9 +1132,9 @@ function set_breakable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
-  amk.fill_object_physic_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
+  fill_object_physic_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
@@ -1339,7 +1147,7 @@ end
 function on_REspawn(obj,respawner)
 	if obj and respawner then
 		amk_mod.respawned(obj,respawner)
-		if IsMonster(obj) then
+		if obj:is_monster() then
 			if respawner.spawned_goes_online==true then amk_mod.switch_monster_online(obj)
 			elseif respawner.spawned_goes_online==false then amk_mod.switch_monster_offline(obj)
 			end
@@ -1359,16 +1167,14 @@ function get_spawner_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_shape_packet(t,stpk,uppk,size)
+	parse_object_packet(t,stpk,uppk,size)
+  parse_shape_packet(t,stpk,uppk,size)
 
 	t.restrictor_type = stpk:r_u8()
 	t.spawned_obj_count = stpk:r_u8()
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
   return t
 end
 
@@ -1376,14 +1182,13 @@ function set_spawner_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_shape_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
 	stpk:w_u8(t.spawned_obj_count)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1428,17 +1233,7 @@ function fill_shape_packet(t,stpk,updpk)
 end
 
 function parse_ini_section_to_array(ini,section)
-	local tmp={}
-	if ini:section_exist(section) then
-		local result, id, value = nil, nil, nil
-		for a=0,ini:line_count(section)-1 do
-			result, id, value = ini:r_line(section,a,"","")
-			if id~=nil and trim(id)~="" and trim(id)~=nil then
-				tmp[trim(id)]=trim(value)
-			end
-		end
-	end
-	return tmp
+	return ini:key_value(section)
 end
 
 function str_explode(div,str,clear)
@@ -1464,15 +1259,13 @@ function get_restrictor_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_shape_packet(t,stpk,uppk,size)
+	parse_object_packet(t,stpk,uppk,size)
+  parse_shape_packet(t,stpk,uppk,size)
 
 	t.restrictor_type = stpk:r_u8()
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
   return t
 end
 
@@ -1480,13 +1273,12 @@ function set_restrictor_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_shape_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_shape_packet(t,stpk,uppk)
 	stpk:w_u8(t.restrictor_type)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1500,14 +1292,12 @@ function get_trader_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  amk.parse_trader_packet(t,stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
+	parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
+  parse_trader_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1515,13 +1305,12 @@ function set_trader_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
-  amk.fill_trader_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
+  fill_trader_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1535,13 +1324,11 @@ function get_invbox_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
+	parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1549,12 +1336,11 @@ function set_invbox_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1624,10 +1410,10 @@ function get_ammo_params(sobj)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  amk.parse_item_packet(t,stpk,uppk,size)
-  amk.parse_item_ammo_packet(t,stpk,uppk,size)
+	parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
+  parse_item_packet(t,stpk,uppk,size)
+  parse_item_ammo_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1635,10 +1421,10 @@ function set_ammo_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
-  amk.fill_item_packet(t,stpk,uppk)
-  amk.fill_item_ammo_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
+  fill_item_packet(t,stpk,uppk)
+  fill_item_ammo_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
@@ -1662,15 +1448,13 @@ function get_destroyable_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-	amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  amk.parse_skeleton_packet(t,stpk,uppk,size)
-  amk.parse_object_physic_packet(t,stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
+	parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
+  parse_skeleton_packet(t,stpk,uppk,size)
+  parse_object_physic_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1678,14 +1462,13 @@ function set_destroyable_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
-  amk.fill_skeleton_packet(t,stpk,uppk)
-  amk.fill_object_physic_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
+  fill_skeleton_packet(t,stpk,uppk)
+  fill_object_physic_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1700,15 +1483,13 @@ function get_weapon_data(sobj)
   sobj:UPDATE_Write(uppk)
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("rsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   local t={}
-  amk.parse_object_packet(t,stpk,uppk,size)
-  amk.parse_visual_packet(t,stpk,uppk,size)
-  amk.parse_item_packet(t,stpk,uppk,size)
-  amk.parse_item_weapon_packet(t,stpk,uppk,size)
-  -- amk.mylog("rsp "..size.." "..size1.." "..stpk:r_tell())
+  parse_object_packet(t,stpk,uppk,size)
+  parse_visual_packet(t,stpk,uppk,size)
+  parse_item_packet(t,stpk,uppk,size)
+  parse_item_weapon_packet(t,stpk,uppk,size)
   return t
 end
 
@@ -1716,14 +1497,13 @@ function set_weapon_data(t,sobj)
   local stpk=net_packet()
   local uppk=net_packet()
 
-  amk.fill_object_packet(t,stpk,uppk)
-  amk.fill_visual_packet(t,stpk,uppk)
-  amk.fill_item_packet(t,stpk,uppk)
-  amk.fill_item_weapon_packet(t,stpk,uppk)
+  fill_object_packet(t,stpk,uppk)
+  fill_visual_packet(t,stpk,uppk)
+  fill_item_packet(t,stpk,uppk)
+  fill_item_weapon_packet(t,stpk,uppk)
 
   local size=stpk:w_tell()
   local size1=uppk:w_tell()
-  -- amk.mylog("wsp "..size.." "..size1)
   stpk:r_seek(0)
   uppk:r_seek(0)
   sobj:STATE_Read(stpk,size)
@@ -1765,48 +1545,6 @@ function fill_item_weapon_packet(ret,stpk,updpk)
 	updpk:w_u8(ret.updweapon_zoom)
 	updpk:w_u8(ret.updcurrent_fire_mode)
   return ret
-end
-
-function get_ver()
-	local ver = "0"
-	local mm = _G.main_menu.get_main_menu()
-	if mm then ver = mm:GetGSVer() end
-	return ver
-end
-
-function game_milliseconds()
-	if StartTime == nil then
-		getStartTime()
-		if StartTime == nil then
-			return 0
-		end
-	end
-	local gtime = game.get_game_time()
-	local seconds = gtime:diffSec(StartTime)
-	local y,m,d,h,min,sec,ms = gtime:get()
-	return (seconds * 1000 + ms)
-end
-
-function game_seconds()
-	if StartTime == nil then
-		getStartTime()
-		if StartTime == nil then
-			return 0
-		end
-	end
-	return game.get_game_time():diffSec(StartTime)
-end
-
-function game_minutes()
-	return math_floor(game_seconds() / 60)
-end
-
-function game_hours()
-	return math_floor(game_seconds() / 3600)
-end
-
-function game_days()
-	return math_floor(game_seconds() / 86400)
 end
 
 --[[

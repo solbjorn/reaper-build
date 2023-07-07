@@ -1,14 +1,14 @@
 --[[----------------------------------------------------------------------------------------------
-ê†·Ø†‡·•¢†≠®• ® Â‡†≠•≠®• ≠†·‚‡Æ•™ ·¨†‡‚ ‚•‡‡•©≠Æ¢
-ó„£†© Ä´•™·†≠§‡
+–†–∞—Å–ø–∞—Ä—Å–µ–≤–∞–Ω–∏–µ –∏ —Ö—Ä–∞–Ω–µ–Ω–∏–µ –Ω–∞—Å—Ç—Ä–æ–µ–∫ —Å–º–∞—Ä—Ç —Ç–µ—Ä—Ä–µ–π–Ω–æ–≤
+–ß—É–≥–∞–π –ê–ª–µ–∫—Å–∞–Ω–¥—Ä
 ------------------------------------------------------------------------------------------------]]
 
 local params_loaded = false
 
 local stay_times
 
---[[ ™•Ë®‡Æ¢†≠≠Î• Ø‡•§„·‚†≠Æ¢Æ™ ‡†≠£Æ¢ ® £‡„ØØ®‡Æ¢Æ™
-‰Æ‡¨†‚:
+--[[ –∫–µ—à–∏—Ä–æ–≤–∞–Ω–Ω—ã–µ –ø—Ä–µ–¥—É—Å—Ç–∞–Ω–æ–≤–æ–∫ —Ä–∞–Ω–≥–æ–≤ –∏ –≥—Ä—É–ø–ø–∏—Ä–æ–≤–æ–∫
+—Ñ–æ—Ä–º–∞—Ç:
 	presets = {
 		preset_name1 = {
 			community1 = {rank_min1,rank_max1},
@@ -18,26 +18,20 @@ local stay_times
 		preset_name2 = false,
 		...
 	}
-false Æß≠†Á†•‚, Á‚Æ ØÎ‚†´®·Ï Ø‡ÆÁ®‚†‚Ï, ≠Æ ≠• ≠†Ë´® ‚†™Æ© Ø‡•§„·‚†≠Æ¢™®
+false –æ–∑–Ω–∞—á–∞–µ—Ç, —á—Ç–æ –ø—ã—Ç–∞–ª–∏—Å—å –ø—Ä–æ—á–∏—Ç–∞—Ç—å, –Ω–æ –Ω–µ –Ω–∞—à–ª–∏ —Ç–∞–∫–æ–π –ø—Ä–µ–¥—É—Å—Ç–∞–Ω–æ–≤–∫–∏
 ]]
 local ltx_stpresets = ini_file( "misc\\smart_terrain_presets.ltx" )
 local presets = {}
 
--- ¢Æß¢‡†È†•‚ ‚†°´®Ê„ · Ø‡•§„·‚†≠Æ¢™Æ© ®´® false
+-- –≤–æ–∑–≤—Ä–∞—â–∞–µ—Ç —Ç–∞–±–ª–∏—Ü—É —Å –ø—Ä–µ–¥—É—Å—Ç–∞–Ω–æ–≤–∫–æ–π –∏–ª–∏ false
 function read_preset( preset_name )
-	local ltx = ltx_stpresets
-
-	if ltx and ltx:section_exist( preset_name ) then
+	if ltx_stpresets and ltx_stpresets:section_exist( preset_name ) then
 		local preset = {}
-		local result, field, str
 		local t
-		local n = ltx:line_count( preset_name )
 		local rank_min, rank_max, rank_interval
 
-		for i = 0, n-1 do
-			result, field, str = ltx:r_line( preset_name, i, "", "" )
-
-			t = parse_names( str )
+		ltx_stpresets:iterate_lines(preset_name, function(result, field, str)
+			t = string.parse_names( str )
 
 			rank_min, rank_max = 10000, 0
 
@@ -54,7 +48,7 @@ function read_preset( preset_name )
 			end
 
 			preset[field] = { rank_min, rank_max }
-		end
+		end)
 
 		return preset
 	else
@@ -62,25 +56,17 @@ function read_preset( preset_name )
 	end
 end
 
--- ß†£‡„ß®‚Ï ‡†ß´®Á≠Î• Æ°È®• §´Ô ¢·•Â ·¨†‡‚Æ¢ ≠†·‚‡Æ©™®
+-- –∑–∞–≥—Ä—É–∑–∏—Ç—å —Ä–∞–∑–ª–∏—á–Ω—ã–µ –æ–±—â–∏–µ –¥–ª—è –≤—Å–µ—Ö —Å–º–∞—Ä—Ç–æ–≤ –Ω–∞—Å—Ç—Ä–æ–π–∫–∏
 function load_params()
 	params_loaded = true
-
-	local ltx = system_ini()
-
 	stay_times = {}
 
-	local result, field, str
-	local n = ltx:line_count( "smart_terrain_stay_time" )
-
-	for i = 0, n-1 do
-		result, field, str = ltx:r_line( "smart_terrain_stay_time", i, "", "" )
-
-		stay_times[field] = parse_nums( str )
-	end
+	config:iterate_lines("smart_terrain_stay_time", function(result, field, str)
+		stay_times[field] = string.parse_nums(str)
+	end)
 end
 
--- ØÆ´„Á®‚Ï ¢‡•¨•≠≠Æ© ®≠‚•‡¢†´
+-- –ø–æ–ª—É—á–∏—Ç—å –≤—Ä–µ–º–µ–Ω–Ω–æ–π –∏–Ω—Ç–µ—Ä–≤–∞–ª
 function get_stay_time_interval( name )
 	if not params_loaded then
 		load_params()
@@ -94,7 +80,7 @@ function get_stay_time_interval( name )
 	return stay_times[name][1], stay_times[name][2]
 end
 
--- ØÆ´„Á®‚Ï Ø‡•§„·‚†≠Æ¢™„
+-- –ø–æ–ª—É—á–∏—Ç—å –ø—Ä–µ–¥—É—Å—Ç–∞–Ω–æ–≤–∫—É
 function get_preset( preset_name )
 	local pset = presets[preset_name]
 	if pset == nil then

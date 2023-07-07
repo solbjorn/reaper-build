@@ -4,29 +4,9 @@
 function proceed()
     local actor = db.actor
 
-    if not has_alife_info("dar_document1") and
- 		actor:object("dar_document1") then
- 		actor:give_info_portion("dar_document1")
-	end
-
-	if not has_alife_info("dar_document2") and
- 		actor:object("dar_document2") then
- 		actor:give_info_portion("dar_document2")
-	end
-
-	if not has_alife_info("dar_document3") and
- 		actor:object("dar_document3") then
- 		actor:give_info_portion("dar_document3")
-	end
-
 	if not has_alife_info("dar_document4") and
- 		actor:object("dar_document4") then
- 		actor:give_info_portion("dar_document4")
-	end
-
-	if not has_alife_info("dar_document5") and
- 		actor:object("dar_document5") then
- 		actor:give_info_portion("dar_document5")
+		actor:object("dar_document4") then
+		actor:give_info_portion("dar_document4")
 	end
 
 	if not has_alife_info("dar_ring_spawn2") and
@@ -40,14 +20,14 @@ function proceed()
 		has_alife_info("dar_password_info1")
 	then
 		actor:give_info_portion("dar_password_info1_know")
-		news_manager.send_tip(actor, "pass_to_1st_door")
+		news_manager.send_tip("pass_to_1st_door", nil, "kalugin")
 	end
 
 	if not has_alife_info("dar_password_info2_know") and
 		has_alife_info("dar_password_info2")
 	then
 		actor:give_info_portion("dar_password_info2_know")
-		news_manager.send_tip(actor, "pass_to_2nd_door")
+		news_manager.send_tip("pass_to_2nd_door", nil, "kalugin")
 	end
 end
 

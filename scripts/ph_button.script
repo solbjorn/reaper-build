@@ -18,14 +18,14 @@ function ph_button:reset_scheme()
 end
 
 function ph_button:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function ph_button:try_switch()
 	local st = db.storage[self.object:id()]
 	if st.active_scheme and st.active_scheme == "ph_button" and self.st.on_press then
 		if xr_logic.switch_to_section(self.object, self.st,
-		   xr_logic.pick_section_from_condlist(db_actor, self.object, self.st.on_press.condlist)) then
+		   xr_logic.pick_section_from_condlist(self.object, self.st.on_press.condlist)) then
 			return true
 		end
 	end
@@ -40,7 +40,7 @@ function ph_button:use_callback(victim, who)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ ph_button(npc, storage) ] = true
 end
 

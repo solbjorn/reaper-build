@@ -11,7 +11,7 @@ function action_territory:__init(obj, storage)
 	self.st = storage
 end
 function action_territory:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 function action_territory:hit_callback(obj, amount, local_direction, who, bone_index)
 	if who:id() ~= db_actor_id then
@@ -21,7 +21,7 @@ function action_territory:hit_callback(obj, amount, local_direction, who, bone_i
 		return
 	end
   xr_logic.pstor_store(obj,"wasenemy",false) -- выстрел в нейтрала или друга. запомним
-	xr_logic.pick_section_from_condlist(db_actor, obj, self.st.territory_hit)
+	xr_logic.pick_section_from_condlist(obj, self.st.territory_hit)
 end
 function action_territory:death_callback(victim, who)
 	if who:id() ~= db_actor_id then
@@ -30,11 +30,11 @@ function action_territory:death_callback(victim, who)
   if xr_logic.pstor_retrieve(victim,"wasenemy",true) then
     return -- ГГ убил врага. Не будем обижаться
   end
-	xr_logic.pick_section_from_condlist(db_actor, victim, self.st.territory_death)
+	xr_logic.pick_section_from_condlist(victim, self.st.territory_death)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(obj, storage)
+function add_to_binder(obj, storage)
 	local new_action = action_territory(obj, storage)
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	storage.actions[ new_action ] = true
@@ -50,10 +50,10 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
 
 	local tmp = utils.cfg_get_string(ini, section, "territory_hit", obj, false, "")
-	st.territory_hit = xr_logic.parse_condlist_q(tmp or "")
+	st.territory_hit = xr_logic.parse_condlist(tmp or "")
 
 	tmp = utils.cfg_get_string(ini, section, "territory_death", obj, false, "")
-	st.territory_death = xr_logic.parse_condlist_q(tmp or "")
+	st.territory_death = xr_logic.parse_condlist(tmp or "")
 end
 
 function issue_event(npc, type_, ...)

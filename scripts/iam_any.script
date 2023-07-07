@@ -1,0 +1,228 @@
+function iAmAnyInit()
+	iAmGrenadeInit()
+	iAmPistolInit()
+	iAmKnifeInit()
+	iAmAddonInit()
+	iAmAmmoInit()
+	iAmOutfitInit()
+	iAmAnomalyInit()
+	iAmMagazinedWeaponInit()
+	iAmWeaponInit()
+	iAmStalkerInit()
+	iAmMonsterInit()
+	iAmArtefactInit()
+end
+
+local iAmOutfit
+function iAmOutfitInit()
+	iAmOutfit={
+		[clsid.equ_exo]			= true,
+		[clsid.equ_military]	= true,
+		[clsid.equ_scientific]	= true,
+		[clsid.equ_stalker_s]	= true,
+		[clsid.equ_stalker]		= true
+	}
+end
+
+local iAmAmmo
+function iAmAmmoInit()
+	iAmAmmo={
+		[clsid.wpn_ammo] = true,
+		[clsid.wpn_ammo_vog25] 	= true,
+		[clsid.wpn_ammo_og7b] 	= true,
+		[clsid.wpn_ammo_m209] 	= true
+	}
+end
+
+local iAmAddon
+function iAmAddonInit()
+	iAmAddon={
+		[clsid.wpn_scope_s] 			= true,
+		[clsid.wpn_scope] 				= true,
+		[clsid.wpn_silencer] 			= true,
+		[clsid.wpn_grenade_launcher] 	= true
+	}
+end
+
+local iAmKnife
+function iAmKnifeInit()
+	iAmKnife={
+		[clsid.wpn_knife]	=true,
+		[clsid.wpn_knife_s]	=true
+	}
+end
+
+local iAmGrenade
+function iAmGrenadeInit()
+	iAmGrenade={
+		[clsid.wpn_grenade_f1]		= true,
+		[clsid.wpn_grenade_fake]	= true,
+		[clsid.wpn_grenade_rgd5]	= true,
+		[clsid.wpn_grenade_rpg7]	= true
+	}
+end
+
+local iAmAnomaly
+function iAmAnomalyInit()
+	iAmAnomaly={
+		[clsid.zone_buzz_s] = true,
+		[clsid.zone_bfuzz_s] = true,
+		[clsid.zone_electra_s] = true,
+		[clsid.zone_galant_s] = true,
+		[clsid.zone_ice_s] = true,
+		[clsid.zone_mbald_s] = true,
+		[clsid.zone_mincer_s] = true,
+		[clsid.zone_zharka_s] = true,
+		[clsid.zone_radioactive] = true
+	}
+end
+
+local iAmPistol
+function iAmPistolInit()
+	iAmPistol={
+		[clsid.wpn_fort]		=true,
+		[clsid.wpn_hpsa]		=true,
+		[clsid.wpn_hpsa_s]		=true,
+		[clsid.wpn_pm]			=true,
+		[clsid.wpn_pm_s]		=true,
+		[clsid.wpn_usp45]		=true,
+		[clsid.wpn_usp45_s]		=true,
+		[clsid.wpn_walther]		=true,
+		[clsid.wpn_walther_s]	=true
+	}
+end
+
+local clsid_wpn_binocular_s
+local iAmMagazinedWeapon
+function iAmMagazinedWeaponInit()
+	clsid_wpn_binocular_s = clsid.wpn_binocular_s
+	iAmMagazinedWeapon={
+		[clsid.wpn_ak74_s]		= true,
+		[clsid_wpn_binocular_s]		= true,
+		[clsid.wpn_bm16_s]		= true,
+		[clsid.wpn_groza_s]		= true,
+		[clsid.wpn_lr300_s]		= true,
+		[clsid.wpn_rg6_s]		= true,
+		[clsid.wpn_rpg7_s]		= true,
+		[clsid.wpn_shotgun_s]	= true,
+		[clsid.wpn_svd_s]		= true,
+		[clsid.wpn_svu_s]		= true,
+		[clsid.wpn_val_s]		= true,
+		[clsid.wpn_vintorez_s]	= true
+	}
+	for key,value in pairs(iAmPistol) do
+		iAmMagazinedWeapon[key]=value
+	end
+end
+
+local iAmWeapon
+function iAmWeaponInit()
+	iAmWeapon = { }
+	for key,value in pairs(iAmKnife) do
+		iAmWeapon[key]=value
+	end
+	for key,value in pairs(iAmGrenade) do
+		iAmWeapon[key]=value
+	end
+	for key,value in pairs(iAmMagazinedWeapon) do
+		iAmWeapon[key]=value
+	end
+end
+
+local clsid_script_trader
+local iAmStalker
+function iAmStalkerInit()
+	clsid_script_trader = clsid.script_trader
+	iAmStalker = {
+		[clsid.actor]			= true,
+		[clsid.script_stalker]	= true
+	}
+end
+
+local iAmMonster
+function iAmMonsterInit()
+	iAmMonster = {
+		[clsid.boar_s]			= true,
+		[clsid.bloodsucker_s]	= true,
+		[clsid.dog_s]			= true,
+		[clsid.flesh_s]			= true,
+		[clsid.pseudodog_s]		= true,
+		[clsid.psy_dog_s]		= true,
+		[clsid.burer_s]			= true,
+		[clsid.cat_s]			= true,
+		[clsid.chimera_s]		= true,
+		[clsid.controller_s]	= true,
+		[clsid.fracture_s]		= true,
+		[clsid.poltergeist_s]	= true,
+		[clsid.gigant_s]		= true,
+		[clsid.zombie_s]		= true,
+		[clsid.tushkano_s]		= true,
+		[clsid.snork_s]			= true,
+		[clsid.rat_s]			= true
+	}
+end
+
+local iAmArtefact
+function iAmArtefactInit()
+	iAmArtefact = {
+		[clsid.art_mercury_ball]=true,
+		[clsid.art_black_drops]=true,
+		[clsid.art_needles]=true,
+		[clsid.art_bast_artefact]=true,
+		[clsid.art_gravi_black]=true,
+		[clsid.art_dummy]=true,
+		[clsid.art_zuda]=true,
+		[clsid.art_thorn]=true,
+		[clsid.art_faded_ball]=true,
+		[clsid.art_electric_ball]=true,
+		[clsid.art_rusty_hair]=true,
+		[clsid.art_galantine]=true,
+		[clsid.art_gravi]=true,
+		[clsid.artefact]=true,
+		[clsid.artefact_s] = true
+	}
+end
+
+function clsid_monster(clsid)
+	return iAmMonster[clsid] == true
+end
+
+function is_ammo(obj)
+	return iAmAmmo[obj:clsid()] == true
+end
+
+function is_anomaly(obj)
+	return iAmAnomaly[obj:clsid()] == true
+end
+
+function is_artefact(obj)
+	return iAmArtefact[obj:clsid()] == true
+end
+
+function is_binoculars(obj)
+	return obj:clsid() == clsid_wpn_binocular_s
+end
+
+function is_grenade(obj)
+	return iAmGrenade[obj:clsid()] == true
+end
+
+function is_knife(obj)
+	return iAmKnife[obj:clsid()] == true
+end
+
+function is_monster(obj)
+	return iAmMonster[obj:clsid()] == true
+end
+
+function is_stalker(obj)
+	return iAmStalker[obj:clsid()] == true
+end
+
+function is_trader(obj)
+	return obj:clsid() == clsid_script_trader
+end
+
+function is_weapon(obj)
+	return iAmWeapon[obj:clsid()] == true
+end

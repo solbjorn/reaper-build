@@ -147,19 +147,19 @@ function load_job(sj, gname, type, squad, groups)
 	end
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "sar_monolith_general" then
-		return function(gulag)
+		return function()
 			return 0
 		end
     end
     if type == "sar_monolith_sklad" then
-		return function(gulag)
+		return function()
 			return 0
 		end
     end
     if type == "sar_monolith_guard" then
-		return function(gulag)
+		return function()
 			if has_alife_info("mon_door_unlocked") then
 				return 1
 			end
@@ -171,11 +171,8 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx()
-	return nil
-end
 
-function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+function checkStalker(npc_community, gulag_type, se_obj)
 	if gulag_type == "sar_monolith_general" then
 		return npc_community == "monolith"
 	end

@@ -63,14 +63,15 @@ local level_object_by_id = level.object_by_id
 local ms, mc, math_atan2 = math.sin, math.cos, math.atan2
 local math_fmod = math.fmod
 local math_pi = math.pi
-local hud = get_hud()
 local angle = 0
 local lim_angle = 1000*2*math_pi
 local biomap_sweep = nil
+local enabled, biomap
+
 -- вызывается из net_spawn биндера объекта
 -- регистрирует объект
 function add_obj(obj)
-	creatures [obj:id()] = not IsMonster(obj)
+	creatures[obj:id()] = not obj:is_monster()
 end
 
 -- вызывается из net_destroy биндера объекта
@@ -79,10 +80,17 @@ function remove_obj(obj)
 	creatures[obj:id()] = nil
 end
 
+function switch(val)
+	enabled = val
+end
+
 -- вызывается из update биндера актора
 -- обновление положения точек и/или волны
 function update()
-	if not inventory.belt["bioradar"] or level.main_input_receiver() then bioradar_hide() return end
+	if not enabled or level.main_input_receiver() then
+		if biomap then bioradar_hide() end
+		return
+	end
 
 	-- скорректируем ширину под ш\ф
 	koef_x = (device().height/device().width) / (768/1024)
@@ -90,10 +98,11 @@ function update()
 		koef_x_old = koef_x
 		hud:RemoveCustomStatic("biomap_sweep")
 		hud:RemoveCustomStatic("biomap")
+		biomap = nil
 		dots={}
 	end
-	if not hud:GetCustomStatic("biomap") then
-		local biomap = hud:AddCustomStatic("biomap"):wnd()
+	if not biomap then
+		biomap = hud:AddCustomStatic("biomap"):wnd()
 		biomap:SetWndPos(1024 + 3 - biomap_width*koef_x,1)
 		biomap:SetWidth(biomap_width*koef_x)
 
@@ -154,14 +163,15 @@ end
 
 -- убирает радар с экрана
 function bioradar_hide()
-	if hud:GetCustomStatic("biomap") then
-		dots = {}
-		hud:RemoveCustomStatic("biomap")
+	if not biomap then return end
 
-		if biomap_sweep_enabled then
-			hud:RemoveCustomStatic("biomap_sweep")
-			biomap_sweep = nil
-		end
+	hud:RemoveCustomStatic("biomap")
+	biomap = nil
+	dots = {}
+
+	if biomap_sweep_enabled then
+		hud:RemoveCustomStatic("biomap_sweep")
+		biomap_sweep = nil
 	end
 end
 
@@ -242,7 +252,7 @@ function dot:get_color(obj, is_stalker)
 
 	local part = parts[clsid]
 	if part then
-		return inventory.belt[part] ~= nil, colors[clsid]
+		return inv:on_belt(part) ~= nil, colors[clsid]
 	else
 		return false, { 255, 255, 0 }
 	end

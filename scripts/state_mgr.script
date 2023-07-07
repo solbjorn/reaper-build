@@ -277,7 +277,7 @@ function act_state_mgr_end:execute()
 	action_base.execute(self)
 
 	local wpn = self.object:best_weapon()
-	if not wpn or not isWeapon(wpn) then
+	if not wpn or not wpn:is_weapon() then
 		return
 	end
 
@@ -291,7 +291,7 @@ function act_state_mgr_end:execute()
 				return
 			end
 			if self.object:see(look_object) and
-				(not IsStalker(look_object) or
+				(not look_object:is_stalker() or
 				self.object:relation(look_object) == game_object_enemy) and
 				look_object:alive() == true
 			then

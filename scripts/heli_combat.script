@@ -90,7 +90,7 @@ function heli_combat:read_custom_data( ini, section )
 
 	local combat_ignore    = utils.cfg_get_string( ini, section, "combat_ignore",     self.object, false, "", nil )
 	if combat_ignore then
-		self.combat_ignore = xr_logic.parse_condlist_q(combat_ignore)
+		self.combat_ignore = xr_logic.parse_condlist(combat_ignore)
 	else
 		self.combat_ignore = nil
 	end
@@ -343,7 +343,7 @@ end
 
 -- нужно ли игнорировать врага
 function heli_combat:combat_ignore_check()
-	return self.combat_ignore ~= nil and xr_logic.pick_section_from_condlist( db_actor, self.object, self.combat_ignore ) ~= nil
+	return self.combat_ignore ~= nil and xr_logic.pick_section_from_condlist(self.object, self.combat_ignore) ~= nil
 end
 
 -- частое обновление.
@@ -453,10 +453,9 @@ function heli_combat:round_initialize()
 
 	self:round_setup_flight( self.flight_direction )
 
-	if (news_main and news_main.on_heli_combat and self.object) then
+	if self.object then
 		news_main.on_heli_combat(self.object)
 	end
-
 end
 
 function heli_combat:round_setup_flight( direction )
@@ -529,10 +528,9 @@ function heli_combat:search_initialize()
 
 	self:search_setup_flight()
 
-	if (news_main and news_main.on_heli_combat and self.object) then
+	if self.object then
 		news_main.on_heli_combat(self.object)
 	end
-
 end
 
 function heli_combat:search_setup_flight()
@@ -623,10 +621,9 @@ function heli_combat:flyby_initialize()
 	self.heliObject:SetSpeedInDestPoint( self.max_velocity )
 	self.heliObject:LookAtPoint( dummy_vector, false )
 
-	if (news_main and news_main.on_heli_combat and self.object) then
+	if self.object then
 		news_main.on_heli_combat(self.object)
 	end
-
 end
 
 function heli_combat:flyby_set_initial_state()
@@ -701,10 +698,9 @@ function heli_combat:retreat_initialize()
 	self.heliObject:SetDestPosition( self:calc_position_in_radius( 5000 ) )
 	self.heliObject:ClearEnemy()
 
-	if (news_main and news_main.on_heli_retreat and self.object) then
+	if self.object then
 		news_main.on_heli_retreat(self.object)
 	end
-
 end
 
 function heli_combat:retreat_update()

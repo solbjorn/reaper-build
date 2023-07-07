@@ -128,12 +128,7 @@ function trader_give_reward(first_speaker, second_speaker)
                 if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -160,12 +155,7 @@ function military_give_reward(first_speaker, second_speaker)
                 if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -192,12 +182,7 @@ function neutral_give_reward(first_speaker, second_speaker)
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -224,12 +209,7 @@ function svoboda_give_reward(first_speaker, second_speaker)
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -256,12 +236,7 @@ function barman_give_reward(first_speaker, second_speaker)
                   if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -288,12 +263,7 @@ function ecolog_give_reward(first_speaker, second_speaker)
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
@@ -320,16 +290,10 @@ function dolg_give_reward(first_speaker, second_speaker)
                    if type(tonumber(v)) == "number" then
                     db.actor:give_money(tonumber(v))
                 else
-                    alife():create(v,
-						db.actor:position(),
-						db.actor:level_vertex_id(),
-						db.actor:game_vertex_id(),
-						db.actor:id())
-                    news_manager.relocate_item(db.actor, "in", v)
+						got(v)
                 end
             end
 			break
         end
     end
 end
-

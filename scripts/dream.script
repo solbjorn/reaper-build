@@ -1,0 +1,217 @@
+-- -----------------------------
+--  DreamMod v0.2 by Ab@dDon ---
+-- -----------------------------
+
+class "dream_mgr"
+
+function dream_mgr:__init()
+	-- Служебные вызовы и переменные
+	self.actor_is_sleeping = false
+	self:init_dreams() -- Импорт снов, функция от ПЫС'а Oleg "Haron" Kreptul, haronk@ukr.net, 2005
+end
+
+function dream_mgr:sleep(scale) -- Время сна в часах
+	if not scale then scale = (1 - db_actor.health) * 6 end
+	amk_mod.reduce_need_sleep(scale)
+	self:main(scale)
+end
+
+function dream_mgr:main(scale)
+	db_actor:stop_talk()
+	level.disable_input()
+	self:hp_corrector(scale)
+	self.actor_is_sleeping = true
+	actor_flags.sleep_state = true
+	game.start_tutorial("time_scaling")
+	level.add_pp_effector("teleport.ppe", 2006, false)
+	level.set_time_factor(scale * 2650)
+end
+
+function dream_mgr:dreamer()
+	level.set_time_factor(config:r_float_cache("alife", "time_factor"))
+	if self.actor_is_sleeping then
+		self:hp_corrector()
+		game.start_tutorial(self:get_dream())
+	end
+end
+
+function dream_mgr:stopper()
+	if not self.actor_is_sleeping then return end
+	level.set_time_factor(config:r_float_cache("alife", "time_factor"))
+	actor_flags.sleep_state = false
+	self.actor_is_sleeping = false
+	if db_actor:alive() then
+		level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+		level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
+		level.add_pp_effector("total_recall.ppe", 2008, false)
+		say([[characters_voice\human_01\stalker\states\breath\breath_2]])
+		level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
+	end
+	level.enable_input()
+end
+
+function dream_mgr:init_dreams()
+	local ini = ini_file("misc\\dream.ltx")
+	self.regular = nil
+	self.scenario = {}
+	self.type = "all"
+	self.dream_types = {all = 2}
+	local def_global_regular_probability = 80
+	local def_regular_type = "normal"
+	local def_regular_probability = 2
+
+	if ini:section_exist("dreams") then
+		self.regular_probability = def_global_regular_probability
+		if ini:line_exist("dreams", "regular_probability") then
+			local rp = ini:r_float("dreams", "regular_probability")
+			if rp >= 0 or rp <= 100 then
+				self.regular_probability = rp
+			end
+		end
+		if ini:line_exist("dreams", "dream_types") then
+			local rt_str = ini:r_string("dreams", "dream_types")
+			if rt_str then
+				for rt in string.gfind(rt_str, "([%w_]+)") do
+					self.dream_types[rt] = 1
+				end
+			end
+		end
+		if ini:line_exist("dreams", "regular") then
+			self.regular = {}
+			local rd_str = ini:r_string("dreams", "regular")
+
+			if rd_str then
+				for rd_sect in string.gfind(rd_str, "([%w_]+)") do
+					if ini:section_exist(rd_sect) then
+						if ini:line_exist(rd_sect, "dream") then
+							local dream_path = ini:r_string(rd_sect, "dream")
+							local prob = def_regular_probability
+							local tp = def_regular_type
+
+							if ini:line_exist(rd_sect, "probability") then
+								local p = ini:r_float(rd_sect, "probability")
+								if p >= 0 then
+									prob = p
+								end
+							end
+
+							if ini:line_exist(rd_sect, "type") then
+								local t = ini:r_float(rd_sect, "type")
+								if self.dream_types[t] == 1 then
+									tp = t
+								end
+							end
+
+							self.regular[rd_sect] = {dream_path, prob, tp}
+						end
+					end
+				end
+			end
+		end
+
+		if ini:line_exist("dreams", "scenario") then
+			self.scenario = {}
+			local sd_str = ini:r_string("dreams", "scenario")
+
+			if sd_str then
+				for sd_sect in string.gfind(sd_str, "([%w_]+)") do
+					if ini:section_exist(sd_sect) then
+						if ini:line_exist(sd_sect, "dream") then
+							local dream_path = ini:r_string(sd_sect, "dream")
+
+							if ini:line_exist(sd_sect, "cond") then
+								local cond = xr_logic.cfg_get_condlist(ini, sd_sect, "cond", self)
+								local to_regular = nil
+
+								if ini:line_exist(sd_sect, "to_regular") then
+									local prob = def_regular_probability
+									local tp = def_regular_type
+									local tr = ini:r_string(sd_sect, "to_regular")
+									local at, to, p, t = string.find(tr, "(%d+),(%w+)")
+									p = tonumber(p)
+									if p then
+										prob = p
+									end
+									if self.dream_types[t] == 1 then
+										tp = t
+									end
+									to_regular = {prob, tp}
+								end
+
+								self.scenario[sd_sect] = {dream_path, cond, to_regular}
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function dream_mgr:get_dream()
+	local k, v
+	local dream = nil
+
+	for k, v in pairs(self.scenario) do
+		local c = xr_logic.pick_section_from_condlist(self, v[2].condlist)
+		if c == "true" or c == "" then
+			dream = k
+			break
+		end
+	end
+
+	if not dream then -- check regular dream
+		local rval = math.random(100)
+		local rp = self.regular_probability
+
+		if rval < rp and self.dream_types[self.type] then
+			local prob_power = 0
+
+			for k, v in pairs(self.regular) do
+				if self.type == "all" or self.type == v[3] then
+					prob_power = prob_power + v[2]
+				end
+			end
+
+			if prob_power > 0 then
+				local cur_prob = 0
+
+				rval = math.random(prob_power)
+				for k, v in pairs(self.regular) do
+					if self.type == "all" or self.type == v[3] then
+						if rval <  cur_prob + v[2] then
+							return v[1]
+						else
+							cur_prob = cur_prob + v[2]
+						end
+					end
+				end
+			end
+		end
+	else
+		v = self.scenario[dream]
+		if v[3] then -- put this dream into regular
+			self.regular[dream] = {v[1], v[3][1], v[3][2]}
+			self.scenario[dream] = nil
+		end
+		return v[1]
+	end
+
+	return "without_dream" -- no dreams
+end
+
+function dream_mgr:hp_corrector(scale)
+	if scale then
+		self.hp = math.min(scale/6 + db_actor.health, 1)
+	elseif db_actor.health > self.hp then
+		db_actor.health = self.hp - db_actor.health
+	end
+end
+
+-- Для вызовов из xml-секций снов
+function after_time_scaling()
+	dream_:dreamer()
+end
+function after_dream()
+	dream_:stopper()
+end

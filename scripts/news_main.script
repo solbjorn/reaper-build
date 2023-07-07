@@ -1,11 +1,12 @@
 -- copyright © AMK TEAM 2007-2008
 
-local amk_game_minutes =  amk.game_minutes
+local game_minutes = game.minutes
 local math_atan2 = math.atan2
 local math_random = math.random
 local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
+local table_random = table.random
 local table_remove = table.remove
 
 local prob = 0.4
@@ -24,7 +25,6 @@ local timer_heli 				= 10	-- При замеченном вертолетике
 
 local timer_last_showed 		= 0 	-- Последняя показанная новость
 local timer_show_freq 			= 7		-- Сколько ждать между новостями минимально (игровые минуты)
-local time_factor 				= 1
 local timer_next_blow 			= 0			-- Тамер до след. выброса
 local timer_blow_showed			= 0			-- Последняя показанная новость о Выбросе
 local timer_blow_freq 			= 10 * 60  	-- Как часто новости о Выбросе показывать (игровые минуты)
@@ -51,9 +51,6 @@ local dist_heli_seen = 400
 local dist_hear_min = 50
 local dist_hear_max = 400
 
-local rel_enemy = -1000
-local rel_friend = 1000
-
 news_stack = {}
 table_spawned = {}
 table_killed_by_actor = {}
@@ -61,56 +58,38 @@ spammers = {}
 
 function init()
 	if (bInit == false) then
-		news_data.Init()
-		time_factor = system_ini():r_float("alife","time_factor")
 		math.randomseed (device ():time_global ())
 
-		local sini = ini_file("scripts\\amk\\news\\news.ltx")
-		if sini and sini:section_exist("params") then
-			local t = amk.parse_ini_section_to_array(sini, "params")
-			if tonumber(t.timer_check_freq) then timer_check_freq = tonumber(t.timer_check_freq) end
-			if tonumber(t.timer_show_freq) then timer_show_freq = tonumber(t.timer_show_freq) end
-			if tonumber(t.timer_eternal_stalker_freq) then timer_eternal_stalker_freq = tonumber(t.timer_eternal_stalker_freq) end
-			if tonumber(t.timer_random_spawn_freq) then timer_random_spawn_freq = tonumber(t.timer_random_spawn_freq) end
-			if tonumber(t.timer_def_spawn_freq) then timer_def_spawn_freq = tonumber(t.timer_def_spawn_freq) end
-			if tonumber(t.timer_alife_freq) then timer_alife_freq = tonumber(t.timer_alife_freq) end
-			if tonumber(t.timer_weather_freq) then timer_weather_freq = tonumber(t.timer_weather_freq) end
-			if tonumber(t.timer_daytime_freq) then timer_daytime_freq = tonumber(t.timer_daytime_freq) end
-		end
-		-- Реально в игре проходит timer_check_freq * 1000 * 60 * time_factor секунд
+		-- Реально в игре проходит timer_check_freq * 1000 * 60 * level.get_time_factor() секунд
 		-- Реально проходит х секунд
-		local gtime = amk_game_minutes()
-		timer_last_showed = gtime
-		timer_random_spawn = gtime - math_random(timer_random_spawn_freq)
-		timer_def_spawn = gtime - math_random(timer_def_spawn_freq)
-		timer_eternal_stalker = gtime - math_random(timer_eternal_stalker_freq)
-		timer_blow_showed = gtime - math_random(timer_blow_freq)
-		timer_heli_showed = gtime - math_random(timer_heli_freq)
-		timer_alife_showed = gtime - math_random(timer_alife_freq)
-		timer_weather_showed = gtime - math_random(timer_weather_freq)
-		timer_daytime_showed = gtime - math_random(timer_daytime_freq)
-
-		rel_enemy,rel_friend = utils.cfg_get_number(system_ini(), "game_relations", "goodwill_enemy", nil, false, -1000), utils.cfg_get_number(system_ini(), "game_relations", "goodwill_friend", nil, false, 1000)
-
-	    if not amk.has_g_timer("news_check") then
-			amk.g_start_timer("news_check", 0, 0, timer_check_freq)
-	    end
+		timer_last_showed = game_minutes()
+		timer_random_spawn = timer_last_showed - math_random(timer_random_spawn_freq)
+		timer_def_spawn = timer_last_showed - math_random(timer_def_spawn_freq)
+		timer_eternal_stalker = timer_last_showed - math_random(timer_eternal_stalker_freq)
+		timer_blow_showed = timer_last_showed - math_random(timer_blow_freq)
+		timer_heli_showed = timer_last_showed - math_random(timer_heli_freq)
+		timer_alife_showed = timer_last_showed - math_random(timer_alife_freq)
+		timer_weather_showed = timer_last_showed - math_random(timer_weather_freq)
+		timer_daytime_showed = timer_last_showed - math_random(timer_daytime_freq)
 
 		bInit = true
 	end
 end
 
+function new_game()
+	amk.g_start_timer("news_check", 0, 0, timer_check_freq)
+end
+
 function on_spawn_group(community, level, position, count, o_type)
 	if (community and level and position and count and o_type and o_type > 0) then
-		local name, sname = amk_names_lists.get_strings()
-		local s_author = name.." "..sname
-		local m_str = ""
+		local s_author
 		local author = get_nearest_stalker(level, position, dist_seen, 0)
 		if (author) then
 			s_author = get_npc_name(author)
 		else
 			return
 		end
+		local m_str = ""
 		-- o_type = 1 - НПС
 		-- o_type = 2 - монстры
 		if(o_type == 2) then
@@ -173,7 +152,7 @@ function on_abuse(obj)
 	if (obj.alive and obj:alive() == false) then
 		return
 	end
-	local str = news_data.abuse_templates[math_random(#news_data.abuse_templates)]
+	local str = table_random(news_data.abuse_templates)
 	local act
 	if isGameObject(obj) == false then
 		act = get_obj(obj.id)
@@ -190,7 +169,7 @@ end
 
 function on_death(victim, killer)
 	if (victim ~= nil) then
-		if (IsStalker(victim)) then
+		if victim:is_stalker() then
 			local m_obj
 			if (isGameObject(victim)) then
 				m_obj = victim
@@ -235,10 +214,10 @@ function on_stalker_death(victim_, killer_)
 		else
 			killer = get_obj(killer_.id)
 		end
-		if (IsMonster(killer)) then
+		if killer:is_monster() then
 			m_killer = format_death_by_monster(killer)
 			m_killer_str = get_monster_name(killer, 2)
-		elseif (IsAnomaly(killer)) then
+		elseif killer:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer)
 			m_killer_str = get_anomaly_name(killer, 1)
 		elseif (IsNpcStalker(killer)) then
@@ -337,7 +316,7 @@ function on_npc_death(victim_, killer_)
 			killer = get_obj(killer_.id)
 		end
 		if (killer) then
-			if (IsMonster(killer)) then
+			if killer:is_monster() then
 				m_killer = format_death_by_monster(killer)
 			elseif (IsNpcStalker(killer)) then -- Хм, и кто ж его так? Или свои, или ГГ
 				if (IsNpcActor(killer)) then
@@ -346,7 +325,7 @@ function on_npc_death(victim_, killer_)
 				m_killer = format_death_by_stalker(killer)
 			elseif (IsNpcOther(killer)) then -- Ага. Или бандиты, или вояки, или киллеры... Вобщем, люди.
 				m_killer = format_death_by_stalker(killer)
-			elseif (IsAnomaly(killer)) then
+			elseif killer:is_anomaly() then
 				m_killer = format_death_by_anomaly(killer)
 			else
 				m_killer = ""
@@ -354,8 +333,7 @@ function on_npc_death(victim_, killer_)
 		end
 	end
 	if (math_random() < prob) then
-		local name, sname = amk_names_lists.get_strings()
-		local s_from = "" -- name.." "..sname
+		local s_from = ""
 		local m_str = ""
 		local author = nil
 		local aid = nil
@@ -416,10 +394,6 @@ function get_level_name(level_, index)
 	return m_tmp_str
 end
 
-function get_level_subname()
-	return level.name()
-end
-
 function get_current_time()
 	local m_time = "00:00"
 	if (level) then
@@ -463,7 +437,7 @@ end
 function get_npc_community(obj)
 	local m_s_c = ""
 	if (obj) then
-		if(IsMonster(obj)) then
+		if obj:is_monster() then
 			m_s_c = get_monster_name(obj, 1)
 		else
 			if (obj.character_community) then
@@ -496,16 +470,16 @@ function get_object_name(obj)
 	local value	= ""
 	if (isGameObject(obj) and obj.section) then
 		local sect = obj:section()
-		value	= utils.cfg_get_string(system_ini(), sect, "inv_name", obj, false, "", "")
+		value = get_inv_name(sect)
 		s_name = game.translate_string(value)
-		if string_find(sect, "^af_") then
+		if obj:is_artefact() then
 			s_name = "артефакт "..s_name
 		end
 	elseif (obj.section_name) then
 		local sect = obj:section_name()
-		value	= utils.cfg_get_string(system_ini(), sect, "inv_name", obj, false, "", "")
+		value = get_inv_name(sect)
 		s_name = game.translate_string(value)
-		if string_find(sect, "^af_") then
+		if obj:is_artefact() then
 			s_name = "артефакт "..s_name
 		end
 	end
@@ -639,25 +613,11 @@ local wpn_types = {
 }
 
 function get_weapon_type(weapon)
-	if(weapon and isWeapon(weapon)) then
-		local id = get_weapon_name(weapon)
-		return id and wpn_types[id] or 0
-	end
-	return 0
-end
+	if not weapon or not weapon:is_weapon() then return 0 end
 
-function get_weapon_name(weapon)
-	if(weapon and isWeapon(weapon)) then
-		local result = ""
-		if weapon.section then
-			result = weapon:section()
-		elseif weapon.section_name then
-			result = weapon:section_name()
-		end
-		if result == nil then result = "" end
-		return result
-	end
-	return ""
+	local sect = (weapon.section_name and weapon:section_name()) or
+		     (weapon.section and weapon:section())
+	return sect and wpn_types[sect] or 0
 end
 
 function get_npc_weapon(obj)
@@ -672,7 +632,7 @@ function get_npc_weapon(obj)
 			if (ob.active_item) then
 				local m_act = ob:active_item()
 				if (m_act) then
-					if (isWeapon(m_act)) then
+					if m_act:is_weapon() then
 						return m_act
 					end
 				end
@@ -686,7 +646,7 @@ function get_monster_name(obj, index)
 	local m_comm = ""
 	local m_n = ""
 	if index == nil then index = 1 end
-	if(IsMonster(obj)) then
+	if obj:is_monster() then
 		local m_clsid = obj:clsid()
 		if m_clsid then
 			m_comm = news_data.monster_classes[m_clsid]
@@ -731,7 +691,7 @@ end
 function get_monster_rank(obj)
 	local m_rank = ""
 	if (obj) then
-		if (obj and IsMonster(obj)) then
+		if obj:is_monster() then
 			m_rank = ranks.get_obj_rank_name(obj)
 			if (m_rank == nil) then
 				m_rank = ""
@@ -745,7 +705,7 @@ function get_anomaly_name(obj, index)
 	local m_name = ""
 	local m_n = ""
 	if index == nil then index = 1 end
-	if (IsAnomaly(obj)) then
+	if obj:is_anomaly() then
 		local m_type = ""
 		if (isGameObject(obj) and obj.section) then
 			m_type = obj:section()
@@ -767,7 +727,7 @@ function get_anomaly_name(obj, index)
 end
 
 function IsNpcOther(obj)
-	if (obj and IsStalker(obj)) then
+	if obj and obj:is_stalker() then
 		local m_comm  = get_npc_community(obj)
 		if (m_comm == "actor"  or m_comm == "actor_dolg" or m_comm == "actor_freedom" or m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 			return false
@@ -779,7 +739,7 @@ function IsNpcOther(obj)
 end
 
 function IsNpcStalker(obj)
-	if (obj and IsStalker(obj)) then
+	if obj and obj:is_stalker() then
 		local m_comm  = get_npc_community(obj)
 		if (m_comm == "actor" or m_comm == "actor_dolg" or m_comm == "actor_freedom" or m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 			if (obj.name and obj:name() ~= "agr_ratcatcher") then
@@ -791,17 +751,13 @@ function IsNpcStalker(obj)
 end
 
 function IsNpcActor(obj)
-	if (obj and IsStalker(obj)) then
+	if obj and obj:is_stalker() then
 		local m_comm  = get_npc_community(obj)
 		if (m_comm == "actor" or m_comm == "actor_dolg" or m_comm == "actor_freedom") then
 			return true
 		end
 	end
 	return false
-end
-
-function IsAnomaly(obj)
-	return is_anomaly(obj)
 end
 
 function do_news(text, from, timeout, showtime, section, author_id, priority)
@@ -815,13 +771,13 @@ end
 function add_news(news_text, news_from, news_type, news_timeout, news_showtime, news_section, author_id, priority)
 	newsitem = {
 		eventType = news_type,
-		created = amk_game_minutes(),
+		created = game_minutes(),
 		text = news_text,
 		from = news_from,
-		timeout = amk_game_minutes() + (news_timeout / 60),
+		timeout = game_minutes() + (news_timeout / 60),
 		showtime = news_showtime,
 		section = news_section,
-		lifetime = amk_game_minutes() + (news_timeout / 60) + 20,
+		lifetime = game_minutes() + (news_timeout / 60) + 20,
 		activated = nil,
 		author_id = tonumber(author_id),
 		priority = priority
@@ -831,27 +787,24 @@ end
 
 function show_news(text, from, timeout, showtime, section)
 	if level.indoor() == true then return end
-	if (text == "") then return end
-	if (from == "") then return end
-	if sleep_manager.is_sleep_active() then return end
+	if (text == "") or (from == "") then return end
+	if actor_flags.sleep_state then return end
 	local blow = amk.load_variable("blowout",-1)
 	if blow > -1 and blow < 5 then return end
-		local now = amk_game_minutes()
+		local now = game_minutes()
 	local diff = 0
 	if (timer_next_blow ~= 0) then
 		diff = (timer_next_blow - now) * 60 -- Разница в игровых секундах.
-		local eventtime = timeout * time_factor -- Сколько пройдет игровых минут
+		local eventtime = timeout * level.get_time_factor() -- Сколько пройдет игровых минут
 		if eventtime >= diff then return end
 	end
 
-	if (text == nil) then text = "nil" end
-	if (from == nil) then from = "nil" end
 	if (timeout > 1000) then timeout = math_random(timer_general, timer_general * 4) end
 
 	table_insert(spammers, from)
 
-	send_tip(text, from, timeout, showtime, section, "pda_news")
-	timer_last_showed = amk_game_minutes()
+	send_tip(text or "nil", from or "nil", timeout, showtime, section, "pda_news")
+	timer_last_showed = game_minutes()
 end
 
 function format_death_by_monster(obj)
@@ -863,13 +816,13 @@ function format_death_by_monster(obj)
 	if (obj) then
 	-- monster_prefix + monster_classes + monster_suffix
 	-- monster_suffix + monster_classes + monster_prefix
-		m_prefix = news_data.monster_prefix[math_random(#news_data.monster_prefix)].." "
+		m_prefix = table_random(news_data.monster_prefix).." "
 		local m_suffid = math_random(#news_data.monster_suffix)
 		local m_suff = news_data.monster_suffix[m_suffid]
 		if (m_suff) then
 			m_suffix = m_suff[math_random(#m_suff)]
 			m_class = get_monster_name(obj, m_suffid+1)
-			m_postfix = news_data.rate_postfix[math_random(#news_data.rate_postfix)]
+			m_postfix = table_random(news_data.rate_postfix)
 		end
 		if (math_random() < 0.5) then
 			m_s = m_prefix..""..m_suffix..""..m_class.."."..m_postfix
@@ -887,7 +840,7 @@ function format_death_by_anomaly(obj)
 	local m_class = ""
 	if (obj) then
 	-- anomaly_prefix + anomaly_classes + anomaly_classes[3,4]
-		m_prefix = news_data.anomaly_prefix[math_random(#news_data.anomaly_prefix)]
+		m_prefix = table_random(news_data.anomaly_prefix)
 		m_class = get_anomaly_name(obj, 2)
 		m_suffix = get_anomaly_name(obj, math_random(3, 4))
 		if (math_random() < 0.5) then
@@ -980,11 +933,11 @@ function format_death_hear_sounds(victim_, killer_, weapon_)
 					m_s = format_template_hear(victim_, m_hear_a, m_hear_z)
 				end
 			end
-		elseif (killer_ and victim_ and IsMonster(victim_) ~= true and (IsAnomaly(killer_) or IsMonster(killer_))) then -- Если killer == аномалия и victim ~= монстры - то крики
+		elseif (killer_ and victim_ and victim_:is_monster() ~= true and (killer_:is_anomaly() or killer_:is_monster())) then -- Если killer == аномалия и victim ~= монстры - то крики
 			m_hear_a = "Слышал ужасные крики"
 			m_hear_z = "слышал ужасные крики"
 			m_s = format_template_hear(victim_, m_hear_a, m_hear_z)
-		elseif ((killer_ and IsMonster(killer_)) or (victim_ and IsMonster(victim_))) then -- Если killer == монстры  или victim == монстры - то звуки
+		elseif ((killer_ and killer_:is_monster()) or (victim_ and victim_:is_monster())) then -- Если killer == монстры  или victim == монстры - то звуки
 			m_hear_a = "Слышал страшный рык"
 			m_hear_z = "слышал страшный рык"
 			m_s = format_template_hear(victim_, m_hear_a, m_hear_z)
@@ -999,7 +952,7 @@ function format_template_killer_act(obj)
 		local m_class = ""
 		local m_level = get_point_description(get_object_levelname(obj), get_object_position(obj))
 		if (m_level == "") then return "" end
-		if (IsMonster(obj)) then
+		if obj:is_monster() then
 			m_class = get_monster_name(obj, 4)
 		else
 			local m_comm  = get_npc_community(obj)
@@ -1486,7 +1439,6 @@ function isGameObject(obj)
 end
 
 function get_object_levelname(obj)
-	local sim = alife()
 	local mlevel = "null"
 	if (obj) then
 		local m_game_vertex
@@ -1497,12 +1449,12 @@ function get_object_levelname(obj)
 		else
 			m_game_vertex = obj.m_game_vertex_id
 		end
-		if (m_game_vertex and game_graph():valid_vertex_id(m_game_vertex)) then
-			local lvert = game_graph():vertex(m_game_vertex)
+		if (m_game_vertex and graph:valid_vertex_id(m_game_vertex)) then
+			local lvert = graph:vertex(m_game_vertex)
 			if (lvert ~= nil and lvert.level_id) then
 				local lid = lvert:level_id()
 				if (lid ~= nil) then
-					mlevel = sim:level_name(lid)
+					mlevel = g_alife:level_name(lid)
 				end
 			end
 			if mlevel == nil then mlevel = "nil" end
@@ -1531,7 +1483,7 @@ function check_news()
 		table_killed_by_actor = {}
 	end
 
-	if (timer_last_showed + timer_show_freq < amk_game_minutes()) then
+	if (timer_last_showed + timer_show_freq < game_minutes()) then
 		-- Пора показывать, если есть что.
 		amk.oau_reason="cn on_news"
 		on_news()
@@ -1539,26 +1491,26 @@ function check_news()
 
 	spammers = {}
 	amk.oau_reason="cn start_timer"
-  if not amk.has_g_timer("news_check") then
-    amk.g_start_timer("news_check", 0, 0, timer_check_freq)
-  end
+	amk.g_start_timer("news_check", 0, 0, timer_check_freq)
 end
 
 function add_spawned_object(obj)
 	local sim = alife()
-	if (obj and (IsStalker(obj) or IsMonster(obj))) then
+	if (obj and (obj:is_stalker() or obj:is_monster())) then
 		if obj.can_switch_online and obj:can_switch_online() == false then return end
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "stranger" or s_comm == "trader" or s_comm == "arena_enemy" or s_comm == "actor_dolg" or s_comm == "actor_freedom" or s_comm == "ecolog" or s_comm == "green") then
 			return -- это сталкер
+		elseif obj:name() == "mil_stalker0012" then
+			return	-- сумасшедший на милитари
 		end
 		local s_id = ""
 		local pos = get_object_position(obj)
 		local lev = get_object_levelname(obj)
 		local obj_type = 0
-		if IsStalker(obj) then
+		if obj:is_stalker() then
 			obj_type = 1
-		elseif IsMonster(obj) then
+		elseif obj:is_monster() then
 			obj_type = 2
 		end
 		if (isGameObject(obj)) then
@@ -1622,7 +1574,7 @@ function add_spawned_object(obj)
 end
 
 function add_killed_by_actor(obj)
-	if (obj and (IsStalker(obj) or IsMonster(obj))) then
+	if (obj and (obj:is_stalker() or obj:is_monster())) then
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "trader" or s_comm == "ecolog" or s_comm == "green") then
 			return -- это сталкер
@@ -1637,9 +1589,9 @@ function add_killed_by_actor(obj)
 		end
 		local b_added = false
 		local obj_type = 0
-		if IsStalker(obj) then
+		if obj:is_stalker() then
 			obj_type = 1
-		elseif IsMonster(obj) then
+		elseif obj:is_monster() then
 			obj_type = 2
 		end
 		if table_killed_by_actor then
@@ -1668,7 +1620,7 @@ end
 function on_weather_change(old_weather, new_weather)
 -- clear, pasmurno, rain, groza
 	if (old_weather and new_weather) then
-		if (amk_game_minutes() - timer_weather_showed > timer_weather_freq) then
+		if (game_minutes() - timer_weather_showed > timer_weather_freq) then
 			local s_weather = old_weather.."_"..new_weather
 			local m_h = level:get_time_hours()
 			local s_list = nil
@@ -1682,7 +1634,7 @@ function on_weather_change(old_weather, new_weather)
 				if (math_random() < prob) then
 					local name, sname = amk_names_lists.get_strings()
 					show_news(s_text, name.." "..sname, math_random(timer_weather, timer_weather * 5), 15, "gen_info")
-					timer_weather_showed = amk_game_minutes()
+					timer_weather_showed = game_minutes()
 				end
 			end
 		end
@@ -1691,7 +1643,7 @@ end
 
 function on_daytime()
 -- ночь, рассвет, закат...
-	if (amk_game_minutes() - timer_daytime_showed > timer_daytime_freq) then
+	if (game_minutes() - timer_daytime_showed > timer_daytime_freq) then
 		local m_h = level:get_time_hours()
 		local m_m = level:get_time_minutes()
 		local m_t = m_h * 60 + m_m
@@ -1702,7 +1654,7 @@ function on_daytime()
 				s_text = news_data.morning_templates[math_random(#news_data.morning_templates)]
 				local name, sname = amk_names_lists.get_strings()
 				show_news(s_text, name.." "..sname, math_random(timer_weather, timer_weather * 5), 15, "gen_info")
-				timer_daytime_showed = amk_game_minutes()
+				timer_daytime_showed = game_minutes()
 			end
 		elseif(m_t >= 20*60+30 and m_t <= 22*60) then
 			-- 20:30 - 22:00 Закат
@@ -1710,7 +1662,7 @@ function on_daytime()
 				s_text = news_data.evening_templates[math_random(#news_data.evening_templates)]
 				local name, sname = amk_names_lists.get_strings()
 				show_news(s_text, name.." "..sname, math_random(timer_weather, timer_weather * 5), 15, "gen_info")
-				timer_daytime_showed = amk_game_minutes()
+				timer_daytime_showed = game_minutes()
 			end
 		elseif(m_t >= 23*60 and m_t <= 24*60) or (m_t >= 0*60 and m_t <= 4*60) then
 			--23:00 - 04:00 Ночь
@@ -1737,7 +1689,7 @@ function on_daytime()
 						local name, sname = amk_names_lists.get_strings()
 						show_news(s_text, name.." "..sname, base_wait + (i+1) * 3, 15, "gen_info")
 					end
-					timer_daytime_showed = amk_game_minutes()
+					timer_daytime_showed = game_minutes()
 				end
 			end
 
@@ -1748,8 +1700,7 @@ end
 -- Видели, как ГГ что-то делал
 function on_hero_seen(community, level, position, count, o_type)
 	if (community and level and position and count and o_type and o_type > 0) then
-		local name, sname = amk_names_lists.get_strings()
-		local s_author = name.." "..sname
+		local s_author
 		local m_str = ""
 		local aid = nil
 		local author = get_nearest_stalker(level, position, dist_seen, 30)
@@ -1807,11 +1758,10 @@ end
 
 -- где-то веролет дает прикурить (heli_combat:round, heli_combat.heli_combat:search, heli_combat.heli_combat:flyby)
 function on_heli_combat(obj)
-	if (obj and amk_game_minutes() - timer_heli_showed > timer_heli_freq) then
+	if (obj and game_minutes() - timer_heli_showed > timer_heli_freq) then
 		if (math_random() < 0.5) then -- Не надо слишком часть о вертолетике сообщать
 			if (math_random() < prob) then
-				local name, sname = amk_names_lists.get_strings()
-				local s_author = name.." "..sname
+				local s_author
 				local m_str = ""
 				m_str = format_template_heli(obj, "combat")
 				local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_heli_seen, 0)
@@ -1821,7 +1771,7 @@ function on_heli_combat(obj)
 					return
 				end
 				do_news(m_str, s_author, math_random(timer_heli, timer_heli * 5), 15, "gen_info", author.id, 1)
-				timer_heli_showed = amk_game_minutes()
+				timer_heli_showed = game_minutes()
 			end
 		end
 	end
@@ -1829,10 +1779,9 @@ end
 
 -- видели вертолет
 function on_heli_seen(obj)
-	if (obj and amk_game_minutes() - timer_heli_showed > timer_heli_freq) then
+	if (obj and game_minutes() - timer_heli_showed > timer_heli_freq) then
 		if (math_random() < prob) then
-			local name, sname = amk_names_lists.get_strings()
-			local s_author = name.." "..sname
+			local s_author
 			local m_str = ""
 			m_str = format_template_heli(obj, "seen")
 			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_heli_seen, 0)
@@ -1842,17 +1791,16 @@ function on_heli_seen(obj)
 				return
 			end
 			do_news(m_str, s_author, math_random(timer_heli, timer_heli * 5), 15, "gen_info", author.id, 1)
-			timer_heli_showed = amk_game_minutes()
+			timer_heli_showed = game_minutes()
 		end
 	end
 end
 
 -- подбили вертолет
 function on_heli_flame(obj)
-	if (obj and amk_game_minutes() - timer_heli_showed > timer_heli_freq) then
+	if (obj and game_minutes() - timer_heli_showed > timer_heli_freq) then
 		if (math_random() < prob) then
-			local name, sname = amk_names_lists.get_strings()
-			local s_author = name.." "..sname
+			local s_author
 			local m_str = ""
 			m_str = format_template_heli(obj, "flame")
 			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_heli_seen, 0)
@@ -1862,17 +1810,16 @@ function on_heli_flame(obj)
 				return
 			end
 			do_news(m_str, s_author, math_random(timer_heli, timer_heli * 5), 15, "gen_info", author.id, 1)
-			timer_heli_showed = amk_game_minutes()
+			timer_heli_showed = game_minutes()
 		end
 	end
 end
 
 -- упал вертолет
 function on_heli_die(obj)
-	if (obj and amk_game_minutes() - timer_heli_showed > timer_heli_freq) then
+	if (obj and game_minutes() - timer_heli_showed > timer_heli_freq) then
 		if (math_random() < prob) then
-			local name, sname = amk_names_lists.get_strings()
-			local s_author = name.." "..sname
+			local s_author
 			local m_str = ""
 			m_str = format_template_heli(obj, "die")
 			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_heli_seen, 0)
@@ -1882,17 +1829,16 @@ function on_heli_die(obj)
 				return
 			end
 			do_news(m_str, s_author, math_random(timer_heli, timer_heli * 5), 15, "gen_info", author.id, 1)
-			timer_heli_showed = amk_game_minutes()
+			timer_heli_showed = game_minutes()
 		end
 	end
 end
 
 -- улетел вертолетик
 function on_heli_retreat(obj)
-	if (obj and amk_game_minutes() - timer_heli_showed > timer_heli_freq) then
+	if (obj and game_minutes() - timer_heli_showed > timer_heli_freq) then
 		if (math_random() < prob) then
-			local name, sname = amk_names_lists.get_strings()
-			local s_author = name.." "..sname
+			local s_author
 			local m_str = ""
 			m_str = format_template_heli(obj, "retreat")
 			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_heli_seen, 0)
@@ -1902,14 +1848,17 @@ function on_heli_retreat(obj)
 				return
 			end
 			do_news(m_str, s_author, math_random(timer_heli, timer_heli * 5), 15, "gen_info", author.id, 1)
-			timer_heli_showed = amk_game_minutes()
+			timer_heli_showed = game_minutes()
 		end
 	end
 end
 
 -- Видели монстров. Будем спавнить.
+local reward_type = {
+	money	= 1,
+	items	= 2
+}
 function do_seen_monster()
-	local sim = alife()
 	local avail = {}
 	local name, sname = amk_names_lists.get_strings()
 	local s_author = name.." "..sname
@@ -1924,7 +1873,7 @@ function do_seen_monster()
 			for idx, cls in pairs(v.spawn) do
 				local class = cls.class
 				if (news_data.class_templates[class] and #news_data.class_templates[class] >0 ) then
-					class = news_data.class_templates[class][math_random(#news_data.class_templates[class])]
+					class = table_random(news_data.class_templates[class])
 				end
 				if (is_creature_day(class) == false) then
 					bDayOk = false
@@ -1943,125 +1892,203 @@ function do_seen_monster()
 		end
 	end
 
-	if #avail > 0 then
-		local t = avail[math_random(#avail)]
-		local z = news_data.do_seen_monster_templates[t]
-		local obj
-		if (z) then
-			-- Вытягиваем что надо.
-			local spawn = z.spawn
-			local text = z.text
-			if (z.author) then
-				o_author = z.author
-				s_author = z.author
-			end
-			if (z.icon) then icon = z.icon end
-			local bInfo = true
-			local info = z.has_info
-			if (info) then
-				local tbl = amk.str_explode(",", amk.trim(info), true)
-				if (tbl and #tbl) then
-					bInfo = false
-					for ki, vi in pairs(tbl) do
-						if has_alife_info(vi) then
-							bInfo = true
-						end
-					end
-				end
-			end
-			if (bInfo == false) then
-				return
-			end
-			if (text and spawn and (#spawn > 0)) then
-				local b_ok = false
-				for l,m in pairs(spawn) do
-					local class = m.class
-					local count = m.count
-					local point = m.point
-					local lv = m.lv
-					local gv = m.gv
-					if (class and count and point and lv and gv) then
-						local index
-						local new_pos, x_offset, z_offset
-						for index=1, count do
-							x_offset = math_random(5)
-							z_offset = math_random(5)
-							new_pos = vector():set( point[1], point[2], point[3])
-							new_pos.x = new_pos.x + x_offset
-							new_pos.z = new_pos.z + z_offset
-							if (point_is_far(new_pos, lv, gv, dist_far) == false) then
-								-- Слишком близко.
-								return
-							end
-							obj = sim:create(class, new_pos, lv, gv)
-							if (obj) then
-								if (o_author == "") then
-									local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_seen, 0)
-									if (author and get_npc_name(author) ~= "") then
-										s_author = get_npc_name(author)
-										o_author = s_author
-										author_id = author.id
-									end
-								end
-								if (where == "" and string_find(text,"$where")) then
-									local m_where = get_point_description(get_object_levelname(obj), get_object_position(obj))
-									if m_where then
-										text = string_gsub(text, "$where", m_where)
-										where = m_where
-									end
-								end
-								if (IsMonster(obj)) then
-									local tbl = amk.read_monster_params(obj)
-									local cd = amk.parse_custom_data(tbl.custom)
-									if not cd.smart_terrains then cd.smart_terrains={} end
-									cd.smart_terrains.none = "true"
-									-- Микроквест
-									if (z.reward and z.reward.c_min and z.reward.c_max and index == 1 and l == 1) then
-										if not cd.microquest then cd.microquest={} end
-										cd.microquest.reward_money = math_random(z.reward.c_min, z.reward.c_max) * 100
-										cd.microquest.reward_items = ""
-										local rank = get_npc_rank(db.actor)
-										if (rank and news_data.miniquest_rewards and news_data.miniquest_rewards[rank]) then
-											for i=1, 3 do
-												local section = news_data.miniquest_rewards[rank][math_random(#news_data.miniquest_rewards[rank])]
-												if (section) then
-													if (cd.microquest.reward_items == "") then
-														cd.microquest.reward_items = section
-													else
-														cd.microquest.reward_items = cd.microquest.reward_items..","..section
-													end
-												end
-											end
-										end
-										s_from = string_gsub(s_author, " ", "_")
-										cd.microquest.reward_from = s_from
-									end
-									tbl.custom = amk.gen_custom_data(cd)
-									amk.write_monster_params(tbl, obj)
-								end
-								b_ok = true
-							end
-						end
-					end
-				end
-				if (b_ok == true) then
-					if (s_author ~= "") then
-						if author_id then
-							do_news(text, s_author, math_random(timer_spawn, timer_spawn * 3), 15, icon, author_id, 1)
-						else
-							show_news(text, s_author, math_random(timer_spawn, timer_spawn * 3), 15, icon)
-						end
-					end
-					news_data.do_seen_monster_templates[t].enabled = false
-					timer_def_spawn = amk_game_minutes()
-				end
-			end
-		end
-	else
+	if #avail == 0 then
 		for k,v in pairs(news_data.do_seen_monster_templates) do
 			v.enabled = true
 		end
+		return
 	end
+
+	local t = table_random(avail)
+	local z = news_data.do_seen_monster_templates[t]
+	-- Вытягиваем что надо.
+	local spawn = z.spawn
+	local text = z.text
+	if not (text and spawn and (#spawn > 0)) then
+		return
+	end
+
+	if (z.author) then
+		o_author = z.author
+		s_author = z.author
+	end
+	if (z.icon) then icon = z.icon end
+	local bInfo = true
+	local info = z.has_info
+	if (info) then
+		local tbl = string.explode(info, ",", true)
+		if #tbl > 0 then
+			bInfo = false
+			for ki, vi in ipairs(tbl) do
+				if has_info(vi) then
+					bInfo = true
+					break
+				end
+			end
+		end
+	end
+	if (bInfo == false) then
+		return
+	end
+
+	local b_ok = false
+	local microquest_created = false
+	local obj
+	for l,m in ipairs(spawn) do
+		local class = m.class
+		local count = m.count
+		local point = m.point
+		local lv = m.lv
+		local gv = m.gv
+		if (class and count and point and lv and gv) then
+			local index
+			local new_pos, x_offset, z_offset
+			for index=1, count do
+				x_offset = math_random(5)
+				z_offset = math_random(5)
+				new_pos = vector():set( point[1], point[2], point[3])
+				new_pos.x = new_pos.x + x_offset
+				new_pos.z = new_pos.z + z_offset
+				if (point_is_far(new_pos, lv, gv, dist_far) == false) then
+					-- Слишком близко.
+					return
+				end
+				obj = create(class, new_pos, lv, gv)
+				if (obj) then
+					obj:modify_netpk("custom_data", "[smart_terrains]\nnone = true")
+					obj.ini_initialized = false
+					obj:on_before_register()
+
+					if (o_author == "") then
+						local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_seen, 0)
+						if (author and get_npc_name(author) ~= "") then
+							s_author = get_npc_name(author)
+							o_author = s_author
+							author_id = author.id
+						end
+					end
+					if (where == "" and string_find(text,"$where")) then
+						local m_where = get_point_description(get_object_levelname(obj), get_object_position(obj))
+						if m_where then
+							text = string_gsub(text, "$where", m_where)
+							where = m_where
+						end
+					end
+					if obj:is_monster() then
+						local tbl = obj:get_netpk()
+						local cd = tbl.custom_data:getTable()
+						if not cd.smart_terrains then cd.smart_terrains={} end
+						cd.smart_terrains.none = "true"
+						-- Микроквест
+						if (not microquest_created) and z.reward then
+							microquest_created = true
+							if not cd.microquest then cd.microquest={} end
+							if bit_and(z.reward.r_type, reward_type.money)~=0 then
+								cd.microquest.reward_money = math_random(z.reward.c_min, z.reward.c_max) * 100
+							end
+							if bit_and(z.reward.r_type, reward_type.items)~=0 then
+								cd.microquest.reward_items = ""
+								local re_npc = author_id and server_object(author_id)
+								local rank
+								if re_npc then
+									rank = ranks.get_obj_rank_name(re_npc)
+								else
+									rank = ranks.get_rank_name_by_val( math_random(100, 5000), true )
+								end
+								if (rank and news_data.miniquest_rewards[rank]) then
+									for i=1, math_random(1,3) do
+										local section = table_random(news_data.miniquest_rewards[rank])
+										if (section) then
+											if (cd.microquest.reward_items == "" or cd.microquest.reward_items == "<nil>") then
+												cd.microquest.reward_items = section
+											else
+												cd.microquest.reward_items = cd.microquest.reward_items..","..section
+											end
+											cd.microquest.reward_items = string.gsub(cd.microquest.reward_items, "%<nil%>", "")
+										end
+									end
+								end
+							end
+							cd.microquest.reward_from = s_author
+							cd.microquest.trader = z.reward.from
+						end
+						obj:set_netpk(tbl)
+					end
+					b_ok = true
+				end
+			end
+		end
+	end
+	if (b_ok == true) then
+		if (s_author ~= "") then
+			if author_id and not microquest_created then
+				do_news(text, s_author, math_random(timer_spawn, timer_spawn * 3), 15, icon, author_id, 1)
+			else
+				show_news(text, s_author, math_random(timer_spawn, timer_spawn * 3), 15, icon)
+			end
+		end
+		news_data.do_seen_monster_templates[t].enabled = false
+		timer_def_spawn = game_minutes()
+	end
+end
+
+local from2sid = {
+	trader	= 3,
+	barman	= 500
+}
+function check_microquest(monster)
+	local obj = server_object( monster:id() )
+	if obj then
+		local data = obj:get_netpk()
+		local cd = data.custom_data:getTable()
+		if cd.microquest then
+			if cd.microquest.trader == nil then
+				cd.microquest.trader = "trader"
+			end
+			local trader = story_object( from2sid[cd.microquest.trader] )
+			local tdata = trader:get_netpk(trader)
+			local tcd = tdata.custom_data:getTable()
+			if tcd.microquest == nil then
+				tcd.microquest = { reward_money = 0, reward_items = "" }
+			end
+			tcd.microquest.reward_money = tcd.microquest.reward_money + (cd.microquest.reward_money or 0)
+			tcd.microquest.reward_items = tcd.microquest.reward_items..","..(cd.microquest.reward_items or "")
+			tcd.microquest.reward_items = string_gsub(tcd.microquest.reward_items, "%<nil%>", "")
+			trader:set_netpk(tdata)
+
+			timer("news_main.miniquest_reward_news", math_random(120 * 1000, 240 * 1000), true, cd.microquest.trader, cd.microquest.reward_from, get_monster_name(obj, 4))
+		end
+	end
+end
+
+function format_text_pairs(text, fmt)
+	for k, v in pairs(fmt) do
+		text = string_gsub(text, "%$" .. k, v)
+	end
+	return text
+end
+
+function miniquest_reward_news(trader, rewarder, target)
+	local trader_name = news_data.reward_phrases_authors[trader]
+	if trader_name == nil then
+		return
+	end
+
+	rewarder = string_gsub(rewarder, "_", " ")
+	if string_find(rewarder, "источник неизвестен") then
+		rewarder = "какой-то сталкер"
+	elseif string_find(rewarder, "Долг") then
+		rewarder = "полковник Петренко"
+	elseif rewarder == "Сахаров" then
+		rewarder = "человечек от учёных с Янтаря"
+	end
+
+	local text = table_random(news_data.reward_phrases_templates[trader])
+	local t = {
+		["who"]		= rewarder,
+		["target"]	= target
+	}
+	show_news(format_text_pairs(text, t), trader_name, math_random(timer_general, timer_general * 5), 15, trader)
 end
 
 function on_wound(obj)
@@ -2071,7 +2098,7 @@ function on_wound(obj)
 				local stype = "single"
 				local author_id = obj.id
 				if (math_random() < 0.5) then stype = "group" end
-				local stext = news_data.wound_templates[stype][math_random(#news_data.wound_templates[stype])]
+				local stext = table_random(news_data.wound_templates[stype])
 				local m_pos = get_object_position(obj)
 				local m_level = ""
 				if (m_pos) then
@@ -2088,12 +2115,13 @@ function on_wound(obj)
 				m_s = stext
 				local sfrom = sname
 				if (stype == "group") then
-					local name, sname = amk_names_lists.get_strings()
-					sfrom = name.." "..sname
 					local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_seen, 0)
 					if (author and get_npc_name(author) ~= "") then
-						s_from = get_npc_name(author)
+						sfrom = get_npc_name(author)
 						author_id = author.id
+					else
+						local name, sname = amk_names_lists.get_strings()
+						sfrom = name.." "..sname
 					end
 				end
 				do_news(m_s, sfrom, math_random(timer_stalker_death, timer_stalker_death * 2), 10, "gen_info", author_id, 1)
@@ -2115,7 +2143,7 @@ function do_eternal_stalker()
 	if (math_random() < 0.4) then
 		-- Аномалия
 		if (b_indoor == 0) then
-			m_killer_str = news_data.anomalies[math_random(#news_data.anomalies)]
+			m_killer_str = table_random(news_data.anomalies)
 		else
 			-- Не все аномалии под землей бывают...
 			m_killer_str = news_data.anomalies[math_random(#news_data.anomalies-3)]
@@ -2123,7 +2151,7 @@ function do_eternal_stalker()
 	else
 		-- Монстры
 		if (b_indoor == 0) then
-			m_killer_str = news_data.monsters[math_random(#news_data.monsters)]
+			m_killer_str = table_random(news_data.monsters)
 		else
 			-- Не все монстры под землей бывают...
 			m_killer_str = news_data.monsters[math_random(#news_data.monsters-6)]
@@ -2131,22 +2159,25 @@ function do_eternal_stalker()
 	end
 	local m_string = m_name..", "..m_level..", "..m_killer_str.."."
 	show_news(m_string, "Погиб сталкер:", math_random(timer_stalker_death, timer_stalker_death * 5), 10, "death")
-	timer_eternal_stalker = amk_game_minutes()
+	timer_eternal_stalker = game_minutes()
 end
 
 function next_blow(timer)
-	timer_next_blow = amk_game_minutes() + timer
+	timer_next_blow = game_minutes() + timer
+	set_value("blow_shift", math.floor(timer_next_blow))
 end
 
 function do_blow_news()
-	local blow_enabled = system_ini():r_float("blowout_period","enabled")
+	local blow_enabled = config:r_float_cache("blowout_period", "enabled")
 	if blow_enabled == 0 then return end
 	if (timer_next_blow == 0) then return end
-	if (amk.load_variable("blowout",-1) > -1 and amk.load_variable("blowout",-1) < 5) then return end
-	local m_time = amk_game_minutes()
-	local diff = (timer_next_blow - m_time) / 60 -- Разница в игровых часах
+
+	local bl = get_value("blowout", -1)
+	if (bl > -1 and bl < 5) then return end
+
+	local diff = (timer_next_blow - game_minutes()) / 60 -- Разница в игровых часах
 	if diff < 1 then return end
-	local item = news_data.blowout_templates[math_random(#news_data.blowout_templates)]
+	local item = table_random(news_data.blowout_templates)
 	local stext = item["text"]
 	local alive = tonumber(item["alive"])
 	if (alive and isAlive(alive) == false) then
@@ -2181,11 +2212,10 @@ function do_blow_news()
 			stext = m_s
 		end
 		m_s = stext
-		local sfrom = ""
 		local name, sname = amk_names_lists.get_strings()
-		sfrom = name.." "..sname
+		local sfrom = name.." "..sname
 		show_news(stext, sfrom, math_random(10, timer_general), 10, "gen_info")
-		timer_blow_showed = amk_game_minutes()
+		timer_blow_showed = game_minutes()
 	end
 end
 
@@ -2198,101 +2228,95 @@ function news_sort(a,b)
 end
 
 function on_news()
-	local sim = alife()
 	local avail = {}
 	if news_stack then
 		amk.oau_reason="cn on_news first pass"
-		for k,v in pairs(news_stack) do
-			if v.activated == nil then
-				if (v.lifetime <= amk_game_minutes()) then
-					-- Новость устарела.
-					table_remove(news_stack, k)
+		local v
+		if #news_stack > 0 then
+			for i = #news_stack, 1, -1 do
+				v = news_stack[i]
+				if v.activated == nil then
+					if (v.lifetime <= game_minutes()) then
+						-- Новость устарела.
+						table_remove(news_stack, i)
+					end
+				else -- Новость уже была.
+					table_remove(news_stack, i)
 				end
-			else -- Новость уже была.
-				table_remove(news_stack, k)
 			end
 		end
-		amk.oau_reason="cn on_news sort"
-		-- Отсортируем.
-		table.sort(news_stack, news_sort)
-		amk.oau_reason="cn on_news second pass"
-		for k,v in pairs(news_stack) do
-			if v.activated == nil then
-				if (v.lifetime > amk_game_minutes()) then
-					if (v.timeout < amk_game_minutes()) then -- Новость актуальна.
-						table_insert(avail, k)
+		if #news_stack > 0 then
+			amk.oau_reason="cn on_news sort"
+			-- Отсортируем.
+			table.sort(news_stack, news_sort)
+			amk.oau_reason="cn on_news second pass"
+			for i = #news_stack, 1, -1 do
+				v = news_stack[i]
+				if v.activated == nil then
+					if (v.lifetime > game_minutes()) then
+						if (v.timeout < game_minutes()) then -- Новость актуальна.
+							table_insert(avail, i)
+						end
+					else -- Новость устарела.
+						table_remove(news_stack, i)
 					end
-				else -- Новость устарела.
-					table_remove(news_stack, k)
+				else -- Новость уже была.
+					table_remove(news_stack, i)
 				end
-			else -- Новость уже была.
-				table_remove(news_stack, k)
 			end
 		end
 	end
 
 	if avail and #avail > 0 then
 		amk.oau_reason="cn on_news get available"
-		local t = avail[1]
-		local z = news_stack[t]
-		if (z) then
-			local bAlive = false
-			local m_author_id = tonumber(z.author_id)
-			if (m_author_id ~= nil) then
-				amk.oau_reason="cn on_news check author"
-				bAlive = false
-				local obj = sim:object(m_author_id)
-				amk.oau_reason="cn on_news check author obj"
-				if (obj) then
-					amk.oau_reason="cn on_news author obj exists"
-					if (IsStalker(obj)) then
-						amk.oau_reason="cn on_news author obj is NPC"
-						if IsNpcStalker(obj) then
-							amk.oau_reason="cn on_news check author alive"
-					if (obj.alive and obj:alive()==true and obj.health and obj:health() > 0) then
-								amk.oau_reason="cn on_news author is alive"
-						bAlive = true
+		local cnt = math_random(1, 2)
+		for i = 1, cnt do
+			local t = avail[i]
+			local z = news_stack[t]
+			if (z) then
+				local bAlive = false
+				local m_author_id = tonumber(z.author_id)
+				if (m_author_id ~= nil) then
+					amk.oau_reason="cn on_news check author"
+					bAlive = false
+					local obj = server_object(m_author_id)
+					amk.oau_reason="cn on_news check author obj"
+					if (obj) then
+						amk.oau_reason="cn on_news author obj exists"
+						if obj:is_stalker() then
+							amk.oau_reason="cn on_news author obj is NPC"
+							if IsNpcStalker(obj) then
+								amk.oau_reason="cn on_news check author alive"
+								if (obj.alive and obj:alive()==true and obj.health and obj:health() > 0) then
+									amk.oau_reason="cn on_news author is alive"
+									bAlive = true
+								end
+							end
+						end
 					end
+				else
+					bAlive = true
 				end
-					end
+				if (bAlive == true) then
+					amk.oau_reason="cn on_news show_news"
+					show_news(z.text, z.from, 0, z.showtime, z.section)
+					amk.oau_reason="cn on_news set activated"
+					z.activated = game_minutes()
 				end
-			else
-				bAlive = true
-			end
-			if (bAlive == true) then
-				amk.oau_reason="cn on_news show_news"
-				show_news(z.text, z.from, 0, z.showtime, z.section)
-				amk.oau_reason="cn on_news set activated"
-				z.activated = amk_game_minutes()
-			else
-				amk.oau_reason="cn on_news show_news alive is false"
 			end
 		end
 	end
 
 	amk.oau_reason="cn on_news continue"
-
-	if (timer_next_blow == 0) then
-		local name, delay
-		for a=1,100,1 do
-		local tmp = amk.load_variable("gt"..a,nil)
-			if tmp ~= nil then
-				name 	= amk.load_variable("gt"..a, nil)
-				delay 	= amk.load_variable("gd"..a, nil)
-				if (name and delay and name == "blow_shift") then
-					timer_next_blow = delay
-				end
-			end
-		end
+	local gtime = game_minutes()
+	if timer_next_blow == 0 then
+		timer_next_blow = get_value("blow_shift", gtime)
 	end
-
-    local gtime = amk_game_minutes()
-
 	if (gtime - timer_alife_showed > timer_alife_freq) then
 		amk.oau_reason="cn on_news offline_alife start"
 		amk_offline_alife.offline_alife()
 		amk.oau_reason="cn on_news offline_alife exit"
-		timer_alife_showed = amk_game_minutes()
+		timer_alife_showed = gtime
 	end
 	if (gtime - timer_blow_showed > timer_blow_freq) then
 		do_blow_news()
@@ -2308,25 +2332,10 @@ function on_news()
 	end
 end
 
-function on_offline_item_found(who, object)
-end
-
-function on_offline_artifact_found(who, object)
-end
-
-function on_offline_weapon_found(who, object)
-end
-
-function on_offline_monster_found(who, object)
-end
-
-function on_offline_enemy_found(who, object)
-end
-
 -- Кого-то грохнули в оффлайн.
 function on_offline_death(victim, killer, weapon)
 	if (victim and killer) then
-		if (IsStalker(victim)) then
+		if victim:is_stalker() then
 			if (IsNpcStalker(victim)) then
 				on_offline_stalker_death(victim, killer, weapon)
 			else
@@ -2348,10 +2357,10 @@ function on_offline_stalker_death(victim_, killer_, weapon_)
 	m_victim = format_death_stalker_corpse(victim_)
 	local m_level = get_level_name(get_object_levelname(victim_))
 	if (killer_) then
-		if (IsMonster(killer_)) then
+		if killer_:is_monster() then
 			m_killer = format_death_by_monster(killer_)
 			m_killer_str = get_monster_name(killer_, 2)
-		elseif (IsAnomaly(killer_)) then
+		elseif killer_:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer_)
 			m_killer_str = get_anomaly_name(killer_, 1)
 		elseif (IsNpcStalker(killer_)) then
@@ -2377,7 +2386,7 @@ function on_offline_stalker_death(victim_, killer_, weapon_)
 			end
 			m_killer = format_death_by_weapon(weapon_)
 		else
-			m_killer_str = "причина смерти - неустановлена"
+			m_killer_str = "причина смерти - не установлена"
 			m_killer = ""
 		end
 	end
@@ -2425,21 +2434,20 @@ function on_offline_npc_death(victim_, killer_, weapon_)
 	local aid = nil
 	m_victim = format_death_npc_corpse(victim_)
 	if (killer_) then
-		if (IsMonster(killer_)) then
+		if killer_:is_monster() then
 			m_killer = format_death_by_monster(killer_)
 		elseif (IsNpcStalker(killer_)) then -- Хм, и кто ж его так? Или свои, или ГГ
 			m_killer = format_death_by_weapon(weapon_)
 		elseif (IsNpcOther(killer_)) then -- Ага. Или бандиты, или вояки, или киллеры... Вобщем, люди.
 			m_killer = format_death_by_weapon(weapon_)
-		elseif (IsAnomaly(killer_)) then
+		elseif killer_:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer_)
 		else
 			m_killer = ""
 		end
 	end
 	if (math_random() < prob) then
-		local name, sname = amk_names_lists.get_strings()
-		local s_from = "" --name.." "..sname
+		local s_from = ""
 		local s_author = s_from
 		local m_str = ""
 		if (math_random() < 0.5) then
@@ -2489,11 +2497,11 @@ end
 
 function on_offline_corpse_found(who, object)
 	if (who and object) then
-		if (IsStalker(who) and IsNpcStalker(who)) then
+		if who:is_stalker() and IsNpcStalker(who) then
 			local s_corpse = ""
-			if (IsMonster(object)) then
+			if object:is_monster() then
 				s_corpse = format_template_corpse_monster(object)
-			elseif (IsStalker(object)) then
+			elseif object:is_stalker() then
 				if (IsNpcStalker(object)) then
 					s_corpse = format_template_corpse_stalker(object)
 				else
@@ -2512,7 +2520,7 @@ end
 function on_offline_trade(npc, item)
 	if (npc and item and math_random() < 0.25) then
 		local m_from = get_npc_name(npc)
-		local m_str = news_data.trade_templates[math_random(#news_data.trade_templates)]
+		local m_str = table_random(news_data.trade_templates)
 		local m_level = get_point_description(get_object_levelname(npc), get_object_position(npc))
 		if (m_level == "") then return end
 		local m_title = get_object_name(item)
@@ -2524,6 +2532,26 @@ function on_offline_trade(npc, item)
 			do_news(m_str, m_from, math_random(timer_general, timer_general * 10), 15, "trade", npc.id, 1)
 		end
 	end
+end
+
+local rspl_tmeout = -1
+
+function send_resupply(sobj)
+	local rnd_f, rnd_l = amk_names_lists.get_strings()
+	local rnd_name = rnd_f .. " " .. rnd_l
+	local text = table_remove(news_data.resupply_msgs, math_random(#news_data.resupply_msgs))
+	text = format_text_pairs(text, { rnd_npc = rnd_name })
+
+	local timeout = 5
+	local rnd_timer = math_random(60 * 1000, 120 * 1000)
+	if time_real_ms < rspl_tmeout then
+		timeout = (rspl_tmeout - time_real_ms) / 1000
+		rspl_tmeout = rspl_tmeout + rnd_timer
+	else
+		rspl_tmeout = time_real_ms + rnd_timer
+	end
+
+	timer("send_tip", timeout * 1000, true, text, nil, 0, 12, news_manager.sender_data(sobj), "pda_news")
 end
 
 function create_treasurebox()
@@ -2542,80 +2570,58 @@ function on_miniquest_reward(trader)
 		local money = 0
 		local items = ""
 		local story_id = -1
-		if (trader.m_story_id) then
+		if trader.m_story_id then
 			story_id = trader.m_story_id
-		elseif(trader.story_id) then
+		elseif trader.story_id then
 			story_id = trader:story_id()
 		end
-		if (story_id == 3) then
-			local obj = alife():story_object(3)
-			if (obj) then
-				local t = amk.get_trader_data(obj)
-				local cd = amk.parse_custom_data(t.custom)
+		if story_id == 3 or story_id == 500 then
+			local obj = story_object(story_id)
+			if obj then
+				local t = obj:get_netpk()
+				local cd = t.custom_data:getTable()
+				cd.microquest.reward_items = string_gsub(cd.microquest.reward_items, "%<nil%>", "")
 				if (cd.microquest and cd.microquest.reward_money and cd.microquest.reward_items) then
 					money = tonumber(cd.microquest.reward_money)
 					items = cd.microquest.reward_items
 				end
-				if (money and items and money > 0 and items ~= "") then
-					dialogs.relocate_money(trader, money, "in")
-					local tbl = amk.str_explode(",", items, true)
+				local res = false
+				if money and money > 0 then
+					got_money(money)
+					res = true
+				end
+				if items and items ~= "" then
+					local tbl = string.explode(items, ",", true)
 					for k, v in pairs(tbl) do
-						local section = v
-						if (section) then
-							dialogs.relocate_item_section(trader, section, "in")
+						if v ~= "" then
+							got(v)
 						end
 					end
+					res = true
+				end
+				if res then
 					cd.microquest = {}
 					cd.microquest.reward_money = 0
 					cd.microquest.reward_items = ""
-					t.custom = amk.gen_custom_data(cd)
-					amk.set_trader_data(t, obj)
+					obj:set_netpk(t)
 				end
 			end
-		elseif (story_id == 500) then
-			local obj = alife():story_object(500)
-			if (obj) then
-				local t = amk.read_stalker_params(obj)
-				local cd = amk.parse_custom_data(t.custom)
-				if (cd.microquest and cd.microquest.reward_money and cd.microquest.reward_items) then
-					money = tonumber(cd.microquest.reward_money)
-					items = cd.microquest.reward_items
-				end
-				if (money and items and money > 0 and items ~= "") then
-					dialogs.relocate_money(trader, money, "in")
-					local tbl = amk.str_explode(",", items, true)
-					for k, v in pairs(tbl) do
-						local section = v
-						if (section) then
-							dialogs.relocate_item_section(trader, section, "in")
-						end
-					end
-					cd.microquest = {}
-					cd.microquest.reward_money = 0
-					cd.microquest.reward_items = ""
-					t.custom = amk.gen_custom_data(cd)
-					amk.write_stalker_params(t, obj, true)
-				end
-			end
-		else
-			if story_id == nil then story_id = -1 end
 		end
 	end
 end
 
 function point_is_far(point, lv, gv, distance)
-	local result = true
-	if (db.actor and point and lv and gv and distance and game_graph():valid_vertex_id(gv)) then
+	if (db_actor and point and lv and gv and distance and graph:valid_vertex_id(gv)) then
 		-- на одном ли уровне?
-		local map = alife():level_name(game_graph():vertex(gv):level_id())
+		local map = g_alife:level_name(graph:vertex(gv):level_id())
 		if (map and level.name() == map) then
 			-- Достаточно ли далеко?
-			if (point:distance_to(db.actor:position()) < distance) then
-				result = false
+			if point:distance_to(db_actor:position()) < distance then
+				return false
 			end
 		end
-   end
-   return result
+	end
+	return true
 end
 
 function get_nearest_stalker(level, point, dist_max, dist_min)
@@ -2627,10 +2633,10 @@ function get_nearest_stalker(level, point, dist_max, dist_min)
 	if (map and point and amk_offline_alife.off_npcs[map] and amk_offline_alife.off_npcs[map].stalkers and #amk_offline_alife.off_npcs[map].stalkers > 0) then
 		for k, v in pairs(amk_offline_alife.off_npcs[map].stalkers) do
 			if v then
-				local stalker = alife():object(v.id)
+				local stalker = server_object(v.id)
 				-- На одном ли уровне?
-				if stalker and stalker.id ~= db.actor:id() and stalker.health and stalker.can_switch_online and stalker:can_switch_online() and stalker.m_game_vertex_id and game_graph():valid_vertex_id(stalker.m_game_vertex_id) then
-					local s_map = alife():level_name(game_graph():vertex(stalker.m_game_vertex_id):level_id())
+				if stalker and stalker.id ~= db_actor_id and stalker.health and stalker.can_switch_online and stalker:can_switch_online() and stalker.m_game_vertex_id and graph:valid_vertex_id(stalker.m_game_vertex_id) then
+					local s_map = object_level_name(stalker)
 					if (map == s_map) then
 						if (stalker:health() > 0 and stalker.alive and stalker:alive()==true) then
 							local zz = get_npc_community(stalker)
@@ -2669,42 +2675,32 @@ function get_nearest_stalker(level, point, dist_max, dist_min)
 end
 
 function isAlive(story_id)
-	local result = false
-	if (story_id) then
-		local obj = alife():story_object(story_id)
-		if (obj and obj.alive and obj:alive()==true) then
-			result = true
-		end
-	end
-	return result
+	local obj = story_id and story_object(story_id)
+	return obj and obj:alive() or false
 end
 
 function isRadarDeactivated()
-	local result = false
-	if (has_alife_info("bar_deactivate_radar_done")) then
-		result = true
-	end
-	return result
+	return has_info("bar_deactivate_radar_done")
 end
 
-function on_connect()
-	local text = news_data.connect_templates[math_random(#news_data.connect_templates)]
-	if (text) then
-		amk.send_tip(text, "Статус соединения:", 0, 15, "uniq")
+function check_connection(lname, sname)
+	local lin = level.indoor(lname)
+	local sin = level.indoor(sname)
+	local t = nil
+	if lin and not sin then
+		t = news_data.disconnect_templates
+	elseif sin and not lin then
+		t = news_data.connect_templates
 	end
-end
-
-function on_disconnect()
-	local text = news_data.disconnect_templates[math_random(#news_data.disconnect_templates)]
-	if (text) then
-		amk.send_tip(text, "Статус соединения:", 0, 15, "uniq")
+	if t~=nil then
+		send_tip(table_random(t), "Статус соединения:", 0, 15, "uniq", "pda_news")
 	end
 end
 
 function is_creature_day(obj_section)
 	--проверка на дневной/ночной режим
-	local day_begin = utils.cfg_get_number(system_ini(), obj_section, "DayTime_Begin", nil, false, -1)
-	local day_end = utils.cfg_get_number(system_ini(), obj_section, "DayTime_End", nil, false, -1)
+	local day_begin = config:r_float_cache(obj_section, "DayTime_Begin", -1)
+	local day_end = config:r_float_cache(obj_section, "DayTime_End", -1)
 	if day_begin~=-1 and day_end~=-1 then
 		local hrs = level.get_time_hours()
 		local de = day_end

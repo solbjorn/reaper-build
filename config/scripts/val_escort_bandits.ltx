@@ -1,0 +1,97 @@
+[logic@val_escort_guard]
+active          = patrol@val_escort_guard_wait
+on_death        = death@val_escort_guard
+on_hit          = hit@val_escort_guard
+on_combat       = combat@val_escort_guard
+combat_ignore   = combat_ignore
+
+[death@val_escort_guard]
+on_info     = %=val_escort_guard_death%
+
+[hit@val_escort_guard]
+on_info     = %=val_escort_guard_hit%
+
+[combat@val_escort_guard]
+on_info     = %=val_escort_guard_combat%
+
+[danger@val_escort_guard]
+ignore_types                    = corpse
+ignore_distance_sound           = 30
+danger_inertion_time_sound      = 5000
+danger_inertion_time_hit        = 7000
+danger_inertion_time_ricochet   = 4000
+
+[patrol@val_escort_guard_wait]
+path_walk           = captive_wait_walk
+path_look           = captive_wait_look
+animation           = guard
+on_info             = {+val_escort_start}           follower@val_escort_guard_walk ;patrol
+on_info2            = {+val_escort_combat}          remark@val_escort_guard_fight
+on_info3            = {+val_escort_captive_dead}    patrol@val_escort_guard_free
+danger              = danger@val_escort_guard
+combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}
+
+[follower@val_escort_guard_walk]
+leader              = 400
+dont_change_job     = true
+anim_walk           = patrol
+anim_run            = assault
+on_info             = {+val_escort_combat}          remark@val_escort_guard_fight
+on_info2            = {+val_escort_captive_dead}    patrol@val_escort_guard_free
+danger              = danger@val_escort_guard
+combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(406)}
+
+[remark@val_escort_guard_fight]
+anim                = wait_na
+on_info             = {+val_escort_nap1_dead}       patrol@val_escort_guard_free
+on_info2            = {+val_escort_captive_dead}    patrol@val_escort_guard_free
+combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}
+
+[patrol@val_escort_guard_free]
+path_walk           = guards_leave_walk
+def_state_moving1   = patrol
+def_state_moving2   = patrol
+formation           = line
+on_signal           = arrived | %=val_escort_guard_free%
+
+[logic@val_escort_halfdead]
+active          = remark@val_escort_halfdead_wait
+combat_ignore   = combat_ignore
+
+[wounded@val_escort_halfdead]
+hp_state        = 0|wounded_heavy@nil
+hp_state_see    = 0|wounded_heavy@nil
+hp_cover        = 0|false
+hp_fight        = 0|false
+
+[wounded@val_escort_halfdead1]
+hp_state        = 0|wounded_heavy@nil
+hp_state_see    = 0|wounded_heavy@nil
+hp_cover        = 0|false
+hp_fight        = 0|false
+
+[remark@val_escort_halfdead_wait]
+path_walk           = nap1_look
+anim                = wounded_heavy ;wait
+target              = 406
+on_info             = {+val_nap1_phrase1_end -val_nap1_stop_talk_to_bandit} remark@val_escort_halfdead_phrase
+wounded             = wounded@val_escort_halfdead
+combat_ignore_cond  = always
+
+; --------------------------------------------------------------------------
+; -- фраза: Не-еет!!! Не убивай меня! Твоего напарника, сейчас будут вести на Базу Монолита.
+; --        Это все, что я знаю...бля-буду...
+; --------------------------------------------------------------------------
+[remark@val_escort_halfdead_phrase]
+anim                = wounded_heavy ;wait
+snd                 = speech
+target              = 406
+on_signal           = sound_end | remark@val_escort_halfdead_end %+val_halfdead_phrase_end%
+wounded             = wounded@val_escort_halfdead1
+combat_ignore_cond  = always
+
+[remark@val_escort_halfdead_end]
+anim            = wounded_heavy ;wait
+target          = 406
+wounded         = wounded@val_escort_halfdead
+combat_ignore_cond  = always

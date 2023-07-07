@@ -12,7 +12,7 @@ function action_light:reset_scheme()
     light_zones[self.id] = self
 end
 function action_light:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 	   self.active = false
 	   light_zones[self.id] = nil
 	   return
@@ -32,7 +32,7 @@ function action_light:check_stalker(stalker)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_light( npc, storage ) ] = true
 end
 
@@ -47,70 +47,71 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function check_light(stalker)
-	if not stalker then return end
 
-	local torch = stalker:item_in_slot(9)
-	if not torch then return end
-
-	local light = false
-	local forced = false
-
-	--' Проверка по лайтзонам
-	for k,v in pairs(light_zones) do
-		light, forced = v:check_stalker(stalker)
-		if forced == true then
-			break
-		end
+function switch_light(torch, light)
+	if light == false then
+		torch:enable_attachable_item(true)
 	end
-
-	if not forced then
-		--' Проверка по времени суток (ночью всегда включено)
-		local htime = level.get_time_hours()
-		if htime <= 4 or htime >= 22 then
-			light = true
-		else
-			light = false
-		end
-
-		--' Проверка на индор-аутдор (внутри всегда включено)
-		if light == false then
-			if level.indoor() == true then
-				light = true
-			end
-		end
-
-		--' Проверка по активному действию
-		if light == true then
-			--' Фонарики должны быть выключены у костра
-			local scheme = db.storage[stalker:id()].active_scheme
-			local state = state_mgr.get_state(stalker)
-			if scheme == "kamp" or
-				scheme == "camper" or
-				-- И во время сна
-				scheme == "sleeper" or
-				state == "sleep" or
-				state == "sleep_sit"
-			then
-				light = false
-			end
-		end
-	end
-
-	if light == true then
-		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
-		if stalker:best_enemy() ~= nil or stalker:character_community() == "zombied" then
-			light = false
-		end
-	end
-
-	if light ~= nil then
-		if light == false then torch:enable_attachable_item(true) end
-		torch:enable_attachable_item(light)
-		torch:switch_torch(light)
-	end
+	torch:enable_attachable_item(light)
+	torch:switch_torch(light)
 
 	return light
+end
+
+function check_light(stalker)
+	if not stalker then return nil end
+
+	local torch = stalker:item_in_slot(9)
+	if not torch then return nil end
+
+	if stalker:character_community() == "zombied" then
+		switch_light(torch, false)
+		release(torch)
+		return nil
+	end
+
+	--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+	local enemy = stalker:best_enemy()
+	if enemy ~= nil and enemy:alive() and (enemy:is_actor() or (enemy:is_stalker() and enemy:character_community() ~= "zombied")) then
+		return switch_light(torch, false)
+	end
+
+	local light, forced
+
+	--' Проверка по лайтзонам
+	for k, v in pairs(light_zones) do
+		light, forced = v:check_stalker(stalker)
+		if forced == true then
+			return switch_light(torch, light)
+		end
+	end
+
+	--' Проверка по времени суток (ночью всегда включено)
+	local htime = level.get_time_hours()
+	light = htime <= 4 or htime >= 22
+
+	--' Проверка на индор-аутдор (внутри всегда включено)
+	if light == false then
+		light = level.indoor() or level.rain_factor() > 0.07
+	end
+
+	--' Проверка по активному действию
+	if light == true then
+		--' Фонарики должны быть выключены у костра
+		local scheme = db.storage[stalker:id()].active_scheme
+		local state = state_mgr.get_state(stalker)
+		if scheme == "kamp" or
+			scheme == "camper" or
+			-- И во время сна
+			scheme == "sleeper" or
+			state == "sleep" or
+			state == "sleep_sit"
+		then
+			light = false
+		end
+	end
+
+	return switch_light(torch, light)
 end
 
 function clean_up ()

@@ -1,4 +1,3 @@
-
 [m_poltergeist_e]:monster_base
 GroupControlSection	= spawn_group
 SpaceRestrictionSection = space_restrictor,zone_mosquito_bald,zone_radioactive
@@ -143,7 +142,7 @@ satiety_threshold	= 0.5							; below this value monster fill hunger
 ;---------------------------------------------------------
 ; Sounds and sound parameters
 ;---------------------------------------------------------
-sound_idle				= monsters\biting\def_
+sound_idle				= monsters\poltergeist\idle_
 sound_eat				= monsters\biting\def_
 sound_aggressive		= monsters\biting\def_
 sound_attack_hit		= monsters\biting\def_
@@ -158,7 +157,7 @@ sound_die_in_anomaly	= monsters\biting\def_
 
 killer_clsids			= Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
 
-idle_sound_delay		= 0
+idle_sound_delay		= 20000
 eat_sound_delay			= 0
 attack_sound_delay		= 0
 
@@ -203,7 +202,7 @@ Morale_Despondent_Threashold	= 0.5
 ;-------------------------------------------------------------------------
 DamagedThreshold		= 0.4
 
-material				= creatures\large	;objects\bullet
+material				= creatures\phantom	;objects\bullet
 
 squad_attack_algorithm	= 1
 attack_effector			= m_poltergeist_attack_effector
@@ -219,16 +218,18 @@ damage					= m_poltergeist_damage
 
 ;---------------------------
 
-Invisible_Energy_Restore_Velocity				= 0.1
-Invisible_Energy_Decline_Velocity				= 0.0
-Invisible_Energy_Critical_Value					= 0.01
+Invisible_Energy_Restore_Velocity				= 0.08
+Invisible_Energy_Decline_Velocity				= 0.02
+Invisible_Energy_Critical_Value					= 0.02
 Invisible_Energy_Activate_Value					= 0.99
-Invisible_Energy_Aggressive_Restore_Velocity	= 0.1
+Invisible_Energy_Aggressive_Restore_Velocity	= 0.5
 
-Particles_Damage				= monsters\polter_damage
-Particles_Death					= monsters\polter_death
-Particles_Idle					= monsters\polter_idle
-Particles_Hidden				= monsters\polter_linza
+Particles_Damage				= hit_fx\hit_flesh_01
+Particles_Death					= monsters\polter_hide
+Particles_Idle					= none ;monsters\polter_idle
+Particles_Hidden				= none ;monsters\polter_hidden
+
+Hidden_Particles				= monsters\polter_hidden
 
 ;-- Delays -------------------
 
@@ -238,7 +239,7 @@ Delay_Flame_Aggressive	= 30001
 
 Delay_Tele_Min			= 0   ;100
 Delay_Tele_Normal		= 100 ;300
-Delay_Tele_Aggressive	= 10  ;200
+Delay_Tele_Aggressive	= 100  ;200
 
 Delay_Scare_Min			= 30000
 Delay_Scare_Normal		= 30001
@@ -299,7 +300,7 @@ ce_period_number	= 1.5 ;2.0
 ce_power			= 1.5 ;0.7 ; power
 
 [m_poltergeist_step_params];                left             right            right           left
-;-----------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------------
 ;	anim					cycles |	time1 | power1 |	time2 | power2 | time3 | power3 | time4     | power4 |
 ;-----------------------------------------------------------------------------------------------------------------
 stand_walk_fwd_0		=   	1,		0.1,      1,	  	0.34,    1,		 0.6,	 1,			0.84,		1
@@ -358,19 +359,18 @@ Tele_Time_Object_Keep			= 15000
 Tele_Raise_Speed				= 6
 Tele_Delay_Between_Objects_Raise_Time	= 200
 
-Particles_Damage				= monsters\polter_damage
-Particles_Death					= monsters\polter_death
-Particles_Idle					= monsters\polter_idle
-Particles_Hidden				= monsters\polter_linza
+Particles_Damage				= hit_fx\hit_flesh_01
+Particles_Death					= monsters\polter_hide
+Particles_Idle					= none ;monsters\polter_idle
+Particles_Hidden				= none ;monsters\polter_hidden
 
-Hidden_Particles				= monsters\polter_linza
-;Hide_Particles					= monsters\polter_yadro;monsters\polter_hide
+Hidden_Particles				= monsters\polter_hidden
 
-Sound_Idle						= monsters\poltergeist\tele_idle_0
-sound_take_damage				= monsters\poltergeist\tele_damage_
-sound_die						= monsters\poltergeist\tele_death_
+Sound_Idle						= monsters\poltergeist\tele_hold_0
+sound_take_damage				= monsters\poltergeist\hit_
+sound_die						= monsters\poltergeist\die_
 
-sound_tele_hold					= monsters\burer\burer_tele_hold
+sound_tele_hold					= monsters\poltergeist\tele_get_0
 sound_tele_throw				= monsters\burer\burer_tele_throw
 
 [m_poltergeist_tele_outdoor]:m_poltergeist_normal_tele
@@ -415,8 +415,21 @@ Particles_Death					= monsters\polter_death_00
 Particles_Idle					= monsters\polter_idle_00
 Particles_Hidden				= monsters\polter_linza_00
 
-Hidden_Particles				= monsters\polter_linza_00	;monsters\polter_hidden
 Sound_Idle						= monsters\poltergeist\fire_idle_0
+
+Invisible_Energy_Decline_Velocity	= 0.0
+immunities_sect						= poltergeist_immunities_flame
+
+[poltergeist_immunities_flame]
+burn_immunity 		= 0.3					;коэффициенты иммунитета
+strike_immunity 	= 0.7
+shock_immunity 		= 0.5
+wound_immunity 		= 0.3
+radiation_immunity 	= 0.0
+telepatic_immunity 	= 1.0
+chemical_burn_immunity 	= 1.0
+explosion_immunity 	= 0.01
+fire_wound_immunity = 0.05
 
 [m_poltergeist_scan_effector]
 duality_h			= 0.003
@@ -449,4 +462,3 @@ telepatic_immunity 	= 1.0
 chemical_burn_immunity 	= 1.0
 explosion_immunity 	= 0.3
 fire_wound_immunity = 0.3
-

@@ -15,7 +15,7 @@ function mob_combat:reset_scheme()
 end
 
 function mob_combat:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function mob_combat:deactivate()
@@ -24,13 +24,13 @@ end
 function mob_combat:combat_callback()
 	if self.st.enabled and self.object:get_enemy() then
 		if db.storage[self.object:id()].active_scheme then
-			xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+			xr_logic.try_switch_to_another_section(self.object, self.st)
 		end
 	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.action = mob_combat(npc, storage)
 	storage.actions[storage.action] = true
 end

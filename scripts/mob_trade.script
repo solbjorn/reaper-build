@@ -31,31 +31,32 @@ function mob_trade:start_trade(zone, obj)
 	trade.trading = true
 	trade.exchanged = false
 
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function mob_trade:end_trade()
 	local trade = self:storage_trade_section()
 	trade.trading = false
 
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function mob_trade:on_trade(obj, type)
 	local trade = self:storage_trade_section()
 	trade.exchanged = true
 
-	xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.action = mob_trade(npc, storage)
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
-	if npc:clsid() ~= clsid_script_trader then
+	if not npc:is_trader() then
 		abort("object '%s': attempt to use mob_trade script on non-trader mobile", npc:name())
+		return
 	end
 
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
@@ -63,12 +64,12 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	npc:set_callback(callback.trade_start, st.action.start_trade, st.action)
 	npc:set_callback(callback.trade_stop, st.action.end_trade, st.action)
-	npc:set_callback(callback.trade_perform_operation , st.action.on_trade, st.action)
+	npc:set_callback(callback.trade_perform_operation, st.action.on_trade, st.action)
 
 end
 
 function disable_scheme(npc, scheme)
-	if npc:clsid() == clsid_script_trader then
+	if npc:is_trader() then
 		npc:set_callback(callback.trade_start, nil)
 		npc:set_callback(callback.trade_stop, nil)
 		npc:set_callback(callback.trade_perform_operation, nil)

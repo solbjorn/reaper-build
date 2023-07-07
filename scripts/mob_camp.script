@@ -16,7 +16,7 @@ function set_state(obj, state)
 		return
 	end
 
-	if get_clsid(obj) == clsid_bloodsucker_s then
+	if obj and obj:clsid() == clsid_bloodsucker_s then
 		if state == "invis" then
 			obj:set_invisible(true)
 			return
@@ -105,7 +105,7 @@ end
 function mob_camp:update(delta)
 	if self.is_dead then return end -- no need to do additional processing
 
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
 	end
 
@@ -225,7 +225,7 @@ function mob_camp:select_state()
 
 	-- Отпускать в alife монстров, которых обстреляли
 	local h = self.object:get_monster_hit_info()
-	if (enemy == nil) and (h.who) and (h.time ~= 0) and (IsMonster(h.who) or IsStalker(h.who))then
+	if (enemy == nil) and (h.who) and (h.time ~= 0) and (h.who:is_monster() or h.who:is_stalker()) then
 		local dist = self.object:position():distance_to(home_position)
 		if (dist < self.st.home_min_radius) then
 			self.state_current = STATE_ALIFE
@@ -304,7 +304,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- ADD_TO_BINDER
 ----------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	storage.actions[ mob_camp(npc, storage) ] = true
 end

@@ -1566,7 +1566,6 @@ wounded = wounded@ignore_kruglov
 path_walk = chase_1_walk
 path_look = chase_1_look
 def_state_moving = rush
-;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_1
 meet = meet@ecolog_crush
 soundgroup = bar_ecolog_crush1
 ;combat_ignore_cond = always
@@ -1577,7 +1576,6 @@ on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
 path_walk = chase_2_walk
 path_look = chase_2_look
 def_state_moving = rush
-;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_2
 meet = meet@ecolog_crush
 soundgroup = bar_ecolog_crush1
 ;combat_ignore_cond = always
@@ -1588,7 +1586,6 @@ on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
 path_walk = chase_3_walk
 path_look = chase_3_look
 def_state_moving = rush
-;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_3
 meet = meet@ecolog_crush
 soundgroup = bar_ecolog_crush1
 ;combat_ignore_cond = always
@@ -1599,7 +1596,6 @@ on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
 path_walk = chase_4_walk
 path_look = chase_4_look
 def_state_moving = rush
-;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_4
 meet = meet@ecolog_crush
 soundgroup = bar_ecolog_crush1
 ;combat_ignore_cond = always
@@ -1629,7 +1625,8 @@ def_state_moving = assault
 meet = meet@ecolog_kruglov
 radius = 0
 combat_ignore_cond = always
-on_info = {+rostok_objective_1} camper@bar_ecolog_professor_w
+on_info = {+rostok_objective_1 +bar_kruglov_follow_actor -bar_kruglov_follow_talk} walker@bar_ecolog_professor_companion
+on_info2 = {+rostok_objective_1} camper@bar_ecolog_professor_w
 danger = danger_condition@2
 wounded = wounded@ignore_kruglov
 

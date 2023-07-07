@@ -11,8 +11,6 @@ Helicoter binding
 ---------------------------------------------------------------------------------------------
 
 function bind( obj )
---    printf( "BIND HELICOPTER id=%d", obj:id() )
-
    	local ini = obj:spawn_ini()
    	if ini and ini:section_exist("logic") then
 		obj:bind_object( heli_binder( obj, ini ) )
@@ -49,7 +47,7 @@ function heli_binder:reinit()
 
 	self.last_hit_snd_timeout = 0
 
-	self.flame_start_health   = utils.cfg_get_number( system_ini(), "helicopter", "flame_start_health", self.object, true )
+	self.flame_start_health   = config:r_float_cache("helicopter", "flame_start_health")
 
 	self.st.flame_start_snd   = xr_sound.get_sound_object("heli_explosion", "random")
 
@@ -63,7 +61,7 @@ function heli_binder:update( delta )
 
 	if not self.initialized then
 		self.initialized = true
-		xr_logic.initialize_obj( self.object, self.st, self.loaded, db_actor, modules.stype_heli )
+		xr_logic.initialize_obj( self.object, self.st, self.loaded, modules.stype_heli )
 	end
 
 	if self.st.active_section ~= nil then
@@ -78,18 +76,15 @@ function heli_binder:net_spawn( data )
 		return false
 	end
 
-	db.add_obj( self.object )
 	db.add_heli( self.object )
 
-	if (news_main and news_main.on_heli_seen and self.object) then
-		news_main.on_heli_seen(self.object)
-	end
+	news_main.on_heli_seen(self.object)
 
 	return true
 end
 
 function heli_binder:net_destroy()
-	db.del_obj( self.object )
+	db.storage[self.object:id()] = nil
 	db.del_heli( self.object )
 
 	object_binder.net_destroy( self )
@@ -129,10 +124,13 @@ function heli_binder:check_health()
 			heli_snd.play_snd( self.st, heli_snd.snd_damaged, 3 )
 		end
 
-		if health <= 0.005 and not self.st.immortal then
-			heli_die( self.object )
-
-			heli_snd.play_snd( self.st, heli_snd.snd_down, 4 )
+		if not self.st.immortal then
+			if health <= 0.005 then
+				heli_die( self.object )
+				heli_snd.play_snd( self.st, heli_snd.snd_down, 4 )
+			elseif heli.m_flame_started and self.object:position():distance_to(db_actor:position()) > 150 then
+				heli_die( self.object )
+			end
 		end
 	end
 end
@@ -141,13 +139,12 @@ end
 function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 	local enemy        = level.object_by_id( enemy_id )
 	if enemy then
-		local enemy_cls_id = enemy:clsid()
-
 		-- если обидчик актёр или сталкер, то сделать его своим врагом
-		if enemy_cls_id == clsid_actor or enemy_cls_id == clsid_script_stalker then
+		if enemy:is_stalker() then
 			if self.st.hit then
 				xr_logic.issue_event( self.object, self.st.hit, "hit_callback", self.object, power, nil, enemy, nil )
 			end
+			xr_logic.pstor_store(self.object, "last_hit",  enemy:id())
 		end
 	end
 
@@ -192,10 +189,7 @@ function heli_start_flame( obj )
 
 	db.storage[obj:id()].flame_start_snd:play_at_pos( obj, obj:position() )
 
-	if (news_main and news_main.on_heli_flame and obj) then
-		news_main.on_heli_flame(obj)
-	end
-
+	news_main.on_heli_flame(obj)
 end
 
 function heli_die( obj )
@@ -205,11 +199,12 @@ function heli_die( obj )
 	heli:Die()
 
 	db.del_heli( obj )
+	if xr_logic.pstor_retrieve(obj, "last_hit", -1, true) == db_actor_id then
+		xr_statistic.addKillCount(obj)
+	end
 
 	st.last_alt       = heli:GetRealAltitude()
 	st.alt_check_time = time_global() + 1000
 
-	if (news_main and news_main.on_heli_die and obj) then
-		news_main.on_heli_die(obj)
-	end
+	news_main.on_heli_die(obj)
 end

@@ -225,7 +225,7 @@ function action_car:reset_scheme(loading)
 	                self.def_fire_rep = -1
 	            else
 	                local c = tonumber(self.st.fire_rep)
-		            self.def_fire_rep = if_then_else(c > 0, c, 0)
+		            self.def_fire_rep = iif(c > 0, c, 0)
 		        end
 		    else
 		        self.def_fire_rep = 0
@@ -462,7 +462,7 @@ function action_car:walk_arrival_callback(index)
         if next_idx >= 0 then
 	        local fw = self.path_walk_info[next_idx]["fw"]
 	        if fw then
-		        self.fire_wait = if_then_else(fw == "true", true, false)
+		        self.fire_wait = iif(fw == "true", true, false)
 	        else
 	            self.fire_wait = false
 	        end
@@ -473,7 +473,7 @@ function action_car:walk_arrival_callback(index)
 	                self.fire_rep = -1
 	            else
 	                local c = tonumber(fr)
-		            self.fire_rep = if_then_else(c > 0, c, 0)
+		            self.fire_rep = iif(c > 0, c, 0)
 		        end
 	        else
 	            self.fire_rep = self.def_fire_rep
@@ -629,23 +629,23 @@ function action_car:fire_arrival_callback(cur_index)
 
 	    local ff = self.path_fire_info[idx]["ff"]
 	    if ff then
-		    self.fire_forward = if_then_else(ff == "true", true, false)
+		    self.fire_forward = iif(ff == "true", true, false)
 		else
 		    self.fire_forward = false
 	    end
 
 	    local fb = self.path_fire_info[idx]["fb"]
 	    if fb then
-		    self.fire_backward = if_then_else(fb == "true", true, false)
+		    self.fire_backward = iif(fb == "true", true, false)
 		else
 		    self.fire_backward = false
 	    end
 
 	    local f = self.path_fire_info[idx]["f"]
 	    if f then
-		    self.state_shooting = if_then_else(f == "true", state_shooting_on, state_none)
+		    self.state_shooting = iif(f == "true", state_shooting_on, state_none)
 	    else
-		    self.state_shooting = if_then_else(self.st.auto_fire, state_shooting_on, state_none)
+		    self.state_shooting = iif(self.st.auto_fire, state_shooting_on, state_none)
 	    end
 
 	    local ft = self.path_fire_info[idx]["ft"]
@@ -657,7 +657,7 @@ function action_car:fire_arrival_callback(cur_index)
 	else
 		    self.fire_forward = false
 		    self.fire_backward = false
-		    self.state_shooting = if_then_else(self.st.auto_fire, state_shooting_on, state_none)
+		    self.state_shooting = iif(self.st.auto_fire, state_shooting_on, state_none)
 		    self.fire_time = def_min_fire_time
 	end
 
@@ -730,7 +730,7 @@ function action_car:fastcall()
 	if self.destroyed then return true end
 
 	if self.usable ~= nil then
-	    local cu = xr_logic.pick_section_from_condlist(db_actor, self.object, self.usable.condlist)
+	    local cu = xr_logic.pick_section_from_condlist(self.object, self.usable.condlist)
 	    local u = (cu == "true" or cu == "")
 
 	    if u then
@@ -754,14 +754,14 @@ function action_car:update(delta)
 	self.friends={}
 	for k,v in pairs(amk_mod.btrs_friends) do
 		local tmp=level.object_by_id(k)
-		if tmp and ( (IsStalker(tmp) and tmp:character_community()=="military" and tmp:alive()) or
+		if tmp and ( (tmp:is_stalker() and tmp:character_community()=="military" and tmp:alive()) or
 		(tmp:section()=="vehicle_btr" and tmp:id()~=self.object:id()) ) and
 		self.fire_range_sqr>self.object:position():distance_to_sqr(tmp:position()) then
 				self.friends[k] = tmp:section()
 		end
 	end
 
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
 	end
 
@@ -877,14 +877,14 @@ function action_car:fast_update()
 
 	if self.hasWeapon then
 		if self.on_target_vis and self.on_target_vis.v1:alive() and self.car:IsObjectVisible(self.on_target_vis.v1) then
-      local new_section = xr_logic.pick_section_from_condlist(db_actor, self.object, self.on_target_vis.condlist)
+      local new_section = xr_logic.pick_section_from_condlist(self.object, self.on_target_vis.condlist)
       if new_section then
           xr_logic.switch_to_section(self.object, self.st, new_section)
       end
 		end
 
 		if self.on_target_nvis and self.on_target_nvis.v1:alive() and not self.car:IsObjectVisible(self.on_target_nvis.v1) then
-      local new_section = xr_logic.pick_section_from_condlist(db_actor, self.object, self.on_target_nvis.condlist)
+      local new_section = xr_logic.pick_section_from_condlist(self.object, self.on_target_nvis.condlist)
       if new_section then
           xr_logic.switch_to_section(self.object, self.st, new_section)
       end
@@ -1010,7 +1010,7 @@ function action_car:check_friends_on_fire_line()
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[action_car(npc, storage)] = true
 end
 

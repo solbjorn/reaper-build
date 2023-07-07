@@ -1,4 +1,3 @@
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;	FOOD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +67,6 @@ wounds_heal_perc = 0
 eat_portions_num = -1
 
 ; food item
-slot				= 4
 animation_slot		= 4
 
 ;hud item
@@ -113,7 +111,6 @@ wounds_heal_perc = 0
 eat_portions_num = -1
 
 ; food item
-slot				= 4
 animation_slot		= 4
 
 ;hud item
@@ -175,7 +172,6 @@ wounds_heal_perc = 0
 eat_portions_num = -1
 
 ; food item
-slot				= 4
 animation_slot		= 4
 
 ;hud item
@@ -250,8 +246,6 @@ bone_name				= bip01_r_hand
 position_offset			 = 0.0,0.0,0.0
 angle_offset			 = 1.570790,1.570790,3.92699
 
-slot				= 4
-
 ; eatable item
 eat_health		= -0.1
 eat_satiety		= 0.01
@@ -262,7 +256,6 @@ wounds_heal_perc 	= 0
 eat_portions_num 	= -1
 
 ; food item
-slot				= 4
 animation_slot		= 4
 
 ;hud item
@@ -339,7 +332,6 @@ eat_health = 0.0
 eat_satiety = -0.25
 eat_power = 0
 eat_radiation = -1.0
-
 wounds_heal_perc = 0
 eat_portions_num = 1
 
@@ -354,7 +346,7 @@ GroupControlSection	= spawn_group
 discovery_dependency =
 $spawn 				= "food and drugs\medkit"
 $prefetch 			= 8
-class			= II_MEDKI
+class				= II_MEDKI
 cform				= skeleton
 visual				= equipments\item_aptechka.ogf
 description			= enc_equipment_medi_medkit1
@@ -373,7 +365,6 @@ eat_health			= 0.3
 eat_satiety			= 0
 eat_power			= -0.3
 eat_radiation		= -0.1
-
 wounds_heal_perc	= 0.3
 eat_portions_num	= 1
 eat_max_power		= 0.1
@@ -389,7 +380,7 @@ GroupControlSection	= spawn_group
 discovery_dependency =
 $spawn 				= "food and drugs\medkit_army"
 $prefetch 			= 8
-class			= II_MEDKI
+class				= II_MEDKI
 cform				= skeleton
 visual				= equipments\item_aptechka3.ogf
 description			= enc_equipment_medi_medkit2
@@ -408,7 +399,6 @@ eat_health			= 0.6
 eat_satiety			= 0
 eat_power			= -0.3
 eat_radiation		= -0.1
-
 wounds_heal_perc	= 1.0
 eat_portions_num	= 1
 eat_max_power		= 0.1
@@ -424,7 +414,7 @@ GroupControlSection	= spawn_group
 discovery_dependency =
 $spawn 				= "food and drugs\medkit_scientic"
 $prefetch 			= 8
-class			= II_MEDKI
+class				= II_MEDKI
 cform				= skeleton
 visual				= equipments\item_aptechka2.ogf
 description			= enc_equipment_medi_medkit3
@@ -443,7 +433,6 @@ eat_health			= 1.0
 eat_satiety			= 0
 eat_power			= -0.3
 eat_radiation		= -0.5
-
 wounds_heal_perc	= 0.3
 eat_portions_num	= 1
 eat_max_power		= 0.1
@@ -550,6 +539,7 @@ visual				= equipments\item_pda.ogf
 description			= enc_equipment_device_pda1
 radius				= 50;0 ;75
 slot				= 7
+default_to_ruck = false
 
 inv_name			= device_pda1
 inv_name_short		= device_pda1
@@ -624,6 +614,7 @@ night_vision_recharge_time			= 6		;(c) время зарядки аккамулятора
 night_vision_recharge_time_min		= 2		;(c) мин. время зарядки аккамулятора, после которого уст-во уже может работать
 night_vision_discharge_time			= 20	;(c) время разрядки (работы) устройства после полной зарядки
 slot								= 9
+default_to_ruck = false
 disabled_maps						= ai_test,ai_test2, andy_test_
 
 ; Начало описания детекторов
@@ -641,7 +632,6 @@ radius				= 10	;15
 buzzer_radius		= 1.5
 noise				= zone_mosquito_bald       ;detectors\geiger_noise_loop
 buzzer				= zone_mosquito_bald       ;detectors\DA-2_alarm_loop
-;slot				= 3
 ef_detector_type	= 1
 
 inv_name			= st_detector
@@ -704,7 +694,7 @@ radius				= 10	;15
 buzzer_radius		= 1.5
 noise				= zone_mosquito_bald       ;detectors\geiger_noise_loop
 buzzer				= zone_mosquito_bald       ;detectors\DA-2_alarm_loop
-;slot				= 9
+
 ef_detector_type	= 1
 
 inv_name			= st_detector2
@@ -761,7 +751,7 @@ radius				= 10	;15
 buzzer_radius		= 1.5
 noise				= zone_mosquito_bald       ;detectors\geiger_noise_loop
 buzzer				= zone_mosquito_bald       ;detectors\DA-2_alarm_loop
-;slot				= 9
+
 ef_detector_type	= 1
 
 inv_name			= st_detector3
@@ -828,7 +818,7 @@ radius				= 10	;15
 buzzer_radius		= 1.5
 noise				= zone_mosquito_bald       ;detectors\geiger_noise_loop
 buzzer				= zone_mosquito_bald       ;detectors\DA-2_alarm_loop
-slot				= 9
+
 ef_detector_type	= 1
 inv_name			= st_detector_sak
 inv_name_short		= st_detector_sak
@@ -950,7 +940,6 @@ wounds_heal_perc = 0
 eat_portions_num = -1
 
 ; food item
-slot				= 4
 animation_slot		= 4
 
 ;hud item
@@ -986,40 +975,6 @@ anim_hide			= kurit_4
 anim_play			= kurit_5
 anim_prepare		= kurit_5
 anim_eat			= kurit_3
-
-[testsak_l01_escape]:bandage
-$spawn 			= "zones\testsak_l01_escape"
-class					= II_ATTCH
-[testsak_l02_garbage]:bandage
-$spawn 			= "zones\testsak_l02_garbage"
-class					= II_ATTCH
-[testsak_l03_agroprom]:bandage
-$spawn 			= "zones\testsak_l03_agroprom"
-class					= II_ATTCH
-[testsak_l04_darkvalley]:bandage
-$spawn 			= "food and drugs\testsak_l04_darkvalley"
-class					= II_ATTCH
-[testsak_l05_bar]:bandage
-$spawn 			= "zones\testsak_l05_bar"
-class					= II_ATTCH
-[testsak_l06_rostok]:bandage
-$spawn 			= "zones\testsak_l06_rostok"
-class					= II_ATTCH
-[testsak_l07_military]:bandage
-$spawn 			= "zones\testsak_l07_military"
-class					= II_ATTCH
-[testsak_l08_yantar]:bandage
-$spawn 			= "zones\testsak_l08_yantar"
-class					= II_ATTCH
-[testsak_l10_radar]:bandage
-$spawn 			= "zones\testsak_l10_radar"
-class					= II_ATTCH
-[testsak_l11_pripyat]:bandage
-$spawn 			= "zones\testsak_l11_pripyat"
-class					= II_ATTCH
-[testsak_l12_stancia]:bandage
-$spawn 			= "zones\testsak_l12_stancia"
-class					= II_ATTCH
 
 #include "amk_mod_matras.ltx"
 #include "amk_mod_metka.ltx"

@@ -8,42 +8,12 @@ evid_blowout=18572
 evid_outside=evid_blowout+1
 evid_preblowout=evid_blowout+2
 evid_anomaly=evid_blowout+3
---evid_regen=evid_blowout+4
 
 actid_runtohide=evid_blowout
 actid_inhide=evid_blowout+1
 actid_preblow=evid_blowout+2
 actid_monopray=evid_blowout+3
 actid_anomaly=evid_blowout+4
-
---[[
-class "evaluator_regen" (property_evaluator)
-
-function evaluator_regen:__init(st,fullhealthtime) super(nil,"evaluator_regen")
-  self.st=st
-  self.fhtime=fullhealthtime
-end
-
-function evaluator_regen:evaluate()
-  local npc=self.object
-  if not npc:alive() then
-    amk.mylog("regen nonalive")
-    return false
-  end
-  if not self.prevtime then
-    self.prevtime=time_global()
-  end
-  local delta=time_global()-self.prevtime
-  self.prevtime=time_global()
-  local healthinc=npc:max_health()/self.fhtime*delta
-  amk.mylog("regen for "..npc:character_name().." "..healthinc.." "..npc.health)
-  if npc.health>0 and npc.health<npc:max_health() then
-    npc.health=npc.health+healthinc
-  amk.mylog("postregen for "..npc:character_name().." "..healthinc.." "..npc.health)
-  end
-  return false
-end
-]]
 
 class "evaluator_anomaly" (property_evaluator)
 
@@ -80,8 +50,6 @@ end
 
 function evaluator_blowout:evaluate()
   local npc=self.object
-  --get_console():execute("load ~~~eval blowout "..npc:character_name())
-  --get_console():execute("flush")
   if amk_mod.blowout_type()>0 or xr_wounded.is_wounded(npc) then return false end
   local blowout=amk.load_variable("blowout",0)
   if self.prevblow==3 and blowout~=3 then
@@ -150,8 +118,6 @@ local ret_points={}
 
 function evaluator_outside:evaluate()
   local npc=self.object
-  --get_console():execute("load ~~~eval inhide exec "..npc:character_name())
-  --get_console():execute("flush")
   if self.st.washitat and self.st.washitat>time_global() then
     return false
   end
@@ -187,14 +153,12 @@ function evaluator_outside:evaluate()
     -- Если непись зашёл в укрытие, то дадим ему ещё 1 сек чтобы зайти глубже
     if inhide and self.uptime and self.uptime>time_global() then
       -- Уже в укрытии, но секунда ещё не прошла
---      if npc:character_name()=="Волк" then amk.mylog(npc:character_name().." outside1") end
       return true
     elseif inhide and self.uptime and self.uptime<=time_global() then
       -- В укрытии. Секунда только что прошла
     elseif inhide and (not self.uptime) then
       -- Только что зашёл в укрытие
       self.uptime=time_global()+1000
---      if npc:character_name()=="Волк" then amk.mylog(npc:character_name().." outside2") end
       return true
     elseif not inhide then
       -- Не в укрытии
@@ -231,16 +195,6 @@ end
 
 function action_anomaly:execute()
   action_base.execute(self)
-  local npc=self.object
-
-	--[[  amk.mylog("now he has...")
-  local inr=npc:in_restrictions()
-  for r in string.gmatch(inr, "[^,]+") do
-    amk.mylog(r)
-  end
-  get_console():execute("load ~~~actexec anomaly end "..npc:character_name())
-  get_console():execute("flush")
-  ]]
 end
 
 class "action_runtohide" (action_base)
@@ -254,8 +208,6 @@ function action_runtohide:initialize()
   local npc=self.object
   npc:set_detail_path_type(move.line)
   npc:set_path_type(game_object.level_path)
-  -- get_console():execute("load ~~~runtohide init "..npc:character_name())
-  -- get_console():execute("flush")
   -- Ищем ближайшее укрытие
   if not self.st.hidefound then
     local hide,lvid=nearest_hide(npc) --  ищем укрытия без удаления рестрикторов
@@ -270,15 +222,11 @@ function action_runtohide:initialize()
     end
     if hide==nil then
       self.st.nohide=true
-      amk.mylog(npc:character_name().." has no hide")
       return
     end
     self.st.hidefound=true
     self.st.hide=hide
     self.st.lvid=lvid
-    -- if npc:name()=="mil_freedom_member0021" then
-      -- amk.mylog(npc:character_name().." hc "..hide.center.." lvid "..lvid)
-    -- end
   end
   if level.vertex_position(self.st.lvid):distance_to(npc:position())>30 then
     self.st.need_run=true
@@ -289,7 +237,6 @@ function action_runtohide:initialize()
     state_mgr.set_state(npc,"assault")
     self.nosprint=true
   end
-  -- amk.mylog(npc:name().." to "..self.st.lvid.." center "..self.st.hide.center)
   utils.send_to_nearest_accessible_vertex(npc,self.st.lvid)
   self.kicktime=time_global()
   self.ttchst=0
@@ -299,8 +246,6 @@ end
 function action_runtohide:execute()
   action_base.execute(self)
   local npc=self.object
-  -- get_console():execute("load ~~~runtohide exec "..npc:character_name())
-  -- get_console():execute("flush")
   if self.st.hide==nil then
     return
   end
@@ -377,8 +322,6 @@ function action_inhide:initialize()
   npc:set_path_type(game_object.level_path)
   if self.st.hide==nil then self.st.hide={} end
   if self.st.hide.place==nil then self.st.hide.place={} end
-  -- get_console():execute("load ~~~inhide init "..npc:character_name())
-  -- get_console():execute("flush")
   -- Выбираем точку внутри укрытия
   local ang0=math.random(0,360)
   local r0=math.random(1,15)
@@ -410,8 +353,6 @@ function action_inhide:initialize()
 function action_inhide:execute()
   action_base.execute(self)
   local npc=self.object
-  -- get_console():execute("load ~~~inhide exec "..npc:character_name())
-  -- get_console():execute("flush")
   if npc:level_vertex_id()==self.lvid and self.begin and self.begin<time_global() then
     self.begin=nil
     state_mgr.set_state(npc,"hide_na",nil,nil,{look_position=self.tgtvec})
@@ -433,8 +374,6 @@ function action_inhide:finalize()
   if self.st.hide and self.st.hide.place then
     self.st.hide.place[self.lvid]=nil
   end
-  -- get_console():execute("load ~~~inhide fin "..npc:character_name())
-  -- get_console():execute("flush")
 end
 
 function control_entrance_vec(vtx,hide)
@@ -486,8 +425,6 @@ function action_preblow:initialize()
   xr_sound.set_sound(npc,"")
   self.nextupd=time_global()+math.random(5000,10000)
   self.st.nohide=nil
-  -- get_console():execute("load ~~~preblow init "..npc:character_name())
-  -- get_console():execute("flush")
  end
 
 function action_preblow:execute()
@@ -499,8 +436,6 @@ function action_preblow:execute()
     preflook,self.prefang=find_open_dir(npc,self.prefang,45)
     state_mgr.set_state(npc,self.state,nil,nil,{look_position=preflook})
   end
-  -- get_console():execute("load ~~~preblow exec "..npc:character_name())
-  -- get_console():execute("flush")
 end
 
 function find_open_dir(npc,excludeang,excludewidth)
@@ -539,27 +474,42 @@ end
 
 function action_monolith_pray:execute()
   action_base.execute(self)
-  local npc=self.object
 end
 
 function set_hide(npc, ini, scheme, section)
   local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
 
-local cnt=0
-
 --Задаем список неписей с игнором на выброс(например постовых, которые уже находятся в зоне укрытия и могут спокойно выполнять свою работу во время выброса)
 --[[------------------------------ ignor blowout -------------------------------]]
 local npcNameBlowoutIgnore = {
-    ["mil_stalker0012"]         = true, --Псих на АС
-    ["yantar_ecolog_general"]   = true, --Сахаров
-    ["mil_freedom_member0009"]  = true, --Охранник Лукаша
-    ["mil_freedom_member0012"]  = true, --Лукаш
-    ["mil_freedom_member0019"]  = true, --Охранник Лукаша
-    ["mil_freedom_member0021"]  = true, --Скряга
-    ["bar_bar_guard"]           = true, --Гарик в баре
-    ["bar_bar_osvedomitel"]     = true, --Информатор в баре
-    ["bar_bar_guard_2"]         = true, --Жорик в баре
+	["bar_bar_drunk_dolg"]		= true,	-- Бром
+    ["bar_bar_guard"]           = true, -- Гарик
+    ["bar_bar_guard_2"]         = true, -- Жорик
+	["bar_bar_lisiy"]			= true,	-- Лысый
+    ["bar_bar_osvedomitel"]     = true, -- Информатор
+	["bar_bar_visitor_hunter"]	= true,	-- Охотник
+	["bar_bar_visitors_3_3"]	= true,	-- один из визитёров в Баре
+	["bar_bar_visitors_3_4"]	= true, -- ещё один
+	["bar_docent"]				= true,	-- Доцент
+	["bar_dolg_bunker_0001"]	= true,	-- долговцы в бункере в Баре #1
+	["bar_dolg_bunker_0002"]	= true,	-- долговцы в бункере в Баре #2
+	["bar_dolg_bunker_1"]		= true,	-- долговцы в бункере в Баре #3
+	["bar_dolg_bunker_2"]		= true,	-- долговцы в бункере в Баре #4
+	["bar_dolg_bunker_3"]		= true,	-- долговцы в бункере в Баре #5
+	["bar_dolg_bunker_4"]		= true,	-- долговцы в бункере в Баре #6
+	["bar_dolg_bunker_5"]		= true,	-- долговцы в бункере в Баре #7
+	["bar_dolg_leader"]			= true,	-- Воронин
+	["bar_stalker_dolg_1"]		= true, -- долговец в баре
+	["dolgovazyi"]				= true,	-- Долговязый
+    ["mil_freedom_member0009"]  = true, -- охранник Лукаша #1
+    ["mil_freedom_member0012"]  = true, -- Лукаш
+    ["mil_freedom_member0019"]  = true, -- охранник Лукаша #2
+    ["mil_freedom_member0021"]  = true, -- Скряга
+    ["mil_stalker0012"]         = true, -- Псих на АС
+	["rostok_stalker"]			= true,	-- Фримен
+	["stalker_green_zahar"]		= true,	-- Захар
+    ["yantar_ecolog_general"]   = true,  -- Сахаров
 	["yantar_semenov"]          = true, --Семенов на Янтаре
 	["yan_scientist_help"] = true,
 -- Добавляем пятёрку у костра в ТД, чтобы не бегали на базу к бандитам и не гибли
@@ -568,6 +518,7 @@ local npcNameBlowoutIgnore = {
 	["agr_krot"] = true,             -- Крот
 	["esc_fox"] = true,              -- Лис
 	["val_sos_wounded"] = true,       -- Мессер
+	["bar_rostok_james"] = true       -- Джеймс
 }
 local npcCommunityBlowoutIgnore = {
     ["zombied"]     = true,
@@ -575,7 +526,7 @@ local npcCommunityBlowoutIgnore = {
     ["arena_enemy"] = true
 }
 
-function add_to_binder_q(npc,storage)
+function add_to_binder(npc,storage)
   local evid_wounded=xr_evaluators_id.sidor_wounded_base
   local monolith=npc:character_community()=="monolith"
     local zombi = npcCommunityBlowoutIgnore[npc:character_community()] or
@@ -699,8 +650,6 @@ function add_to_binder_q(npc,storage)
     -- action:add_precondition (world_property(evid_preblowout, false))
   end
   npc:set_enemy_callback(ecall,nil)
-  -- get_console():execute("load ~~~bind scheme end "..npc:character_name())
-  -- get_console():execute("flush")
 end
 
 function ecall(p1,obj,enemy)
@@ -712,7 +661,6 @@ function ecall(p1,obj,enemy)
     return false
   end
   if near and db.storage[obj:id()] and db.storage[obj:id()].combat_ignore and db.storage[obj:id()].combat_ignore.action and db.storage[obj:id()].combat_ignore.action.enemy_callback then
-    -- amk.mylog("Calling combat ignore handler for "..obj:name())
     return db.storage[obj:id()].combat_ignore.action:enemy_callback(obj,enemy)
   end
   return near

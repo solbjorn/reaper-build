@@ -2,67 +2,41 @@
 -- Также правились файлы amk.script, amk_mod.script
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local amk_game_minutes = amk.game_minutes
-
 --
 --===	переменные	===--
--- старый буфер
-local ap_old={}
-		-- служебные флаги для таймеров
-		ap_old.alco_drink_flag = 0
-		ap_old.must_drink_flag = 0
-		ap_old.abstinent_step_flag = 0
-		ap_old.alcoholic_lose_hp_flag = 0
-		ap_old.sober_step_flag = 0
-		ap_old.poison_death_flag = 0
-		ap_old.alco_dream_flag = 0
-		ap_old.alco_good_morning_flag = 0
-
-		ap_old.alco_drink_timer = 0
-		ap_old.must_drink_timer = 0
-		ap_old.abstinent_step_timer = 0
-		ap_old.alcoholic_lose_hp_timer = 0
-		ap_old.sober_step_timer = 0
-		ap_old.poison_death_timer = 0
-		ap_old.alco_dream_timer = 0
-		ap_old.alco_good_morning_timer = 0
-
-		ap_old.amk_gg_bottle_drinked = 0
-		ap_old.amk_gg_bottle_summary_drinked = 0
-		ap_old.amk_gg_is_alcoholic = 0
-		ap_old.alco_objectid = -1
---
 -- новый буфер
-local ap={}
-		-- служебные флаги для таймеров
-		ap.a0 = 0	--ap_old.alco_drink_flag
-		ap.a1 = 0	--ap_old.alco_drink_timer
+local dflt = {
+	-- служебные флаги для таймеров
+	a0 = 0,	-- alco_drink_flag
+	a1 = 0,	-- alco_drink_timer
 
-		ap.b0 = 0	--ap_old.must_drink_flag
-		ap.b1 = 0	--ap_old.must_drink_timer
+	b0 = 0,	-- must_drink_flag
+	b1 = 0,	-- must_drink_timer
 
-		ap.c0 = 0	--ap_old.abstinent_step_flag
-		ap.c1 = 0	--ap_old.abstinent_step_timer
+	c0 = 0,	-- abstinent_step_flag
+	c1 = 0,	-- abstinent_step_timer
 
-		ap.d0 = 0	--ap_old.alcoholic_lose_hp_flag
-		ap.d1 = 0	--ap_old.alcoholic_lose_hp_timer
+	d0 = 0,	-- alcoholic_lose_hp_flag
+	d1 = 0,	-- alcoholic_lose_hp_timer
 
-		ap.e0 = 0	--ap_old.sober_step_flag
-		ap.e1 = 0	--ap_old.sober_step_timer
+	e0 = 0,	-- sober_step_flag
+	e1 = 0,	-- sober_step_timer
 
-		ap.f0 = 0	--ap_old.poison_death_flag
-		ap.f1 = 0	--ap_old.poison_death_timer
+	f0 = 0,	-- poison_death_flag
+	f1 = 0,	-- poison_death_timer
 
-		ap.g0 = 0	--ap_old.alco_dream_flag
-		ap.g1 = 0	--ap_old.alco_dream_timer
+	g0 = 0,	-- alco_dream_flag
+	g1 = 0,	-- alco_dream_timer
 
-		ap.h0 = 0	--ap_old.alco_good_morning_flag
-		ap.h1 = 0	--ap_old.alco_good_morning_timer
+	h0 = 0,	-- alco_good_morning_flag
+	h1 = 0,	-- alco_good_morning_timer
 
-		ap.a = 0	--ap_old.amk_gg_bottle_drinked
-		ap.b = 0	--ap_old.amk_gg_bottle_summary_drinked
-		ap.c = 0	--ap_old.amk_gg_is_alcoholic
-		ap.d = -1	--ap_old.alco_objectid
+	a = 0,	-- amk_gg_bottle_drinked
+	b = 0,	-- amk_gg_bottle_summary_drinked
+	c = 0,	-- amk_gg_is_alcoholic
+	d = -1	-- alco_objectid
+}
+local ap
 --
 
 local alc_todo_alcoholic = 35	--штук	--через сколько бутылок допьешься до алкоголизма [35]
@@ -93,54 +67,21 @@ local sober_step_flag = 0		--ГГ протрезвел [таймер 98]
 --
 --
 --= функции =--
---
--- Конвертер из старого типа данных в новый
-function convert_variables()
-	ap_old = amk.unpack_array_from_string(amk.load_variable("amk_alcohol_params",amk.pack_array_to_string(ap_old)))
-	ap = amk.unpack_array_from_string(amk.load_variable("alcpar",amk.pack_array_to_string(ap)))
-	ap.a0 = ap_old.alco_drink_flag
-	ap.a1 = ap_old.alco_drink_timer
 
-	ap.b0 = ap_old.must_drink_flag
-	ap.b1 = ap_old.must_drink_timer
-
-	ap.c0 = ap_old.abstinent_step_flag
-	ap.c1 = ap_old.abstinent_step_timer
-
-	ap.d0 = ap_old.alcoholic_lose_hp_flag
-	ap.d1 = ap_old.alcoholic_lose_hp_timer
-
-	ap.e0 = ap_old.sober_step_flag
-	ap.e1 = ap_old.sober_step_timer
-
-	ap.f0 = ap_old.poison_death_flag
-	ap.f1 = ap_old.poison_death_timer
-
-	ap.g0 = ap_old.alco_dream_flag
-	ap.g1 = ap_old.alco_dream_timer
-
-	ap.h0 = ap_old.alco_good_morning_flag
-	ap.h1 = ap_old.alco_good_morning_timer
-
-	ap.a = ap_old.amk_gg_bottle_drinked
-	ap.b = ap_old.amk_gg_bottle_summary_drinked
-	ap.c = ap_old.amk_gg_is_alcoholic
-	ap.d = ap_old.alco_objectid
-	amk.save_variable("alcpar",amk.pack_array_to_string(ap))
-	--флаг, что сконвертировали уже, и больше не надо
-	amk.del_variable("amk_alcohol_params")
-	amk.save_variable("alcv", 1)
+function init()
+	ap = container:get("alcpar", { })
+	if ap.a0 == nil then
+		for k, v in pairs(dflt) do
+			ap[k] = v
+		end
+	end
 end
+
 -- Реакции на update актора
 function check_alcohol()
 	--задаем параметры
 	-- получение игрового времени
-	local time = amk_game_minutes()
-	-- распаковка состояний и флагов таймеров, переменных
-	if amk.load_variable("alcv", 0) == 0 then
-		convert_variables()
-	end
-	ap = amk.unpack_array_from_string(amk.load_variable("alcpar",amk.pack_array_to_string(ap)))
+	local time = game.minutes()
 	--условия на сработку "таймера"
 	-- выпил водку
 	if ap.a0 == 1 then
@@ -215,23 +156,13 @@ function check_alcohol()
 			amk_abstinent_step(time)
 		end
 	end
-	--  упаковка состояний и флагов таймеров, переменных
-	amk.save_variable("alcpar",amk.pack_array_to_string(ap))
-
 end
 --
 -- Проверка распития бутылки водки
 function drink_vodka(obj)
-	-- получение игрового времени
-	local time = amk_game_minutes()
-	local section = obj:section()
-	local oid = obj:id()
-	if (section=="vodka") then
-		ap.d  = oid
-		ap.a0 = 1
-		ap.a1 = time
-	end
-	amk.save_variable("alcpar",amk.pack_array_to_string(ap))
+	ap.d  = obj:id()
+	ap.a0 = 1
+	ap.a1 = game.minutes()
 end
 --
 function alcohol_drink(game_time)
@@ -315,7 +246,7 @@ end
 function amk_alcohol_dream(game_time)
 	ap.h0 = 1
 	ap.h1 = game_time + alc_max_drink_dream_time*60+10	--hours
-	sleep_manager.main(alc_max_drink_dream_time)
+	dream_:sleep(alc_max_drink_dream_time)
 end
 --
 --ГГ "получает" похмелье

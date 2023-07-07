@@ -85,7 +85,7 @@ function set_sound(npc, sound, now, into_timeout)
 		-- Туточки надобно распарсить имена тем в их id
 		if sound == nil then sound = "" end
 		npc_sounds.theme = sound
-		npc_sounds.snd = parse_names(sound)
+		npc_sounds.snd = string.parse_names(sound)
 		if npc_sounds.last_snd == nil then
 			npc_sounds.last_snd = {}
 		else
@@ -136,13 +136,13 @@ function set_sound_play(npc, sound, timeout)
 	end
 
 	npc_sounds.theme = sound
-	npc_sounds.snd = parse_names(sound)
+	npc_sounds.snd = string.parse_names(sound)
 
 	local key = get_key(npc)
 	local group_table = group_idle[key]
 
 	stop_play_sound(npc)
-	this.play_sound(npc, group_table, timeout)
+	play_sound(npc, group_table, timeout)
 end
 
 function update(npc)
@@ -180,7 +180,7 @@ function update(npc)
 	end
 
 	if group_table.busy_until == nil or time_global() > group_table.busy_until then
-		this.play_sound(npc, group_table)
+		play_sound(npc, group_table)
 	end
 end
 
@@ -318,7 +318,7 @@ function set_actor_sound(sound)
 		actor_sound.theme = sound
 		actor_sound.begin = nil
 
-		this.set_actor_sound_factor(1)
+		set_actor_sound_factor(1)
 	end
 end
 

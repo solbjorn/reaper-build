@@ -9,7 +9,8 @@ function amk_options:__init(owner) super()
 	self:InitCallBacks()
 end
 
-function amk_options:__finalize() end
+function amk_options:__finalize()
+end
 
 function amk_options:InitControls()
 	self:Init(0,0,1024,768)
@@ -50,16 +51,14 @@ function amk_options:InitControls()
 	radio_rad:SetNewActiveTab(amk.load_variable("option_rad",1))
 
 	self:Register(xml:Init3tButton("form:btn_okay", self.form),"btn_okay")
-
 end
 
 function amk_options:InitCallBacks()
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
-	self:AddCallback("btn_okay", ui_events.BUTTON_CLICKED, self.on_okay, self)
+	self:AddCallbackEx("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallbackEx("btn_okay", ui_events.BUTTON_CLICKED, self.on_okay)
 end
 
 function amk_options:on_okay()
-
 	local radio_mus = self:GetTabControl("radio_amk_mus")
 	local radio_hud = self:GetTabControl("radio_amk_hud")
 	local radio_treasure = self:GetTabControl("radio_amk_treasure")
@@ -71,18 +70,12 @@ function amk_options:on_okay()
 	amk.save_variable("option_rad", radio_rad:GetActiveIndex() )
 
 	self:on_quit()
-
 end
 
 function amk_options:on_quit()
-	local console = get_console()
 	self:GetHolder():start_stop_menu (self.owner, true)
 	self:GetHolder():start_stop_menu (self,true)
-	--self.owner:Show	(true)
-
-	if level.present() and (db.actor ~= nil) and db.actor:alive() then
-		console:execute("main_menu off")
-	end
+	self.owner:Show(true)
 end
 
 function amk_options:OnKeyboard(dik, keyboard_action)
@@ -98,4 +91,3 @@ function amk_options:OnKeyboard(dik, keyboard_action)
 	end
 	return true
 end
-

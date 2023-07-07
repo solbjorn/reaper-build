@@ -19,12 +19,12 @@ end
 
 function ph_on_death:death_callback (obj, who)
 	if db.storage[self.object:id()].active_scheme then
-		xr_logic.try_switch_to_another_section (obj, self.st, db_actor)
+		xr_logic.try_switch_to_another_section(obj, self.st)
 	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ph_on_death(npc, storage)] = true
 end
 

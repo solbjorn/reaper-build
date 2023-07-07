@@ -54,7 +54,7 @@ function trader_repiar_weapon_s1(trader, actor)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		item_in_slot:set_condition(1)
-		dialogs.relocate_money(actor, item_repair_cost, "out")
+		lost_money(item_repair_cost)
 	end
 end
 
@@ -63,7 +63,7 @@ function trader_repiar_weapon_s2(trader, actor)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		item_in_slot:set_condition(1)
-		dialogs.relocate_money(actor, item_repair_cost, "out")
+		lost_money(item_repair_cost)
 	end
 end
 
@@ -72,7 +72,7 @@ function trader_repiar_armor_s6(trader, actor)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
-		dialogs.relocate_money(actor, item_repair_cost, "out")
+		lost_money(item_repair_cost)
 	end
 end
 
@@ -125,20 +125,20 @@ end
 -- Оплата долговцем наших услуг по устранению снайпера
 function mil_dolg_payment (stalker, player)
     if not has_alife_info("military_scull_give_reward_1") then
-      dialogs.relocate_money(stalker, 4000, "in")
+		got_money(4000)
         db.actor:give_info_portion("military_scull_give_reward_1")
     end
 end
 
 function mil_dolg_payment2 (stalker, player)
     if not has_alife_info("military_scull_give_reward_2") then
-      dialogs.relocate_money(stalker, 8000, "in")
+		got_money(8000)
         db.actor:give_info_portion("military_scull_give_reward_2")
     end
 end
 
 function lukash_payment (stalker, player)
-    dialogs.relocate_money (stalker, 7000, "in")
+	got_money(7000)
 end
 
 -- Отмечаем провал задачи
@@ -160,11 +160,6 @@ function set_freedom_enemy (player, stalker)
     relation_registry.set_community_goodwill ("freedom", db.actor:id (), -5000)
 end
 
-function transfer_vodka (player, stalker)
-    if player:object ("vodka") == nil then return end
-    dialogs.relocate_item (stalker, player:object ("vodka"), "out")
-end
-
 function have_a_vodka (stalker, player)
     return stalker:object ("vodka") ~= nil
 end
@@ -178,7 +173,7 @@ function send_ammo_for_LR (actor, npc)
 end
 
 function commander_transfer (actor, npc)
-    dialogs.relocate_money(npc, npc:money() / 2, "in")
+	got_money(npc:money() / 2)
 end
 
 function mil_remove_base_spot (actor, npc)

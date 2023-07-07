@@ -1,0 +1,222 @@
+-----------------------------------------------------------------------------------
+-- Trader binding
+-----------------------------------------------------------------------------------
+local particles={}
+
+function bind(obj)
+	obj:bind_object(trader_binder(obj))
+end
+
+------------------------------------------------------------------------------------
+class "trader_binder" (object_binder)
+
+function trader_binder:__init(obj) super(obj)
+	self.loaded = false
+	self.particles = {}
+end
+
+function trader_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function trader_binder:reinit()
+	object_binder.reinit(self)
+
+	self.st = { }
+	db.storage[self.object:id()] = self.st
+
+	self.object:set_callback(callback.hit, self.hit_callback, self)
+	self.object:set_callback(callback.death, self.death_callback, self)
+	self.object:set_callback(callback.use_object, self.use_callback, self)
+end
+
+function trader_binder:update(delta)
+	object_binder.update(self, delta)
+
+	local obj_id = self.object:id()
+	if particles[obj_id] and #particles[obj_id] > 0 then
+		for kk,vv in pairs(particles[obj_id]) do
+			table.insert(self.particles,amk_particle.amk_particle(vv))
+			table.remove(particles[obj_id],kk)
+		end
+	end
+
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			if vv:is_finished() then
+				self.particles[kk]=nil
+			else
+				vv:update(delta)
+				if vv.give_dmg and vv.target then
+					if vv:get_pos():distance_to(vv.target:bone_position("bip01_spine"))<1 then
+						local h = hit()
+						h.impulse = 0
+						h.draftsman = vv.target
+						h.direction = vv.dir
+						h:bone("bip01_spine") -- чтобы учитывалась броня
+						h.power = math.random(10,50)/100
+						h.type = hit.strike --chemical_burn
+						vv.target:hit(h)
+						h.power = math.random(10,50)/100
+						h.type = hit.chemical_burn
+						vv.target:hit(h)
+						vv:stop()
+					end
+				end
+			end
+		end
+	end
+
+	if self.death_recorded then return end
+
+	if not self.first_update then
+		-- Апдейт торговли
+		trade_manager.first_update(self.object)
+		self.first_update = true
+	end
+
+	if not self.object:alive() then
+		self.object:set_tip_text_default()
+		self.death_recorded = true
+	end
+
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+	end
+end
+
+function trader_binder:death_callback(victim, who)
+	if not self.object then return end
+
+	if who:id() == db_actor_id then
+		xr_statistic.addKillCount(self.object)
+		freeplay_stats:check_stalker_killed_count()
+	end
+
+	if self.st.mob_death then
+		xr_logic.issue_event(self.object, self.st.mob_death, "death_callback", victim, who)
+	end
+
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	end
+
+	smart_terrain.on_death( self.object:id() )
+
+	--' Наносим небольшой импульс вперед.
+	local h = hit()
+	h.draftsman = self.object
+	h.type = hit.fire_wound
+	h.direction = db_actor:position():sub(self.object:position())
+	h:bone("pelvis")
+	h.power = 1
+	h.impulse = 10
+	self.object:hit(h)
+
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			vv:on_death()
+		end
+	end
+
+	--AMK UTILS--
+	amk.on_death(victim, who)
+	--AMK UTILS--
+end
+
+function trader_binder:use_callback(obj, who)
+	sa_callbacks.npc_use(obj, who)
+end
+
+function trader_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+
+	if self.st.hit then
+		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+
+	amk.on_npc_hit(obj, amount, local_direction, who, bone_index)
+end
+
+function trader_binder:net_spawn(sobject)
+	if not object_binder.net_spawn(self, sobject) then
+		return false
+	end
+
+	db.add_obj(self.object)
+	-- регистрация в схеме биорадара
+	biodetector.add_obj(self.object)
+
+	xr_gulag.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded )
+
+	if self.object:alive() then 
+		if self.object:is_talk_enabled() then
+			self.object:set_tip_text("character_use")
+		else
+			self.object:set_tip_text("") 
+		end 
+	end
+
+	amk.on_net_spawn(self.object)
+
+	return true
+end
+
+function trader_binder:net_destroy()
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			if not vv:is_finished() then
+				vv:stop()
+				self.particles[kk]=nil
+			end
+		end
+	end
+
+	self.object:set_callback(callback.death, nil)
+	self.object:set_callback(callback.hit, nil)
+	self.object:set_callback(callback.use_object, nil)
+
+	local st = db.storage[self.object:id()]
+	if st and st.active_scheme then
+		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
+	end
+
+	db.del_obj(self.object)
+	-- отрегистрация в схеме биорадара
+	biodetector.remove_obj(self.object)
+
+	object_binder.net_destroy(self)
+end
+
+function trader_binder:net_save_relevant()
+	return true
+end
+
+function trader_binder:save(packet)
+	object_binder.save(self, packet)
+
+	xr_logic.save_obj(self.object, packet)
+end
+
+function trader_binder:load(reader)
+	self.loaded = true
+
+	object_binder.load(self, reader)
+
+	if reader:r_eof() then
+		abort("bind_trader.script, trader_binder:load(): - SAVE FILE IS CORRUPT")
+		return
+	end
+
+	xr_logic.load_obj(self.object, reader)
+end
+
+function play_particle(obj,params)
+	local obj_id = obj:id()
+	if not particles[obj_id] then
+		particles[obj_id] = { }
+	end
+	table.insert(particles[obj_id], params)
+end

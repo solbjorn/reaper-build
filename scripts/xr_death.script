@@ -40,11 +40,11 @@ function action_process_death:death_callback(victim, who)
 
 	if actor then
 		if self.st.info then
-			xr_logic.pick_section_from_condlist(actor, self.object, self.st.info)
+			xr_logic.pick_section_from_condlist(self.object, self.st.info)
 		end
 
 		if self.st.info2 then
-			xr_logic.pick_section_from_condlist(actor, self.object, self.st.info2)
+			xr_logic.pick_section_from_condlist(self.object, self.st.info2)
 		end
 	end
 end
@@ -52,7 +52,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- binder
 ----------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_process_death(npc, storage) ] = true
 end
 
@@ -72,11 +72,11 @@ function reset_death(npc, scheme, st, section)
 		if section and ini:section_exist(section) then
 			local tmp = get_field_string("on_info")
 			if tmp then
-				st.death.info = xr_logic.parse_condlist_q(tmp)
+				st.death.info = xr_logic.parse_condlist(tmp)
 			end
 			tmp = get_field_string("on_info2")
 			if tmp then
-				st.death.info2 = xr_logic.parse_condlist_q(tmp)
+				st.death.info2 = xr_logic.parse_condlist(tmp)
 			end
 		end
 	end

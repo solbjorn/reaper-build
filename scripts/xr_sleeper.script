@@ -111,12 +111,12 @@ function action_sleeper_activity:execute()
 	if self.state == state_walking then
 		self.move_mgr:update()
 		if self.move_mgr:arrived_to_first_waypoint() then
-			xr_logic.try_switch_to_another_section(self.object, self.st, db_actor)
+			xr_logic.try_switch_to_another_section(self.object, self.st)
 		end
 		return
 	end
 	if self.state == state_sleeping then
-		if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+		if xr_logic.try_switch_to_another_section(self.object, self.st) then
 			return
 		end
 		xr_sound.set_sound(self.object, "sleep")
@@ -142,7 +142,7 @@ local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.propert
 local wp_prop_need_sleeper_true = world_property(prop_need_sleeper, true)
 local wp_prop_need_sleeper_false = world_property(prop_need_sleeper, false)
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local manager = npc:motivation_action_manager()
 
 	-- // evaluators
@@ -154,7 +154,7 @@ function add_to_binder_q(npc, storage)
 	action:add_precondition		(wp_stalker_ids_property_enemy_false)
 	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
 	action:add_precondition		(wp_prop_need_sleeper_true)
-	xr_motivator.addCommonPrecondition(action)
+	bind_stalker.addCommonPrecondition(action)
 	action:add_effect(wp_prop_need_sleeper_false)
 	manager:add_action(operator_action_sleeper, action)
 

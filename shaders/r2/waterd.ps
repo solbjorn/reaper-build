@@ -1,5 +1,4 @@
 #include "common.h"
-#include "ogse_config.h"
 #include "shared\waterconfig.h"
 
 struct   v2p
@@ -27,7 +26,7 @@ half4        main        ( v2p I )        : COLOR
 	//	Igor: additional depth test
 #ifdef	USE_SOFT_WATER
 
-	half4 _P = 	tex2Dproj( s_position, I.tctexgen); 
+	half4 _P = 	tex2Dproj( s_position, I.tctexgen);
 	half waterDepth = _P.z-I.tctexgen.z;
 
 	half alphaDistort = saturate(5*waterDepth);
@@ -37,7 +36,6 @@ half4        main        ( v2p I )        : COLOR
         half2        faded_bx2        = (faded*2-1)*W_DISTORT_POWER;
         half         faded_dot        = dot        (half3(faded_bx2,0),.75        );        //0.75
         half         alpha                = .5f        ;                //abs          (faded_dot);
-
 
                 faded                = faded*POWER - .5*POWER + 0.5        ;
 

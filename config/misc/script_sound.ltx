@@ -55,10 +55,13 @@ stalker		= 1,help\wounded_psy\psy_
 stalker		= 1,help\wounded_psy\suicide_
 
 [hail_rnd]
-stalker		= 1,hail\deleted_
+stalker		= 1,hail\hail_
 
 [wait_seq]
 stalker		= 1,waiting\wait_
+
+[moveout_rnd]
+stalker		= 1,waiting\moveout\moveout_
 
 [threat_weap_seq]
 stalker		= 1,threat\drop_weapon\dropweapon_
@@ -78,25 +81,34 @@ stalker		= 1,reactions\hear_something\hear_
 [reac_see_rnd]
 stalker		= 1,reactions\see_something\see_
 
-[reac_cmonstr_rnd]
+[reac_crps_monstr_rnd]
 stalker		= 1,reactions\dead_mutant\dead_mutant_
 
-[reac_cenemy_rnd]
+[reac_crps_enemy_rnd]
 stalker		= 1,reactions\dead_enemy\dead_enemy_
 
-[reac_cneutral_rnd]
+[reac_crps_neutral_rnd]
 stalker		= 1,reactions\dead_neutral\dead_neutral_
 
-[reac_cfriend_rnd]
+[reac_crps_friend_rnd]
 stalker		= 1,reactions\dead_friend\dead_friend_
 
 [reac_nothing_rnd]
 stalker		= 1,reactions\nothing\nothing_
 
-[talk_hello_rnd]
+[talk_hello_seq]
 500			= 0,scenario\bar\barman\bar_barman_hello_
 902			= 0,scenario\yantar\professor_talk_1
-stalker		= 1,waiting\wait_ ;talk\neutral_greeting\greeting_
+stalker		= 1,talk\neutral_greeting\greeting_ ;waiting\wait_
+
+[loot_good_rnd]
+stalker		= 1,states\loot\loot_good_
+
+[loot_bad_rnd]
+stalker		= 1,states\loot\loot_bad_
+
+[loot_begin_rnd]
+stalker		= 1,states\loot\loot_begin_
 
 [reac_music_rnd]
 stalker		= 1,reactions\music\reaction_music_
@@ -104,14 +116,14 @@ stalker		= 1,reactions\music\reaction_music_
 [reac_joke_rnd]
 stalker		= 1,reactions\joke\reaction_joke_
 
-[talk_hello_friend_rnd]
-stalker		= 1,states\idle\idle_ ;talk\friendly_greeting\greeting_
+[talk_hello_friend_seq]
+stalker		= 1,talk\friendly_greeting\greeting_ ;states\idle\idle_
 
 [talk_bye_rnd]
-stalker		= 1,states\idle\idle_ ;talk\leave\leave_
+stalker		= 1,talk\leave\leave_ ;states\idle\idle_
 
 [talk_accept_rnd]
-stalker		= 1,states\idle\idle_ ;talk\accept\accept_
+stalker		= 1,talk\accept\accept_ ;states\idle\idle_
 
 [talk_reject_rnd]
 stalker		= 1,states\idle\idle_ ;talk\rejection\rejection_

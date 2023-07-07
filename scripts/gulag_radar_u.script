@@ -673,14 +673,14 @@ function load_job(sj, gname, type, squad, groups)
 
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "bun_krovosos_nest" then
-		return function(gulag)
+		return function()
 			return 0
 		end
 	end
 
-	return function(gulag)
+	return function()
 		if has_alife_info("bun_antenna_off") then
 			return 1
 		else
@@ -692,12 +692,8 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
-	return nil
-end
---------------------------------------------------------------------------
-function checkStalker(npc_community, gulag_type)
 
+function checkStalker(npc_community, gulag_type)
     if gulag_type == "bun_camper1" then
 	   return npc_community == "monolith"
 	end
@@ -806,7 +802,6 @@ function checkStalker(npc_community, gulag_type)
 end
 
 function checkMonster( npc_community, gulag_type )
-
    if gulag_type == "bun_krovosos_nest" then
 	   return npc_community == "bloodsucker"
 	end

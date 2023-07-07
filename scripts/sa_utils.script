@@ -13,8 +13,25 @@ _G.pressed_keys = {}
 --]]-----------------------------------------------------------------------------------------------
 function _G.get_weapon_data(obj, param)
 	if obj and param then
-		if param == "ammo_type" then
+		if param == "is_attached_grenade_launcher" then
+			return toboolean(bit_and(obj:get_wpn_int(nil, 936), 2))
+		elseif param == "ammo_type" then
 			return obj:get_wpn_int(nil, 1444)
+		elseif param == "grenade_mode" and obj:is_weapon_gl() then
+			return toboolean(bit_and(obj:get_wpn_int(nil, 2392), 1))
+		elseif param == "mag_size" then
+			return obj:get_wpn_int(nil, 1408)
+		elseif param == "zoom_mode" then
+			return toboolean(bit_and(obj:get_wpn_int(nil, 1012), 1))
+		elseif param == "zoom_rotation_factor" then
+			return obj:get_wpn_float(1016)
+		elseif param == "scope_texture" then
+			return not toboolean(bit_and(obj:get_wpn_int(nil, 936), 128))
+		elseif param == "scope_enabled" then
+			return toboolean(obj:get_wpn_int(nil, 1000))
+		elseif param == "scope_name" then
+			set_int_arg0(952)
+			return obj:get_wpn_shared_str()
 		end
 	end
 end
@@ -22,7 +39,11 @@ end
 function _G.get_ammo_data(obj, param)
 	if obj and param then
 		if param == "box_size" then
-			return obj:get_go_int16(nil, 476)
+			if obj.get_go_int16 then
+				return obj:get_go_int16(nil, 476)
+			else
+				return obj:get_netpk("ammo_left")
+			end
 		end
 	end
 end
@@ -30,7 +51,39 @@ end
 function _G.set_ammo_data(obj, param, value)
 	if obj and param and value then
 		if param == "box_size" then
-			obj:set_go_int16(476, value)
+			if obj.set_go_int16 then
+				obj:set_go_int16(476, value)
+			else
+				obj:modify_netpk("ammo_left", value, "upd.ammo_left", value)
+			end
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.get_actor_data(param)
+	if param then
+		if param == "camera_type" then
+			return db_actor:get_actor_int(nil, 1328)
+		elseif param == "zoom_mode" then
+			return toboolean(bit_and(db_actor:get_actor_int(nil, 1480), 1))
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.set_actor_data(param, value)
+	if param and value then
+		if param == "camera_type" then
+			db_actor:set_actor_int(1328, value)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.get_monster_data(obj, param)
+	if obj and param then
+		if param == "speed" then
+			return obj:get_custom_monster_float(920)
+		elseif param == "invisible" then
+			return toboolean(obj:get_custom_monster_int(nil, 1713))
 		end
 	end
 end
@@ -46,6 +99,15 @@ end
 function _G.set_inventory_item_flag(obj, mask, value)
 	obj:set_inventory_item_int16(132, flags16():assign(obj:get_inventory_item_int16(nil, 132)):set(mask, value):get())
 end
+---------------------------------------------------------------------------------------------------
+function _G.get_hud_data(obj, param)
+	if obj and param then
+		if param == "hud_section" then
+			set_int_arg0(24)
+			return obj:get_hud_shared_str()
+		end
+	end
+end
 --[[-----------------------------------------------------------------------------------------------
  * Sounds
 --]]-----------------------------------------------------------------------------------------------
@@ -57,14 +119,53 @@ function _G.play_safe_sound_object(sound_path, timeout, volume)
 		if not volume then
 			volume = 1.0
 		end
-		sound_object(sound_path):play_no_feedback(db_actor, sound_object.s2d, timeout, vector(), volume)
+		sound_object(sound_path):play_no_feedback(db_actor, sound_object.s2d, timeout, xyz(), volume)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
- * Game log
+ * Particles
 --]]-----------------------------------------------------------------------------------------------
-function _G.msg(fmt, ...)
-	log1(string.format(tostring(fmt), ...))
+local safe_particle_objects = {}
+local safe_particle_objects_id = 0
+---------------------------------------------------------------------------------------------------
+function _G.safe_particle_object(particle_path)
+	if particle_path then
+		safe_particle_objects_id = safe_particle_objects_id + 1
+		safe_particle_objects[safe_particle_objects_id] = particles_object(particle_path)
+		return safe_particle_objects[safe_particle_objects_id]
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Camera
+--]]-----------------------------------------------------------------------------------------------
+function _G.camera_rotate_on_position(pos, speed, action, ...)
+	if pos and speed >= 1 and speed <= 20 then
+		local args = {...}
+		local current_dir = screen.cam_dir:mul(level.get_target_dist())
+		local end_dir = pos:sub(screen.cam_pos)
+		local current_angle = -current_dir:getH()
+		local end_angle = -end_dir:getH()
+		if vector():crossproduct(end_dir, screen.cam_dir).y > 0 then
+			speed = -speed
+		end
+		level.add_call(
+			function()
+				if current_angle > 1.57 then
+					current_angle = -4.71
+				elseif current_angle < -4.71 then
+					current_angle = 1.57
+				end
+				current_angle = current_angle + speed / 1000
+				db_actor:set_camera_direction(xyz(current_angle, 0, 0))
+				return math.abs(current_angle - end_angle) < 0.01
+			end,
+			function()
+				if action then
+					loadstring("return function(args) "..action.."(unpack(args)) end")()(args)
+				end
+			end
+		)
+	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * Extended level namespace
@@ -79,7 +180,7 @@ function level.add_cam_effector3(time, amplitude, period_number, power)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-local indoors = { }
+local gcfg = game_ini()
 ---------------------------------------------------------------------------------------------------
 function level.indoor(lname)
 	if not lname then
@@ -89,14 +190,14 @@ function level.indoor(lname)
 			return false
 		end
 	end
-
-	local ind = indoors[lname]
-	if ind == nil then
-		ind = read_line(lname, "indoor", "bool", game_ini(), false)
-		indoors[lname] = ind
-	end
-
-	return ind
+	return gcfg:r_string_cache(lname, "indoor", false)
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Extended math namespace
+--]]-----------------------------------------------------------------------------------------------
+function _G.round(value)
+	local min = math.floor(value)
+	return value - min < 0.5 and min or min + 1
 end
 --[[-----------------------------------------------------------------------------------------------
  * Ini
@@ -124,39 +225,37 @@ function _G.read_line(section, line, line_type, ini, default_value)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
- * Timers (with save)
---]]-----------------------------------------------------------------------------------------------
-function _G.start_timer(name, action, type, sec, min, hour)
-	if not sec then sec = 0 end
-	if not min then min = 0 end
-	if not hour then hour = 0 end
-
-	if type == "real" then
-		type = timer_types.real
-	elseif type == "game" then
-		type = timer_types.game
-	end
-
-	local delay = (((hour * 60 + min) * 60) + sec) * 1000
-	reap.start_timer(action, delay, type)
-end
---[[-----------------------------------------------------------------------------------------------
  * Others
 --]]-----------------------------------------------------------------------------------------------
 function _G.is_key_pressed(dik)
 	return dik and pressed_keys[dik]
 end
 ---------------------------------------------------------------------------------------------------
-function _G.level_name_by_game_vertex(game_vertex_id)
-	if game_vertex_id then
-		return alife():level_name(game_graph():vertex(game_vertex_id):level_id())
-	end
+function _G.is_hud_draw()
+	return console:get_bool("hud_draw")
+end
+---------------------------------------------------------------------------------------------------
+function _G.toboolean(e)
+	return e ~= nil and e ~= 0 and e ~= "0" and e ~= "false" and e ~= false
 end
 ---------------------------------------------------------------------------------------------------
 function _G.random_position(center, radius)
 	center.x = center.x + math.random(-radius, radius)
 	center.z = center.z + math.random(-radius, radius)
 	return center
+end
+---------------------------------------------------------------------------------------------------
+function level.parked_call(action, x)
+	if not x then
+		x = 1
+	end
+	level.add_call(
+		function()
+			x = x - 1
+			return x == 0
+		end,
+		action
+	)
 end
 ---------------------------------------------------------------------------------------------------
 function _G.get_item_place(obj, npc)
@@ -173,25 +272,48 @@ function _G.get_item_place(obj, npc)
 	return item_place.undefined
 end
 ---------------------------------------------------------------------------------------------------
-local show_in_dialogs = {
-	["encyclopedia"]	= true,
-}
+function _G.play_object_bones_particle(obj, particle_path)
+	if obj and particle_path then
+		local ini = obj:get_visual_ini()
+		if ini and ini:section_exist("particle_bones") then
+			local bones = ini:key_value("particle_bones")
+			for k, v in pairs(bones) do
+				safe_particle_object(particle_path):play_at_pos(obj:bone_position(k))
+			end
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.make_hit(victim, power, impulse, type, direction, who, bone_name)
+	if victim then
+		if not type then type = hit.wound end
+		if not direction then direction = xyz() end
+		if not power then power = 1 end
+		if not impulse then impulse = 1 end
+		if not who then who = victim end
+		local h = hit()
+		h.type = type
+		h.direction = direction
+		if bone_name then
+			h:bone(bone_name)
+		end
+		h.power = power
+		h.impulse = impulse
+		h.draftsman = who
+		victim:hit(h)
+	end
+end
 ---------------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 	if news_text then
-		if not header then header = game.translate_string("st_tip") end
+		local sinfo = sender and news_manager.tips_icons[sender]
+		if not sinfo then
+			sinfo = news_manager.tips_icons["default"]
+		end
+		if not header then header = sinfo[3] or translate("st_tip") end
 		if not timeout then timeout = 0 end
 		if not showtime then showtime = 5 end
-		if not (sender and news_manager.tips_icons[sender]) then sender = "default" end
 		if sound then sound_object("device\\pda\\"..sound):play(db_actor, timeout, sound_object.s2d) end
-
-		local news_text = "%c[255,160,160,160]"..header.."\\n%c[default]"..news_text
-		local x, y = news_manager.tips_icons[sender][1], news_manager.tips_icons[sender][2]
-		local rect = Frect():set(x, y, 83, 47)
-		if sender and show_in_dialogs[sender] and db_actor:is_talking() then
-			db_actor:give_talk_message(news_text, "ui\\ui_iconsTotal", rect, "iconed_answer_item")
-		else
-			db_actor:give_game_news(news_text, "ui\\ui_iconsTotal", rect, timeout * 1000, showtime * 1000)
-		end
+		db_actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), timeout * 1000, showtime * 1000)
 	end
 end

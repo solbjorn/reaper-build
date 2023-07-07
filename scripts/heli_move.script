@@ -100,7 +100,7 @@ function heli_move:save()
 end
 
 function heli_move:update( delta )
-	if xr_logic.try_switch_to_another_section( self.object, self.a, db_actor ) then
+	if xr_logic.try_switch_to_another_section(self.object, self.a) then
 		return
 	end
 
@@ -333,7 +333,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------
 
-function add_to_binder_q( npc, storage )
+function add_to_binder( npc, storage )
 	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	storage.actions[ heli_move( npc, storage ) ] = true
 end

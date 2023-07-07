@@ -59,7 +59,7 @@ function action_cutscene:update( delta )
 	self:switch_state( actor )
 
     --' выполняем архитектурное требование
-	xr_logic.try_switch_to_another_section( self.object, self.st, actor )
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_cutscene(npc, storage) ] = true
 end
 

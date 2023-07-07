@@ -31,13 +31,12 @@ local respawners_by_parent = {}
 local amk_respawner_control = {}
 local amk_named_respawner_control = {}
 
-local smart_terrain_CTime_0 = smart_terrain.CTime_0
-local utils_w_CTime = utils.w_CTime
-local utils_r_CTime = utils.r_CTime
-
 local math_random =  math.random
 local string_gfind = string.gfind
 local table_remove = table.remove
+
+local CTime_0 = game.CTime()
+
 ----------------------------------------------------------------------------------------------------------------------
 -- Разные полезные функции
 ----------------------------------------------------------------------------------------------------------------------
@@ -60,31 +59,15 @@ end
 function r_2nums( spawn_ini, section, line, def1, def2 )
   if spawn_ini:line_exist( section, line ) then
     -- если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
-    local t = parse_names( spawn_ini:r_string( section, line ) )
-    local n = #t
-
-    if n == 0 then
-      return def1, def2
-    elseif n == 1 then
-      return t[1], def2
-    else
-      return t[1], t[2]
-    end
+		local t = string.parse_names( spawn_ini:r_string( section, line ) )
+		return (t[1] or def1), (t[2] or def2)
   else
     return def1, def2
   end
 end
 
-function parse_names( s )
-    local t = {}
-    for name in string_gfind( s, "([%w_%-.\\]+)%p*" ) do
-        t[#t+1] = name
-    end
-    return t
-end
-
 function r_spawns( namelist, sectSpawnProps, item_spawn)
-	local t = parse_names( namelist )
+	local t = string.parse_names( namelist )
 	local n = #t
 
 	local ret_table = {}
@@ -114,12 +97,10 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 
 		-- Вычитываем настройки секций респавна и кешируем их.
 		if not item_spawn and sectSpawnProps[spawn_section] == nil then
-			local respawn_ini = system_ini()
-
-			local community = respawn_ini:line_exist(spawn_section, "community") and respawn_ini:r_string(spawn_section, "community") or "nil"
-			local rank = respawn_ini:line_exist(spawn_section, "spec_rank") and respawn_ini:r_string(spawn_section, "spec_rank") or "nil"
+			local community = config:line_exist(spawn_section, "community") and config:r_string(spawn_section, "community") or "nil"
+			local rank = config:line_exist(spawn_section, "spec_rank") and config:r_string(spawn_section, "spec_rank") or "nil"
 			local check = true
-			local custom_data = respawn_ini:line_exist(spawn_section, "custom_data") and respawn_ini:r_string(spawn_section, "custom_data") or nil
+			local custom_data = config:line_exist(spawn_section, "custom_data") and config:r_string(spawn_section, "custom_data") or nil
 			if custom_data ~= nil then
 				local custom_data_ltx = ini_file(custom_data)
 				if custom_data_ltx:section_exist("smart_terrains") then
@@ -151,7 +132,7 @@ function se_respawn:__init( section ) super( section )
   -- Таблица для кеширования свойств секций респавна.
   self.sectSpawnProps = {}
 
-	self.respawn_time = smart_terrain_CTime_0
+	self.respawn_time = CTime_0
 end
 -- сохранение
 function se_respawn:STATE_Write( packet )
@@ -164,7 +145,7 @@ function se_respawn:STATE_Write( packet )
 		table_size = 255
 	end
 	packet:w_u8(table_size)
-	utils_w_CTime(packet, self.respawn_time or smart_terrain_CTime_0)
+	packet:w_CTime(self.respawn_time or CTime_0)
 
 	for i=1,table_size do
 		packet:w_u16(self.spawned_obj[i])
@@ -176,7 +157,7 @@ function se_respawn:STATE_Read( packet, size )
   cse_alife_smart_zone.STATE_Read( self, packet, size )
 
 	local table_size = packet:r_u8()
-	self.respawn_time = utils_r_CTime( packet )
+	self.respawn_time = packet:r_CTime()
 	for i=1,table_size do
 		self.spawned_obj[i] = packet:r_u16()
 	end
@@ -266,7 +247,7 @@ function init_respawn_params(obj, reset)
 	end
 
 	obj.str_conditions = r_str(ini, section_name, "conditions", "100")
-	obj.conditions = xr_logic.parse_condlist_q(obj.str_conditions)
+	obj.conditions = xr_logic.parse_condlist(obj.str_conditions)
 	obj.respawn_radius = r_field_num("respawn_radius", -1)
 	obj.parent = r_field_num("parent", nil)
 
@@ -289,10 +270,11 @@ function se_respawn:create(prob)
 		prob = 0
 	end
 
-	if tostring(prob)=="true" then
-		prob=80
-	elseif tostring(prob)=="false" then
-		prob=0
+	local b = tostring(prob)
+	if b == "true" then
+		prob = 80
+	elseif b == "false" then
+		prob = 0
 	end
 
   if math_random(100) <= tonumber(prob) then
@@ -300,11 +282,11 @@ function se_respawn:create(prob)
     local sum = 0
     -- Производим рандомную взвешенную выборку
     -- с учетом уже заспавленного количества человек.
-    for k,v in pairs(self.respawn_section) do
+    for k,v in ipairs(self.respawn_section) do
         sum = sum + v.prob
     end
     sum = math_random(0, sum)
-    for k,v in pairs(self.respawn_section) do
+    for k,v in ipairs(self.respawn_section) do
         sum = sum - v.prob
         if sum <= 0 then
           spawn_section = v.section
@@ -361,22 +343,28 @@ end
 function se_respawn:spawn()
 	if not self.spawn_once then
 		-- Пробегаемся по списку уже заспавненных объектов и удаляем из них мертвые либо уничтоженные.
-		for k,v in pairs(self.spawned_obj) do
-			local obj = level.object_by_id(v)
-			if obj == nil then
-			  obj = alife():object(v)
-			end
+		local parentid = self.parent and id_by_sid(self.parent) or -1
+		local v, obj
+		for i = #self.spawned_obj, 1, -1 do
+			v = self.spawned_obj[i]
+			obj = server_object(v)
 
-			if obj ~= nil then
-			  if (IsStalker(obj) or IsMonster(obj)) and obj:alive() ~= true then
-				table_remove(self.spawned_obj, k)
-			  end
+			if obj == nil then
+				table_remove(self.spawned_obj, i)
+			elseif self.parent then
+				if obj.parent_id ~= parentid then
+					table_remove(self.spawned_obj, i)
+				end
+			elseif obj:is_stalker() or obj:is_monster() then
+				if obj:alive() ~= true then
+					table_remove(self.spawned_obj, i)
+				end
 			else
-			  table_remove(self.spawned_obj, k)
+				table_remove(self.spawned_obj, i)
 			end
 		end
 	end
-  if xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions) == "0" then
+  if xr_logic.pick_section_from_condlist(self, self.conditions) == "0" then
     return
   end
 
@@ -398,7 +386,7 @@ function se_respawn:spawn()
     if self.max_count ~= -1 and #self.spawned_obj >= self.max_count then
       return
     end
-    if self:create(xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions)) == false then
+    if self:create(xr_logic.pick_section_from_condlist(self, self.conditions)) == false then
       return
     end
   end
@@ -406,11 +394,12 @@ end
 --' Удаляем уже заспавненный объект из списка заспавненных
 --' Используется только  для ящиком со шмотками в смарттеррейнах
 function se_respawn:remove_spawned(id)
-  for k,v in pairs(self.spawned_obj) do
-    if id == v then
-      table_remove(self.spawned_obj, k)
-    end
-  end
+	for i,v in ipairs(self.spawned_obj) do
+		if id == v then
+			table_remove(self.spawned_obj, i)
+			break
+		end
+	end
 end
 function se_respawn:set_respawn_time()
 	local idle_time = game.CTime()
@@ -426,10 +415,10 @@ function se_respawn:execute()
   end
 
 	if self.respawn_time < game.get_game_time() then
-		if self.respawn_time == smart_terrain_CTime_0 then
+		if self.respawn_time == CTime_0 then
 			self:set_respawn_time()
 		else
-			self.respawn_time = smart_terrain_CTime_0
+			self.respawn_time = CTime_0
 			-- Производим попытку заспаунить объекты
 			self:spawn()
 		end
@@ -461,7 +450,7 @@ function spawn(name)
     if spawner.max_count ~= -1 and #spawner.spawned_obj >= spawner.max_count then
       return
     end
-    if spawner:create(xr_logic.pick_section_from_condlist(db.actor_proxy, spawner, spawner.conditions)) == false then
+    if spawner:create(xr_logic.pick_section_from_condlist(spawner, spawner.conditions)) == false then
       return
     end
   end
@@ -472,15 +461,14 @@ function get_respawner_by_parent(parent_id)
 end
 
 function create_ammo(section, position, lvi, gvi, pid, num)
-	local num_in_box = read_line(section, "box_size")
-	local sim = alife()
+	local num_in_box = config:r_u32_cache(section, "box_size")
 
 	while num > num_in_box do
-		sim:create_ammo(section, position, lvi, gvi, pid, num_in_box)
+		g_alife:create_ammo(section, position, lvi, gvi, pid, num_in_box)
 		num = num - num_in_box
 	end
 	if num > 0 then
-		sim:create_ammo(section, position, lvi, gvi, pid, num)
+		g_alife:create_ammo(section, position, lvi, gvi, pid, num)
 	end
 end
 
@@ -494,4 +482,5 @@ function get_respawner_by_name(name)
 	if amk_named_respawner_control[name] then
 		return alife():object(amk_named_respawner_control[name].id)
 	end
+	return nil
 end

@@ -6,11 +6,11 @@
 zone_by_name        = {}
 storage             = {}
 actor               = nil
-actor_proxy         = actor_proxy.actor_proxy()
 heli                = {}
 story_by_id         = {}
 trader        = nil
 info_restr          = {}
+strn_by_respawn     = {}
 
 creatures={}
 
@@ -25,12 +25,11 @@ end
 
 function add_zone( zone )
   zone_by_name[zone:name()] = zone
-  add_obj( zone )
 end
 
 function del_zone( zone )
   zone_by_name[zone:name()] = nil
-  del_obj( zone )
+	storage[zone:id()] = nil
 end
 
 function add_actor( obj )
@@ -38,13 +37,11 @@ function add_actor( obj )
 	_G.db_actor_id = obj:id()
 
   actor = obj
-  actor_proxy:net_spawn( obj )
   add_obj( obj )
 end
 
 function del_actor()
   del_obj( actor )
-  actor_proxy:net_destroy()
   actor = nil
 
 	_G.db_actor_id = 0

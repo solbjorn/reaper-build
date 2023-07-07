@@ -86,7 +86,7 @@ function dead_npc()
 	local sim = alife()
 	for a=1, #nepis do
 		local obj = sim:story_object(nepis[a])
-		if obj and IsStalker(obj) and not obj:alive() then
+		if obj and obj:is_stalker() and not obj:alive() then
 			local info = obj:name() .. "_umer"
 			if not has_alife_info(info) then
 				db.actor:give_info_portion(info)
@@ -105,9 +105,8 @@ function setGulagEnemy()
 local npc,obj
 	local sim = alife()
 
-	for i, v in pairs(db.storage) do
-        npc = level.object_by_id(i)
-        if npc and npc:name() == "rostok_stalker" then
+	for i, npc in pairs(db.creatures) do
+        if npc:name() == "rostok_stalker" then
             obj = sim:object(npc:id())
 			break
         end
@@ -214,11 +213,11 @@ function killactor_spawn()
 end
 
 function sorok_pda()
-	return new_dialog.item_much("device_pda_npc",40) ~= false
+	return has("device_pda_npc", 40)
 end
 
 function sorok_pda_sdal(first_speaker, second_speaker)
-new_dialog.out_item_much("device_pda_npc",40)
+	lost("device_pda_npc", 40)
 end
 
 function chern_dogs()
@@ -357,7 +356,7 @@ function release_actor_items()
         if not items[obj:section()] then
             -- удаление вещи
             sim:release(sim:object(obj:id()), true)
-		sleep_manager.main(5+amk.load_variable("gg_need_sleep_nrg",0))
+		dream_:sleep(5+amk.load_variable("gg_need_sleep_nrg",0))
         end
     end
 end
@@ -440,15 +439,11 @@ function sms_new1()
 end
 
 function actor_has_money_30000()
-  return db.actor:money()>=30000
+	return has_money(30000)
 end
 
-function give_money_30000(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  dialogs.relocate_money(npc,30000,"out")
+function give_money_30000()
+	lost_money(30000)
 end
 
 function delete_smart()

@@ -212,7 +212,7 @@ local t
 	end
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "dar_com_center_poltergeist" then
 		return function(gulag)
 			return 0
@@ -281,11 +281,8 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
-	return nil
-end
 
-function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+function checkStalker(npc_community, gulag_type, se_obj)
 	if gulag_type == "dar_military_scout" then
         return se_obj:profile_name() == "dar_military_scout"
     end

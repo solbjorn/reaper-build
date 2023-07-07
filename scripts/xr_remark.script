@@ -122,7 +122,7 @@ function action_remark_activity:update()
     end
     --' Нужно выдать связанный типс.
     if self.st.tips_id ~= nil then
-      self.tips_sound = news_manager.send_tip_nosound(db.actor, self.st.tips_id, self.st.sender)
+      self.tips_sound = news_manager.send_tip_nosound(self.st.tips_id, self.st.sender)
       if self.tips_sound ~= nil then
         --' Играем звук забитый
         self.tips_sound:play(db.actor, 0, sound_object.s2d)
@@ -164,7 +164,7 @@ function action_remark_activity:execute()
   action_base.execute(self)
 
   --' Try to switch to another scheme:
-  if xr_logic.try_switch_to_another_section(self.object, self.st, db_actor) then
+  if xr_logic.try_switch_to_another_section(self.object, self.st) then
     return
   end
   self:update()
@@ -190,7 +190,7 @@ local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.propert
 local wp_prop_need_remark_true = world_property(prop_need_remark, true)
 local wp_prop_need_remark_false = world_property(prop_need_remark, false)
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local manager = npc:motivation_action_manager()
 
 		-- // evaluators
@@ -202,7 +202,7 @@ function add_to_binder_q(npc, storage)
 	new_action:add_precondition(wp_stalker_ids_property_enemy_false)
 	new_action:add_precondition(wp_stalker_ids_property_anomaly_false)
 	new_action:add_precondition(wp_prop_need_remark_true)
-	xr_motivator.addCommonPrecondition(new_action)
+	bind_stalker.addCommonPrecondition(new_action)
 	new_action:add_effect(wp_prop_need_remark_false)
 	manager:add_action(operator_action_remark, new_action)
 

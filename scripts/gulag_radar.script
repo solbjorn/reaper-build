@@ -500,7 +500,7 @@ function load_job(sj, gname, type, squad, groups)
 
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "freedom_vs_duty" then
 		return function(gulag)
 			return 0
@@ -578,7 +578,7 @@ function load_states(gname, type)
 		end
 	end
 
-	return function(gulag)
+	return function()
 		return 0
 	end
 end
@@ -586,7 +586,7 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
+function load_ltx(type)
 	if type == "rad_antena" then
 		return load_ltx_antenna_patrol()
 	end
@@ -1066,7 +1066,7 @@ function load_ltx_rad_mil_entrance()
 end
 --------------------------------------------------------------------------
 
-function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+function checkStalker(npc_community, gulag_type, se_obj)
 	if	gulag_type == "rad_antena"					or
 		gulag_type == "rad_entrance"				or
 		gulag_type == "rad_antenna_monolith"		or
@@ -1098,7 +1098,6 @@ function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
 end
 
 function checkMonster( npc_community, gulag_type )
-
 	if gulag_type == "rad_gig" then
 		return npc_community == "pseudo_gigant"
 	end

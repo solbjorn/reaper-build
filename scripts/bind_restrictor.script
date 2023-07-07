@@ -5,6 +5,26 @@ Space restrictor binder
 Примечания:
   - обновлений у рестрикторов нету, поэтому для тех, кому надо, актёр вызывает искусственно на своём обновлении
 --------------------------------------------------------------------------------------------------]]
+local removed_names = {
+	['gar_vagon_in_restrictor'] = true,
+	['bar_restrictor'] = true,
+	['rostok_sniper_killer_restrictor'] = true,
+	['agr_u_bloodsucker_rest'] = true,
+
+	esc_tutorial_zone				= true,
+	esc_anomaly_tips_zone				= true,
+	trader_zone					= true,
+	bar_no_weapon_zone				= true,
+	yan_no_weapon_restr				= true,
+	aes2_space_restrictor_no_weapon			= true,
+
+	val_trader_tip_zone				= true,
+	mil_sr_sleep_1					= true,
+	rad_sleep_room					= true,
+	pri_wave3_followers_btr_phrase1_sound_zone	= true,
+	aes_space_restrictor_sound_0054			= true,
+	aes2_space_restrictor_zombies			= true
+}
 
 local updatable_binders = {}    -- биндеры, которые требуют обновлений (update)
 
@@ -15,15 +35,10 @@ function actor_update(delta)
 end
 
 function bind( obj )
-  if obj:name()=="gar_vagon_in_restrictor" or obj:name()=="bar_restrictor" or
-     obj:name()=="rostok_sniper_killer_restrictor" or
-     obj:name()=="agr_u_bloodsucker_rest" then
-    local sobj=alife():object(obj:id())
-    if sobj then
-      alife():release(sobj,true)
-      return
-    end
-  end
+	if removed_names[obj:name()] then
+		release(obj)
+		return
+	end
 
   obj:bind_object( restrictor_binder( obj ) )
 end
@@ -57,7 +72,7 @@ function restrictor_binder:net_spawn(data)
   -- Не регистрироваться на апдейты, если у объекта в customdata
   -- нет секции logic вообще.
 	local ini = self.object:spawn_ini()
-	if ini and ini:section_exist("logic") then
+	if ini and xr_logic.logic_not_empty(self.object, ini) then
 		updatable_binders[self.object:id()] = self
 	end
 
@@ -74,8 +89,6 @@ function restrictor_binder:net_destroy()
 
   updatable_binders[self.object:id()] = nil
 
-  db.storage[self.object:id()] = nil
-
   object_binder.net_destroy(self)
 end
 
@@ -83,14 +96,18 @@ end
 function restrictor_binder:actor_update(delta)
   if not self.initialized then
     self.initialized = true
-    xr_logic.initialize_obj(self.object, self.st, self.loaded, db_actor, modules.stype_restrictor)
+		xr_logic.initialize_obj(self.object, self.st, self.loaded, modules.stype_restrictor)
   end
 
 	if self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+	elseif self.object:section() == "space_restrictor" and
+	       self.object:name() == "space_restrictor" .. self.object:id() and
+	       not self.object:is_story_object() then
+		release(self.object)
 	else
 		updatable_binders[self.object:id()] = nil
-  end
+	end
 end
 
 function restrictor_binder:net_save_relevant()

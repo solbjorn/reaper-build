@@ -17,12 +17,11 @@ local math_random = math.random
 local string_find = string.find
 local string_sub = string.sub
 
-local nrg,med,cnt,gv,lv,w
+local gv,lv,w
 in_hide=false
 local sound_obj_right,sound_obj_left,snd_volume,snd_obj_eq
 local sync_done=false
 local dynlasthour
-zombied={}
 
 local weather_types = {
 	l01_escape		= 0,
@@ -109,42 +108,22 @@ function on_game_start()
 end
 
 function first_run()
-	if amk_load_variable("x_first_run",true) then
+	if not has_info("storyline_actor_start") then
 		amk_g_start_timer("gg_need_sleep",0,0,6)
 		amk_g_start_timer("show_news",0,0,10)
-		amk_save_variable("x_first_run",false)
-	end
 
-	if amk_load_variable("amk_12",0)==0 then
 		amk.spawn_item("amk_zapiska",vector():set(-126.96,-28.41,-379.12),27,125181)
 		amk.spawn_item("amk_zapiska",vector():set(21.6,-3.94,-18.28),1140,5991)
 		amk.spawn_item("amk_zapiska",vector():set(-126.92,23.27,-36.98),1543,7083)
 		sak.add_new_lcitem()
-		amk_save_variable("amk_12",1)
-	end
 
-	if amk_load_variable("amk_13",0)==0 then
 		-- pri_space_restrictor_0011
 		local obj = alife():story_object(830)
 		if obj then
 			alife():release(obj)
 			alife():create(5877)
 		end
-		amk_save_variable("amk_13",1)
-	end
 
-	if amk_load_variable("amk_13",0)==0 then
-		-- pri_space_restrictor_0011
-		local obj = alife():story_object(830)
-		if obj then
-			alife():release(obj)
-	    alife():create(5877)
-		end
-		amk_save_variable("amk_13",1)
-	end
-
-	if amk_load_variable("amk_version",0)<1400 then
-		amk_save_variable("amk_version",1400)
 		amk_anoms.pre_blow_off()
 		amk_anoms.after_blow_on()
 
@@ -205,18 +184,6 @@ function check_spawn()
 		db.actor:give_info_portion("cit_fail_first_task")
 	end
 
-	if not db.actor:has_info("val_chase_start") then
-		local objt = alife():story_object(6002)
-		if objt then
-			alife():release(objt)
-		end
-	end
-	sak.out_new_lc(9100,"info_way100a") sak.out_new_lc(9101,"info_way101a") sak.out_new_lc(9102,"info_way102a")
-	sak.out_new_lc(9103,"info_way103a") sak.out_new_lc(9104,"info_way104a") sak.out_new_lc(9105,"info_way105a")
- 	sak.out_new_lc(9106,"info_way106a") sak.out_new_lc(9107,"info_way107a") sak.out_new_lc(9108,"info_way108a")
- 	sak.out_new_lc(9109,"info_way109a") sak.out_new_lc(9110,"info_way110a") sak.out_new_lc(9111,"info_way111a")
- 	sak.out_new_lc(1008,"info_way112a") sak.out_new_lc(592,"info_way113a") sak.out_new_lc(594,"info_way114a")
-
 	--level_changers section
 	local lname = level.name()
 	local sname = amk_load_variable("level_on_save","")
@@ -232,34 +199,19 @@ function check_spawn()
 	end
 
 	-- Выдадим сообщения при переходе на уровень.
-	if news_main then
-		if (lname ~= sname and sname ~= "") then
-			if (level.indoor(lname) == true and level.indoor(sname) == false) then -- Спустились под землю.
-				news_main.on_disconnect()
-			elseif (level.indoor(lname) == false and level.indoor(sname) == true) then -- Выбрались из-под земли.
-				news_main.on_connect()
-			end
-			if (amk_offline_alife) then
-				amk_offline_alife.update_trade()
-		end
-	end
-  end
-
-	if lname=="l01_escape" and sname=="l04_darkvalley" then
-		local obj = alife():story_object(6002)
-		if not obj then
-			alife():create(15)
-		end
+	if lname ~= sname and sname ~= "" then
+		news_main.check_connection(lname, sname)
+		amk_offline_alife.update_trade()
 	end
 
 	if sname=="l01_escape" and lname=="l04_darkvalley" then
 		db.actor:set_actor_position(vector():set(-44.38, 0.43, -541.47))
 	end
 
-	--spots section
-	if db_actor then
-		db_actor:binded_object().bCheckStart = true
+	if lname ~= sname and sname ~= "" then
+		reap_misc.rename_autosave(sname, lname)
 	end
+
 	w = get_weather_sect(lname)
 	if amk_load_variable("blowout",0)>0 then amk_save_variable("weather",level.get_weather()) end
 	level.set_weather("amk_for_blow",true)
@@ -299,12 +251,11 @@ function restore_sun()
 	local sname = amk_load_variable("level_on_save","")
   amk_save_variable("level_on_save",lname)
   if sname=="l12_stancia_2" and lname=="l11_pripyat" then
-    sleep_manager.main(1)
+		dream_:sleep(1)
   end
 
-	if amk_load_variable("blow_started",0)==0 then
+	if not has_info("storyline_actor_start") then
 		start_blow_timer()
-		amk_save_variable("blow_started",1)
 	end
 	sync_done=true
 end
@@ -329,9 +280,7 @@ end
 --'   **   **   **   **   **    **   **   **      NEWS_AMK          **   **   **   **   **    **   **   **   **
 --'*******************************************************************************
 function show_news()
-	if (news_main and news_main.on_news) then
-		news_main.on_news()
-	end
+	news_main.on_news()
 
 	if level.indoor() == false then -- Радиомолчание
 		if math_random()>0.2 then
@@ -350,7 +299,7 @@ function show_news()
 			if amk_uniq_news_lists and math_random()>0.5 then
 				local uniq=amk_uniq_news_lists.get_strings()
 				local name,sname = amk_names_lists.get_strings()
-				amk.send_tip(uniq,name.." "..sname,nil,15,"uniq", "pda_news")
+				amk.send_tip(uniq,name.." "..sname,nil,15,"uniq", "news")
 			elseif amk_modders then
 				sound_object("device\\pda\\pda_news"):play(db_actor, 0, sound_object.s2d)
 				local mod_news=amk_modders.get_strings()
@@ -375,7 +324,7 @@ function reduce_need_sleep(time)
 end
 
 function test_for_need_sleep()
-	if sleep_manager.is_sleep_active() == false then
+	if not actor_flags.sleep_state then
 		amk_save_variable("gg_need_sleep",amk_load_variable("gg_need_sleep",0)+1)
 		test_sleep_pp()
 	end
@@ -385,7 +334,7 @@ end
 function test_sleep_pp()
 	local tmp=amk_load_variable("gg_need_sleep",0)
 	if tmp>360 then
-		sleep_manager.main(5+amk_load_variable("gg_need_sleep_nrg",0))
+		dream_:sleep(5+amk_load_variable("gg_need_sleep_nrg",0))
 	end
 	if tmp>300 then
 		level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
@@ -395,44 +344,25 @@ function test_sleep_pp()
 	end
 end
 
-local sleep_item = {
-	["energy_drink"]	= "sleep_nrg",
-	["matras"]		= "sleep_matras",
-	["treasure_item"]	= "sleep_tr_item"
-}
-
-function check_sleep_item(obj)
-	local stype = sleep_item[obj:section()]
-	if stype~=nil then
-		amk_start_timer(stype,0.1,obj:id())
+function test_for_need_sleep_nrg()
+	local n=amk_load_variable("gg_need_sleep_nrg",0)
+	if n<3 then
+		amk_save_variable("gg_need_sleep_nrg",n+1)
+		amk_save_variable("gg_need_sleep",amk_load_variable("gg_need_sleep",0)-30+n*10)
+		test_sleep_pp()
 	end
-end
-
-function test_for_need_sleep_nrg(oid)
-	if alife():object(oid)==nil then
-		local n=amk_load_variable("gg_need_sleep_nrg",0)
-		if n<3 then
-			amk_save_variable("gg_need_sleep_nrg",n+1)
-			amk_save_variable("gg_need_sleep",amk_load_variable("gg_need_sleep",0)-30+n*10)
-			test_sleep_pp()
-		end
-		amk_g_start_timer("block_sleep_menu",0,1,0)
-		amk_save_variable("block_sleep_menu",1)
-	end
+	amk_g_start_timer("block_sleep_menu",0,1,0)
+	amk_save_variable("block_sleep_menu",1)
 end
 
 function sleep_action()
 	local enemy=false
-	local obj
 	local actorPos = db_actor:position()
-	for npcId, npc in pairs(db.storage) do
-		obj = level_object_by_id(npcId)
-		if obj then
-			if (( IsStalker(obj) and amk.get_npc_relation(obj,db_actor)=="enemy" ) or IsMonster(obj))
-				and obj:position():distance_to(actorPos) < 40 and obj:see(db_actor) then
-				enemy=true
-				break
-			end
+	for npcId, obj in pairs(db.creatures) do
+		if (( obj:is_stalker() and amk.get_npc_relation(obj,db_actor)=="enemy" ) or obj:is_monster())
+			and obj:position():distance_to(actorPos) < 40 and obj:see(db_actor) then
+			enemy=true
+			break
 		end
 	end
 	if enemy==true then
@@ -455,19 +385,9 @@ function sleep_action()
 	end
 end
 
-function test_for_need_sleep_matras(oid)
-	if alife():object(oid)==nil then
-		sleep_action()
-		amk.spawn_item_in_inv("matras")
-	end
-end
-
-function test_for_need_sleep_tr_item(oid)
-	if alife():object(oid)==nil then
-	    if news_main then
-	      news_main.create_treasurebox()
-	    end
-	end
+function test_for_need_sleep_matras()
+	sleep_action()
+	amk.spawn_item_in_inv("matras")
 end
 
 --'*******************************************************************************
@@ -648,13 +568,7 @@ function check_af_transform(af,anom_id,anom_sect)
 			af_start_transform_timer(af_start_transform(65,25,af_sect,"af_armor_3"), pos ,0,2,0,"Панцирь")
 		end
 		if af_sect=="af_medusa" or af_sect=="af_drops" or af_sect=="af_blood" or af_sect=="af_rusty_thorn" and actor:has_info("info_amk_recipt_simbion") then
-			local s={}
-			s.aid=-1
-			s.koluchka=-1
-			s.medusa=-1
-			s.drop=-1
-			s.blood=-1
-			s=amk.unpack_array_from_string(amk_load_variable("af_simbion_activation",amk.pack_array_to_string(s)))
+			local s = get_value("af_simbion_activation", { aid = -1 })
 			if s.aid~=anom_id then
 				s.aid=anom_id
 				s.koluchka=-1
@@ -684,9 +598,9 @@ function check_af_transform(af,anom_id,anom_sect)
 				af_start_transform_timer(af_start_transform(75,25,"af_buliz","af_simbion") , pos ,0,5,0,"Симбион")
 				return
 			end
-			amk_save_variable("af_simbion_activation",amk.pack_array_to_string(s))
-			end
+			set_value("af_simbion_activation", s)
 		end
+	end
 	if string_find(anom_sect,"_mincer")~=nil then
 		if af_sect=="af_babka_2" and actor:has_info("info_amk_recipt_burer_grandmother_glassbeards") and check_af_transform_rank(4) then
 			af_flash(af)
@@ -735,7 +649,7 @@ end
 
 function af_start_transform(v1,v2,af_from,af_target)
 -- adjust transformation probability according to the ecolog rank
-    local artrank = xr_statistic_freeplay.get_freeplay_statistic():get_found_artefacts_ranks()
+	local artrank = freeplay_stats:get_found_artefacts_ranks()
 	local vv1=(1.0-(1.0-v1/100)*(1.0-artrank/100))*100
 	local vv2=v2 * (100 - artrank) * (100 - artrank) * (100 - artrank) / 1000000
 
@@ -752,16 +666,17 @@ function af_start_transform(v1,v2,af_from,af_target)
 end
 
 function af_start_transform_timer(af,pos,delay_d,delay_h,delay_m,af_sect)
-	local t={}
-	t.section=af
-	t.pos={}
-		t.pos.x=pos.x
-		t.pos.y=pos.y
-		t.pos.z=pos.z
-	t.gv=gv
-	t.lv=lv
-	t.from_sect=af_sect
-	amk_g_start_timer("af_transform",delay_d,delay_h,delay_m,amk.pack_array_to_string(t))
+	amk_g_start_timer("af_transform", delay_d, delay_h, delay_m, {
+		pos = {
+			x	= pos.x,
+			y	= pos.y,
+			z	= pos.z
+		},
+		section		= af,
+		gv		= gv,
+		lv		= lv,
+		from_sect	= af_sect
+	})
 end
 
 function af_transform_end(params)
@@ -798,58 +713,75 @@ function check_metka()
 		end
 	end
 end
+
+-- Динамическая музыка
 local next_update=0
 local inert = 1000
-local clicks_prev = 200 music_section="" music_previous_section="" music_next_section_start_time=0 music_stop_previous=0 music=false music_init = 0 music_themes = {} music_phases={} musicflag=1
-local music_objs={[1]=nil,[2]=nil}
-local music_stor={ enemy_see_actor=0, actor_see_enemy=0, enemy_hit_actor=0, actor_hit_enemy=0 } music_lo_lvl=7 music_hi_lvl=17
-local music_graph={}
+local clicks_prev = 200
+local music_section=""
+local music_previous_section=""
+local music_next_section_start_time=0
+local music_stop_previous=0
+local music=false
+local music_init = 0
+local music_themes = {}
+local music_phases={}
+local musicflag=1
+local music_objs={[1] = nil,[2] = nil}
+local music_stor={ enemy_see_actor=0, actor_see_enemy=0, enemy_hit_actor=0, actor_hit_enemy=0 }
+local music_lo_lvl=7
+local music_hi_lvl=17
+local music_graph = {}
 
 function build_music_graph()
-local skip = false
-local lname = level.name()
-	local sini = ini_file("scripts\\amk\\music\\music.ltx")
-	if sini and sini:section_exist("music_themes") then
-		local result, id, value = nil, nil, nil
-		for a=0,sini:line_count("music_themes")-1 do
-			result, id, value = sini:r_line("music_themes",a,"","")
-			if id~=nil and amk.trim(id)~="" and amk.trim(id)~=nil then
-				id=amk.trim(id)
-				value1 = amk.str_explode("|", amk.trim(value), true)
-				value={}
-				for k,v in pairs(value1) do
-					local tmp = amk.str_explode("=", v, true)
-					value[tmp[1]]=tmp[2]
+	local lvls = {
+		lo	= music_lo_lvl,
+		hi	= music_hi_lvl
+	}
+	local lname = level.name()
+	local skip = false
+
+	local sect = "music_themes"
+	local sini = ini_file("scripts\\amk\\music.ltx")
+	if sini:section_exist(sect) then
+		local value1, tmp, t, tt
+		sini:iterate_lines(sect, function(result, id, value)
+			value1 = string.explode(value, "|", true)
+			value = {}
+
+			for k,v in pairs(value1) do
+				tmp = string.explode(v, "=", true)
+				value[tmp[1]] = tmp[2]
+			end
+
+			if value.map then
+				t = string.explode(value.map, ",", true)
+				for kk,vv in pairs(t)do
+					skip = skip or vv == lname
 				end
-if value.map then
-					local t = amk.str_explode(",", value.map, true)
-					for kk,vv in pairs(t)do
-						skip = skip or vv == lname
+				skip = not skip
+			else
+				skip = false
+			end
+
+			if not skip then
+				table.insert(music_themes, id)
+				t = sini:key_value(id.."_music_files")
+				t.null = ""
+				for k,v in pairs(t) do
+					music_phases[id.."_"..k]=v
+					if not music_graph[id.."_"..k] then
+						music_graph[id.."_"..k] = {}
 					end
-					skip = not skip
-				else
-					skip = false
-				end
-				if not skip then
-					table.insert(music_themes, id)
-local t = amk.parse_ini_section_to_array(sini,id.."_music_files")
-					t.null = ""
-					for k,v in pairs(t) do
-						music_phases[id.."_"..k]=v
-						if not music_graph[id.."_"..k] then
-							music_graph[id.."_"..k] = {}
-						end
-local tt = amk.parse_ini_section_to_array(sini,id.."_graph_"..k)
-						for kk,vv in pairs(tt) do
-local tmp = amk.str_explode(",",vv,true)
-							local lvl = tmp[1]
-							lvl = amk_mod["music_"..lvl.."_lvl"]
-							music_graph[id.."_"..k][id.."_"..kk] = {lvl,tmp[2]}
-						end
+					tt = sini:key_value(id.."_graph_"..k)
+					for kk,vv in pairs(tt) do
+						tmp = string.explode(vv, ",", true)
+						music_graph[id.."_"..k][id.."_"..kk] = {lvls[tmp[1]],tmp[2]}
 					end
 				end
 			end
-		end
+		end)
+
 		if #music_themes > 0 then
 			return true
 		else
@@ -861,77 +793,186 @@ local tmp = amk.str_explode(",",vv,true)
 end
 
 function music_start(sound)
-if not music then
-if music_objs[1]==nil then music_objs[1]=amk_music.amk_music() end
-if music_objs[2]==nil then music_objs[2]=amk_music.amk_music()  end music_objs[musicflag]:initialize(music_phases[sound]) music_next_section_start_time=music_objs[musicflag]:play()-200 music_previous_section=music_section musicflag=3-musicflag  end music = true end
+	if get_value("option_mus", 1) == 0 then
+		return
+	end
+	if not music then
+		if music_objs[1] == nil then
+			music_objs[1] = amk_music.amk_music()
+		end
+		if music_objs[2] == nil then
+			music_objs[2] = amk_music.amk_music()
+		end
+		music_objs[musicflag]:initialize(music_phases[sound])
+		music_next_section_start_time = music_objs[musicflag]:play()-200
+		music_previous_section = music_section
+		musicflag = 3-musicflag
+	end
+
+	music = true
+end
 
 function music_change(sound)
-if music then music_objs[musicflag]:initialize(music_phases[sound]) music_next_section_start_time=music_objs[musicflag]:play_at_time(music_next_section_start_time+200)-200 musicflag=3-musicflag music_previous_section=music_section  end end
+	if music then
+		music_objs[musicflag]:initialize(music_phases[sound])
+		music_next_section_start_time = music_objs[musicflag]:play_at_time(music_next_section_start_time+200)-200
+		musicflag=3-musicflag music_previous_section=music_section
+	end
+end
 
 function interactive_music()
 	amk.oau_reason="music begin"
-	if (amk_load_variable("option_mus",1)==0 or amk_music==nil) then return end
-	if music_init ~= 1 then
-		if music_init==-1 then
-			return
+
+	if get_value("option_mus", 1) == 0 then
+		if music then
+			if music_objs[1] then music_objs[1]:stop() end
+			if music_objs[2] then music_objs[2]:stop() end
+		end
+		return
+	end
+	if music_init == -1 then return end
+	if music_init == 0 then
+		if build_music_graph() then
+			music_init = 1
 		else
-			if build_music_graph() then music_init=1 else music_init=-1 return  end
+			music_init = -1
+			return
 		end
 	end
-	local time_ = time_global()
 	if not music then
-		if next_update < time_ then music_select_section(inert) next_update = time_ + inert end
+		if next_update <= time_real_ms then
+			music_select_section(inert)
+			next_update = time_real_ms + inert
+		end
 	end
-	if not music and music_previous_section=="" and music_section~="" then music_start(music_section) end
-	if music and music_previous_section~="" and music_section=="" then music_previous_section="" end
+	if not music and music_previous_section == "" and music_section ~= "" then
+		music_start(music_section)
+	end
+	if music and music_previous_section ~= "" and music_section == "" then
+		music_previous_section = ""
+	end
 	if music then
 		music_objs[1]:update()
 		music_objs[2]:update()
-		if time_ > music_next_section_start_time then
+		if time_real_ms > music_next_section_start_time then
 			music_select_section(music_objs[musicflag]:length())
-			if music_section~="" then music_change(music_section) else music=false end
+			if music_section ~= "" then
+				music_change(music_section)
+			else
+				music = false
+			end
 		end
 	end
+
 	amk.oau_reason=""
 end
 
-function reset_music_cntrs(c) music_stor.actor_see_enemy=music_stor.actor_see_enemy-2*c music_stor.enemy_see_actor=music_stor.enemy_see_actor-2*c music_stor.actor_hit_enemy=music_stor.actor_hit_enemy-8*c music_stor.enemy_hit_actor=music_stor.enemy_hit_actor-4*c
-if music_stor.actor_see_enemy<0 then music_stor.actor_see_enemy=0 elseif music_stor.actor_see_enemy>music_lo_lvl then music_stor.actor_see_enemy=music_lo_lvl end
-if music_stor.enemy_see_actor<0 then music_stor.enemy_see_actor=0 elseif music_stor.enemy_see_actor>music_lo_lvl then music_stor.enemy_see_actor=music_lo_lvl end
-if music_stor.actor_hit_enemy<0 then music_stor.actor_hit_enemy=0 elseif music_stor.actor_hit_enemy>music_hi_lvl then music_stor.actor_hit_enemy=music_hi_lvl end
-if music_stor.enemy_hit_actor<0 then music_stor.enemy_hit_actor=0 elseif music_stor.enemy_hit_actor>music_hi_lvl then music_stor.enemy_hit_actor=music_hi_lvl  end
+function reset_music_cntrs(c)
+	music_stor.actor_see_enemy = music_stor.actor_see_enemy-2*c
+	music_stor.enemy_see_actor = music_stor.enemy_see_actor-2*c
+	music_stor.actor_hit_enemy = music_stor.actor_hit_enemy-8*c
+	music_stor.enemy_hit_actor = music_stor.enemy_hit_actor-4*c
+	if music_stor.actor_see_enemy < 0 then
+		music_stor.actor_see_enemy = 0
+	elseif music_stor.actor_see_enemy > music_lo_lvl then
+		music_stor.actor_see_enemy = music_lo_lvl
+	end
+	if music_stor.enemy_see_actor < 0 then
+		music_stor.enemy_see_actor = 0
+	elseif music_stor.enemy_see_actor > music_lo_lvl then
+		music_stor.enemy_see_actor = music_lo_lvl
+	end
+	if music_stor.actor_hit_enemy < 0 then
+		music_stor.actor_hit_enemy = 0
+	elseif music_stor.actor_hit_enemy > music_hi_lvl then
+		music_stor.actor_hit_enemy = music_hi_lvl
+	end
+	if music_stor.enemy_hit_actor < 0 then
+		music_stor.enemy_hit_actor = 0
+	elseif music_stor.enemy_hit_actor > music_hi_lvl then
+		music_stor.enemy_hit_actor = music_hi_lvl
+	end
 end
 
-local shoot_helper=0
+local shoot_helper = 0
 
 function calc_adrenaline(act,obj,typ)
-local dist = obj:position():distance_to(db.actor:position())
-if act=="actor_see_enemy" then music_stor.actor_see_enemy=music_stor.actor_see_enemy+50/dist elseif act=="enemy_see_actor" then music_stor.enemy_see_actor=music_stor.enemy_see_actor+50/dist elseif act=="actor_hit_enemy" then
-if time_global()>shoot_helper then music_stor.actor_hit_enemy=music_stor.actor_hit_enemy+13 shoot_helper=time_global()+500  end elseif act=="enemy_hit_actor" then music_stor.enemy_hit_actor=music_stor.enemy_hit_actor+8  end end
+	local dist = obj:position():distance_to(db_actor:position())
 
-function music_select_section(time) reset_music_cntrs(time/inert)
-local cs = music_section
-local eseen = music_stor.enemy_see_actor
-if eseen >= music_lo_lvl then eseen = music_lo_lvl  end
-local aseen = music_stor.actor_see_enemy
-if aseen >= music_lo_lvl then aseen = music_lo_lvl  end
-local ehits = music_stor.enemy_hit_actor
-if ehits >= music_hi_lvl then ehits = music_hi_lvl  end
-local ahits = music_stor.actor_hit_enemy
-if ahits >= music_hi_lvl then ahits = music_hi_lvl  end
-local lvl = aseen + eseen
-if lvl>music_hi_lvl*0.75 then lvl=music_hi_lvl*0.75  end lvl = ehits + lvl + ahits
-if music_section=="" then music_section=music_themes[math_random(#music_themes)].."_null"  end
-local last_sel_max=0
-local last_sel_min=1000 for k,v in pairs(music_graph[music_section]) do
-if v[2]=="<" and v[1]<last_sel_min then
-if v[1]>lvl then music_section=k last_sel_min=v[1]  end end
-if v[2]==">" and v[1]>=last_sel_max then
-if v[1]<=lvl then music_section=k last_sel_max=v[1]  end end end
-if string_find(music_section,"null") then music_section="" end
-if music and music_previous_section~="" and music_section=="" then music_previous_section=""  end
-local l=0
-if music and music_objs[musicflag]~=nil then l=music_objs[musicflag]:length()  end end
+	if act == "actor_see_enemy" then
+		music_stor.actor_see_enemy = music_stor.actor_see_enemy+50/dist
+	elseif act == "enemy_see_actor" then
+		music_stor.enemy_see_actor = music_stor.enemy_see_actor+50/dist
+	elseif act == "actor_hit_enemy" then
+		if time_global() > shoot_helper then
+			music_stor.actor_hit_enemy = music_stor.actor_hit_enemy+13
+			shoot_helper = time_global()+500
+		end
+	elseif act == "enemy_hit_actor" then
+		music_stor.enemy_hit_actor = music_stor.enemy_hit_actor+8
+	end
+end
+
+function music_select_section(time)
+	reset_music_cntrs(time/inert)
+
+	local cs = music_section
+	local eseen = music_stor.enemy_see_actor
+	if eseen >= music_lo_lvl then
+		eseen = music_lo_lvl
+	end
+	local aseen = music_stor.actor_see_enemy
+	if aseen >= music_lo_lvl then
+		aseen = music_lo_lvl
+	end
+	local ehits = music_stor.enemy_hit_actor
+	if ehits >= music_hi_lvl then
+		ehits = music_hi_lvl
+	end
+	local ahits = music_stor.actor_hit_enemy
+	if ahits >= music_hi_lvl then
+		ahits = music_hi_lvl
+	end
+
+	local lvl = aseen+eseen
+	if lvl > music_hi_lvl*0.75 then
+		lvl = music_hi_lvl*0.75
+	end
+	lvl = ehits+lvl+ahits
+
+	if music_section == "" then
+		music_section = table.random(music_themes).."_null"
+	end
+
+	local last_sel_max = 0
+	local last_sel_min = 1000
+	for k,v in pairs(music_graph[music_section]) do
+		if v[2] == "<" and v[1] < last_sel_min then
+			if v[1] > lvl then
+				music_section=k
+				last_sel_min=v[1]
+			end
+		end
+		if v[2] == ">" and v[1] >= last_sel_max then
+			if v[1] <= lvl then
+				music_section = k
+				last_sel_max = v[1]
+			end
+		end
+	end
+
+	if string_find(music_section,"null") then
+		music_section = ""
+	end
+	if music and music_previous_section ~= "" and music_section == "" then
+		music_previous_section = ""
+	end
+
+	local l = 0
+	if music and music_objs[musicflag] ~= nil then
+		l = music_objs[musicflag]:length()
+	end
+end
 
 --'*******************************************************************************
 --'   **   **   **   **   **    **   **   **   **      BLOWOUT        **   **   **   **   **    **   **   **   **
@@ -1006,7 +1047,7 @@ function Run_Blowout_pp()
 	if blow_enabled>0 then
 		local bt=blowout_type()
 		if bt==2 and amk_load_variable("freeplay",0)~=2 then return end
-		sleep_manager.stopper()
+		dream_:stopper()
 		amk_save_variable("blowout",1)
 		if bt<1 then
 			level.add_pp_effector("monolith_off.ppe", 2003, false)
@@ -1071,7 +1112,7 @@ function Blowout_pp(phase)
 		amk_g_start_timer("blowout", 0, 0, math_random(1, 4), 3)
 	elseif phase==3 then
 		amk_anoms.after_blow_on()
-		sak.off_testobj()
+		amk_anoms.off_testobj()
 		amk_save_variable("blowout",3)
 		local h = hit()
 		local cr
@@ -1315,18 +1356,17 @@ function check_usable_item(obj)
 		amk.drop_item(db.actor,obj)
 		amk.remove_item(obj)
 	else
-		local recipes=amk.load_table("amk_body_recipe")
+		local recipes = get_value("amk_body_recipe", { })
 		info=recipes[obj:id()]
 	end
 	if db.actor==nil or info==nil or db.actor:has_info(info) then
 		return
 	end
 	db.actor:give_info_portion(info)
-	amk_dialogs.info_received()
 end
 
 function generate_recipe(obj)
-	if IsMonster(obj) then
+	if obj:is_monster() then
 		return
 	end
 	local info=nil
@@ -1341,7 +1381,7 @@ function generate_recipe(obj)
 		prob=10
 	end
 	if not info then return end
-	local recipes=amk.load_table("amk_body_recipe")
+	local recipes = get_value("amk_body_recipe", { })
 	-- Проверим не генерился ли уже этот рецепт
 	for k,v in pairs(recipes) do
 		if v==info then
@@ -1351,7 +1391,7 @@ function generate_recipe(obj)
 	-- Сгенерим рецепт
 	if math_random(100)<=prob then
 		recipes[obj:id()]=info
-		amk.save_table("amk_body_recipe",recipes)
+		set_value("amk_body_recipe", recipes)
 	end
 end
 
@@ -2112,19 +2152,16 @@ local hud_tbl={  	bandit_gaz_outfit_m1				= "hud_gaz",
 local current_static
 local static_enabled
 local current_zoom=1
-
-local last_rect = nil
-local lhup = nil
-local hud = nil
+local last_rect
 
 function get_hud_rect(force)
 	if force or not last_rect then
-		local zoom=db_actor:get_camera_fov()/device().fov
+		local zoom=db_actor:get_camera_fov()/screen.fov
 		zoom=(zoom-1)*1.5+1
 		if zoom<1 then
 			zoom=1
 		end
-		local stretchy=0.75/(math_floor(device().aspect_ratio*1000)/1000)
+		local stretchy=0.75/(math_floor((screen.height / screen.width)*1000)/1000)
 		if stretchy<1 then stretchy=1 end
 		last_rect={zoom=zoom,x=-768*zoom+768,y=(-512*zoom+512)*stretchy-(stretchy-1)*300,w=1024*zoom,h=768*zoom*stretchy}
 	end
@@ -2144,8 +2181,7 @@ function set_hud_tex(static,enabled)
 		return
 	end
 
-	lhup.nextupd = 0
-	lhup.night_vision_active = false
+	sa_main.reattach_statics()
 
 	current_zoom=rect.zoom
 	local need_change=false
@@ -2197,9 +2233,9 @@ function set_blurs(enabled,rect)
 	local expirt=0.3
 	local breathpower=3
 
-	local delta=(time_global()-blurlt)/1000 -- дельта в секундах
-	local phase=(time_global()-blurcyctime)/1000 -- фаза дыхательного цикла в сек.
-	blurlt=time_global()
+	local delta=(time_real_ms-blurlt)/1000 -- дельта в секундах
+	local phase=(time_real_ms-blurcyctime)/1000 -- фаза дыхательного цикла в сек.
+	blurlt=time_real_ms
 	if phase>period then
 		phase=phase%period
 		blurcyctime=blurlt-phase*1000
@@ -2244,9 +2280,6 @@ function set_blurs(enabled,rect)
 end
 
 function check_hud()
-	if not lhup then lhup = sa_hud_interface_mgr.get_hud_interface_mgr() end
-	if not hud then hud = get_hud() end
-
 	local hudotf,actor
 	if db and db.actor then
 		actor=db.actor
@@ -2589,14 +2622,11 @@ function weather_manager()
 			end
 			rnd=rnd-v
 		end
-		local bt=blowout_type()
 		local sect = dynw .. "_" .. next_weather .. "_" .. hour .. get_moon_phase()
-		if (amk_load_variable("blowout",0)==0 and bt<1) or level.name()==0 then
+		if (amk_load_variable("blowout",0)==0 and blowout_type()<1) then
 			level.set_weather(dynw_type .. "_" .. sect)
 		end
-		if (news_main and news_main.on_weather_change) then
-			news_main.on_weather_change(dynw, next_weather)
-		end
+		news_main.on_weather_change(dynw, next_weather)
 
 		amk_save_variable("dynw",next_weather)
 		amk_save_variable("dynlasthour",hour)
@@ -2615,24 +2645,21 @@ function switch_monster_offline(obj)
 	se_monster.need_be_online[obj.id]=false
 end
 
-function respawned(obj,respawner)
-	if IsMonster(obj) then
-		local sini = respawner:spawn_ini()
-		if sini:line_exist ("respawn", "creature_binded_logic") == true then
-			local cfg_name = utils.cfg_get_string(sini, "respawn", "creature_binded_logic", false, false, false, "")
-			local t = amk.read_monster_params(obj)
-			t.custom = "[logic]\ncfg = scripts\\amk\\"..cfg_name..".ltx"
-			amk.write_monster_params(t, obj)
-		end
-	elseif IsStalker(obj) then
-		local sini = respawner:spawn_ini()
-		if sini:line_exist ("respawn", "creature_binded_logic") == true then
-			local cfg_name = utils.cfg_get_string(sini, "respawn", "creature_binded_logic", false, false, false, "")
-			local t = amk.read_stalker_params(obj)
-			t.custom = "[logic]\ncfg = scripts\\amk\\"..cfg_name..".ltx"
-			amk.write_stalker_params(t, obj)
-		end
-	end
+function respawned(obj, respawner)
+	if not obj or not (obj:is_monster() or obj:is_stalker()) then return end
+
+	local sini = respawner:spawn_ini()
+	if not sini:line_exist("respawn", "creature_binded_logic") then return end
+
+	local custom =
+		"[smart_terrains]\n" ..
+		"none = true\n" ..
+		"[logic]\n" ..
+		"cfg = scripts\\amk\\" .. sini:r_string("respawn", "creature_binded_logic") .. ".ltx"
+	obj:modify_netpk("custom_data", custom)
+
+	obj.ini_initialized = false
+	obj:on_before_register()
 end
 
 local respawners={}
@@ -2775,18 +2802,20 @@ end
 btrs_friends={}
 
 function build_btrs_table(obj)
-	if obj and (IsStalker(obj) and obj:character_community()=="military" and obj:alive()) or obj:section()=="vehicle_btr" then
+	if obj and (obj:is_stalker() and obj:character_community()=="military" and obj:alive()) or obj:section()=="vehicle_btr" then
 			btrs_friends[obj:id()] = obj:section()
 	end
 end
 
 function firebated(obj, amount, local_direction, who, bone_index)
-	if bone_index>0 and who and IsStalker(who) then --false для отключения
+	if who and bone_index > 0 then --false для отключения
 		local script
-		if IsMonster(obj) then
+		if obj:is_monster() then
 			script=bind_monster
-		elseif IsStalker(obj) then
-			script=xr_motivator
+		elseif obj:is_stalker() then
+			script=bind_stalker
+		elseif obj:is_trader() then
+			script = bind_trader
 		end
 		if script then
 			local weapon = who:active_item()
@@ -2808,6 +2837,17 @@ local zombi_skeletons={
 "physics\\dead_body\\skelet_combine_pose_05",
 "physics\\dead_body\\skelet_torso"
 }
+
+function spawn_skel(obj)
+	local skel = create("breakable_object", obj:position(), obj:level_vertex_id(), obj:game_vertex_id())
+	local t = amk.get_breakable_data(skel)
+	t.visual = table.random(zombi_skeletons)
+	t.mass = 1.0
+	t.physic_type = 3
+	t.skeleton_flags = 1
+	amk.set_breakable_data(t, skel)
+end
+
 function zomby_blow(obj)
 	if obj:object("wpn_flame") then
 		amk_particle.amk_particle({
@@ -2853,73 +2893,8 @@ function zomby_blow(obj)
     	h.type = hit.chemical_burn
 		db.actor:hit(h)
 		end
-		local skel = amk.spawn_item("breakable_object",obj:position(),obj:game_vertex_id(),obj:level_vertex_id())
-		local t = amk.get_breakable_data(skel)
-		t.visual = zombi_skeletons[math_random(#zombi_skeletons)]
-		t.mass = 1.0
-		t.physic_type = 3
-		t.skeleton_flags = 1
-		amk.set_breakable_data(t,skel)
+		spawn_skel(obj)
 		alife():release(alife():object(obj:id()))
-	end
-end
-
-function repair_weapon (st)
-	local arr = amk.unpack_array_from_string(st)
-	local oid = arr[1]
-	local repbox_health = arr[2]
-	local slot = arr[3]
-	if alife():object(oid)==nil then
-		local repair_coef = 0
-		local item_in_slot = db.actor:item_in_slot(slot)
-		if repbox_health==1 then
-			repair_coef=0.25
-		elseif repbox_health<1 then
-			repair_coef=0.2
-		elseif repbox_health<0.8 then
-			repair_coef=0.15
-		elseif repbox_health<0.6 then
-			repair_coef=0.1
-		elseif repbox_health<0.4 then
-			repair_coef=0.05
-		end
-		---------------------------------------------------------------------------
-		local rem
-
-		if item_in_slot == nil then
-			amk.send_tip(game.translate_string("rep_no_weapon_in_slot"),nil,nil,5)
-			rem = amk.spawn_item_in_inv("repbox_s"..slot)
-			amk_start_timer("repbox_cond",0.1,amk.pack_array_to_string( {rem.id, repbox_health} ))
-		else
-			if item_in_slot:condition()>0.95 then
-				amk.send_tip(game.translate_string("rep_not_need"),nil,nil,5)
-				rem = amk.spawn_item_in_inv("repbox_s"..slot)
-				amk_start_timer("repbox_cond",0.1,amk.pack_array_to_string( {rem.id, repbox_health} ))
-			else
-				if item_in_slot:condition()>=0.7 then
-					item_in_slot:set_condition(item_in_slot:condition() + repair_coef)
-					if repbox_health>0.3 then
-						rem = amk.spawn_item_in_inv("repbox_s"..slot)
-						amk_start_timer("repbox_cond",0.1,amk.pack_array_to_string( {rem.id, repbox_health-0.2} ))
-					end
-				else
-					amk.send_tip(game.translate_string("rep_need_big"),nil,nil,5)
-					rem = amk.spawn_item_in_inv("repbox_s"..slot)
-					amk_start_timer("repbox_cond",0.1,amk.pack_array_to_string( {rem.id, repbox_health} ))
-				end
-			end
-		end
-	end
-
-end
-
-function after_repair_weapon (st)
-	local arr = amk.unpack_array_from_string(st)
-	local oid = arr[1]
-	local repbox_health = arr[2]
-	local lobj = level_object_by_id(oid)
-	if lobj then
-		lobj:set_condition(repbox_health)
 	end
 end
 

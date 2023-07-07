@@ -8,17 +8,24 @@
 --]]-----------------------------------------------------------------------------------------------
 _G.effector_ids = {
 	night_vision = 55,
+	vampire_grasp = 3001,
+	vampire_sucking = 3002,
+	vampire_fade = 3003,
 	psy_effect = 3004,
+	head_shot = 3006,
 	hit = 3007,
 	yantar_blowout = 3009,
 	yantar_underground_psi = 3010,
 	shell_shock = 3011,
 	earthquake = 3012,
-	snd_shock = 3014
+	radar_pass = 3014,
+	snd_shock = 3015
 }
 ---------------------------------------------------------------------------------------------------
 _G.actor_flags = {
-	sleep_state = false
+	sleep_state = false,
+	bloodsucker_vampire_state = false,
+	scope_zoom_mode = false
 }
 ---------------------------------------------------------------------------------------------------
 _G.item_place = {
@@ -32,12 +39,39 @@ _G.inventory_item_flags = {
 	belt = 8
 }
 ---------------------------------------------------------------------------------------------------
-callback["on_key_press"] = 123
-callback["on_key_release"] = 124
-callback["drop_item_from_inventory"] = 129
-callback["on_item_belt"] = 130
-callback["on_item_ruck"] = 131
-callback["on_item_slot"] = 132
-callback["switch_torch"] = 134
-callback["hit_effector"] = 144
-callback["before_hit"] = 152
+_G.weapon_states = {
+	idle = 0,
+	fire = 1,
+	fire2 = 2,
+	reload = 3,
+	showing = 4,
+	hiding = 5,
+	hidden = 6,
+	misfire = 7,
+	mag_empty = 8,
+	switch = 9
+}
+---------------------------------------------------------------------------------------------------
+_G.missile_states = {
+	hidden = 0,
+	showing = 1,
+	idle = 2,
+	attack_begin = 3,
+	attack_idle = 4,
+	attack_act = 5,
+	attack_end = 6,
+	empty = 7,
+	hiding = 8,
+	playing = 9
+}
+---------------------------------------------------------------------------------------------------
+_G.key_events = {
+	pressed = 0,
+	released = 1
+}
+---------------------------------------------------------------------------------------------------
+_G.EActorCameras = {
+	eacFirstEye = 0,
+	eacLookAt = 1,
+	eacFreeLook = 2
+}

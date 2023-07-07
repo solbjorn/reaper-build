@@ -1,5 +1,4 @@
 #include "common.h"
-#include "ogse_config.h"
 #include "shared\waterconfig.h"
 
 struct vf
@@ -19,16 +18,16 @@ struct vf
 
 uniform sampler2D	s_nmap;
 uniform sampler2D	s_leaves;
-uniform samplerCUBE	s_env0; 
-uniform samplerCUBE	s_env1; 
+uniform samplerCUBE	s_env0;
+uniform samplerCUBE	s_env1;
 half4 main (vf I) : COLOR
 {
 	half4 base = tex2D(s_base,I.tbase);
 	half3 n0 = tex2D(s_nmap,I.tnorm0);
 	half3 n1 = tex2D(s_nmap,I.tnorm1);
-	half3 Navg = n0 + n1 - 1;	
+	half3 Navg = n0 + n1 - 1;
 	half3 Nw = normalize(mul(half3x3(I.M1, I.M2, I.M3), Navg));
-			
+
 		/*cubemap reflections*/
 	half3 v2point = normalize(I.v2point);
 	half3 vreflect = reflect(v2point, Nw);
@@ -37,7 +36,7 @@ half4 main (vf I) : COLOR
 	half3        env0               = texCUBE          (s_env0, vreflect);
 	half3        env1               = texCUBE          (s_env1, vreflect);
 	half3         env               = lerp                (env0,env1,L_ambient.w);
-	
+
 	half fresnel = saturate(dot(vreflect,v2point));
 	half power = pow(fresnel,9);
 	half amount	= 0.15h+0.25h*power;	// 1=full env, 0=no env
@@ -52,9 +51,9 @@ half4 main (vf I) : COLOR
 	//	additional depth test
 //	half4 texgen_proj = mul(m_P, I.tctexgen);
 //	half4 depth_tc = convert_to_screen_space(texgen_proj);
-	half4 _P = 	tex2Dproj( s_position, I.tctexgen); 
+	half4 _P = 	tex2Dproj( s_position, I.tctexgen);
 	half waterDepth = (_P.z-I.tctexgen.z);
-	
+
 	//	water fog
 	half fog_exp_intens = -4.0h;
 	float fog = 1 - exp(fog_exp_intens*waterDepth);
@@ -63,7 +62,7 @@ half4 main (vf I) : COLOR
 
 	alpha = min(alpha, saturate(waterDepth));
 	alpha = max (fog, alpha);
-	
+
 	#ifndef LOW_WATER_DEPTH
 		#ifdef SW_USE_FOAM
 			//	Leaves

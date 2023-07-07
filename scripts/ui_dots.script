@@ -18,20 +18,22 @@ function dots:InitControls()
 	local xml = CScriptXmlInit()
 	xml:ParseFile("ui_dots_wnd.xml")
 
-	self.dialog					= xml:InitStatic("main_dialog:dialog", self)
-	xml:InitStatic				("main_dialog:capt", self.dialog)
-	xml:InitStatic				("main_dialog:msg", self.dialog)
+	local dialog					= xml:InitStatic("main_dialog:dialog", self)
+	xml:InitStatic				("main_dialog:capt", dialog)
+	xml:InitStatic				("main_dialog:msg", dialog)
 
 	-- кнопки
-	self:Register(xml:Init3tButton("main_dialog:btn_1", self.dialog),"btn_1")
-	self:Register(xml:Init3tButton("main_dialog:btn_quit", self.dialog),"btn_quit")
-	self:Register(xml:InitEditBox("main_dialog:edit_box", 	self.dialog), "edit_box")
+	self:Register(xml:Init3tButton("main_dialog:btn_1", dialog),"btn_1")
+	self:Register(xml:Init3tButton("main_dialog:btn_quit", dialog),"btn_quit")
+
+	self:Register(xml:InitEditBox("main_dialog:edit_box", dialog), "edit_box")
+	self.edit_box = self:GetEditBox("edit_box")
 end
 
 function dots:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.dots1, self)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+	self:AddCallbackEx("btn_1", ui_events.BUTTON_CLICKED, self.dots1)
+	self:AddCallbackEx("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
 end
 
 function dots:OnKeyboard(dik, keyboard_action)
@@ -40,8 +42,7 @@ function dots:OnKeyboard(dik, keyboard_action)
 -- на выход повесим Esc
 		if dik == DIK_keys.DIK_ESCAPE then
 			self:on_quit()
-		end
-		if dik == DIK_keys.DIK_RETURN then
+		elseif dik == DIK_keys.DIK_RETURN then
 			self:dots1()
 		end
 	end
@@ -49,13 +50,11 @@ function dots:OnKeyboard(dik, keyboard_action)
 end
 
 function dots:dots1()
-	local edit_box		= self:GetEditBox("edit_box")
-	gps_habar.mylog("устанавливаем метку с текстом")
-	amk.add_spot_on_map(self.targt, "red_location", edit_box:GetText())
+	amk.add_spot_on_map(self.targt, "red_location", self.edit_box:GetText())
 	self:on_quit()
 end
 
 function dots:on_quit()
+	self:ClearCallbacks()
 	self:GetHolder():start_stop_menu (self,true)
 end
-

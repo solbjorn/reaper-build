@@ -20,7 +20,12 @@ function yan_scientist_task_fail ()
 end
 
 function yantar_vasilyev_spam (actor, npc)
-    if level.name() == "l08_yantar" then
-        news_manager.send_tip(db.actor, "storyline_vasilyev_tip", nil, "ecolog", nil, 903)
-    end
+	if level.name() == "l08_yantar" then
+		news_manager.send_tip("storyline_vasilyev_tip", nil, "vasilyev", nil, 903)
+	end
+end
+
+-- Ray Twitty aka Shadows: вернет true, если сейчас идем с Кругловым/Семеновым делать замеры (с момента выхода из бункера и до завершения задания)
+function yan_scientist_raid_now()
+	return has_info("yan_scientist_point_to_1") and not (has_info("yan_find_scientist_done") or yan_scientist_task_fail())
 end

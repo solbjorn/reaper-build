@@ -843,44 +843,27 @@ local teleports = {
 	}
 }
 
-function on_item_drop(obj)
-	local obj_sect = obj:section()
-	local teleport = teleports[obj_sect]
-	if not teleport then return end -- не наш "клиент"
-
-	-- если арт не нужен или он есть у ГГ
-	if not teleport.art or db_actor:object(teleport.art) then
-		-- отправляем телепорт на экспертизу
-		-- узнаем не съели ли его или выложили в нычку
-		local tbl = {
-			obj_id		= obj:id(),
-			obj_sect	= obj_sect
-		}
-		amk.start_timer("timer_drop_obj_teleport", 0.2, amk.pack_array_to_string(tbl))
-	end
-end
-
-function teleport_start(obj_sect)
-	local teleport = teleports[obj_sect]
+function teleport_start(obj)
+	local sect = obj:section()
+	local teleport = teleports[sect]
+	if not teleport then return end
 
 	-- отбираем арт у ГГ, если нужно отобрать
 	if teleport.art then
 		local art = db_actor:object(teleport.art)
 		if art then
-			local sim = alife()
-			local se_art = sim:object(art:id())
-			if se_art then
-				-- вызываем случайную функцию для данного телепорта
-				jump(teleport.goto_func[math.random(#teleport.goto_func)])
-				sim:release(se_art)
-			end
+			release(art)
+		else
+			amk.spawn_item_in_inv(sect)
+			return
 		end
-	else
-		jump(teleport.goto_func[math.random(#teleport.goto_func)])
 	end
 
+	-- вызываем случайную функцию для данного телепорта
+	jump(table.random(teleport.goto_func))
+
 	if teleport.keep then -- вернуть телепорт в рюкзак
-		amk.spawn_item_in_inv(obj_sect)
+		amk.spawn_item_in_inv(sect)
 	end
 end
 

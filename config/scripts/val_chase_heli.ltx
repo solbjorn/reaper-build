@@ -4,7 +4,7 @@ active = heli_move@wait
 [heli_move@wait]
 path_move           = val_chase_heli_wait_move
 engine_sound        = false
-on_info             = {+val_raid_end} nil
+on_info             = {+val_raid_end} heli_move@finish
 on_info2            = {+val_raid_start} heli_move@ready
 
 [heli_move@ready]
@@ -14,19 +14,12 @@ engine_sound        = true
 combat_enemy        = nil
 combat_use_rocket   = false
 combat_use_mgun     = true
-;invulnerable       = true
 on_info             = {+val_chase_start} heli_move@start
 
 [heli_move@start]
 path_move           = val_chase_heli_start_move
 path_look           = val_chase_heli_start_look
 engine_sound        = true
-;combat_enemy        = nil
-;combat_use_rocket   = false
-;combat_use_mgun     = true
-;invulnerable        = true
-;on_info             = {+val_stairs_start} heli_move@start
-;on_info             = {=heli_health_le(0.25)} heli_move@die
 immortal            = true
 on_signal           = arrived | heli_move@finish %+val_raid_end% ;heli_move@chase
 
@@ -34,6 +27,7 @@ on_signal           = arrived | heli_move@finish %+val_raid_end% ;heli_move@chas
 path_move     = val_chase_heli_die_move
 engine_sound  = false
 combat_ignore = true
+on_timer = 30000 | nil %=release_obj%
 
 ;--- Old ------------------------------------------------------------
 [heli_move@chase]
@@ -43,7 +37,6 @@ combat_enemy        = actor
 combat_use_rocket   = true
 combat_use_mgun     = false
 combat_safe_altitude = -40
-;invulnerable       = true
 immortal            = true
 on_info             = {=heli_health_le(0.25)} heli_move@die
 

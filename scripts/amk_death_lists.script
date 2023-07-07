@@ -1,4 +1,3 @@
-
 local dead_reason={
 "\"Трамплин\"",
 "\"Жарка\"",
@@ -51,18 +50,24 @@ local dead_reason={
 }
 
 local where_dead={
-"Агропром",
-"Свалка",
-"Завод \"Росток\"",
-"Армейские склады",
-"Тёмная долина",
-"Янтарь",
-"Радар"
+"l01_escape",
+"l02_garbage",
+"l03_agroprom",
+"l04_darkvalley",
+"l05_bar",
+"l06_rostok",
+"l08_yantar",
+"l07_military",
+"l10_radar",
+"l11_pripyat",
+"l12_stancia",
+"l12_stancia_2"
 }
 
 function get_strings()
-	local reason=dead_reason[math.random(table.getn(dead_reason))]
-	local dead=where_dead[math.random(table.getn(where_dead))]
-
-	return reason,dead
+	local reason = table.random(dead_reason)
+	local curr, lname = level.name()
+	repeat lname = table.random(where_dead)
+	until lname ~= curr
+	return reason, translate(lname)
 end

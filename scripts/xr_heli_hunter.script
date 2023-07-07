@@ -38,7 +38,7 @@ function evaluator_shoot:evaluate()
 	local overrides = db.storage[self.object:id()].overrides
 
 	if overrides and overrides.heli_hunter ~= nil and
-	   xr_logic.pick_section_from_condlist(db_actor, self.object, overrides.heli_hunter) ~= nil
+	   xr_logic.pick_section_from_condlist(self.object, overrides.heli_hunter) ~= nil
 	then
 		-- поиск вертолета
 		self.a.heli = get_nearest_heli(self.object:position(), self.a.attack_dist_sqr)
@@ -123,7 +123,7 @@ local wp_stalker_ids_property_alive_true = world_property(stalker_ids.property_a
 local wp_prop_heli_hunter_true = world_property(prop_heli_hunter, true)
 local wp_prop_heli_hunter_false = world_property(prop_heli_hunter, false)
 
-function add_to_binder_q( npc, storage )
+function add_to_binder( npc, storage )
 	local manager = npc:motivation_action_manager()
 
 	manager:add_evaluator( prop_heli_hunter, evaluator_shoot( "heli_hunter", storage ) )

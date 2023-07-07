@@ -61,7 +61,7 @@ function generic_physics_binder:update(delta)
 		end
 	else
 		self.initialized = true
-		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)
+		xr_logic.initialize_obj(self.object, self.st, self.loaded, modules.stype_item)
 
 		local ini = self.st.ini
 		local section = self.st.section_logic
@@ -81,7 +81,7 @@ function generic_physics_binder:update(delta)
 			local graph_point_marker = get_field_string("graph_point_marker")
 			if graph_point_marker then
 				self.disable_graph_point = patrol(graph_point_marker):game_vertex_id(0)
-				game_graph():accessible(self.disable_graph_point, false)
+				graph:accessible(self.disable_graph_point, false)
 			end
 			self.object:set_callback(callback_hit, generic_physics_binder.hit_callback, self)
 			self.object:set_callback(callback_death, generic_physics_binder.death_callback, self)
@@ -91,11 +91,14 @@ function generic_physics_binder:update(delta)
 
 	if self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
-    -- для бтра hit_callback не вызывается. заткнём эту дырку.
+
+		-- для бтра hit_callback и death_callback не вызывается. заткнём эти дырки.
     if self.health and (not self.nofixonhit) then
       local health=self.object:get_car() and self.object:get_car():GetfHealth()
       if health then
-        if self.health-health>0.00001 then
+			if health < 0 then
+				self:death_callback(self.object, db_actor)
+			elseif self.health-health>0.001 then
           self.health=health
           self:hit_callback(self.object, self.health-health, vector():set(1,0,0), db.actor, 0)
           self.nofixonhit=nil
@@ -139,12 +142,10 @@ function generic_physics_binder:net_destroy()
 end
 
 function generic_physics_binder:net_save_relevant()
-	--printf("generic_physics_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
 	return true
 end
 
 function generic_physics_binder:save(packet)
-	--printf("generic_physics_binder:save(): self.object:name()='%s'", self.object:name())
 	object_binder.save(self, packet)
 
 	xr_logic.save_obj(self.object, packet)
@@ -153,14 +154,12 @@ end
 function generic_physics_binder:load(reader)
 	self.loaded = true
 
-	--printf("generic_physics_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load(self, reader)
 
 	xr_logic.load_obj(self.object, reader)
 end
 
 function generic_physics_binder:use_callback(obj, who)
-	--xr_use.notify_on_use(obj, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
@@ -194,8 +193,12 @@ function generic_physics_binder:death_callback(victim, who)
     end
 
     if self.disable_graph_point ~= nil then
-        game_graph():accessible(self.disable_graph_point, true)
+        graph:accessible(self.disable_graph_point, true)
     end
+
+	if self.object:clsid() == clsid_car_s and who:id() == db_actor_id then
+		xr_statistic.addKillCount(self.object)
+	end
 
 	if self.is_drop_box then
 		self.box_items:spawn_items()

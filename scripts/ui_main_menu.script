@@ -7,7 +7,7 @@
 -- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
 -- Version:     0.9
 
-local all_good = db and modules and _z and xr_logic
+local all_good = db and modules and xr_logic
 if not all_good then
 	local broken = "Missing or broken:"
 	if not db then broken = broken .. " db.script" end
@@ -17,49 +17,53 @@ if not all_good then
 	if not xr_logic then
 		broken = broken .. " xr_logic.script"
 	end
-	if not _z then broken = broken .. " _z.script" end
 	abort(broken)
 end
+
+local pause_menu_init = true
 
 class "main_menu" (CUIScriptWnd)
 
 function main_menu:__init() super()
+	-- DMX MOD on
+	if game_is_running() and pause_menu_init then
+		local xml = CScriptXmlInit()
+		xml:ParseFile("ui_load_pause.xml")
+		self.load_window = xml:InitStatic("intro_static", self)
+		xml:InitStatic("load_progress", self)
+		local level_intro = xml:InitStatic("level_intro", self)
+		level_intro:InitTexture("intro\\intro_"..level.name())
+		self.sound_volume_music = console:get_float("snd_volume_music")
+		console:execute("snd_volume_music 0")
+		return
+	end
+	-- DMX MOD off
+
+	self.alive_on_level = game_is_running()
 	self.mbox_mode = 0
-   self:InitControls()
-   self:InitCallBacks()
+	self:InitControls()
+	self:InitCallBacks()
 end
 
 function main_menu:__finalize()
-
 end
 
 function main_menu:InitControls()
-	self:Init(0,0,1024,768)
-    local xml = CScriptXmlInit()
-    xml:ParseFile("ui_mm_main.xml")
+	self:Init(0, 0, 1024, 768)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_mm_main.xml")
 
-    xml:InitStatic("back_movie", self)
-    xml:InitStatic("background", self)
-   -- xml:InitStatic("fire_movie", self)
-    self.shniaga = xml:InitMMShniaga("shniaga_wnd",self);
+	xml:InitStatic("back_movie", self)
+	xml:InitStatic("background", self)
+	self.shniaga = xml:InitMMShniaga("shniaga_wnd", self)
 
 	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")
 
-	local _ver = xml:InitStatic("static_version",self)
-	local mm = _G.main_menu.get_main_menu()
-	local version = "1.0"
-	if type(mm.GetGSVer) == "function" then
-		version = mm:GetGSVer()
-	end
-	if version < "1.0004" then
-		abort("Game must be patched to at least version 1.0004")
-		return
-	else
-		_ver:SetText("Версия игры - " .. version)
-	end
+	local ver = xml:InitStatic("static_version", self)
+	ver:SetText("Версия игры - " .. _G.main_menu.get_main_menu():GetGSVer())
 
-	local mod_ver 		= xml:InitStatic ("mod_version",self)
+	local mod_ver = xml:InitStatic("mod_version", self)
 	local amk_title 	= amk_ver.amk_title
 	local amk_version    	= amk_ver.amk_version
 	local sak_title 	= sak_ver.sak_title
@@ -76,36 +80,34 @@ end
 
 function main_menu:InitCallBacks()
 	-- new game
-	self:AddCallback("btn_novice",		ui_events.BUTTON_CLICKED,				self.OnButton_new_novice_game,		self)
-	self:AddCallback("btn_stalker",		ui_events.BUTTON_CLICKED,				self.OnButton_new_stalker_game,		self)
-	self:AddCallback("btn_veteran",		ui_events.BUTTON_CLICKED,				self.OnButton_new_veteran_game,		self)
-	self:AddCallback("btn_master",		ui_events.BUTTON_CLICKED,				self.OnButton_new_master_game,		self)
-	self:AddCallback("btn_spawn",		ui_events.BUTTON_CLICKED,				self.OnButton_load_spawn,			self)
+	self:AddCallbackEx("btn_novice",		ui_events.BUTTON_CLICKED,				self.OnButton_new_novice_game)
+	self:AddCallbackEx("btn_stalker",		ui_events.BUTTON_CLICKED,				self.OnButton_new_stalker_game)
+	self:AddCallbackEx("btn_veteran",		ui_events.BUTTON_CLICKED,				self.OnButton_new_veteran_game)
+	self:AddCallbackEx("btn_master",		ui_events.BUTTON_CLICKED,				self.OnButton_new_master_game)
 	-- options
-	self:AddCallback("btn_options",     ui_events.BUTTON_CLICKED,				self.OnButton_options_clicked,		self)
+	self:AddCallbackEx("btn_options",     ui_events.BUTTON_CLICKED,				self.OnButton_options_clicked)
 	-- load
-	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked,			self)
+	self:AddCallbackEx("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked)
 	-- save
-	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
-	-- multiplayer
-	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
+	self:AddCallbackEx("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked)
 	-- quit
-	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
-	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
-	self:AddCallback("btn_ret",			ui_events.BUTTON_CLICKED,				self.OnButton_return_game,			self)
-	self:AddCallback("btn_lastsave",	ui_events.BUTTON_CLICKED,				self.OnButton_last_save,			self)
-	self:AddCallback("btn_credits",		ui_events.BUTTON_CLICKED,				self.OnButton_credits_clicked,		self)
+	self:AddCallbackEx("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked)
+	self:AddCallbackEx("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked)
+	self:AddCallbackEx("btn_ret",			ui_events.BUTTON_CLICKED,				self.OnButton_return_game)
+	self:AddCallbackEx("btn_lastsave",	ui_events.BUTTON_CLICKED,				self.OnButton_last_save)
+	self:AddCallbackEx("btn_credits",		ui_events.BUTTON_CLICKED,				self.OnButton_credits_clicked)
 	-- message box
-	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_OK_CLICKED,		self.OnMsgOk,						self)
-	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_CANCEL_CLICKED,	self.OnMsgCancel,					self)
-	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_YES_CLICKED,		self.OnMsgYes,						self)
-	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_NO_CLICKED,		self.OnMsgNo,						self)
-	self:AddCallback("msg_box",			ui_events.MESSAGE_BOX_QUIT_GAME_CLICKED,self.OnMessageQuitGame,				self)
-	self:AddCallback("msg_box",			ui_events.MESSAGE_BOX_QUIT_WIN_CLICKED,	self.OnMessageQuitWin,				self)
+	self:AddCallbackEx("msg_box",     ui_events.MESSAGE_BOX_OK_CLICKED,		self.OnMsgOk)
+	self:AddCallbackEx("msg_box",     ui_events.MESSAGE_BOX_CANCEL_CLICKED,	self.OnMsgCancel)
+	self:AddCallbackEx("msg_box",     ui_events.MESSAGE_BOX_YES_CLICKED,		self.OnMsgYes)
+	self:AddCallbackEx("msg_box",     ui_events.MESSAGE_BOX_NO_CLICKED,		self.OnMsgNo)
+	self:AddCallbackEx("msg_box",			ui_events.MESSAGE_BOX_QUIT_GAME_CLICKED,self.OnMessageQuitGame)
+	self:AddCallbackEx("msg_box",			ui_events.MESSAGE_BOX_QUIT_WIN_CLICKED,	self.OnMessageQuitWin)
 	--amk
-	self:AddCallback("btn_amk",		ui_events.BUTTON_CLICKED,				self.amk_options,		self)
+	self:AddCallbackEx("btn_amk",		ui_events.BUTTON_CLICKED,				self.amk_options)
 
 end
+
 function main_menu:OnMsgOk()
 	self.mbox_mode = 0
 end
@@ -115,8 +117,7 @@ function main_menu:OnMsgCancel()
 end
 
 function main_menu:OnMsgYes()
-
-	if 	self.mbox_mode == 1 then
+	if self.mbox_mode == 1 then
 		self:LoadLastSave()
 	end
 
@@ -128,25 +129,22 @@ function main_menu:OnMsgNo()
 end
 
 function main_menu:LoadLastSave()
-	local					console = get_console()
 	console:execute			("main_menu off")
 	console:execute			("load_last_save")
 end
 
 function main_menu:OnButton_last_save()
-	if (alife() == nil) or (db_actor and not db_actor:alive()) then
-		self:LoadLastSave();
+	if not self.alive_on_level then
+		self:LoadLastSave()
 		return
 	end
 
-	self.mbox_mode			= 1
-	self.message_box:Init	("message_box_confirm_load_save")
+	self.mbox_mode = 1
+	self.message_box:Init("message_box_confirm_load_save")
 	self:GetHolder():start_stop_menu(self.message_box, true)
 end
 
 function main_menu:OnButton_credits_clicked()
---	local console = get_console()
---	console:execute("main_menu off")
 	game.start_tutorial("credits_seq")
 end
 
@@ -157,57 +155,58 @@ end
 
 function main_menu:OnButton_disconnect_clicked()
 	self.message_box:Init("message_box_quit_game")
-
-	if (level.game_id() ~= 1) then
-		self.message_box:SetText("ui_mm_disconnect_message")	-- MultiPlayer
-	else
-		self.message_box:SetText("ui_mm_quit_game_message")		-- SinglePlayer
-	end
+	self.message_box:SetText("ui_mm_quit_game_message")
 	self:GetHolder():start_stop_menu(self.message_box, true)
 end
 
 function main_menu:OnMessageQuitGame()
-	local console = get_console()
 	console:execute("disconnect")
 end
 
 function main_menu:OnMessageQuitWin()
-	local console = get_console()
 	console:execute("quit")
 end
 
+local dlgs = {
+	amk_options_dlg	= true,
+	load_dlg	= true,
+	opt_dlg		= true,
+	save_dlg	= true
+}
+
 function main_menu:OnButton_return_game()
-	local console = get_console()
-	console:execute("main_menu off")
+	self:ClearCallbacks()
+	for k, v in pairs(dlgs) do
+		v = self[k]
+		if v then
+			v:ClearCallbacks()
+			self[k] = nil
+		end
+	end
+	get_console():execute("main_menu off")
 end
 
 function main_menu:OnButton_new_novice_game()
-	local console = get_console()
 	console:execute("g_game_difficulty gd_novice")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_stalker_game()
-	local console = get_console()
 	console:execute("g_game_difficulty gd_stalker")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_veteran_game()
-	local console = get_console()
 	console:execute("g_game_difficulty gd_veteran")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_master_game()
-	local console = get_console()
 	console:execute("g_game_difficulty gd_master")
 	self:StartGame()
 end
 
 function main_menu:StartGame()
-	local console = get_console()
-
 	if (alife() ~= nil) then
 		console:execute	("disconnect")
 	end
@@ -216,19 +215,8 @@ function main_menu:StartGame()
 	console:execute("main_menu off")
 end
 
-function main_menu:OnButton_load_spawn()
-	if self.spawn_dlg == nil then
-		self.spawn_dlg = ui_spawn_dialog.spawn_dialog()
-		self.spawn_dlg.owner = self
-	end
-
-	self:GetHolder():start_stop_menu(self.spawn_dlg, true)
-	self:GetHolder():start_stop_menu(self, true) --new
-	self:Show(false)
-end
-
 function main_menu:OnButton_save_clicked()
-	if self.save_dlg == nil then
+	if not self.save_dlg then
 		self.save_dlg = ui_save_dialog.save_dialog()
 		self.save_dlg.owner = self
 	end
@@ -239,7 +227,7 @@ function main_menu:OnButton_save_clicked()
 end
 
 function main_menu:OnButton_options_clicked()
-	if self.opt_dlg == nil then
+	if not self.opt_dlg then
 		self.opt_dlg = ui_mm_opt_main.options_dialog()
 		self.opt_dlg.owner = self
 	end
@@ -262,62 +250,48 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
-function main_menu:OnButton_multiplayer_clicked()
-	if self.mp_dlg ==nil then
-		self.mp_dlg = ui_mp_main.mp_main()
-		self.mp_dlg.owner = self
+function main_menu:OnKeyboard(dik, keyboard_action)
+	-- DMX MOD on
+	if self.load_window then
+		if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+			if dik_to_bind(dik) ~= key_bindings.kCONSOLE then
+				self.load_window = nil
+				console:execute("snd_volume_music "..self.sound_volume_music)
+				console:execute("main_menu off")
+				pause_menu_init = false
+			end
+		end
+		return true
 	end
-	self.mp_dlg:UpdateControls()
-	self:GetHolder():start_stop_menu(self.mp_dlg, true)
-	self:GetHolder():start_stop_menu(self, true) --new
-	self:Show(false)
+	-- DMX MOD off
 
---	self.mp_dlg:OnBtn_Refresh()
-
-	local console			= get_console()
-	console:execute			("check_for_updates 0")
-
-	self.mp_dlg:OnRadio_NetChanged()
-end
-
-function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
-		self:OnButton_multiplayer_clicked()
-	end
-	return true
-end
-
-function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
-	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-	local bind = dik_to_bind(dik)
-	local console = get_console()
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		local alive_on_level = level.present() and (db_actor ~= nil) and db_actor:alive()
-		if dik == DIK_keys.DIK_ESCAPE and alive_on_level then
-			console:execute("main_menu off")
+		if dik == DIK_keys.DIK_ESCAPE and self.alive_on_level then
+			self:OnButton_return_game()
 		-- OGSE Team on
 		-- Система быстрых сохранений игры
-		elseif dik == DIK_keys.DIK_F6 and alive_on_level then
-			console:execute("main_menu off")
-			console:execute("save " .. "pseudoquicksave")
-		elseif dik == DIK_keys.DIK_F7 and ui_load_dialog.file_exist("pseudoquicksave.sav") then
+		elseif dik == DIK_keys.DIK_F6 and self.alive_on_level then
+			self:OnButton_return_game()
+			console:execute("save " .. user_name() .. "_quicksave")
+		elseif dik == DIK_keys.DIK_F7 and ui_load_dialog.file_exist(user_name() .. "_quicksave.sav") then
 			if (alife() == nil) then
-				console:execute	("disconnect")
-				console:execute	("start server(" .. "pseudoquicksave" .. "/single/alife/load) client(localhost)")
+				console:execute("disconnect")
+				console:execute("start server(" .. user_name() .. "_quicksave/single/alife/load) client(localhost)")
 			else
-				console:execute	("load " .. "pseudoquicksave")
+				console:execute("load " .. user_name() .. "_quicksave")
 			end
-		elseif (dik == DIK_keys.DIK_F8 or dik == DIK_keys.DIK_S) and alive_on_level then
-			local s_date = ""
-			s_date = AddTextDigit(s_date, level.get_time_days())
-			s_date = s_date .. "_"
-			s_date = AddTextDigit(s_date, level.get_time_hours())
-			s_date = s_date .. "_"
-			s_date = AddTextDigit(s_date, level.get_time_minutes())
-			local s_level = level.name()
-			console:execute("main_menu off")
-			console:execute("save " .. "pqs_" .. s_level .. "_" .. s_date)
+		elseif (dik == DIK_keys.DIK_F8 or dik == DIK_keys.DIK_S) and self.alive_on_level then
+			local name = string.format(translate("ui_autosave_day") .. " %d. %02d.%02d. %s", game.days() + 1,
+						   level.get_time_hours(), level.get_time_minutes(), translate(level.name()))
+			name = name:clear()
+			if string.len(name) > 60 then
+				name = string.sub(name, 1, 57) .. "..."
+			end
+
+			self:OnButton_return_game()
+			console:execute("save " .. name)
 		-- OGSE Team off
 		elseif dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
@@ -343,13 +317,4 @@ function main_menu:amk_options()
 	self:GetHolder():start_stop_menu(self.amk_options_dlg, true)
 	self:GetHolder():start_stop_menu(self, true)
 	self:Show(false)
-end
-
-function AddTextDigit(str, dig)
-	if (dig > 9) then
-		str = str .. dig
-	else
-		str = str .. "0" .. dig
-	end
-	return str
 end

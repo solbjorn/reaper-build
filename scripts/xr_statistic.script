@@ -22,6 +22,12 @@ monster_classes = {
 function addKillCount(npc)
 	local props, sect = getNpcType(npc)
 	if props and sect then
+		if translate(sect) == sect then
+			abort("Statistics entry " .. sect .. " for " .. npc:name() ..
+			      " is not translated")
+			return
+		end
+
 		actor_stats.add_points(props, sect, 1, 1)
 		db_actor:set_character_rank(db_actor:character_rank() + 1)
 	end
@@ -37,29 +43,41 @@ local comms = {
 	bandit		= true,
 	green		= true,
 	sniper		= true,
+	trader		= true,
 	zombied		= true
 }
 for k, v in pairs(comms) do
 	comms[k] = k
 end
 
+local tech = {
+	[clsid.script_heli]	= "helicopter",
+	[clsid.car_s]		= "vehicle_btr"
+}
+
 function getNpcType(npc)
 	if not npc then return nil, nil end
-	if IsStalker(npc) then
+
+	if npc:is_stalker() then
 		local community = comms[npc:character_community()] or "neutral"
 		local rank = ranks.get_obj_rank_name(npc)
 		return "stalkerkills", community.."_"..rank
-	else
+	elseif npc:is_monster() then
 		local community = monster_classes[npc:clsid()]
 		if community == nil then
 			abort("Statistics ERROR: cannot find monster class for [%s]", npc:name())
 			return nil,nil
 		end
-		if community == "NIL" then
-			return nil,nil
-		end
 
 		local rank = ranks.get_obj_rank_name(npc)
 		return "monsterkills", community.."_"..rank
+	else
+		local community = tech[npc:clsid()]
+		if not community then 
+			abort("Statistics ERROR: cannot find entry for [%s]", npc:name())
+			return nil, nil
+		end
+
+		return "techkills", community
 	end
 end

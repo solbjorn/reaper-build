@@ -1,23 +1,15 @@
-local tm_random_task = nil
-
-function tm_register_task_target(target)
-	if not tm_random_task then
-		tm_random_task = task_manager.get_random_task()
-	end
-	tm_random_task:register_target(target)
-end
-
 class "se_outfit" (cse_alife_item_custom_outfit)
 function se_outfit:__init (section) super (section)
 end
 function se_outfit:on_register()
 	cse_alife_item_custom_outfit.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_outfit:on_unregister()
+	cse_alife_item_custom_outfit.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
 class "se_weapon" (cse_alife_item_weapon)
@@ -26,11 +18,12 @@ end
 function se_weapon:on_register()
 	cse_alife_item_weapon.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_weapon:on_unregister()
+	cse_alife_item_weapon.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
 class "se_weapon_shotgun" (cse_alife_item_weapon_shotgun)
@@ -39,11 +32,12 @@ end
 function se_weapon_shotgun:on_register()
 	cse_alife_item_weapon_shotgun.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_weapon_shotgun:on_unregister()
+	cse_alife_item_weapon_shotgun.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
 class "se_weapon_magazined" (cse_alife_item_weapon_magazined)
@@ -52,11 +46,12 @@ end
 function se_weapon_magazined:on_register()
 	cse_alife_item_weapon_magazined.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_weapon_magazined:on_unregister()
+	cse_alife_item_weapon_magazined.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
 class "se_weapon_magazined_w_gl" (cse_alife_item_weapon_magazined_w_gl)
@@ -65,39 +60,52 @@ end
 function se_weapon_magazined_w_gl:on_register()
 	cse_alife_item_weapon_magazined_w_gl.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_weapon_magazined_w_gl:on_unregister()
+	cse_alife_item_weapon_magazined_w_gl.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
-class "se_item"	(cse_alife_item)
+class "se_item" (cse_alife_item)
 function se_item:__init (section) super (section)
 end
 function se_item:on_register()
 	cse_alife_item.on_register( self )
 	-- Регистрация в таскменеджере
-	tm_register_task_target(self)
+	random_task:register_target(self)
 end
 function se_item:on_unregister()
+	cse_alife_item.on_unregister(self)
 	--' Отрегистрация в таскменеджере
-	tm_random_task:unregister_target(self)
+	random_task:unregister_target(self)
 end
 
 class "se_item_torch" (cse_alife_item_torch)
 function se_item_torch:__init (section) super (section)
 end
-function se_item_torch:on_register()
-	cse_alife_item_torch.on_register( self )
-end
-function se_item_torch:on_unregister()
-end
 
---' ФИзобъекты
+--' Физобъекты
 class "se_physic" (cse_alife_object_physic)
 function se_physic:__init (section) super (section)
 end
 function se_physic:keep_saved_data_anyway()
 	return true
+end
+
+function se_physic:STATE_Write(packet)
+	cse_alife_object_physic.STATE_Write(self, packet)
+
+	if self.m_level_vertex_id == 594270 and self:name() == "trader_pribor_0002" then
+		reap_stor.save(packet)
+	end
+end
+
+function se_physic:STATE_Read(packet, size)
+	cse_alife_object_physic.STATE_Read(self, packet, size)
+
+	if self.m_level_vertex_id == 594270 and self:name() == "trader_pribor_0002" then
+		reap_stor.load(packet)
+	end
 end

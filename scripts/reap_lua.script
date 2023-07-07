@@ -1,0 +1,317 @@
+--[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local game_get_game_time = game.get_game_time
+local math_floor = math.floor
+
+--[[---------------------------------------------------------------------------
+ * Ini
+--]]---------------------------------------------------------------------------
+
+ini_file.r_bool_cache = function(ini, section, line, def)
+	local cache = ini.cache
+	if not cache then
+		cache = { }
+		ini.cache = cache
+	end
+
+	local sect = cache[section]
+	if not sect then
+		sect = { }
+		cache[section] = sect
+	end
+
+	local val = sect[line]
+	if val == nil then
+		if ini:line_exist(section, line) then
+			val = ini:r_bool(section, line)
+		end
+		if val == nil then val = "NFD" end
+		sect[line] = val
+	end
+
+	if val ~= "NFD" then return val else return def end
+end
+config.r_bool_cache = ini_file.r_bool_cache
+
+ini_file.r_float_cache = function(ini, section, line, def)
+	local cache = ini.cache
+	if not cache then
+		cache = { }
+		ini.cache = cache
+	end
+
+	local sect = cache[section]
+	if not sect then
+		sect = { }
+		cache[section] = sect
+	end
+
+	local val = sect[line]
+	if val == nil then
+		val = ini:line_exist(section, line) and ini:r_float(section, line) or "NFD"
+		sect[line] = val
+	end
+
+	return val ~= "NFD" and val or def
+end
+config.r_float_cache = ini_file.r_float_cache
+
+ini_file.r_string_cache = function(ini, section, line, def)
+	local cache = ini.cache
+	if not cache then
+		cache = { }
+		ini.cache = cache
+	end
+
+	local sect = cache[section]
+	if not sect then
+		sect = { }
+		cache[section] = sect
+	end
+
+	local val = sect[line]
+	if val == nil then
+		val = ini:line_exist(section, line) and ini:r_string(section, line) or "NFD"
+		sect[line] = val
+	end
+
+	return val ~= "NFD" and val or def
+end
+config.r_string_cache = ini_file.r_string_cache
+
+ini_file.r_u32_cache = function(ini, section, line, def)
+	local cache = ini.cache
+	if not cache then
+		cache = { }
+		ini.cache = cache
+	end
+
+	local sect = cache[section]
+	if not sect then
+		sect = { }
+		cache[section] = sect
+	end
+
+	local val = sect[line]
+	if val == nil then
+		val = ini:line_exist(section, line) and ini:r_u32(section, line) or "NFD"
+		sect[line] = val
+	end
+
+	return val ~= "NFD" and val or def
+end
+config.r_u32_cache = ini_file.r_u32_cache
+
+--[[---------------------------------------------------------------------------
+ * Server objects
+--]]---------------------------------------------------------------------------
+
+local server_classes = {
+	"cse_anomalous_zone",
+	"cse_alife_car",
+	"cse_alife_creature_abstract",
+	"cse_alife_creature_actor",
+	"cse_alife_creature_crow",
+	"cse_alife_creature_phantom",
+	"cse_custom_zone",
+	"cse_alife_dynamic_object",
+	"cse_alife_dynamic_object_visual",
+	"cse_alife_graph_point",
+	"cse_alife_helicopter",
+	"cse_alife_human_abstract",
+	"cse_alife_human_stalker",
+	"cse_alife_item",
+	"cse_alife_item_ammo",
+	"cse_alife_item_artefact",
+	"cse_alife_item_bolt",
+	"cse_alife_item_custom_outfit",
+	"cse_alife_item_detector",
+	"cse_alife_item_document",
+	"cse_alife_item_explosive",
+	"cse_alife_item_grenade",
+	"cse_alife_item_pda",
+	"cse_alife_item_torch",
+	"cse_alife_item_weapon",
+	"cse_alife_item_weapon_magazined",
+	"cse_alife_item_weapon_magazined_w_gl",
+	"cse_alife_item_weapon_shotgun",
+	"cse_alife_level_changer",
+	"cse_alife_monster_abstract",
+	"cse_alife_monster_base",
+	"cse_alife_monster_zombie",
+	"cse_alife_mounted_weapon",
+	"cse_alife_object",
+	"cse_alife_object_breakable",
+	"cse_alife_object_climable",
+	"cse_alife_object_hanging_lamp",
+	"cse_alife_object_physic",
+	"cse_alife_object_projector",
+	"cse_alife_online_offline_group",
+	"cse_alife_ph_skeleton_object",
+	"cse_alife_psydog_phantom",
+	"cse_alife_smart_zone",
+	"cse_alife_space_restrictor",
+	"cse_alife_team_base_zone",
+	"cse_torrid_zone",
+	"cse_alife_trader",
+	"cse_zone_visual",
+	"cse_abstract",
+	"CSE_AbstractVisual",
+	"cse_spectator",
+	"cse_temporary"
+}
+
+function set_cse_field(field, value)
+	for i = 1, #server_classes do
+		_G[server_classes[i]][field] = value
+	end
+end
+
+function get_netpk(obj, field)
+	local t = netpacket:get(obj)
+	if field and t then
+		return t.upd and t.upd[field] or t[field]
+	else
+		return t
+	end
+end
+set_cse_field("get_netpk", get_netpk)
+
+function set_netpk(obj, data, noconvert)
+	return netpacket:set(data, obj, noconvert)
+end
+set_cse_field("set_netpk", set_netpk)
+
+function modify_netpk(obj, ...)
+	return netpacket:modify(obj, ...)
+end
+set_cse_field("modify_netpk", modify_netpk)
+
+local methods = {
+	"is_ammo",
+	"is_anomaly",
+	"is_artefact",
+	"is_binoculars",
+	"is_grenade",
+	"is_knife",
+	"is_monster",
+	"is_stalker",
+	"is_trader",
+	"is_weapon"
+}
+
+for i = 1, #methods do
+	set_cse_field(methods[i], iam_any[methods[i]])
+end
+
+function is_story_object(obj)
+	return obj.m_story_id < 4294967295
+end
+set_cse_field("is_story_object", is_story_object)
+
+--[[---------------------------------------------------------------------------
+ * Client objects
+--]]---------------------------------------------------------------------------
+
+game_object.get_netpk = function(obj, field)
+	local t = netpacket:get(server_object(obj))
+	if field and t then
+		return t.upd and t.upd[field] or t[field]
+	else
+		return t
+	end
+end
+
+game_object.set_netpk = function(obj, data, noconvert)
+	return netpacket:set(data, server_object(obj), noconvert)
+end
+
+game_object.modify_netpk = function(obj, ...)
+	return netpacket:modify(server_object(obj), ...)
+end
+
+game_object.is_stalker = function(obj)
+	return iam_any.is_stalker(obj)
+end
+
+game_object.is_story_object = function(obj)
+	return obj:story_id() < 4294967295
+end
+
+--[[---------------------------------------------------------------------------
+ * CTime
+--]]---------------------------------------------------------------------------
+
+game.CTime.get_table = function(var)
+	local Y, M, D, h, m, s, ms = var:get(Y, M, D, h, m, s, ms)
+	return {
+		year	= Y,
+		month	= M,
+		day	= D,
+		hour	= h,
+		["min"]	= m,
+		sec	= s,
+		msec	= ms
+	}
+end
+
+game.CTime.init = function(var, Y, M, D, h, m, s, ms)
+	var:set(Y or 1, M or 1, D or 1, h or 0, m or 0, s or 0, ms or 0)
+	return var
+end
+
+game.CTime.set_table = function(var, t)
+	if not t then t = { } end
+	var:set(t.year or 1, t.month or 1, t.day or 1, t.hour or 0, t.min or 0, t.sec or 0, t.msec or 0)
+	return var
+end
+
+--[[---------------------------------------------------------------------------
+ * Game time
+--]]---------------------------------------------------------------------------
+
+local start_time
+
+game.get_start_time = function()
+	if start_time then return start_time end
+
+	local t = string.explode(config:r_string("alife", "start_time"), ":")
+	local d = string.explode(config:r_string("alife", "start_date"), ".")
+
+	start_time = game.CTime():set_table({
+		year	= tonumber(d[3]),
+		month	= tonumber(d[2]),
+		day	= tonumber(d[1]),
+		hour	= tonumber(t[1]),
+		["min"]	= tonumber(t[2]),
+		sec	= tonumber(t[3])
+	})
+	return start_time
+end
+
+game.milliseconds = function(var)
+	if not var then var = game_get_game_time() end
+
+	local seconds = var:diffSec(start_time)
+	return seconds * 1000 + var:get_table().msec
+end
+
+game.seconds = function(var)
+	return (var or game_get_game_time()):diffSec(start_time)
+end
+local game_seconds = game.seconds
+
+game.minutes = function(var)
+	return math_floor(game_seconds(var) / 60)
+end
+
+game.hours = function(var)
+	return math_floor(game_seconds(var) / 3600)
+end
+
+game.days = function(var)
+	local start = start_time:get_table()
+	return math_floor((game_seconds(var) + (start.hour * 3600 + start.min * 60 + start.sec)) / 86400)
+end

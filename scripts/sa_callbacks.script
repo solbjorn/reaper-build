@@ -10,20 +10,23 @@ prefetch("sa_utils")
 --[[-----------------------------------------------------------------------------------------------
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
+local hud_animations_mgr
 local hud_interface_mgr
 local next_500 = 0
 ---------------------------------------------------------------------------------------------------
 function actor_update(delta)
-	if not hud_interface_mgr then
+	if not hud_animations_mgr then
+		hud_animations_mgr = sa_hud_animations_mgr.get_hud_animations_mgr()
 		hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
 	end
-	local time_ = time_global()
+	hud_animations_mgr:update()
 	hud_interface_mgr:update()
 	sa_inventory_items_mgr.repack_ammo()
-	if next_500 < time_ then
+	if next_500 < time_real_ms then
 		sa_main.bunker_cooling_sound()
-		next_500 = time_ + 500
+		next_500 = time_real_ms + 500
 	end
+	sa_main.scope_zoom_mode_callback()
 	reap.update()
 end
 ---------------------------------------------------------------------------------------------------
@@ -33,22 +36,23 @@ function actor_net_spawn()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_net_destroy()
+	hud_animations_mgr:clear_scope_texture()
 	reap.net_destroy()
 end
 ---------------------------------------------------------------------------------------------------
-local last_mob_type
 local last_health
 ---------------------------------------------------------------------------------------------------
 function actor_hit(obj, amount, local_direction, who, bone_index)
-	if last_mob_type then
-		reap.hit_effectors(last_mob_type, who, last_health - db_actor.health)
+	if last_health then
+		reap.hit_effectors(last_health - db_actor.health)
 	end
-	last_mob_type = nil
+	last_health = nil
 end
 ---------------------------------------------------------------------------------------------------
 function actor_death(victim, who)
 	hud_interface_mgr:actor_death()
 	sa_main.restore_torch(victim)
+	reap.actor_death(victim, who)
 end
 ---------------------------------------------------------------------------------------------------
 function item_take(obj)
@@ -62,19 +66,19 @@ local belt_obj_by_id = {}
 ---------------------------------------------------------------------------------------------------
 function item_drop(obj)
 	reap.item_drop(obj)
-
 	if belt_obj_by_id[obj:id()] then
 		item_drop_from_belt(obj)
 		belt_obj_by_id[obj:id()] = nil
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function item_drop_from_inventory(obj)
-end
----------------------------------------------------------------------------------------------------
 function item_drop_from_belt(obj)
 	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
 	reap.item_drop_from_belt(obj)
+end
+---------------------------------------------------------------------------------------------------
+function item_use(obj)
+	reap.item_use(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_belt(obj)
@@ -83,7 +87,6 @@ function item_belt(obj)
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_belt(obj)
-
 	belt_obj_by_id[obj:id()] = obj
 end
 ---------------------------------------------------------------------------------------------------
@@ -97,7 +100,6 @@ function item_ruck(obj)
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_ruck(obj)
-
 	if belt_obj_by_id[obj:id()] then
 		item_move_from_belt(obj)
 		belt_obj_by_id[obj:id()] = nil
@@ -106,7 +108,6 @@ end
 ---------------------------------------------------------------------------------------------------
 function item_slot(obj)
 	reap.item_slot(obj)
-
 	if belt_obj_by_id[obj:id()] then
 		item_move_from_belt(obj)
 		belt_obj_by_id[obj:id()] = nil
@@ -117,38 +118,53 @@ function take_item_from_box(box, item)
 	reap.take_item_from_box(box, item)
 end
 ---------------------------------------------------------------------------------------------------
-function info(info_id)
-	sa_main.hiding_weapons(info_id)
-	sa_main.dead_body_sounds(info_id)
-	sa_main.lchanger_indoor_locations(info_id)
+function info(info_id, ui_info)
+	if ui_info then
+		sa_main.dead_body_sounds(info_id)
+		reap.info(info_id)
+	end
 end
 ---------------------------------------------------------------------------------------------------
-function hit_effector(mob_type, side)
-	if not last_mob_type or mob_type ~= hit_mob_types.generic then
-		last_mob_type = mob_type
+function scope_zoom_mode(mode_on)
+	if not level.main_input_receiver() then
+		if mode_on then
+			level.hide_indicators()
+		else
+			level.show_indicators()
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function hit_effector()
+	if not last_health then
 		last_health = db_actor.health
 	end
 end
 ---------------------------------------------------------------------------------------------------
 function key_press(dik)
+	if not level.main_input_receiver() then
+		sa_main.pda_info_fix(dik)
+	end
+	hud_animations_mgr:on_keyboard(dik, key_events.pressed)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
 function key_release(dik)
+	hud_animations_mgr:on_keyboard(dik, key_events.released)
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------
 function new_game()
-	start_timer("psy_blowout_timer", "sa_main.yantar_psy_blowout()", "real", 0, math.random(5, 7))
+	timer("sa_main.yantar_psy_blowout", math.random(5 * 60 * 1000, 7 * 60 * 1000), true)
 	reap.new_game()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_save(packet)
-	reap.save(packet)
+	reap.actor_save(packet)
 end
 ---------------------------------------------------------------------------------------------------
 function actor_load(reader)
-	reap.load(reader)
+	reap.actor_load(reader)
 end
 --[[-----------------------------------------------------------------------------------------------
  * NPC
@@ -166,14 +182,20 @@ end
  * MONSTER
 --]]-----------------------------------------------------------------------------------------------
 function monster_update(obj)
-	if obj:alive() and db_actor:alive() and not actor_flags.sleep_state then
+	if obj:alive() and db.actor:alive() and not (actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state) then
 		local enemy = obj:get_enemy()
 		if enemy and obj:see(enemy) and enemy:id() == db_actor_id then
+			sa_monsters.bloodsucker_vampire(obj)
 			sa_monsters.pseudodog_psy_effect(obj)
 			sa_monsters.burer_tele_attack(obj)
 		end
 		sa_monsters.controller_death_zone(obj)
 	end
+	sa_monsters.poltergeist_particles(obj)
+end
+---------------------------------------------------------------------------------------------------
+function monster_net_spawn(obj)
+	sa_monsters.poltergeist_particles_init(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function monster_use(obj, who)

@@ -32,6 +32,7 @@ local string_sub   = string.sub
 class "evaluator_contact" (property_evaluator)
 function evaluator_contact:__init(name, storage) super (nil, name)
   self.a = storage
+	self.updcnt = -1
 end
 function evaluator_contact:evaluate()
   if self.a.meet_set ~= true then return false end
@@ -48,7 +49,11 @@ function evaluator_contact:evaluate()
       return false
     end
 
-    self.a.meet_manager:update()
+		self.updcnt = self.updcnt-1
+		if self.updcnt < 0 then
+			self.updcnt = 5
+			self.a.meet_manager:update()
+		end
 
     if self.mgr == nil then
       self.mgr = self.object:motivation_action_manager()
@@ -58,6 +63,7 @@ function evaluator_contact:evaluate()
       self.begtime=nil
       return false
     end
+
     -- Чтобы не стояли и не пялились часами
     local tken=(tostring(self.a.meet_manager.state)~="nil")
     local istk=self.object:is_talking()
@@ -109,10 +115,7 @@ function action_meet_wait:execute ()
   elseif meet_manager.victim == "nil" then
     victim = nil
   else
-    local sim = alife()
-    if sim then
-      victim = sim:story_object(victim)
-    end
+    victim = story_object(victim)
   end
 
   local synsound = nil
@@ -169,7 +172,7 @@ function action_meet_wait:execute ()
 
   local tt = db.storage[self.object:id()]
   if tt.active_scheme then
-      xr_logic.try_switch_to_another_section(self.object, tt[tt.active_scheme], db_actor)
+      xr_logic.try_switch_to_another_section(self.object, tt[tt.active_scheme])
   end
 end
 function action_meet_wait:finalize ()
@@ -185,15 +188,18 @@ function Cmeet_manager:__init(npc, storage)
   self.startdialog = nil
 end
 function Cmeet_manager:update()
-  -- стартовый диалог
-  local targets=amk.unpack_array_from_string(amk.load_variable("kill_targets",""))
-  local kill_dialog=nil
-  for k,v in pairs(targets) do
-    if v.id==self.npc:id() then
-      kill_dialog=v.dialog
-      break
-    end
-  end
+	-- стартовый диалог
+
+	local targets = container:get("kill_targets", { })
+	local id, v, kill_dialog = self.npc:id()
+	for i = 1, #targets do
+		v = targets[i]
+		if v.id == id then
+			kill_dialog = v.dialog
+			break
+		end
+	end
+
   if kill_dialog then
   -- NPC собрались убивать, поэтому ничего важнее быть не может. Всё остальное потом
     if self.startdialog~=kill_dialog then
@@ -201,7 +207,7 @@ function Cmeet_manager:update()
       self.startdialog=kill_dialog
     end
   elseif self.a.meet_dialog ~= nil then
-    local tmp = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_dialog)
+    local tmp = xr_logic.pick_section_from_condlist(self.npc, self.a.meet_dialog)
     if self.startdialog ~= tmp then
       self.startdialog = tmp
       if tmp == nil or tmp == "nil" then
@@ -256,11 +262,11 @@ function Cmeet_manager:process_zone()
   if key ~= nil then
     local r1,r2
     if self.a.zone[key].state then
-      r1 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.zone[key].state)
+      r1 = xr_logic.pick_section_from_condlist(self.npc, self.a.zone[key].state)
       self.emerg_state = true
     end
     if self.a.zone[key].sound then
-      r2 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.zone[key].sound)
+      r2 = xr_logic.pick_section_from_condlist(self.npc, self.a.zone[key].sound)
     end
     return tostring(r1), tostring(r2)
   end
@@ -269,7 +275,8 @@ end
 function Cmeet_manager:process_meet()
   local key
   local is_talking = self.npc:is_talking()
-  if isWeapon(db_actor:active_item()) and
+	local act = db_actor:active_item()
+	if act and act:is_weapon() and not act:is_binoculars() and
        self.npc:relation(db_actor) ~= game_object.friend and self:actor_targets_npc(self.npc)
     then
     key = self:get_key_from_distance(self.a.meet_state_wpn)
@@ -277,14 +284,14 @@ function Cmeet_manager:process_meet()
       self.wpn_meet=true
       local r1,r2
       if self.a.meet_state_wpn[key].state then
-        r1 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_state_wpn[key].state)
+        r1 = xr_logic.pick_section_from_condlist(self.npc, self.a.meet_state_wpn[key].state)
         self.emerg_state = true
       end
       if is_talking then
         r2 = nil
       else
         if self.a.meet_state_wpn[key].sound then
-          r2 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_state_wpn[key].sound)
+          r2 = xr_logic.pick_section_from_condlist(self.npc, self.a.meet_state_wpn[key].sound)
         end
       end
       return tostring(r1), tostring(r2)
@@ -295,14 +302,14 @@ function Cmeet_manager:process_meet()
     if key ~= nil then
       local r1,r2
       if self.a.meet_state[key].state then
-        r1 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_state[key].state)
+        r1 = xr_logic.pick_section_from_condlist(self.npc, self.a.meet_state[key].state)
         self.emerg_state = false
       end
       if is_talking then
         r2 = nil
       else
         if self.a.meet_state[key].sound then
-          r2 = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.meet_state[key].sound)
+          r2 = xr_logic.pick_section_from_condlist(self.npc, self.a.meet_state[key].sound)
         end
       end
       return tostring(r1), tostring(r2)
@@ -312,15 +319,16 @@ function Cmeet_manager:process_meet()
 end
 function Cmeet_manager:process_victim()
   local key
-  if isWeapon(db_actor:active_item()) then
+	local act = db_actor:active_item()
+	if act and act:is_weapon() then
     key = self:get_key_from_distance(self.a.victim_wpn)
     if key ~= nil then
-      return tostring(xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.victim_wpn[key].state))
+      return tostring(xr_logic.pick_section_from_condlist(self.npc, self.a.victim_wpn[key].state))
     end
   else
     key = self:get_key_from_distance(self.a.victim)
     if key ~= nil then
-      return tostring(xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.victim[key].state))
+      return tostring(xr_logic.pick_section_from_condlist(self.npc, self.a.victim[key].state))
     end
   end
   return "nil"
@@ -328,7 +336,7 @@ end
 
 function Cmeet_manager:actor_targets_npc(npc)
   local dangerang=1/npc:position():distance_to(db_actor:position())
-  local ang=horz_angle(device().cam_dir,npc:position():sub(device().cam_pos))
+	local ang=horz_angle(screen.cam_dir,npc:position():sub(screen.cam_pos))
   local tgt=ang>-dangerang and ang<dangerang
   if tgt then
     if self.tgt_time then
@@ -375,10 +383,11 @@ function Cmeet_manager:process_use()
   end
 
   local t
-  if isWeapon(db_actor:active_item()) then
-    t = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.use_wpn)
+	local act = db_actor:active_item()
+	if act and act:is_weapon() and not act:is_binoculars() then
+    t = xr_logic.pick_section_from_condlist(self.npc, self.a.use_wpn)
   else
-    t = xr_logic.pick_section_from_condlist(db_actor, self.npc, self.a.use)
+    t = xr_logic.pick_section_from_condlist(self.npc, self.a.use)
   end
   -- проверка по дистанции
   if (is_talking and self.npc:position():distance_to_sqr(db_actor:position()) > 9) and
@@ -406,7 +415,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- binder
 ----------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(object, st)
+function add_to_binder(object, st)
 	local manager = object:motivation_action_manager()
 
 	-- Evaluators
@@ -558,8 +567,8 @@ function init_meet(npc, ini, section, st, scheme)
 		st.init_meet		= ""
 		st.victim			= {}
 		st.victim_wpn		= {}
-		st.use				= xr_logic.parse_condlist_q("false")
-		st.use_wpn			= xr_logic.parse_condlist_q("false")
+		st.use				= xr_logic.parse_condlist("false")
+		st.use_wpn			= xr_logic.parse_condlist("false")
 		st.meet_dialog		= {}
 		st.zone				= {}
 		st.syndata			= {}
@@ -567,29 +576,29 @@ function init_meet(npc, ini, section, st, scheme)
 		st.abuse			= "false"
 	elseif section == "nil" or not ini:section_exist(section) then
 		-- Загружаем дефолты!
-		st.meet_state		= parse_data_q(def.meet_state)
-		st.meet_state_wpn	= parse_data_q(def.meet_state_wpn)
+		st.meet_state		= parse_data(def.meet_state)
+		st.meet_state_wpn	= parse_data(def.meet_state_wpn)
 		st.init_meet		= def.init_meet
-		st.victim			= parse_data_q(def.victim)
-		st.victim_wpn		= parse_data_q(def.victim_wpn)
-		st.use				= xr_logic.parse_condlist_q(def.use)
-		st.use_wpn			= xr_logic.parse_condlist_q(def.use_wpn)
+		st.victim			= parse_data(def.victim)
+		st.victim_wpn		= parse_data(def.victim_wpn)
+		st.use				= xr_logic.parse_condlist(def.use)
+		st.use_wpn			= xr_logic.parse_condlist(def.use_wpn)
 		st.meet_dialog		= {}
 		st.zone				= {}
-		st.syndata			= parse_syn_data_q(def.syndata)
+		st.syndata			= parse_syn_data(def.syndata)
 		st.precond			= def.precond
 		st.abuse			= def.abuse
 	else
-		st.meet_state		= parse_data_q(get_field_string("meet_state", def.meet_state))
-		st.meet_state_wpn	= parse_data_q(get_field_string("meet_state_wpn", def.meet_state_wpn))
+		st.meet_state		= parse_data(get_field_string("meet_state", def.meet_state))
+		st.meet_state_wpn	= parse_data(get_field_string("meet_state_wpn", def.meet_state_wpn))
 		st.init_meet		= get_field_string("init_meet", def.init_meet)
-		st.victim			= parse_data_q(get_field_string("victim", def.victim))
-		st.victim_wpn		= parse_data_q(get_field_string("victim_wpn", def.victim_wpn))
-		st.use				= xr_logic.parse_condlist_q(get_field_string("use", def.use))
-		st.use_wpn			= xr_logic.parse_condlist_q(get_field_string("use_wpn", def.use_wpn))
-		st.meet_dialog		= xr_logic.parse_condlist_q(get_field_string("meet_dialog", ""))
-		st.zone				= parse_zone_data_q(get_field_string("zone", ""))
-		st.syndata			= parse_syn_data_q(get_field_string("synpairs", def.syndata))
+		st.victim			= parse_data(get_field_string("victim", def.victim))
+		st.victim_wpn		= parse_data(get_field_string("victim_wpn", def.victim_wpn))
+		st.use				= xr_logic.parse_condlist(get_field_string("use", def.use))
+		st.use_wpn			= xr_logic.parse_condlist(get_field_string("use_wpn", def.use_wpn))
+		st.meet_dialog		= xr_logic.parse_condlist(get_field_string("meet_dialog", ""))
+		st.zone				= parse_zone_data(get_field_string("zone", ""))
+		st.syndata			= parse_syn_data(get_field_string("synpairs", def.syndata))
 		st.precond			= get_field_string("precond", def.precond)
 		st.abuse			= get_field_string("abuse", def.abuse)
 	end
@@ -605,7 +614,7 @@ function init_meet(npc, ini, section, st, scheme)
   st.meet_set = true
 end
 
-function parse_data_q(s)
+function parse_data(s)
 	local t = {}
 
     if s then
@@ -631,10 +640,10 @@ function parse_data_q(s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist_q(state)
+				dat.state = xr_logic.parse_condlist(state)
 			end
 			if sound then
-				dat.sound = xr_logic.parse_condlist_q(sound)
+				dat.sound = xr_logic.parse_condlist(sound)
 			end
 			t[#t+1] = dat
 		end
@@ -642,7 +651,7 @@ function parse_data_q(s)
 	return t
 end
 
-function parse_zone_data_q(s)
+function parse_zone_data(s)
 	local t = {}
 
     if s then
@@ -668,10 +677,10 @@ function parse_zone_data_q(s)
 
 			dat.zone = zone
 			if state then
-				dat.state = xr_logic.parse_condlist_q(state)
+				dat.state = xr_logic.parse_condlist(state)
 			end
 			if sound then
-				dat.sound = xr_logic.parse_condlist_q(sound)
+				dat.sound = xr_logic.parse_condlist(sound)
 			end
 			t[#t+1] = dat
 		end
@@ -680,7 +689,7 @@ function parse_zone_data_q(s)
     return t
 end
 
-function parse_syn_data_q(s)
+function parse_syn_data(s)
 	local t = {}
     if s then
 		for name in string_gfind( s, "(%|*[^%|]+%|*)%p*" ) do
@@ -719,13 +728,13 @@ function set_actor_dialogs(npc, ini, name, dialog_section)
 	local actor_dialogs_string = get_field_string("id")
 	if actor_dialogs_string ~= nil then
 		--' Создаем в массиве запись где будут храниться считанные диалоги.
-		db.storage[npc:id()].actor_dialogs = parse_names(actor_dialogs_string)
+		db.storage[npc:id()].actor_dialogs = string.parse_names(actor_dialogs_string)
 	end
 
 	local actor_disable = get_field_string("disable")
 	if actor_disable ~= nil then
 		--' Создаем в массиве запись где будут храниться считанные диалоги.
-		db.storage[npc:id()].actor_disable = parse_names(actor_disable)
+		db.storage[npc:id()].actor_disable = string.parse_names(actor_disable)
 	end
 end
 
@@ -748,19 +757,19 @@ end
 
 -- Функция проверяет не мешает ли персонажу говорить с нами оружие
 function cannot_talk_by_weapon(npc)
-  local st = db.storage[npc:id()].meet
-  if st then
-    if not isWeapon(db_actor:active_item()) then
-      return false
-    end
+	local st = db.storage[npc:id()].meet
+	if st then
+		local act = db_actor:active_item()
+		if not act or not act:is_weapon() then return false end
+
     if st.use then
-      local t = xr_logic.pick_section_from_condlist(db_actor, npc, st.use)
+      local t = xr_logic.pick_section_from_condlist(npc, st.use)
       if t == "false" then
         return false
       end
     end
     if st.use_wpn then
-      local t = xr_logic.pick_section_from_condlist(db_actor, npc, st.use_wpn)
+      local t = xr_logic.pick_section_from_condlist(npc, st.use_wpn)
       if t == "false" then
         return true
       end

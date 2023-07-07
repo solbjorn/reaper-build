@@ -13,9 +13,20 @@ function action_timer:__init(obj, storage)
 	self.st = storage
 end
 function action_timer:update(delta)
-	local actor = db_actor
-	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
+	end
+	-- Ray Twitty aka Shadows: скрываем статики если худ выключен
+	if is_hud_draw() then
+		if not hud:GetCustomStatic(self.st.timer_id) then
+			self.st.timer = hud:AddCustomStatic(self.st.timer_id, true):wnd()
+			if self.st.string then
+				hud:AddCustomStatic("hud_timer_text", true):wnd():SetTextST(self.st.string)
+			end
+		end
+	else
+		self:deactivate()
+		self.st.timer = nil
 	end
 	-- Высчитываем сколько времени уже работает счетчик
 	local nn = time_global() - db.storage[self.object:id()].activation_time
@@ -31,12 +42,15 @@ function action_timer:update(delta)
 		value_time = 0
 	end
 	-- Формируем строку счетчика
-	local hours = math_floor(value_time/3600000)
-	local minutes = math_floor(value_time/60000 - hours*60)
-	local seconds = math_floor(value_time/1000 - hours*3600 - minutes*60)
-	local str = tostring(hours)..":"..sr_timer.time2str(minutes)..":"..sr_timer.time2str(seconds)
+	-- Ray Twitty aka Shadows: если статик скрыт, нет смысла и считать
+	if self.st.timer then
+		local hours = math_floor(value_time/3600000)
+		local minutes = math_floor(value_time/60000 - hours*60)
+		local seconds = math_floor(value_time/1000 - hours*3600 - minutes*60)
+		local str = tostring(hours)..":"..sr_timer.time2str(minutes)..":"..sr_timer.time2str(seconds)
 
-	self.st.timer:SetTextST(str)
+		self.st.timer:SetTextST(str)
+	end
 
 	-- Определяем нужно ли куда то переходить.
 	for k,v in pairs(self.st.on_value) do
@@ -44,19 +58,17 @@ function action_timer:update(delta)
 		   (self.st.type == "inc" and value_time >= v.dist)
 		then
 			-- Обработка значения.
-			xr_logic.switch_to_section(self.object, self.st, xr_logic.pick_section_from_condlist(db_actor, self.object, v.state))
+			xr_logic.switch_to_section(self.object, self.st, xr_logic.pick_section_from_condlist(self.object, v.state))
 		end
 	end
 end
 function action_timer:deactivate(delta)
-	local custom_timer_static = self.st.ui:GetCustomStatic(self.st.timer_id)
-	if custom_timer_static ~= nil then
-		self.st.ui:RemoveCustomStatic(self.st.timer_id)
+	if hud:GetCustomStatic(self.st.timer_id) then
+		hud:RemoveCustomStatic(self.st.timer_id)
 	end
 	if self.st.string ~= nil then
-		local custom_static_text = self.st.ui:GetCustomStatic("hud_timer_text")
-		if custom_static_text ~= nil then
-			self.st.ui:RemoveCustomStatic("hud_timer_text")
+		if hud:GetCustomStatic("hud_timer_text") then
+			hud:RemoveCustomStatic("hud_timer_text")
 		end
 	end
 end
@@ -69,7 +81,7 @@ function time2str(n)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(obj, storage)
+function add_to_binder(obj, storage)
 	storage.actions[ action_timer(obj, storage) ] = true
 end
 
@@ -92,12 +104,11 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	st.timer_id = utils.cfg_get_string( ini, section, "timer_id", obj, false, "", "hud_timer")
 	st.string	= utils.cfg_get_string( ini, section, "string", obj, false, "")
 
-	st.ui = get_hud()
-	local custom_timer_static = st.ui:AddCustomStatic(st.timer_id, true)
+	local custom_timer_static = hud:AddCustomStatic(st.timer_id, true)
 	st.timer = custom_timer_static:wnd()
 
 	if st.string ~= nil then
-		local timer_text_static = st.ui:AddCustomStatic("hud_timer_text", true)
+		local timer_text_static = hud:AddCustomStatic("hud_timer_text", true)
 		timer_text_static:wnd():SetTextST(st.string)
 	end
 end
@@ -117,7 +128,7 @@ function parse_data(npc,s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist_q(state)
+				dat.state = xr_logic.parse_condlist(state)
 			end
 			t[#t+1] = dat
 		end

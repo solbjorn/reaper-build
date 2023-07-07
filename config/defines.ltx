@@ -54,6 +54,23 @@ cform           		= skeleton
 ; Ненужные значения, которые читаются, но в подавляющем большинстве не используются
 inv_name_short			= UNUSED	; Это используется только на худе, и нужно прописывать только для патронов, ножей и гранат
 
+; Аномалии
+[anomaly]
+GroupControlSection	= spawn_group_zone
+;$spawn 			= "zones\anom_zone"
+;$prefetch 			= 16
+attenuation     	= 1
+period				= 1
+idle_particles_dont_stop = false
+
+artefacts			=			; Список артов, которые спавнить: секция, удельная вероятность: af_dummy_spring, 0.41, af_dummy_dummy, 0.36 ...
+BirthProbability 	= 0.0
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24  		; Насколько часто спавнить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 50  		; Вероятность заспавнить артефакт в процентах.
+spawn_blowout_artefacts = off	; Рождение артефактов во время срабатывания в online
+
 ; Остальное
 [O_INVBOX]:base
 class				= O_INVBOX
@@ -100,7 +117,6 @@ script_binding          = bind_restrictor.bind
 class     				= LVL_CHNG
 GroupControlSection 	=
 $spawn      			= "ai\level changer"
-script_binding  		= bind_lc.bind
 
 [script_zone]
 class     				= SCRIPTZN

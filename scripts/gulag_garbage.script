@@ -1,4 +1,4 @@
-function load_job(sj, gname, type, squad, groups)
+function load_job(sj, gname, type)
 --'--------------------------------------------------------------------------
 --' GARBAGE
 --'--------------------------------------------------------------------------
@@ -474,7 +474,6 @@ local t
 	end
 
 	--' Boars nest 2
-
 	if type == "gar_boars_nest2" then
 		t = { section = "logic@gar_boars2_nest",
 			idle = 0,
@@ -1375,7 +1374,7 @@ function gar_seryi_killed()
 	       has_alife_info("gar_seryi_drug2_die")
 end
 
-function load_states(gname, type)
+function load_states(type)
 	if type == "gar_hellcar_group" then
 		return function(gulag)
 			local actor = db.actor
@@ -1549,11 +1548,8 @@ end
 --------------------------------------------------------------------------
 -- Dynamic ltx
 --------------------------------------------------------------------------
-function load_ltx(gname, type)
-	return nil
-end
 
-function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+function checkStalker(npc_community, gulag_type, se_obj)
 	if gulag_type == "gar_hellcar_group" then
 		return npc_community == "stalker"
 	end

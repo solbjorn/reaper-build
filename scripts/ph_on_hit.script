@@ -19,14 +19,14 @@ end
 
 function ph_on_hit:hit_callback(obj, amount, local_direction, who, bone_index)
 	if db.storage[self.object:id()].active_scheme then
-		xr_logic.try_switch_to_another_section(obj, self.st, db_actor)
+		xr_logic.try_switch_to_another_section(obj, self.st)
 	end
 end
 function ph_on_hit:deactivate()
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.action = ph_on_hit(npc, storage)
 end
 

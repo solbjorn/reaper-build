@@ -1,0 +1,155 @@
+--[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local clsid_controller_s = clsid.controller_s
+
+--[[---------------------------------------------------------------------------
+ * dsh
+--]]---------------------------------------------------------------------------
+
+class "cached_condlist"
+
+function cached_condlist:__init(parsed, ttl)
+	self.parsed = parsed
+	self.ttl = ttl
+end
+
+function cached_condlist:pick_section_from_condlist(npc)
+	if self.cached_time and self.cached_time > time_real_ms then
+		return self.cached_res
+	end
+	if not time_real_ms then
+		return xr_logic.pick_section_from_condlist(npc, self.parsed)
+	end
+
+	self.cached_res = xr_logic.pick_section_from_condlist(npc, self.parsed)
+	self.cached_time = time_real_ms + self.ttl
+
+	return self.cached_res
+end
+
+--[[---------------------------------------------------------------------------
+ * utak3r
+--]]---------------------------------------------------------------------------
+
+function rename_autosave(old_lvl, new_lvl)
+	local save_name = user_name() .. "_autosave.sav"
+	local fs = getFS()
+	if not fs:exist("$game_saves$", save_name) then return end
+
+	local new_svname = translate("ui_autosave_day") .. " " .. game.days() + 1 ..
+			   ". " .. translate(old_lvl) .. " - " .. translate(new_lvl)
+	new_svname = new_svname:clear()
+
+	local f1 = fs:update_path("$game_saves$", save_name)
+	local f2 = fs:update_path("$game_saves$", new_svname .. ".sav")
+	fs:file_copy(f1, f2)
+	fs:file_delete(f1)
+
+	console:execute("load_last_save " .. new_svname)
+end
+
+--[[---------------------------------------------------------------------------
+ * ZRP
+--]]---------------------------------------------------------------------------
+
+function net_spawn()
+	-- fix "took wrong exit from Agroprom tunnels"
+	if not has_info("agr_find_gunslinger_cache_final") and
+	   has_info("agr_gunslinger_flash_have") and
+	   curr_level ~= "l03u_agr_underground" then
+		give_info("agr_find_gunslinger_cache_final")
+	end
+end
+
+function kill_online_controllers()
+	for id, obj in pairs(db.creatures) do
+		if obj:clsid() == clsid_controller_s and obj:alive() then
+			obj:kill(obj)
+		end
+	end
+end
+
+-- Mr. Fusion's spot remover code
+local sticky_mapspots = {
+	["esc_flash_task"] = {
+		["2"] = {sid = 9, type = "green_location"},	-- Wolf's scouts
+		["3"] = {sid = 17, type = "green_location"},	-- Bandits at factory (kill)
+		["4"] = {sid = 4, type = "green_location"}	-- Nimble
+	},
+	["agroprom_find_gunslinger_cache"] = {
+		["3"] = {sid = 307, type = "green_location"}	-- "preferred" underground exit
+	},
+	["val_captive_help"] = {
+		["2"] = {sid = 400, type = "green_location"}	-- Dutyer to rescue in ambush
+	},
+	["yan_find_scientist"] = {
+		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+	},
+	["yan_find_scientist_semenov"] = {
+		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+	},
+	["yan_find_vasilyev_task"] = {
+		["2"] = {sid = 907, type = "green_location"}	-- lab entrance
+	},
+	["yan_kill_brain_task_2"] = {
+		["2"] = {sid = 921, type = "green_location"}	-- secret tunnel exit
+	},
+	["mil_kill_sniper"] = {
+		["2"] = {sid = 708, type = "blue_location"}	-- Skull (reward)
+	},
+	["mil_kill_lukash"] = {
+		["4"] = {sid = 707, type = "green_location"},	-- Lukash (kill)
+		["5"] = {sid = 774, type = "blue_location"}	-- Duty farmstead (reward)
+	},
+	["mil_mad_job"] = {
+		["2"] = {sid = 702, type = "blue_location"}	-- Max (reward)
+	},
+	["mil_lukash_job"] = {
+		["2"] = {sid = 708, type = "crlc_mdl"},		-- Skull (kill)
+		["3"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+	},
+	["mil_courier_job"] = {
+		["2"] = {sid = 710, type = "crlc_big"},		-- Pavlik (wait)
+		["3"] = {sid = 710, type = "green_location"},	-- Pavlik (kill)
+		["4"] = {sid = 719, type = "green_location"},	-- Pavlik's contact (kill)
+		["5"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+	},
+	["mil_blockpost_job"] = {
+		["2"] = {sid = 770, type = "crlc_big"}		-- Cap's barrier
+	},
+	["mil_freedom_rg6_task"] = {
+		["2"] = {sid = 728, type = "green_location"},	-- Cook
+		["3"] = {sid = 706, type = "green_location"}	-- Bulldog 6 in village
+	},
+	["bar_radar_deactivate"] = {
+		["2"] = {sid = 1005, type = "green_location"},	-- bunker entrance
+		["3"] = {sid = 1006, type = "green_location"}	-- radar switch
+	},
+	["cit_doctor_task"] = {
+		["2"] = {sid = 822, type = "green_location"}	-- hotel room with decoder
+	},
+	["rad_get_to_aes"] = {
+		["3"] = {sid = 830, type = "green_location"},	-- Stadium entrance
+		["4"] = {sid = 1102, type = "green_location"}	-- Sarcophagus entrance
+	},
+	["sar_monolith"] = {
+		["2"] = {sid = 1300, type = "green_location"}	-- Monolith
+	},
+	["sar_secret_lab"] = {
+		["2"] = {sid = 1303, type = "green_location"}	-- C-Con lab door
+	}
+}
+
+function task_mapspot_cleanup(task_id, objective)
+	local obj = sticky_mapspots[task_id]
+	if not obj then return end
+
+	obj = obj[tostring(objective)]
+	if not obj then return end
+
+	level.parked_call(function()
+		level_tasks.remove_location_safe(obj.sid, obj.type)
+	end)
+end

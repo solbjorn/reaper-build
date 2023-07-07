@@ -5,7 +5,7 @@ function action_process_use:__init(obj, storage)
 end
 function action_process_use:use_callback(victim, who)
 	if db.storage[self.object:id()].active_scheme then
-		xr_logic.try_switch_to_another_section(victim, self.st, db_actor)
+		xr_logic.try_switch_to_another_section(victim, self.st)
 	end
 end
 
@@ -87,7 +87,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- binder
 ----------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.action = action_process_use(npc, storage)
 end
 

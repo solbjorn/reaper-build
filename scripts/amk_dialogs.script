@@ -77,23 +77,12 @@ function scare_humanoid(talker,listener) -- можно вызывать как из фразы ГГ, так 
   h.type = hit.wound
   tgt:hit(h)
   tgt.morale=0
---  local hc=tgt:get_holder_class()
---  amk.mylog("morale ".. tgt.morale .. " hclass " .. type(hc) .. " mor " .. type(hc.SetMorale))
-end
-
-function info_received()
-  amk.send_tip("",game.translate_string("st_found_new_pda"),0,10,"gen_info")
 end
 
 function actor_has_money_30000()
-	return db_actor:money() >= reap.with_discount(30000)
+	return has_money(reap.with_discount(30000))
 end
 
-function give_money_30000(t1, t2)
-	local npc = t1
-	if npc:id() == db_actor_id then
-		npc = t2
-	end
-
-	dialogs.relocate_money(npc, reap.with_discount(30000), "out")
+function give_money_30000()
+	lost_money(reap.with_discount(30000))
 end

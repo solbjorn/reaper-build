@@ -33,9 +33,7 @@ function action_abuse_hit:initialize()
 
 	state_mgr.set_state(self.object, "punch", nil, nil, {look_object = db.actor}, {animation = true})
 	xr_sound.set_sound_play(self.object, "use_abuse")
-	if (news_main and news_main.on_abuse) then
-		news_main.on_abuse(self.object)
-	end
+	news_main.on_abuse(self.object)
 end
 function action_abuse_hit:execute ()
 	action_base.execute(self)
@@ -104,7 +102,7 @@ local xr_actions_id_alife = xr_actions_id.alife
 local stalker_ids_property_alive = stalker_ids.property_alive
 local stalker_ids_property_danger = stalker_ids.property_danger
 
-function add_to_binder_q(object, st)
+function add_to_binder(object, st)
 	local manager = object:motivation_action_manager()
 
 	-- Evaluators

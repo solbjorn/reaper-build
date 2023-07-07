@@ -1,13 +1,9 @@
-if (jit == nil) then
-  profiler.setup_hook ()
-end
+if not jit then abort("JIT is nil") end
 
 prefetch("sa_init")
+prefetch('xr_extensions')
 
-db_actor = nil
-db_actor_id = 0
-
-local string_gfind = string.gfind
+math.randomseed(os.time())
 
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типы схем
@@ -26,29 +22,141 @@ end
 
 -- Глобальные singletone классы
 config = system_ini()
+console = get_console()
+graph = game_graph()
+screen = device()
 
 -- Следующие singletone классы задаются в start_game_callback
 g_alife = nil
+netpacket = nil
+
+-- В init_container
+container = nil
+freeplay_stats = nil
+random_task = nil
+treasure = nil
+variable = nil
+
+-- В bind_actor.net_spawn
+db_actor = nil
+db_actor_id = 0
+inv = nil
+hud = nil
+aem = nil
+dream_ = nil
+
+curr_level = nil
+time_real_ms = nil
+time_game_ct = nil
+time_game_hours = nil
 
 prefetch("lua_ext")
+prefetch("reap_lua")
+
+function init_clsids()
+	clsid_script_stalker = clsid.script_stalker
+	clsid_car = clsid.car
+	clsid_actor = clsid.actor
+	clsid_smart_terrain = clsid.smart_terrain
+	clsid_bloodsucker_s = clsid.bloodsucker_s
+end
+
+-- Старт игры
+function start_game_callback()
+	init_clsids()
+
+	g_alife = alife()
+	netpacket = m_netpk.c_net_packet()
+	game.get_start_time()
+
+	xr_sound.clear_all_sound_object()
+	dialog_manager.fill_phrase_table()
+
+	iam_any.iAmAnyInit()
+	--AMK UTILS--
+	amk.on_game_start()
+	--AMK UTILS--
+end
+
+-- Чтение контейнера и создание классов из его данных
+function init_container()
+	if not container then
+		container = keyvals()
+		freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
+		random_task = task_manager.CRandomTask()
+		treasure = treasure_manager.CTreasure()
+		variable = xr_logic.CVariable()
+	end
+end
+
+function after_objs_load_callback() --калбек вызывается после загрузки объектов из сейва
+	init_container()
+end
+
+-- запущена ли игра
+function game_is_running()
+	return level.present() and db_actor and db_actor:alive() or false
+end
 
 -- Короткие имена для частых функций
 voice = xr_sound.get_safe_sound_object
+translate = game.translate_string
+
+-- метки на карте
+map_spot = level.map_add_object_spot_ser
+level_map_spot = level.map_add_object_spot
+has_map_spot = level.map_has_object_spot
+del_map_spot = level.map_remove_object_spot
 
 -- переменные
-set_value = amk.save_variable
-get_value = amk.load_variable
-del_value = amk.del_variable
+function set_value(var, value)
+	return variable:set(var, value)
+end
+function get_value(var, default, delete)
+	return variable:get(var, default, delete)
+end
+function del_value(var)
+	return variable:del(var)
+end
+
+-- Инвентарь ГГ, объявляется в bind_actor.net_spawn
+function has(s, i)
+	return inv:has(s, i)
+end
+function got(s, i)
+	inv:got(s, i)
+end
+function lost(s, i)
+	inv:lost(s, i)
+end
+function transfer(v, s, t)
+	inv:transfer(v, s, t)
+end
+
+-- Деньги
+function got_money(m)
+	db_actor:give_money(m)
+	news_manager.relocate_money("in", m)
+end
+function lost_money(m)
+	db_actor:give_money(-m)
+	news_manager.relocate_money("out", m)
+end
+function has_money(m)
+	return db_actor:money() >= m
+end
 
 -- Проиграть звук
 function say(s)
-	voice(s):play_no_feedback(db_actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
+	if type(s) == "string" then s = voice(s) end
+	s:play_no_feedback(db_actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
 end
 
 -- Вместо has_alife_info, alife():has_info, db.actor:has_info
 function has_info(i)
 	return g_alife:has_info(0,i)
 end
+has_alife_info = has_info
 
 -- Вместо db.actor:give_info_portion
 function give_info(i)
@@ -84,29 +192,69 @@ function server_object(o)
 	if type(o) ~= "userdata" then		-- id или name
 		return g_alife:object(o)
 	elseif o.section_name then			-- серверный объект
-		return o
+		return g_alife:object(o.id)
 	else								-- клиентский объект
 		return g_alife:object(o:id())
 	end
 end
 
+-- Вместо alife():story_object()
+function story_object(o)
+	return g_alife:story_object(o)
+end
+
+-- Уровень, на котором находится объект
+function object_level(o)
+	return graph:vertex(o.m_game_vertex_id or o:game_vertex_id()):level_id()
+end
+
+-- Название уровня, на котором находится объект
+function object_level_name(o)
+	return g_alife:level_name(object_level(o))
+end
+
 -- Вместо level.object_by_id()
 level_object = level.object_by_id
+
+-- Вместо level_object_by_sid()
+function level_story_object(sid)
+	local o = story_object(sid)
+	return o and level_object(o.id)
+end
+level_object_by_sid = level_story_object
+
+-- Получение id по story_id
+function id_by_sid(sid)
+	local o = story_object(sid)
+	return o and o.id
+end
 
 -- Это использовать только при разовых указаниях позиции для create и т.п. Для всего остального использовать свой экземпляр класса vector().
 local pos_only = vector()
 function xyz(x,y,z)
-	return pos_only:set(x,y,z)
+	return pos_only:set(x or 0, y or 0, z or 0)
 end
 
-----------------------------------------------------------------------
+-- Запуск таймера
+timer = nil
 
-function printf(fmt,...)
+-- Спавн/удаление особых объектов
+
+-- Спавн телепортов
+function create_teleport(section, pos, lv, gv)
+	local o = g_alife:create(section, pos, lv, gv)
+	set_value(section, o.id)
+	return o
 end
 
-----------------------------------------------------------------------
-if nil == time_global then
-  time_global = function () return device():time_global() end
+-- Удаление телепортов
+function release_teleport(section)
+	release(get_value(section, -1, true))
+end
+
+-- Вывод в лог
+function log(fmt,...)
+	log1(string.format(tostring(fmt), ...))
 end
 
 function action(obj,...)
@@ -131,18 +279,6 @@ function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
---// Если один объект nil, например нет актера, то считаем, что он далеко
-function distance_between_safe(obj1, obj2)
-    if(obj1 == nil or obj2 == nil) then return 100000 end
-  return obj1:position():distance_to(obj2:position())
-end
-
---' Проверка на инфопоршны, даже если игрока не существует
-function has_alife_info(info_id)
-	local aa = alife()
-	return (aa and aa:has_info(0, info_id)) or false
-end
-
 function reset_action (npc, script_name)
     if npc:get_script () then
        npc:script (false, script_name)
@@ -150,185 +286,42 @@ function reset_action (npc, script_name)
     npc:script (true, script_name)
 end
 
---------------------------------------------------
--- Functions and variables added by Zmey
---------------------------------------------------
-
--- іонстанта, которуі использовать в местах, где нужно задать неограниченное время действия
+-- Константа, которую использовать в местах, где нужно задать неограниченное время действия
 time_infinite = 100000000
 
+-- Рандомный выбор из списка параметров
 function random_choice(...)
     local arg = {...}
     local r = math.random(1, #arg)
     return arg[r]
 end
 
-function new_action(...)
-    local arg = {...}
-    local act = entity_action()
-    for i = 1, #arg do
-        act:set_action(arg[i])
-    end
-    return act;
-end
-
-function if_then_else(cond, if_true, if_false)
-    if cond then
-        return if_true
-    end
-    return if_false
-end
-
---------------------------------------------------------------------------------
-class "enabled_evaluator" (property_evaluator)
-
-function enabled_evaluator:__init (name, storage) super ()
-    self.a = storage
-end
-
-function enabled_evaluator:evaluate()
-    return  self.a.enabled
-end
-
--- Ї абЁв бва®Єг ўЁ¤  "   , ЎЎЎ, ўўў..." ў в Ў«Ёжг { "   ", "ЎЎЎ", "ўўў", ... }
--- —гЈ ©
-function parse_names( s )
-    local t = {}
-    for name in string_gfind( s, "([%w_\\]+)%p*" ) do
-        t[#t+1] = name
-    end
-
-    return t
-end
-
-function parse_key_value( s )
-  if s == nil then
-    return nil
-  end
-    local t = {}
-    local key, nam = nil, nil
-    for name in string_gfind( s, "([%w_\\%-]+)[,%s]*" ) do
-    if key == nil then
-      key = name
-    else
-      t[key] = name
-      key = nil
-    end
-    end
-    return t
-end
-
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - ¤а®Ў­лҐ зЁб« 
-function parse_nums( s )
-  local t = {}
-
-  for entry in string_gfind( s, "([%d%.]+)%,*" ) do
-    t[#t+1] = tonumber( entry )
-  end
-
-  return t
-end
-
--- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
 function is_object_online(obj_id)
-  return level.object_by_id(obj_id) ~= nil
+	return level_object(obj_id) ~= nil
 end
 
-function init_clsids()
-	clsid_crow = clsid.crow
-	clsid_script_stalker = clsid.script_stalker
-	clsid_script_trader = clsid.script_trader
-
-	clsid_wpn_ammo = clsid.wpn_ammo
-	clsid_car = clsid.car
-	clsid_equ_stalker_s = clsid.equ_stalker_s
-	clsid_wpn_grenade_f1 = clsid.wpn_grenade_f1
-	clsid_wpn_grenade_fake = clsid.wpn_grenade_fake
-	clsid_wpn_grenade_rgd5 = clsid.wpn_grenade_rgd5
-
-	clsid_actor = clsid.actor
-	clsid_smart_terrain = clsid.smart_terrain
-	clsid_level_changer = clsid.level_changer
-
-	clsid_bloodsucker_s = clsid.bloodsucker_s
-	clsid_snork_s = clsid.snork_s
-	clsid_zombie_s = clsid.zombie_s
-
-	clsid_wpn_ak74_s = clsid.wpn_ak74_s
-	clsid_wpn_bm16_s = clsid.wpn_bm16_s
-	clsid_wpn_walther_s = clsid.wpn_walther_s
-
-	clsid_zone_bfuzz_s = clsid.zone_bfuzz_s
-	clsid_zone_zharka_s = clsid.zone_zharka_s
+-- Вычисляет yaw в радианах
+function yaw(v1, v2)
+	return math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / math.sqrt((v1.x*v1.x + v1.z*v1.z ) * (v2.x*v2.x + v2.z*v2.z )) )
 end
 
-function get_clsid(npc)
-	return npc and npc:clsid()
+function yaw_degree(v1, v2)
+	return (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / math.sqrt((v1.x*v1.x + v1.z*v1.z ) * (v2.x*v2.x + v2.z*v2.z )) ) * 57.2957)
 end
-
-function is_anomaly(obj, id)
-	id = id or (obj and obj:clsid()) or 0
-	return id >= clsid_zone_bfuzz_s and id <= clsid_zone_zharka_s
-end
-
--- Їа®ўҐапҐв ®аг¦ЁҐ «Ё нв® (ЇҐаҐ¤ ў вм game_object)
-function isWeapon(object)
-	local id = (object and object:clsid()) or 0
-
-	return (id >= clsid_wpn_bm16_s and id <= clsid_wpn_walther_s) or id == clsid_wpn_ak74_s or
-	       id == clsid_wpn_grenade_f1 or id == clsid_wpn_grenade_rgd5 or
-	       id == clsid_wpn_grenade_fake
-end
-
---Tvчисляет yaw в радианах
-function yaw( v1, v2 )
-    return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
-end
-
-function yaw_degree( v1, v2 )
-    return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
-end
-function yaw_degree3d( v1, v2 )
-    return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
+function yaw_degree3d(v1, v2)
+	return (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/math.sqrt((v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
 end
 
 function vector_cross (v1, v2)
     return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
---//Вращает вектор вокруг оси y против часовой стрелки
-
+-- Вращает вектор вокруг оси y против часовой стрелки
 function vector_rotate_y (v, angle)
     angle = angle * 0.01745329252
     local c = math.cos (angle)
     local s = math.sin (angle)
     return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
-end
-
--- очистка таблицы
-function clear_table (t)
-	local table_remove = table.remove
-	while #t > 0 do
-		table_remove (t, #t)
-	end
-end
-
---€бЇ®«м§гҐв ¤«п ¬®­бва®ў. ‚лЎ®а в®зЄЁ, Єг¤  Ё¤вЁ ў ­ҐЄ®в®а®¬ а ¤ЁгбҐ Ё зв®Ў в®зЄ  Ўл«  ¤ «миҐ ­  а ббв®п­ЁЁ
--- min_radius ®в вҐЄгйҐ© Ї®§ЁжЁЁ(Ґб«Ё нв® Ї®«гзЁвбп). center_id - жҐ­ва Ї®§ЁжЁЁ, ў®ЄагЈ Є®в®а®© ¦ЁўҐ¬,
--- position_id - вгЄгй п Ї®§ЁжЁп, radius - ў Є Є®¬ а ¤ЁгбҐ ўлЎЁа вм в®зЄг, min_radius - ¬Ё­Ё¬ «м­®Ґ а ббв®п­ЁҐ, ®в вҐЄгйҐ© Ї®§ЁжЁЁ ¤® ­®ў®© в®зЄЁ.
-function new_point(center_id, position_id,radius, min_radius)
-    local math_random =  math.random
-    local dir = vector():set(math_random(-1000, 1000)/1000.0, 0.0001, math_random(-1000, 1000)/1000.0)
-    local pos = level.vertex_in_direction(center_id, dir, radius)
-    local i   = 1
-
-    while(level.vertex_position(position_id):distance_to(level.vertex_position(pos) ) < min_radius and i < 20) do
-        dir = vector():set(math_random(-1000, 1000)/1000.0, 0.0001, math_random(-1000, 1000)/1000.0)
-        pos = level.vertex_in_direction(center_id, dir, radius)
-        i   = i + 1
-    end
-
-    return (level.vertex_position(pos))
 end
 
 function stop_play_sound(obj)
@@ -338,148 +331,27 @@ function stop_play_sound(obj)
   end
 end
 
---// Является ли оbj монстром
-function is_object_monster(obj)
-	local otype = (obj and obj:clsid()) or 0
-	return (otype >= clsid_bloodsucker_s and otype <= clsid_zombie_s) or otype == clsid_crow
+function switch_online(id)
+	if id == -1 then return end
+	g_alife:set_switch_online(id, true)
+	g_alife:set_switch_offline(id, false)
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-  local points = {}                                       -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
-
-    for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
-      if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
-            if(old_point == nil) then
-                points[#points+1] = patrol_path:point(i)
-            elseif(old_point ~= i) then
-                points[#points+1] = patrol_path:point(i)
-            end
-        end
-    end
-
-    local number_point = #points
-
-    if(number_point == 0) then
-        return nil
-    elseif(number_point == 1) then
-        return points[1]
-    else
-        return points[math.random(1, number_point)]
-    end
+function switch_offline(npc)
+	if not npc or ((npc:is_stalker() or npc:is_monster()) and not npc:alive()) then return end
+	local id = npc:id()
+	g_alife:set_switch_online(id, false)
+	g_alife:set_switch_offline(id, true)
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-    local points = {}                                          -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
-
-    for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
-      if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
-            if(old_point == nil) then
-                points[#points+1] = i
-            elseif(old_point ~= i) then
-                points[#points+1] = i
-            end
-        end
-    end
-
-    local number_point = #points
-
-    if(number_point == 0) then
-        return nil
-    elseif(number_point == 1) then
-        return patrol_path:level_vertex_id(points[1])
-    else
-        return patrol_path:level_vertex_id(points[math.random(1, number_point)])
-    end
-end
-
---‚®§ўа й Ґв Ё­¤ҐЄб б ¬®© Ў«Ё¦­Ґ© в®зЄЁ ЇгвЁ б § ¤ ­л¬ ЎЁв®¬, ®в вҐЄгйҐ© в®зЄЁ
-function near_point_with_bit(point, patrol_path, bit)
-    local new_point = nil
-    local index     = nil
-    local dist      = 1000.0
-
-    for i = 0, patrol_path:count()-1 do
-        if( patrol_path:flag(i, bit) ) then
-            if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-                --…б«Ё нв  в®зЄ  ЇҐаў п Ё§ ­ иҐ¤иЁебп, «ЁЎ® ®в ­ҐҐ Їгвм Ў«Ё¦Ґ, в® § Ї®¬Ё­ Ґ¬ ҐҐ
-                new_point   = patrol_path:point(i)
-                index       = i
-                dist        = new_point:distance_to(point)
-             end
-        end
-    end
-
-    return index
-end
-
--- ђҐЄгабЁў­ п а бЇҐз вЄ  в Ў«Ёжл
-function print_table(table, subs)
-end
-
--------------------------------------------------------------------------------------------
-function switch_online (id)
-    if id == -1 then return end
-    local sim = alife ()
-    if sim ~= nil then
-       sim:set_switch_online  (id, true)
-       sim:set_switch_offline (id, false)
-    end
-end
--------------------------------------------------------------------------------------------
-function switch_offline (npc)
-    if npc == nil or npc:alive () == false then return end
-    local sim = alife ()
-    if sim ~= nil then
-       sim:set_switch_online  (npc:id (), false)
-       sim:set_switch_offline (npc:id (), true)
-    end
-end
--------------------------------------------------------------------------------------------
-function IsMonster (object, class_id)
-	local id = class_id or (object and object:clsid()) or 0
-	return id >= clsid_bloodsucker_s and id <= clsid_zombie_s
-end
--------------------------------------------------------------------------------------------
-function IsStalker (object, class_id)
-	local id = class_id or (object and object:clsid()) or 0
-	return id == clsid_script_stalker or id == clsid_actor
-end
--------------------------------------------------------------------------------------------
-function level_object_by_sid( sid )
-  local sim = alife()
-
-  if sim then
-    local se_obj = sim:story_object( sid )
-    if se_obj then
-      return level.object_by_id( se_obj.id )
-    end
-  end
-
-  return nil
-end
-
-function id_by_sid( sid )
-  local sim = alife()
-
-  if sim then
-    local se_obj = sim:story_object( sid )
-    if se_obj then
-      return se_obj.id
-    end
-  end
-
-  return nil
+-- быстрый if
+function iif(t,t1,t2)
+	return t and t1 or t2
 end
 
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(fmt, ...)
-	fail(string.format(tostring(fmt), ...))
+	error(string.format(tostring(fmt), ...))
 end
 
 function set_inactivate_input_time(delta)
@@ -489,8 +361,8 @@ function set_inactivate_input_time(delta)
 end
 
 -- проверяет целую часть числа на нечётность
-function odd( x )
-  return math.floor( x * 0.5 ) * 2 == math.floor( x )
+function odd(x)
+	return math.fmod(x, 2) >= 1
 end
 
 --' Усталость
@@ -523,6 +395,11 @@ end
 function on_actor_psy()
 end
 
+--' инвентарное название объекта
+function get_inv_name(section)
+	return translate(config:r_string(section, "inv_name"))
+end
+
 function get_texture_info(id_name, id_default)
   if id_default == nil then id_default = id_name end
 
@@ -534,31 +411,6 @@ function get_texture_info(id_name, id_default)
   return task_info:get_file_name(), r
 end
 
-function start_game_callback()
-	init_clsids()
-	fill_ammo_section()
-
-	g_alife = alife()
-
-  task_manager.clear_task_manager()
-  treasure_manager.clear_treasure_manager()
-  xr_sound.clear_all_sound_object()
-  dialog_manager.fill_phrase_table()
-
-  --AMK UTILS--
-  amk.on_game_start(obj)
-  --AMK UTILS--
-end
-
-ammo_section = { }
-
-function fill_ammo_section()
-	local ini = ini_file("misc\\death_generic.ltx")
-
-	local n = ini:line_count("ammo_sections")
-	local result, id, value
-	for i = 0, n - 1 do
-		result, id, value = ini:r_line("ammo_sections", i, "", "")
-		ammo_section[id] = true
-	end
-end
+ammo_section = ini_file("misc\\death_generic.ltx"):key_true("ammo_sections")
+quest_section = ini_file("misc\\death_generic.ltx"):key_true("keep_items")
+news_manager.prepare_data()

@@ -10,33 +10,28 @@ function action_tip:__init(obj, storage)
 end
 
 function action_tip:reset_scheme()
-	--printf("_bp: sr_idle: action_tip:reset_scheme: self.object:name()='%s'", self.object:name())
 	self.st.tips_sended = false
 	self.st.signals = {}
 end
 
 function action_tip:update(delta)
-	local actor = db_actor
-
-	if self.object:inside(actor:position()) then
+	if self.object:inside(db_actor:position()) then
 		if self.st.conditions == nil or
-		   xr_logic.pick_section_from_condlist(actor, nil, self.st.conditions.condlist) ~= nil
+		   xr_logic.pick_section_from_condlist(nil, self.st.conditions.condlist) ~= nil
 		then
-		    if self.st.tips_sended == false then
-  			      news_manager.send_tip( actor, self.st.info, self.st.timeout, self.st.sender, self.st.showtime )
-			   if self.st.single == true then
-			      self.st.signals["tip_sended"] = true
-			      self.st.tips_sended = true
-			   end
+			if self.st.tips_sended == false then
+  				news_manager.send_tip(self.st.info, self.st.timeout, self.st.sender, self.st.showtime)
+				self.st.signals["tip_sended"] = true
+				self.st.tips_sended = true
 			end
 		end
 	end
 
-	xr_logic.try_switch_to_another_section(self.object, self.st, actor)
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_tip(npc, storage) ] = true
 end
 
@@ -45,11 +40,9 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
 
 	st.info     = utils.cfg_get_string( ini, section, "name",     obj, true,  "", "" )
-	st.type     = utils.cfg_get_string( ini, section, "type",     obj, false, "", "news" )
 	st.sender   = utils.cfg_get_string( ini, section, "sender",   obj, false, "", nil )
 	st.timeout  = utils.cfg_get_number( ini, section, "timeout",  obj, false,     nil )
 	st.showtime = utils.cfg_get_number( ini, section, "showtime", obj, false,     nil )
-	st.single   = utils.cfg_get_bool  ( ini, section, "single",   obj, false, false)
 
 	st.conditions = xr_logic.cfg_get_condlist( ini, section, "cond", obj )
 end

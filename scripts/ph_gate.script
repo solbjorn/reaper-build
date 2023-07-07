@@ -288,11 +288,7 @@ function action_gate:update(delta)
 		abort("object '%s': gate failed to initialize", self.object:name())
 	end
 
-	local actor = db.actor
-
-	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
-		return
-	end
+	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 
 function action_gate:open_gate(disable_snd)
@@ -340,7 +336,7 @@ function action_gate:try_switch()
 	local st = db.storage[self.object:id()]
 	if st.active_scheme and st.active_scheme == "ph_gate" and self.st.on_use then
 		if xr_logic.switch_to_section(self.object, self.st,
-		   xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_use.condlist)) then
+		   xr_logic.pick_section_from_condlist(self.object, self.st.on_use.condlist)) then
 			return true
 		end
 	end
@@ -440,7 +436,7 @@ function action_gate:use_callback(obj, who)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	storage.actions[ action_gate(npc, storage) ] = true
 end
 

@@ -6,7 +6,7 @@ function set_combat_type( npc, actor, t )
 	-- это нужно для функций в xr_conditions.script
 	db.storage[npc:id()].enemy = npc:best_enemy()
 
-	local script_combat_type = xr_logic.pick_section_from_condlist( actor, npc, t.combat_type.condlist )
+	local script_combat_type = xr_logic.pick_section_from_condlist(npc, t.combat_type.condlist)
 
 	if script_combat_type == "nil" then
 		script_combat_type = nil
@@ -39,10 +39,10 @@ function evaluator_check_combat:evaluate()
 			local overrides = npc_storage.overrides
 
 			if overrides and overrides.on_combat then
-				xr_logic.pick_section_from_condlist( actor, self.object, overrides.on_combat.condlist )
+				xr_logic.pick_section_from_condlist(self.object, overrides.on_combat.condlist)
 			end
 
-			if not xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+			if not xr_logic.try_switch_to_another_section(self.object, self.st) then
 				-- взять из overrides, иначе из секции on_combat
 				if overrides and overrides.combat_type then
 					return set_combat_type( self.object, actor, overrides )
@@ -77,7 +77,7 @@ end
 local xr_evaluators_id_script_combat = xr_evaluators_id.script_combat
 local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
 
-function add_to_binder_q(npc, storage)
+function add_to_binder(npc, storage)
 	local manager = npc:motivation_action_manager()
 
 	manager:add_evaluator( xr_evaluators_id_script_combat, evaluator_check_combat("script_combat",storage) )
@@ -103,7 +103,7 @@ function set_combat_checker(npc, ini, scheme, section)
 
 		-- зомбированные сражаются по умолчанию на зомбированной боевой схеме
 		if not st.combat_type and is_zombied then
-			st.combat_type = { condlist = xr_logic.parse_condlist_q("zombied") }
+			st.combat_type = { condlist = xr_logic.parse_condlist("zombied") }
 		end
 
 		if st.combat_type then

@@ -1,5 +1,4 @@
 local nagrad = {
-
   level_1 = {
   "af_medusa",
   "af_cristall_flower",
@@ -66,1108 +65,429 @@ local nagrad = {
 }
 
 function na_hunters_toz(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("hunters_toz") or false
+	return has("hunters_toz")
 end
 function vzyal_hunters_toz(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(2,4)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
 	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "hunters_toz", "out", 1)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("hunters_toz")
+	got(item, count)
 end
 function na_p38_sk1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_p38_sk1") or false
+	return has("wpn_p38_sk1")
 end
 function vzyal_p38_sk1(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(1,3)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
 	item = nagrad.level_5[math.random(#nagrad.level_5)]
-	flamethrower.relocate_n_items_section(trader, "wpn_p38_sk1", "out", 1)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("wpn_p38_sk1")
+	got(item, count)
 end
 function na_ppsh(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_ppsh41_sk2") or false
+	return has("wpn_ppsh41_sk2")
 end
 function vzyal_ppsh(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(1,3)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
 	item = nagrad.level_5[math.random(#nagrad.level_5)]
-	flamethrower.relocate_n_items_section(trader, "wpn_ppsh41_sk2", "out", 1)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("wpn_ppsh41_sk2")
+	got(item, count)
 end
 function na_mosinka(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_m1891_30") or false
+	return has("wpn_m1891_30")
 end
 function vzyal_mosinka(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(1,3)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
 	item = nagrad.level_5[math.random(#nagrad.level_5)]
-	flamethrower.relocate_n_items_section(trader, "wpn_m1891_30", "out", 1)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("wpn_m1891_30")
+	got(item, count)
 end
 function na_mosinka_optika(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_m1891_30_scope") or false
+	return has("wpn_m1891_30_scope")
 end
 function vzyal_mosinka_optika(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(2,4)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
 	item = nagrad.level_5[math.random(#nagrad.level_5)]
-	flamethrower.relocate_n_items_section(trader, "wpn_m1891_30_scope", "out", 1)
-    flamethrower.relocate_n_items_section(actor, item , "in", count)
+	lost("wpn_m1891_30_scope")
+	got(item, count)
 end
 function na_ak74_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_ak74_m1") or false
+	return has("wpn_ak74_m1")
 end
 function vzyal_ak74_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_ak74_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_ak74_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_abakan_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_abakan_m1") or false
+	return has("wpn_abakan_m1")
 end
 function vzyal_abakan_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_abakan_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_abakan_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_fort_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_fort_m1") or false
+	return has("wpn_fort_m1")
 end
 function vzyal_fort_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(#nagrad.level_1)]
-	flamethrower.relocate_n_items_section(trader, "wpn_fort_m1", "out", 1)
+	local item = nagrad.level_1[math.random(#nagrad.level_1)]
+	lost("wpn_fort_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_mp5_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_mp5_m1") or false
+	return has("wpn_mp5_m1")
 end
 function vzyal_mp5_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(#nagrad.level_1)]
-	flamethrower.relocate_n_items_section(trader, "wpn_mp5_m1", "out", 1)
+	local item = nagrad.level_1[math.random(#nagrad.level_1)]
+	lost("wpn_mp5_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_groza_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_groza_m1") or false
+	return has("wpn_groza_m1")
 end
 function vzyal_groza_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_groza_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_groza_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_spas12_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_spas12_m1") or false
+	return has("wpn_spas12_m1")
 end
 function vzyal_spas12_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_spas12_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_spas12_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_winchester_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_winchester_m1") or false
+	return has("wpn_winchester_m1")
 end
 function vzyal_winchester_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_winchester_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_winchester_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_l85_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_l85_m1") or false
+	return has("wpn_l85_m1")
 end
 function vzyal_l85_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_l85_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_l85_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_lr300_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_lr300_m1") or false
+	return has("wpn_lr300_m1")
 end
 function vzyal_lr300_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_lr300_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_lr300_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_svd_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_svd_m1") or false
+	return has("wpn_svd_m1")
 end
 function vzyal_svd_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_svd_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_svd_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_sig_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_sig_m1") or false
+	return has("wpn_sig_m1")
 end
 function vzyal_sig_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_sig_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_sig_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_eagle_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_eagle_m1") or false
+	return has("wpn_eagle_m1")
 end
 function vzyal_eagle_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_eagle_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_eagle_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_colt_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_colt_m1") or false
+	return has("wpn_colt_m1")
 end
 function vzyal_colt_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_colt_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_colt_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_val_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_val_m1") or false
+	return has("wpn_val_m1")
 end
 function vzyal_val_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_val_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_val_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_mp5_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_mp5_m2") or false
+	return has("wpn_mp5_m2")
 end
 function vzyal_mp5_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(#nagrad.level_1)]
-	flamethrower.relocate_n_items_section(trader, "wpn_mp5_m2", "out", 1)
+	local item = nagrad.level_1[math.random(#nagrad.level_1)]
+	lost("wpn_mp5_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_abakan_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_abakan_m2") or false
+	return has("wpn_abakan_m2")
 end
 function vzyal_abakan_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_abakan_m2", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_abakan_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_l85_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_l85_m2") or false
+	return has("wpn_l85_m2")
 end
 function vzyal_l85_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_l85_m2", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_l85_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_ak74u_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_ak74u_m1") or false
+	return has("wpn_ak74u_m1")
 end
 function vzyal_ak74u_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_ak74u_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_ak74u_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_sig_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_sig_m2") or false
+	return has("wpn_sig_m2")
 end
 function vzyal_sig_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_sig_m2", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_sig_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_g36_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_g36_m1") or false
+	return has("wpn_g36_m1")
 end
 function vzyal_g36_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_g36_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_g36_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_svu_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_svu_m1") or false
+	return has("wpn_svu_m1")
 end
 function vzyal_svu_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_svu_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_svu_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_beretta_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_beretta_m1") or false
+	return has("wpn_beretta_m1")
 end
 function vzyal_beretta_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_beretta_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_beretta_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_vintorez_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_vintorez_m1") or false
+	return has("wpn_vintorez_m1")
 end
 function vzyal_vintorez_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_vintorez_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_vintorez_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_groza_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_groza_m2") or false
+	return has("wpn_groza_m2")
 end
 function vzyal_groza_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_groza_m2", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_groza_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_rg6_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_rg6_m1") or false
+	return has("wpn_rg6_m1")
 end
 function vzyal_rg6_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_rg6_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_rg6_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_walter_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_walther_m1") or false
+	return has("wpn_walther_m1")
 end
 function vzyal_walter_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(#nagrad.level_1)]
-	flamethrower.relocate_n_items_section(trader, "wpn_walther_m1", "out", 1)
+	local item = nagrad.level_1[math.random(#nagrad.level_1)]
+	lost("wpn_walther_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_pm_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_pm_m1") or false
+	return has("wpn_pm_m1")
 end
 function vzyal_pm_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(#nagrad.level_1)]
-	flamethrower.relocate_n_items_section(trader, "wpn_pm_m1", "out", 1)
+	local item = nagrad.level_1[math.random(#nagrad.level_1)]
+	lost("wpn_pm_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_bizon_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_bizon_m1") or false
+	return has("wpn_bizon_m1")
 end
 function vzyal_bizon_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_bizon_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_bizon_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_lr300_m2(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_lr300_m2") or false
+	return has("wpn_lr300_m2")
 end
 function vzyal_lr300_m2(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_lr300_m2", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_lr300_m2")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_ak47_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_ak47_m1") or false
+	return has("wpn_ak47_m1")
 end
 function vzyal_ak47_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(#nagrad.level_2)]
-	flamethrower.relocate_n_items_section(trader, "wpn_ak47_m1", "out", 1)
+	local item = nagrad.level_2[math.random(#nagrad.level_2)]
+	lost("wpn_ak47_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_darkgauss(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_dark_gauss") or false
+	return has("wpn_dark_gauss")
 end
 function vzyal_darkgauss(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_dark_gauss", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_dark_gauss")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_apb_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_apb_m1") or false
+	return has("wpn_apb_m1")
 end
 function vzyal_apb_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(#nagrad.level_3)]
-	flamethrower.relocate_n_items_section(trader, "wpn_apb_m1", "out", 1)
+	local item = nagrad.level_3[math.random(#nagrad.level_3)]
+	lost("wpn_apb_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 function na_rpk74_m1(first_speaker, second_speaker)
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
-	return actor:object("wpn_rpk74_m1") or false
+	return has("wpn_rpk74_m1")
 end
 function vzyal_rpk74_m1(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if db.actor and db.actor:id() == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(#nagrad.level_4)]
-	flamethrower.relocate_n_items_section(trader, "wpn_rpk74_m1", "out", 1)
+	local item = nagrad.level_4[math.random(#nagrad.level_4)]
+	lost("wpn_rpk74_m1")
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
 
 -- Проверка
 
 function give_psevdo_tails(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_psevdodog_tail", 5)
+	lost("mutant_psevdodog_tail", 5)
 end
 function psevdo_tails_have()
-	return sak.have_item_namber("mutant_psevdodog_tail",5) ~= false
+	return has("mutant_psevdodog_tail",5)
 end
 function give_dog_tails(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_dog_tail", 10)
+	lost("mutant_dog_tail", 10)
 end
 function dog_tails_have()
-	return sak.have_item_namber("mutant_dog_tail",10) ~= false
+	return has("mutant_dog_tail",10)
 end
 function give_burer_hand(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_burer_hand", 6)
+	lost("mutant_burer_hand", 6)
 end
 function burer_hand_have()
-	return sak.have_item_namber("mutant_burer_hand",6) ~= false
+	return has("mutant_burer_hand",6)
 end
 function give_hand_kontroler(first_speaker, second_speaker)
-	sak.out_item_namber("mutant_hand_kontroler", 4)
+	lost("mutant_hand_kontroler", 4)
 end
 function hand_kontroler_have()
-	return sak.have_item_namber("mutant_hand_kontroler",4) ~= false
+	return has("mutant_hand_kontroler",4)
 end
 function give_vodka5(first_speaker, second_speaker)
-	sak.out_item_namber("vodka", 5)
+	lost("vodka", 5)
 end
 function vodka5_have()
-	return sak.have_item_namber("vodka",5) ~= false
+	return has("vodka",5)
 end
 function give_vodka10(first_speaker, second_speaker)
-	sak.out_item_namber("vodka", 10)
+	lost("vodka", 10)
 end
 function vodka10_have()
-	return sak.have_item_namber("vodka",10) ~= false
+	return has("vodka",10)
 end
 function give_vodka20(first_speaker, second_speaker)
-	sak.out_item_namber("vodka", 20)
+	lost("vodka", 20)
 end
 function vodka20_have()
-	return sak.have_item_namber("vodka",20) ~= false
+	return has("vodka",20)
 end
 function give_krysyk_pomer_goods()
-	sak.out_item_namber("oceanic815",40)
+	lost("oceanic815",40)
 end
 function have_krysyk_pomer_goods()
-  	return sak.have_item_namber("oceanic815",40) ~= false
+	return has("oceanic815",40)
 end
 function give_hunters_toz()
-	sak.out_item_namber("hunters_toz",1)
+	lost("hunters_toz")
 end
 function have_hunters_toz()
-  	return sak.have_item_namber("hunters_toz",1) ~= false
+	return has("hunters_toz")
 end
 function give_chemodan(first_speaker, second_speaker)
-	sak.out_item_namber("inventory_sakbox_01", 1)
+	lost("inventory_sakbox_01")
 end
 function chemodan_have()
-  	return sak.have_item_namber("inventory_sakbox_01",1) ~= false
+	return has("inventory_sakbox_01")
 end
 function give_plan(first_speaker, second_speaker)
-	sak.out_item_namber("travka", 1)
+	lost("travka")
 end
 function plan_have()
-  	return sak.have_item_namber("travka",1) ~= false
+	return has("travka")
 end
 function give_pivo10()
-	sak.out_item_namber("oceanic815",10)
+	lost("oceanic815",10)
 end
 function have_pivo10()
-  	return sak.have_item_namber("oceanic815",10) ~= false
+	return has("oceanic815",10)
 end
 function give_wpn_benelli_short()
-	sak.out_item_namber("wpn_benelli_short",1)
+	lost("wpn_benelli_short")
 end
 function have_wpn_benelli_short()
-  	return sak.have_item_namber("wpn_benelli_short",1) ~= false
+	return has("wpn_benelli_short")
 end
 function give_batareyka()
-	sak.out_item_namber("af_dummy_battery",3)
+	lost("af_dummy_battery",3)
 end
 function have_batareyka()
-  	return sak.have_item_namber("af_dummy_battery",3) ~= false
+	return has("af_dummy_battery",3)
 end
 function give_arbalet_bad()
-	sak.out_item_namber("arbalet_bad",1)
+	lost("arbalet_bad")
 end
 function have_arbalet_bad()
-  	return sak.have_item_namber("arbalet_bad",1) ~= false
+	return has("arbalet_bad")
 end
 function give_green_vyvert()
-	sak.out_item_namber("af_vyvert_green",1)
+	lost("af_vyvert_green")
 end
 function have_green_vyvert()
-  	return sak.have_item_namber("af_vyvert_green",1) ~= false
+	return has("af_vyvert_green")
 end
 function give_awm_2()
-	sak.out_item_namber("wpn_awm",2)
+	lost("wpn_awm",2)
 end
 function have_awm_2()
-  	return sak.have_item_namber("wpn_awm",2) ~= false
+	return has("wpn_awm",2)
 end
 function give_remkomplekt()
-	sak.out_item_namber("inventory_sakbox_02",1)
+	lost("inventory_sakbox_02")
 end
 function have_remkomplekt()
-  	return sak.have_item_namber("inventory_sakbox_02",1) ~= false
+	return has("inventory_sakbox_02")
 end
 
 function give_zapchasti(first_speaker, second_speaker)
@@ -1196,49 +516,49 @@ function give_zapchasti(first_speaker, second_speaker)
 	dialogs.relocate_item_section(trader, "mutant_rat_tail", "out")
 end
 function have_flesh_eye()
-  	return sak.have_item_namber("mutant_flesh_eye",1) ~= false
+	return has("mutant_flesh_eye")
 end
 function have_boar_leg()
-  	return sak.have_item_namber("mutant_boar_leg",1) ~= false
+	return has("mutant_boar_leg")
 end
 function have_dog_tail()
-  	return sak.have_item_namber("mutant_dog_tail",1) ~= false
+	return has("mutant_dog_tail")
 end
 function have_psevdodog_tail()
-  	return sak.have_item_namber("mutant_psevdodog_tail",1) ~= false
+	return has("mutant_psevdodog_tail")
 end
 function have_krovosos_jaw()
-  	return sak.have_item_namber("mutant_krovosos_jaw",1) ~= false
+	return has("mutant_krovosos_jaw")
 end
 function have_burer_hand()
-  	return sak.have_item_namber("mutant_burer_hand",1) ~= false
+	return has("mutant_burer_hand")
 end
 function have_zombie_hand()
-  	return sak.have_item_namber("mutant_zombie_hand",1) ~= false
+	return has("mutant_zombie_hand")
 end
 function have_snork_leg()
-  	return sak.have_item_namber("mutant_snork_leg",1) ~= false
+	return has("mutant_snork_leg")
 end
 function have_face_tushkano()
-  	return sak.have_item_namber("mutant_face_tushkano",1) ~= false
+	return has("mutant_face_tushkano")
 end
 function have_hand_kontroler()
-  	return sak.have_item_namber("mutant_hand_kontroler",1) ~= false
+	return has("mutant_hand_kontroler")
 end
 function have_poltergeist_glas()
-  	return sak.have_item_namber("mutant_poltergeist_glas",1) ~= false
+	return has("mutant_poltergeist_glas")
 end
 function have_psevdogigant_hand()
-  	return sak.have_item_namber("mutant_psevdogigant_hand",1) ~= false
+	return has("mutant_psevdogigant_hand")
 end
 function have_tail_cat()
-  	return sak.have_item_namber("mutant_tail_cat",1) ~= false
+	return has("mutant_tail_cat")
 end
 function have_chimera_kogot()
-  	return sak.have_item_namber("mutant_chimera_kogot",1) ~= false
+	return has("mutant_chimera_kogot")
 end
 function have_rat_tail()
-  	return sak.have_item_namber("mutant_rat_tail",1) ~= false
+	return has("mutant_rat_tail")
 end
 
 -- Обмен
@@ -1257,71 +577,71 @@ function add_wpn_p38_sk1_10_vodka(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "vodka", "in")
 end
 function add_ammo_12x76_dart(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x76_dart",1)
+	got("ammo_12x76_dart")
 	dialogs.relocate_item_section(first_speaker, "ammo_12x76_dart", "in")
 end
 function add_ammo_12x76_zhekan(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x76_zhekan",2)
+	got("ammo_12x76_zhekan",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_12x76_zhekan", "in")
 end
 function add_ammo_12x70_buck(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_12x70_buck",4)
+	got("ammo_12x70_buck",4)
 	dialogs.relocate_item_section(first_speaker, "ammo_12x70_buck", "in")
 end
 function add_ammo_16cal_fost(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_16cal_fost",1)
+	got("ammo_16cal_fost")
 	dialogs.relocate_item_section(first_speaker, "ammo_16cal_fost", "in")
 end
 function add_ammo_16cal_skart(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_16cal_skart",2)
+	got("ammo_16cal_skart",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_16cal_skart", "in")
 end
 function add_ammo_16cal_buck(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_16cal_buck",4)
+	got("ammo_16cal_buck",4)
 	dialogs.relocate_item_section(first_speaker, "ammo_16cal_buck", "in")
 end
 function add_3ammo_44mag_jhp(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_44mag_jhp",2)
+	got("ammo_44mag_jhp",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_44mag_jhp", "in")
 end
 function add_2ammo_50ae_thv(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_50ae_thv",1)
+	got("ammo_50ae_thv")
 	dialogs.relocate_item_section(first_speaker, "ammo_50ae_thv", "in")
 end
 function add_vodka20(first_speaker, second_speaker)
-	sak.create_items(db.actor,"vodka",19)
+	got("vodka",19)
 	dialogs.relocate_item_section(first_speaker, "vodka", "in")
 end
 function add_medkit20(first_speaker, second_speaker)
-	sak.create_items(db.actor,"medkit",19)
+	got("medkit",19)
 	dialogs.relocate_item_section(first_speaker, "medkit", "in")
 end
 function add_antirad30(first_speaker, second_speaker)
-	sak.create_items(db.actor,"antirad",29)
+	got("antirad",29)
 	dialogs.relocate_item_section(first_speaker, "antirad", "in")
 end
 function add_strela_10(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",9)
+	got("ammo_arbolt",9)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 function add_strela_20(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",19)
+	got("ammo_arbolt",19)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 function add_strela_30(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",29)
+	got("ammo_arbolt",29)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 function add_strela_40(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",39)
+	got("ammo_arbolt",39)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 function add_strela_50(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",49)
+	got("ammo_arbolt",49)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 function add_strela_100(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_arbolt",99)
+	got("ammo_arbolt",99)
 	dialogs.relocate_item_section(first_speaker, "ammo_arbolt", "in")
 end
 
@@ -1386,11 +706,11 @@ function add_vodka(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "vodka", "in")
 end
 function add_3ammo_357sw_jhp(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_357sw_jhp",2)
+	got("ammo_357sw_jhp",2)
 	dialogs.relocate_item_section(first_speaker, "ammo_357sw_jhp", "in")
 end
 function add_2ammo_357sw_jfp(first_speaker, second_speaker)
-	sak.create_items(db.actor,"ammo_357sw_jfp",1)
+	got("ammo_357sw_jfp")
 	dialogs.relocate_item_section(first_speaker, "ammo_357sw_jfp", "in")
 end
 function add_3bad_rpg(first_speaker, second_speaker)
@@ -1652,16 +972,16 @@ function goodup_novice_outfit_bad(task, objective)
 	return false
 end
 function goodup_novice_outfit_plus(task, objective)
-  	return sak.have_item_namber("novice_outfit_plus",1) ~= false
+	return has("novice_outfit_plus")
 end
 function giveup_novice_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit", 1)
+	lost("novice_outfit")
 end
 function giveup_novice_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_bad", 1)
+	lost("novice_outfit_bad")
 end
 function giveup_novice_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_plus", 1)
+	lost("novice_outfit_plus")
 end
 function add_novice_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "novice_outfit_bad", "in")
@@ -1690,16 +1010,16 @@ function goodup_novice_outfit_rain_1_bad(task, objective)
 	return false
 end
 function goodup_novice_outfit_rain_1_plus(task, objective)
-  	return sak.have_item_namber("novice_outfit_rain_1_plus",1) ~= false
+	return has("novice_outfit_rain_1_plus")
 end
 function giveup_novice_outfit_rain_1(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_1", 1)
+	lost("novice_outfit_rain_1")
 end
 function giveup_novice_outfit_rain_1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_1_bad", 1)
+	lost("novice_outfit_rain_1_bad")
 end
 function giveup_novice_outfit_rain_1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_1_plus", 1)
+	lost("novice_outfit_rain_1_plus")
 end
 function add_novice_outfit_rain_1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "novice_outfit_rain_1_bad", "in")
@@ -1728,16 +1048,16 @@ function goodup_novice_outfit_rain_2_bad(task, objective)
 	return false
 end
 function goodup_novice_outfit_rain_2_plus(task, objective)
-  	return sak.have_item_namber("novice_outfit_rain_2_plus",1) ~= false
+	return has("novice_outfit_rain_2_plus")
 end
 function giveup_novice_outfit_rain_2(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_2", 1)
+	lost("novice_outfit_rain_2")
 end
 function giveup_novice_outfit_rain_2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_2_bad", 1)
+	lost("novice_outfit_rain_2_bad")
 end
 function giveup_novice_outfit_rain_2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_rain_2_plus", 1)
+	lost("novice_outfit_rain_2_plus")
 end
 function add_novice_outfit_rain_2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "novice_outfit_rain_2_bad", "in")
@@ -1766,16 +1086,16 @@ function goodup_novice_outfit_new_1_bad(task, objective)
 	return false
 end
 function goodup_novice_outfit_new_1_plus(task, objective)
-  	return sak.have_item_namber("novice_outfit_new_1_plus",1) ~= false
+	return has("novice_outfit_new_1_plus")
 end
 function giveup_novice_outfit_new_1(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_1", 1)
+	lost("novice_outfit_new_1")
 end
 function giveup_novice_outfit_new_1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_1_bad", 1)
+	lost("novice_outfit_new_1_bad")
 end
 function giveup_novice_outfit_new_1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_1_plus", 1)
+	lost("novice_outfit_new_1_plus")
 end
 function add_novice_outfit_new_1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "novice_outfit_new_1_bad", "in")
@@ -1804,16 +1124,16 @@ function goodup_novice_outfit_new_2_bad(task, objective)
 	return false
 end
 function goodup_novice_outfit_new_2_plus(task, objective)
-  	return sak.have_item_namber("novice_outfit_new_2_plus",1) ~= false
+	return has("novice_outfit_new_2_plus")
 end
 function giveup_novice_outfit_new_2(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_2", 1)
+	lost("novice_outfit_new_2")
 end
 function giveup_novice_outfit_new_2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_2_bad", 1)
+	lost("novice_outfit_new_2_bad")
 end
 function giveup_novice_outfit_new_2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("novice_outfit_new_2_plus", 1)
+	lost("novice_outfit_new_2_plus")
 end
 function add_novice_outfit_new_2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "novice_outfit_new_2_bad", "in")
@@ -1842,16 +1162,16 @@ function goodup_bandit_outfit_bad(task, objective)
 	return false
 end
 function goodup_bandit_outfit_plus(task, objective)
-  	return sak.have_item_namber("bandit_outfit_plus",1) ~= false
+	return has("bandit_outfit_plus")
 end
 function giveup_bandit_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit", 1)
+	lost("bandit_outfit")
 end
 function giveup_bandit_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_bad", 1)
+	lost("bandit_outfit_bad")
 end
 function giveup_bandit_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_plus", 1)
+	lost("bandit_outfit_plus")
 end
 function add_bandit_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_outfit_bad", "in")
@@ -1880,16 +1200,16 @@ function goodup_bandit_outfit_red_bad(task, objective)
 	return false
 end
 function goodup_bandit_outfit_red_plus(task, objective)
-  	return sak.have_item_namber("bandit_outfit_red_plus",1) ~= false
+	return has("bandit_outfit_red_plus")
 end
 function giveup_bandit_outfit_red(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red", 1)
+	lost("bandit_outfit_red")
 end
 function giveup_bandit_outfit_red_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red_bad", 1)
+	lost("bandit_outfit_red_bad")
 end
 function giveup_bandit_outfit_red_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red_plus", 1)
+	lost("bandit_outfit_red_plus")
 end
 function add_bandit_outfit_red_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_outfit_red_bad", "in")
@@ -1918,16 +1238,16 @@ function goodup_bandit_outfit_red1_bad(task, objective)
 	return false
 end
 function goodup_bandit_outfit_red1_plus(task, objective)
-  	return sak.have_item_namber("bandit_outfit_red1_plus",1) ~= false
+	return has("bandit_outfit_red1_plus")
 end
 function giveup_bandit_outfit_red1(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red1", 1)
+	lost("bandit_outfit_red1")
 end
 function giveup_bandit_outfit_red1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red1_bad", 1)
+	lost("bandit_outfit_red1_bad")
 end
 function giveup_bandit_outfit_red1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_red1_plus", 1)
+	lost("bandit_outfit_red1_plus")
 end
 function add_bandit_outfit_red1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_outfit_red1_bad", "in")
@@ -1956,16 +1276,16 @@ function goodup_bandit_outfit_blue_bad(task, objective)
 	return false
 end
 function goodup_bandit_outfit_blue_plus(task, objective)
-  	return sak.have_item_namber("bandit_outfit_blue_plus",1) ~= false
+	return has("bandit_outfit_blue_plus")
 end
 function giveup_bandit_outfit_blue(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_blue", 1)
+	lost("bandit_outfit_blue")
 end
 function giveup_bandit_outfit_blue_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_blue_bad", 1)
+	lost("bandit_outfit_blue_bad")
 end
 function giveup_bandit_outfit_blue_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_outfit_blue_plus", 1)
+	lost("bandit_outfit_blue_plus")
 end
 function add_bandit_outfit_blue_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_outfit_blue_bad", "in")
@@ -2050,37 +1370,37 @@ function goodup_killer_outfit_bast(task, objective)
 	return false
 end
 function goodup_killer_outfit_plus(task, objective)
-  	return sak.have_item_namber("killer_outfit_plus",1) ~= false
+	return has("killer_outfit_plus")
 end
 function giveup_killer_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit", 1)
+	lost("killer_outfit")
 end
 function giveup_killer_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_bad", 1)
+	lost("killer_outfit_bad")
 end
 function giveup_killer_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_good", 1)
+	lost("killer_outfit_good")
 end
 function giveup_killer_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_default", 1)
+	lost("killer_outfit_default")
 end
 function giveup_killer_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_static", 1)
+	lost("killer_outfit_static")
 end
 function giveup_killer_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_kat_eye", 1)
+	lost("killer_outfit_kat_eye")
 end
 function giveup_killer_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_psy", 1)
+	lost("killer_outfit_psy")
 end
 function giveup_killer_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_blackwhite", 1)
+	lost("killer_outfit_blackwhite")
 end
 function giveup_killer_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_bast", 1)
+	lost("killer_outfit_bast")
 end
 function giveup_killer_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("killer_outfit_plus", 1)
+	lost("killer_outfit_plus")
 end
 function add_killer_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "killer_outfit_bad", "in")
@@ -2207,37 +1527,37 @@ function goodup_monolit_outfit_bast(task, objective)
 	return false
 end
 function goodup_monolit_outfit_plus(task, objective)
-  	return sak.have_item_namber("monolit_outfit_plus",1) ~= false
+	return has("monolit_outfit_plus")
 end
 function giveup_monolit_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit", 1)
+	lost("monolit_outfit")
 end
 function giveup_monolit_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_bad", 1)
+	lost("monolit_outfit_bad")
 end
 function giveup_monolit_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_good", 1)
+	lost("monolit_outfit_good")
 end
 function giveup_monolit_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_default", 1)
+	lost("monolit_outfit_default")
 end
 function giveup_monolit_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_static", 1)
+	lost("monolit_outfit_static")
 end
 function giveup_monolit_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_kat_eye", 1)
+	lost("monolit_outfit_kat_eye")
 end
 function giveup_monolit_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_psy", 1)
+	lost("monolit_outfit_psy")
 end
 function giveup_monolit_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_blackwhite", 1)
+	lost("monolit_outfit_blackwhite")
 end
 function giveup_monolit_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_bast", 1)
+	lost("monolit_outfit_bast")
 end
 function giveup_monolit_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_outfit_plus", 1)
+	lost("monolit_outfit_plus")
 end
 function add_monolit_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "monolit_outfit_bad", "in")
@@ -2364,37 +1684,37 @@ function goodup_specops_outfit_bast(task, objective)
 	return false
 end
 function goodup_specops_outfit_plus(task, objective)
-  	return sak.have_item_namber("specops_outfit_plus",1) ~= false
+	return has("specops_outfit_plus")
 end
 function giveup_specops_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit", 1)
+	lost("specops_outfit")
 end
 function giveup_specops_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_bad", 1)
+	lost("specops_outfit_bad")
 end
 function giveup_specops_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_good", 1)
+	lost("specops_outfit_good")
 end
 function giveup_specops_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_default", 1)
+	lost("specops_outfit_default")
 end
 function giveup_specops_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_static", 1)
+	lost("specops_outfit_static")
 end
 function giveup_specops_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_kat_eye", 1)
+	lost("specops_outfit_kat_eye")
 end
 function giveup_specops_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_psy", 1)
+	lost("specops_outfit_psy")
 end
 function giveup_specops_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_blackwhite", 1)
+	lost("specops_outfit_blackwhite")
 end
 function giveup_specops_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_bast", 1)
+	lost("specops_outfit_bast")
 end
 function giveup_specops_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("specops_outfit_plus", 1)
+	lost("specops_outfit_plus")
 end
 function add_specops_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "specops_outfit_bad", "in")
@@ -2521,37 +1841,37 @@ function goodup_military_outfit_bast(task, objective)
 	return false
 end
 function goodup_military_outfit_plus(task, objective)
-  	return sak.have_item_namber("military_outfit_plus",1) ~= false
+	return has("military_outfit_plus")
 end
 function giveup_military_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit", 1)
+	lost("military_outfit")
 end
 function giveup_military_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_bad", 1)
+	lost("military_outfit_bad")
 end
 function giveup_military_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_good", 1)
+	lost("military_outfit_good")
 end
 function giveup_military_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_default", 1)
+	lost("military_outfit_default")
 end
 function giveup_military_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_static", 1)
+	lost("military_outfit_static")
 end
 function giveup_military_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_kat_eye", 1)
+	lost("military_outfit_kat_eye")
 end
 function giveup_military_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_psy", 1)
+	lost("military_outfit_psy")
 end
 function giveup_military_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_blackwhite", 1)
+	lost("military_outfit_blackwhite")
 end
 function giveup_military_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_bast", 1)
+	lost("military_outfit_bast")
 end
 function giveup_military_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("military_outfit_plus", 1)
+	lost("military_outfit_plus")
 end
 function add_military_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "military_outfit_bad", "in")
@@ -2678,37 +1998,37 @@ function goodup_militaryspec_outfit_bast(task, objective)
 	return false
 end
 function goodup_militaryspec_outfit_plus(task, objective)
-  	return sak.have_item_namber("militaryspec_outfit_plus",1) ~= false
+	return has("militaryspec_outfit_plus")
 end
 function giveup_militaryspec_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit", 1)
+	lost("militaryspec_outfit")
 end
 function giveup_militaryspec_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_bad", 1)
+	lost("militaryspec_outfit_bad")
 end
 function giveup_militaryspec_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_good", 1)
+	lost("militaryspec_outfit_good")
 end
 function giveup_militaryspec_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_default", 1)
+	lost("militaryspec_outfit_default")
 end
 function giveup_militaryspec_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_static", 1)
+	lost("militaryspec_outfit_static")
 end
 function giveup_militaryspec_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_kat_eye", 1)
+	lost("militaryspec_outfit_kat_eye")
 end
 function giveup_militaryspec_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_psy", 1)
+	lost("militaryspec_outfit_psy")
 end
 function giveup_militaryspec_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_blackwhite", 1)
+	lost("militaryspec_outfit_blackwhite")
 end
 function giveup_militaryspec_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_bast", 1)
+	lost("militaryspec_outfit_bast")
 end
 function giveup_militaryspec_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("militaryspec_outfit_plus", 1)
+	lost("militaryspec_outfit_plus")
 end
 function add_militaryspec_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "militaryspec_outfit_bad", "in")
@@ -2835,37 +2155,37 @@ function goodup_stalker_guard_outfit_bast(task, objective)
 	return false
 end
 function goodup_stalker_guard_outfit_plus(task, objective)
-  	return sak.have_item_namber("stalker_guard_outfit_plus",1) ~= false
+	return has("stalker_guard_outfit_plus")
 end
 function giveup_stalker_guard_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit", 1)
+	lost("stalker_guard_outfit")
 end
 function giveup_stalker_guard_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_bad", 1)
+	lost("stalker_guard_outfit_bad")
 end
 function giveup_stalker_guard_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_good", 1)
+	lost("stalker_guard_outfit_good")
 end
 function giveup_stalker_guard_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_default", 1)
+	lost("stalker_guard_outfit_default")
 end
 function giveup_stalker_guard_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_static", 1)
+	lost("stalker_guard_outfit_static")
 end
 function giveup_stalker_guard_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_kat_eye", 1)
+	lost("stalker_guard_outfit_kat_eye")
 end
 function giveup_stalker_guard_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_psy", 1)
+	lost("stalker_guard_outfit_psy")
 end
 function giveup_stalker_guard_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_blackwhite", 1)
+	lost("stalker_guard_outfit_blackwhite")
 end
 function giveup_stalker_guard_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_bast", 1)
+	lost("stalker_guard_outfit_bast")
 end
 function giveup_stalker_guard_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_guard_outfit_plus", 1)
+	lost("stalker_guard_outfit_plus")
 end
 function add_stalker_guard_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_guard_outfit_bad", "in")
@@ -2992,37 +2312,37 @@ function goodup_stalker_outfit_bast(task, objective)
 	return false
 end
 function goodup_stalker_outfit_plus(task, objective)
-  	return sak.have_item_namber("stalker_outfit_plus",1) ~= false
+	return has("stalker_outfit_plus")
 end
 function giveup_stalker_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit", 1)
+	lost("stalker_outfit")
 end
 function giveup_stalker_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_bad", 1)
+	lost("stalker_outfit_bad")
 end
 function giveup_stalker_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_good", 1)
+	lost("stalker_outfit_good")
 end
 function giveup_stalker_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_default", 1)
+	lost("stalker_outfit_default")
 end
 function giveup_stalker_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_static", 1)
+	lost("stalker_outfit_static")
 end
 function giveup_stalker_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_kat_eye", 1)
+	lost("stalker_outfit_kat_eye")
 end
 function giveup_stalker_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_psy", 1)
+	lost("stalker_outfit_psy")
 end
 function giveup_stalker_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_blackwhite", 1)
+	lost("stalker_outfit_blackwhite")
 end
 function giveup_stalker_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_bast", 1)
+	lost("stalker_outfit_bast")
 end
 function giveup_stalker_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_plus", 1)
+	lost("stalker_outfit_plus")
 end
 function add_stalker_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_outfit_bad", "in")
@@ -3149,37 +2469,37 @@ function goodup_stalker_outfit_v1_bast(task, objective)
 	return false
 end
 function goodup_stalker_outfit_v1_plus(task, objective)
-  	return sak.have_item_namber("stalker_outfit_v1_plus",1) ~= false
+	return has("stalker_outfit_v1_plus")
 end
 function giveup_stalker_outfit_v1(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1", 1)
+	lost("stalker_outfit_v1")
 end
 function giveup_stalker_outfit_v1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_bad", 1)
+	lost("stalker_outfit_v1_bad")
 end
 function giveup_stalker_outfit_v1_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_good", 1)
+	lost("stalker_outfit_v1_good")
 end
 function giveup_stalker_outfit_v1_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_default", 1)
+	lost("stalker_outfit_v1_default")
 end
 function giveup_stalker_outfit_v1_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_static", 1)
+	lost("stalker_outfit_v1_static")
 end
 function giveup_stalker_outfit_v1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_kat_eye", 1)
+	lost("stalker_outfit_v1_kat_eye")
 end
 function giveup_stalker_outfit_v1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_psy", 1)
+	lost("stalker_outfit_v1_psy")
 end
 function giveup_stalker_outfit_v1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_blackwhite", 1)
+	lost("stalker_outfit_v1_blackwhite")
 end
 function giveup_stalker_outfit_v1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_bast", 1)
+	lost("stalker_outfit_v1_bast")
 end
 function giveup_stalker_outfit_v1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v1_plus", 1)
+	lost("stalker_outfit_v1_plus")
 end
 function add_stalker_outfit_v1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_outfit_v1_bad", "in")
@@ -3306,37 +2626,37 @@ function goodup_stalker_outfit_v2_bast(task, objective)
 	return false
 end
 function goodup_stalker_outfit_v2_plus(task, objective)
-  	return sak.have_item_namber("stalker_outfit_v2_plus",1) ~= false
+	return has("stalker_outfit_v2_plus")
 end
 function giveup_stalker_outfit_v2(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2", 1)
+	lost("stalker_outfit_v2")
 end
 function giveup_stalker_outfit_v2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_bad", 1)
+	lost("stalker_outfit_v2_bad")
 end
 function giveup_stalker_outfit_v2_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_good", 1)
+	lost("stalker_outfit_v2_good")
 end
 function giveup_stalker_outfit_v2_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_default", 1)
+	lost("stalker_outfit_v2_default")
 end
 function giveup_stalker_outfit_v2_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_static", 1)
+	lost("stalker_outfit_v2_static")
 end
 function giveup_stalker_outfit_v2_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_kat_eye", 1)
+	lost("stalker_outfit_v2_kat_eye")
 end
 function giveup_stalker_outfit_v2_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_psy", 1)
+	lost("stalker_outfit_v2_psy")
 end
 function giveup_stalker_outfit_v2_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_blackwhite", 1)
+	lost("stalker_outfit_v2_blackwhite")
 end
 function giveup_stalker_outfit_v2_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_bast", 1)
+	lost("stalker_outfit_v2_bast")
 end
 function giveup_stalker_outfit_v2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v2_plus", 1)
+	lost("stalker_outfit_v2_plus")
 end
 function add_stalker_outfit_v2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_outfit_v2_bad", "in")
@@ -3463,37 +2783,37 @@ function goodup_stalker_outfit_v3_bast(task, objective)
 	return false
 end
 function goodup_stalker_outfit_v3_plus(task, objective)
-  	return sak.have_item_namber("stalker_outfit_v3_plus",1) ~= false
+	return has("stalker_outfit_v3_plus")
 end
 function giveup_stalker_outfit_v3(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3", 1)
+	lost("stalker_outfit_v3")
 end
 function giveup_stalker_outfit_v3_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_bad", 1)
+	lost("stalker_outfit_v3_bad")
 end
 function giveup_stalker_outfit_v3_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_good", 1)
+	lost("stalker_outfit_v3_good")
 end
 function giveup_stalker_outfit_v3_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_default", 1)
+	lost("stalker_outfit_v3_default")
 end
 function giveup_stalker_outfit_v3_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_static", 1)
+	lost("stalker_outfit_v3_static")
 end
 function giveup_stalker_outfit_v3_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_kat_eye", 1)
+	lost("stalker_outfit_v3_kat_eye")
 end
 function giveup_stalker_outfit_v3_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_psy", 1)
+	lost("stalker_outfit_v3_psy")
 end
 function giveup_stalker_outfit_v3_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_blackwhite", 1)
+	lost("stalker_outfit_v3_blackwhite")
 end
 function giveup_stalker_outfit_v3_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_bast", 1)
+	lost("stalker_outfit_v3_bast")
 end
 function giveup_stalker_outfit_v3_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_v3_plus", 1)
+	lost("stalker_outfit_v3_plus")
 end
 function add_stalker_outfit_v3_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_outfit_v3_bad", "in")
@@ -3620,37 +2940,37 @@ function goodup_scientific_outfit_bast(task, objective)
 	return false
 end
 function goodup_scientific_outfit_plus(task, objective)
-  	return sak.have_item_namber("scientific_outfit_plus",1) ~= false
+	return has("scientific_outfit_plus")
 end
 function giveup_scientific_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit", 1)
+	lost("scientific_outfit")
 end
 function giveup_scientific_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_bad", 1)
+	lost("scientific_outfit_bad")
 end
 function giveup_scientific_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_good", 1)
+	lost("scientific_outfit_good")
 end
 function giveup_scientific_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_default", 1)
+	lost("scientific_outfit_default")
 end
 function giveup_scientific_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_static", 1)
+	lost("scientific_outfit_static")
 end
 function giveup_scientific_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_kat_eye", 1)
+	lost("scientific_outfit_kat_eye")
 end
 function giveup_scientific_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_psy", 1)
+	lost("scientific_outfit_psy")
 end
 function giveup_scientific_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_blackwhite", 1)
+	lost("scientific_outfit_blackwhite")
 end
 function giveup_scientific_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_bast", 1)
+	lost("scientific_outfit_bast")
 end
 function giveup_scientific_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("scientific_outfit_plus", 1)
+	lost("scientific_outfit_plus")
 end
 function add_scientific_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "scientific_outfit_bad", "in")
@@ -3777,37 +3097,37 @@ function goodup_exo_outfit_bast(task, objective)
 	return false
 end
 function goodup_exo_outfit_plus(task, objective)
-  	return sak.have_item_namber("exo_outfit_plus",1) ~= false
+	return has("exo_outfit_plus")
 end
 function giveup_exo_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit", 1)
+	lost("exo_outfit")
 end
 function giveup_exo_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_bad", 1)
+	lost("exo_outfit_bad")
 end
 function giveup_exo_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_good", 1)
+	lost("exo_outfit_good")
 end
 function giveup_exo_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_default", 1)
+	lost("exo_outfit_default")
 end
 function giveup_exo_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_static", 1)
+	lost("exo_outfit_static")
 end
 function giveup_exo_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_kat_eye", 1)
+	lost("exo_outfit_kat_eye")
 end
 function giveup_exo_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_psy", 1)
+	lost("exo_outfit_psy")
 end
 function giveup_exo_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_blackwhite", 1)
+	lost("exo_outfit_blackwhite")
 end
 function giveup_exo_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_bast", 1)
+	lost("exo_outfit_bast")
 end
 function giveup_exo_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("exo_outfit_plus", 1)
+	lost("exo_outfit_plus")
 end
 function add_exo_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "exo_outfit_bad", "in")
@@ -3934,37 +3254,37 @@ function goodup_svoboda_light_outfit_bast(task, objective)
 	return false
 end
 function goodup_svoboda_light_outfit_plus(task, objective)
-  	return sak.have_item_namber("svoboda_light_outfit_plus",1) ~= false
+	return has("svoboda_light_outfit_plus")
 end
 function giveup_svoboda_light_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit", 1)
+	lost("svoboda_light_outfit")
 end
 function giveup_svoboda_light_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_bad", 1)
+	lost("svoboda_light_outfit_bad")
 end
 function giveup_svoboda_light_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_good", 1)
+	lost("svoboda_light_outfit_good")
 end
 function giveup_svoboda_light_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_default", 1)
+	lost("svoboda_light_outfit_default")
 end
 function giveup_svoboda_light_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_static", 1)
+	lost("svoboda_light_outfit_static")
 end
 function giveup_svoboda_light_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_kat_eye", 1)
+	lost("svoboda_light_outfit_kat_eye")
 end
 function giveup_svoboda_light_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_psy", 1)
+	lost("svoboda_light_outfit_psy")
 end
 function giveup_svoboda_light_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_blackwhite", 1)
+	lost("svoboda_light_outfit_blackwhite")
 end
 function giveup_svoboda_light_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_bast", 1)
+	lost("svoboda_light_outfit_bast")
 end
 function giveup_svoboda_light_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_light_outfit_plus", 1)
+	lost("svoboda_light_outfit_plus")
 end
 function add_svoboda_light_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_light_outfit_bad", "in")
@@ -4091,37 +3411,37 @@ function goodup_svoboda_heavy_outfit_bast(task, objective)
 	return false
 end
 function goodup_svoboda_heavy_outfit_plus(task, objective)
-  	return sak.have_item_namber("svoboda_heavy_outfit_plus",1) ~= false
+	return has("svoboda_heavy_outfit_plus")
 end
 function giveup_svoboda_heavy_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit", 1)
+	lost("svoboda_heavy_outfit")
 end
 function giveup_svoboda_heavy_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_bad", 1)
+	lost("svoboda_heavy_outfit_bad")
 end
 function giveup_svoboda_heavy_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_good", 1)
+	lost("svoboda_heavy_outfit_good")
 end
 function giveup_svoboda_heavy_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_default", 1)
+	lost("svoboda_heavy_outfit_default")
 end
 function giveup_svoboda_heavy_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_static", 1)
+	lost("svoboda_heavy_outfit_static")
 end
 function giveup_svoboda_heavy_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_kat_eye", 1)
+	lost("svoboda_heavy_outfit_kat_eye")
 end
 function giveup_svoboda_heavy_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_psy", 1)
+	lost("svoboda_heavy_outfit_psy")
 end
 function giveup_svoboda_heavy_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_blackwhite", 1)
+	lost("svoboda_heavy_outfit_blackwhite")
 end
 function giveup_svoboda_heavy_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_bast", 1)
+	lost("svoboda_heavy_outfit_bast")
 end
 function giveup_svoboda_heavy_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_outfit_plus", 1)
+	lost("svoboda_heavy_outfit_plus")
 end
 function add_svoboda_heavy_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_heavy_outfit_bad", "in")
@@ -4248,37 +3568,37 @@ function goodup_dolg_outfit_bast(task, objective)
 	return false
 end
 function goodup_dolg_outfit_plus(task, objective)
-  	return sak.have_item_namber("dolg_outfit_plus",1) ~= false
+	return has("dolg_outfit_plus")
 end
 function giveup_dolg_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit", 1)
+	lost("dolg_outfit")
 end
 function giveup_dolg_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_bad", 1)
+	lost("dolg_outfit_bad")
 end
 function giveup_dolg_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_good", 1)
+	lost("dolg_outfit_good")
 end
 function giveup_dolg_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_default", 1)
+	lost("dolg_outfit_default")
 end
 function giveup_dolg_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_static", 1)
+	lost("dolg_outfit_static")
 end
 function giveup_dolg_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_kat_eye", 1)
+	lost("dolg_outfit_kat_eye")
 end
 function giveup_dolg_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_psy", 1)
+	lost("dolg_outfit_psy")
 end
 function giveup_dolg_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_blackwhite", 1)
+	lost("dolg_outfit_blackwhite")
 end
 function giveup_dolg_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_bast", 1)
+	lost("dolg_outfit_bast")
 end
 function giveup_dolg_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_outfit_plus", 1)
+	lost("dolg_outfit_plus")
 end
 function add_dolg_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "dolg_outfit_bad", "in")
@@ -4405,37 +3725,37 @@ function goodup_dolg_scientific_outfit_bast(task, objective)
 	return false
 end
 function goodup_dolg_scientific_outfit_plus(task, objective)
-  	return sak.have_item_namber("dolg_scientific_outfit_plus",1) ~= false
+	return has("dolg_scientific_outfit_plus")
 end
 function giveup_dolg_scientific_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit", 1)
+	lost("dolg_scientific_outfit")
 end
 function giveup_dolg_scientific_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_bad", 1)
+	lost("dolg_scientific_outfit_bad")
 end
 function giveup_dolg_scientific_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_good", 1)
+	lost("dolg_scientific_outfit_good")
 end
 function giveup_dolg_scientific_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_default", 1)
+	lost("dolg_scientific_outfit_default")
 end
 function giveup_dolg_scientific_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_static", 1)
+	lost("dolg_scientific_outfit_static")
 end
 function giveup_dolg_scientific_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_kat_eye", 1)
+	lost("dolg_scientific_outfit_kat_eye")
 end
 function giveup_dolg_scientific_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_psy", 1)
+	lost("dolg_scientific_outfit_psy")
 end
 function giveup_dolg_scientific_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_blackwhite", 1)
+	lost("dolg_scientific_outfit_blackwhite")
 end
 function giveup_dolg_scientific_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_bast", 1)
+	lost("dolg_scientific_outfit_bast")
 end
 function giveup_dolg_scientific_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_scientific_outfit_plus", 1)
+	lost("dolg_scientific_outfit_plus")
 end
 function add_dolg_scientific_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "dolg_scientific_outfit_bad", "in")
@@ -4562,37 +3882,37 @@ function goodup_ecolog_outfit_bast(task, objective)
 	return false
 end
 function goodup_ecolog_outfit_plus(task, objective)
-  	return sak.have_item_namber("ecolog_outfit_plus",1) ~= false
+	return has("ecolog_outfit_plus")
 end
 function giveup_ecolog_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit", 1)
+	lost("ecolog_outfit")
 end
 function giveup_ecolog_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_bad", 1)
+	lost("ecolog_outfit_bad")
 end
 function giveup_ecolog_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_good", 1)
+	lost("ecolog_outfit_good")
 end
 function giveup_ecolog_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_default", 1)
+	lost("ecolog_outfit_default")
 end
 function giveup_ecolog_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_static", 1)
+	lost("ecolog_outfit_static")
 end
 function giveup_ecolog_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_kat_eye", 1)
+	lost("ecolog_outfit_kat_eye")
 end
 function giveup_ecolog_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_psy", 1)
+	lost("ecolog_outfit_psy")
 end
 function giveup_ecolog_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_blackwhite", 1)
+	lost("ecolog_outfit_blackwhite")
 end
 function giveup_ecolog_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_bast", 1)
+	lost("ecolog_outfit_bast")
 end
 function giveup_ecolog_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("ecolog_outfit_plus", 1)
+	lost("ecolog_outfit_plus")
 end
 function add_ecolog_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "ecolog_outfit_bad", "in")
@@ -4719,37 +4039,37 @@ function goodup_protection_outfit_bast(task, objective)
 	return false
 end
 function goodup_protection_outfit_plus(task, objective)
-  	return sak.have_item_namber("protection_outfit_plus",1) ~= false
+	return has("protection_outfit_plus")
 end
 function giveup_protection_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit", 1)
+	lost("protection_outfit")
 end
 function giveup_protection_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_bad", 1)
+	lost("protection_outfit_bad")
 end
 function giveup_protection_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_good", 1)
+	lost("protection_outfit_good")
 end
 function giveup_protection_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_default", 1)
+	lost("protection_outfit_default")
 end
 function giveup_protection_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_static", 1)
+	lost("protection_outfit_static")
 end
 function giveup_protection_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_kat_eye", 1)
+	lost("protection_outfit_kat_eye")
 end
 function giveup_protection_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_psy", 1)
+	lost("protection_outfit_psy")
 end
 function giveup_protection_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_blackwhite", 1)
+	lost("protection_outfit_blackwhite")
 end
 function giveup_protection_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_bast", 1)
+	lost("protection_outfit_bast")
 end
 function giveup_protection_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("protection_outfit_plus", 1)
+	lost("protection_outfit_plus")
 end
 function add_protection_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "protection_outfit_bad", "in")
@@ -4876,37 +4196,37 @@ function goodup_killer_blue_exoskeleton_bast(task, objective)
 	return false
 end
 function goodup_killer_blue_exoskeleton_plus(task, objective)
-  	return sak.have_item_namber("killer_blue_exoskeleton_plus",1) ~= false
+	return has("killer_blue_exoskeleton_plus")
 end
 function giveup_killer_blue_exoskeleton(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton", 1)
+	lost("killer_blue_exoskeleton")
 end
 function giveup_killer_blue_exoskeleton_bad(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_bad", 1)
+	lost("killer_blue_exoskeleton_bad")
 end
 function giveup_killer_blue_exoskeleton_good(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_good", 1)
+	lost("killer_blue_exoskeleton_good")
 end
 function giveup_killer_blue_exoskeleton_default(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_default", 1)
+	lost("killer_blue_exoskeleton_default")
 end
 function giveup_killer_blue_exoskeleton_static(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_static", 1)
+	lost("killer_blue_exoskeleton_static")
 end
 function giveup_killer_blue_exoskeleton_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_kat_eye", 1)
+	lost("killer_blue_exoskeleton_kat_eye")
 end
 function giveup_killer_blue_exoskeleton_psy(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_psy", 1)
+	lost("killer_blue_exoskeleton_psy")
 end
 function giveup_killer_blue_exoskeleton_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_blackwhite", 1)
+	lost("killer_blue_exoskeleton_blackwhite")
 end
 function giveup_killer_blue_exoskeleton_bast(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_bast", 1)
+	lost("killer_blue_exoskeleton_bast")
 end
 function giveup_killer_blue_exoskeleton_plus(first_speaker, second_speaker)
-	sak.out_item_namber("killer_blue_exoskeleton_plus", 1)
+	lost("killer_blue_exoskeleton_plus")
 end
 function add_killer_blue_exoskeleton_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "killer_blue_exoskeleton_bad", "in")
@@ -5033,37 +4353,37 @@ function goodup_dolg_black_exoskeleton_bast(task, objective)
 	return false
 end
 function goodup_dolg_black_exoskeleton_plus(task, objective)
-  	return sak.have_item_namber("dolg_black_exoskeleton_plus",1) ~= false
+	return has("dolg_black_exoskeleton_plus")
 end
 function giveup_dolg_black_exoskeleton(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton", 1)
+	lost("dolg_black_exoskeleton")
 end
 function giveup_dolg_black_exoskeleton_bad(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_bad", 1)
+	lost("dolg_black_exoskeleton_bad")
 end
 function giveup_dolg_black_exoskeleton_good(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_good", 1)
+	lost("dolg_black_exoskeleton_good")
 end
 function giveup_dolg_black_exoskeleton_default(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_default", 1)
+	lost("dolg_black_exoskeleton_default")
 end
 function giveup_dolg_black_exoskeleton_static(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_static", 1)
+	lost("dolg_black_exoskeleton_static")
 end
 function giveup_dolg_black_exoskeleton_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_kat_eye", 1)
+	lost("dolg_black_exoskeleton_kat_eye")
 end
 function giveup_dolg_black_exoskeleton_psy(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_psy", 1)
+	lost("dolg_black_exoskeleton_psy")
 end
 function giveup_dolg_black_exoskeleton_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_blackwhite", 1)
+	lost("dolg_black_exoskeleton_blackwhite")
 end
 function giveup_dolg_black_exoskeleton_bast(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_bast", 1)
+	lost("dolg_black_exoskeleton_bast")
 end
 function giveup_dolg_black_exoskeleton_plus(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_black_exoskeleton_plus", 1)
+	lost("dolg_black_exoskeleton_plus")
 end
 function add_dolg_black_exoskeleton_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "dolg_black_exoskeleton_bad", "in")
@@ -5190,37 +4510,37 @@ function goodup_svoboda_exoskeleton_bast(task, objective)
 	return false
 end
 function goodup_svoboda_exoskeleton_plus(task, objective)
-  	return sak.have_item_namber("svoboda_exoskeleton_plus",1) ~= false
+	return has("svoboda_exoskeleton_plus")
 end
 function giveup_svoboda_exoskeleton(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton", 1)
+	lost("svoboda_exoskeleton")
 end
 function giveup_svoboda_exoskeleton_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_bad", 1)
+	lost("svoboda_exoskeleton_bad")
 end
 function giveup_svoboda_exoskeleton_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_good", 1)
+	lost("svoboda_exoskeleton_good")
 end
 function giveup_svoboda_exoskeleton_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_default", 1)
+	lost("svoboda_exoskeleton_default")
 end
 function giveup_svoboda_exoskeleton_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_static", 1)
+	lost("svoboda_exoskeleton_static")
 end
 function giveup_svoboda_exoskeleton_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_kat_eye", 1)
+	lost("svoboda_exoskeleton_kat_eye")
 end
 function giveup_svoboda_exoskeleton_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_psy", 1)
+	lost("svoboda_exoskeleton_psy")
 end
 function giveup_svoboda_exoskeleton_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_blackwhite", 1)
+	lost("svoboda_exoskeleton_blackwhite")
 end
 function giveup_svoboda_exoskeleton_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_bast", 1)
+	lost("svoboda_exoskeleton_bast")
 end
 function giveup_svoboda_exoskeleton_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_exoskeleton_plus", 1)
+	lost("svoboda_exoskeleton_plus")
 end
 function add_svoboda_exoskeleton_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_exoskeleton_bad", "in")
@@ -5347,37 +4667,37 @@ function goodup_monolit_exoskeleton_bast(task, objective)
 	return false
 end
 function goodup_monolit_exoskeleton_plus(task, objective)
-  	return sak.have_item_namber("monolit_exoskeleton_plus",1) ~= false
+	return has("monolit_exoskeleton_plus")
 end
 function giveup_monolit_exoskeleton(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton", 1)
+	lost("monolit_exoskeleton")
 end
 function giveup_monolit_exoskeleton_bad(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_bad", 1)
+	lost("monolit_exoskeleton_bad")
 end
 function giveup_monolit_exoskeleton_good(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_good", 1)
+	lost("monolit_exoskeleton_good")
 end
 function giveup_monolit_exoskeleton_default(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_default", 1)
+	lost("monolit_exoskeleton_default")
 end
 function giveup_monolit_exoskeleton_static(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_static", 1)
+	lost("monolit_exoskeleton_static")
 end
 function giveup_monolit_exoskeleton_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_kat_eye", 1)
+	lost("monolit_exoskeleton_kat_eye")
 end
 function giveup_monolit_exoskeleton_psy(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_psy", 1)
+	lost("monolit_exoskeleton_psy")
 end
 function giveup_monolit_exoskeleton_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_blackwhite", 1)
+	lost("monolit_exoskeleton_blackwhite")
 end
 function giveup_monolit_exoskeleton_bast(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_bast", 1)
+	lost("monolit_exoskeleton_bast")
 end
 function giveup_monolit_exoskeleton_plus(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_exoskeleton_plus", 1)
+	lost("monolit_exoskeleton_plus")
 end
 function add_monolit_exoskeleton_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "monolit_exoskeleton_bad", "in")
@@ -5504,37 +4824,37 @@ function goodup_broken_exoskeleton_bast(task, objective)
 	return false
 end
 function goodup_broken_exoskeleton_plus(task, objective)
-  	return sak.have_item_namber("broken_exoskeleton_plus",1) ~= false
+	return has("broken_exoskeleton_plus")
 end
 function giveup_broken_exoskeleton(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton", 1)
+	lost("broken_exoskeleton")
 end
 function giveup_broken_exoskeleton_bad(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_bad", 1)
+	lost("broken_exoskeleton_bad")
 end
 function giveup_broken_exoskeleton_good(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_good", 1)
+	lost("broken_exoskeleton_good")
 end
 function giveup_broken_exoskeleton_default(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_default", 1)
+	lost("broken_exoskeleton_default")
 end
 function giveup_broken_exoskeleton_static(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_static", 1)
+	lost("broken_exoskeleton_static")
 end
 function giveup_broken_exoskeleton_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_kat_eye", 1)
+	lost("broken_exoskeleton_kat_eye")
 end
 function giveup_broken_exoskeleton_psy(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_psy", 1)
+	lost("broken_exoskeleton_psy")
 end
 function giveup_broken_exoskeleton_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_blackwhite", 1)
+	lost("broken_exoskeleton_blackwhite")
 end
 function giveup_broken_exoskeleton_bast(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_bast", 1)
+	lost("broken_exoskeleton_bast")
 end
 function giveup_broken_exoskeleton_plus(first_speaker, second_speaker)
-	sak.out_item_namber("broken_exoskeleton_plus", 1)
+	lost("broken_exoskeleton_plus")
 end
 function add_broken_exoskeleton_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "broken_exoskeleton_bad", "in")
@@ -5661,37 +4981,37 @@ function goodup_freedom_scientific_outfit_bast(task, objective)
 	return false
 end
 function goodup_freedom_scientific_outfit_plus(task, objective)
-  	return sak.have_item_namber("freedom_scientific_outfit_plus",1) ~= false
+	return has("freedom_scientific_outfit_plus")
 end
 function giveup_freedom_scientific_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit", 1)
+	lost("freedom_scientific_outfit")
 end
 function giveup_freedom_scientific_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_bad", 1)
+	lost("freedom_scientific_outfit_bad")
 end
 function giveup_freedom_scientific_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_good", 1)
+	lost("freedom_scientific_outfit_good")
 end
 function giveup_freedom_scientific_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_default", 1)
+	lost("freedom_scientific_outfit_default")
 end
 function giveup_freedom_scientific_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_static", 1)
+	lost("freedom_scientific_outfit_static")
 end
 function giveup_freedom_scientific_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_kat_eye", 1)
+	lost("freedom_scientific_outfit_kat_eye")
 end
 function giveup_freedom_scientific_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_psy", 1)
+	lost("freedom_scientific_outfit_psy")
 end
 function giveup_freedom_scientific_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_blackwhite", 1)
+	lost("freedom_scientific_outfit_blackwhite")
 end
 function giveup_freedom_scientific_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_bast", 1)
+	lost("freedom_scientific_outfit_bast")
 end
 function giveup_freedom_scientific_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("freedom_scientific_outfit_plus", 1)
+	lost("freedom_scientific_outfit_plus")
 end
 function add_freedom_scientific_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "freedom_scientific_outfit_bad", "in")
@@ -5818,37 +5138,37 @@ function goodup_merc_scientific_outfit_bast(task, objective)
 	return false
 end
 function goodup_merc_scientific_outfit_plus(task, objective)
-  	return sak.have_item_namber("merc_scientific_outfit_plus",1) ~= false
+	return has("merc_scientific_outfit_plus")
 end
 function giveup_merc_scientific_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit", 1)
+	lost("merc_scientific_outfit")
 end
 function giveup_merc_scientific_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_bad", 1)
+	lost("merc_scientific_outfit_bad")
 end
 function giveup_merc_scientific_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_good", 1)
+	lost("merc_scientific_outfit_good")
 end
 function giveup_merc_scientific_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_default", 1)
+	lost("merc_scientific_outfit_default")
 end
 function giveup_merc_scientific_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_static", 1)
+	lost("merc_scientific_outfit_static")
 end
 function giveup_merc_scientific_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_kat_eye", 1)
+	lost("merc_scientific_outfit_kat_eye")
 end
 function giveup_merc_scientific_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_psy", 1)
+	lost("merc_scientific_outfit_psy")
 end
 function giveup_merc_scientific_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_blackwhite", 1)
+	lost("merc_scientific_outfit_blackwhite")
 end
 function giveup_merc_scientific_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_bast", 1)
+	lost("merc_scientific_outfit_bast")
 end
 function giveup_merc_scientific_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("merc_scientific_outfit_plus", 1)
+	lost("merc_scientific_outfit_plus")
 end
 function add_merc_scientific_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "merc_scientific_outfit_bad", "in")
@@ -5975,37 +5295,37 @@ function goodup_monolit_scientific_outfit_bast(task, objective)
 	return false
 end
 function goodup_monolit_scientific_outfit_plus(task, objective)
-  	return sak.have_item_namber("monolit_scientific_outfit_plus",1) ~= false
+	return has("monolit_scientific_outfit_plus")
 end
 function giveup_monolit_scientific_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit", 1)
+	lost("monolit_scientific_outfit")
 end
 function giveup_monolit_scientific_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_bad", 1)
+	lost("monolit_scientific_outfit_bad")
 end
 function giveup_monolit_scientific_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_good", 1)
+	lost("monolit_scientific_outfit_good")
 end
 function giveup_monolit_scientific_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_default", 1)
+	lost("monolit_scientific_outfit_default")
 end
 function giveup_monolit_scientific_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_static", 1)
+	lost("monolit_scientific_outfit_static")
 end
 function giveup_monolit_scientific_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_kat_eye", 1)
+	lost("monolit_scientific_outfit_kat_eye")
 end
 function giveup_monolit_scientific_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_psy", 1)
+	lost("monolit_scientific_outfit_psy")
 end
 function giveup_monolit_scientific_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_blackwhite", 1)
+	lost("monolit_scientific_outfit_blackwhite")
 end
 function giveup_monolit_scientific_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_bast", 1)
+	lost("monolit_scientific_outfit_bast")
 end
 function giveup_monolit_scientific_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_scientific_outfit_plus", 1)
+	lost("monolit_scientific_outfit_plus")
 end
 function add_monolit_scientific_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "monolit_scientific_outfit_bad", "in")
@@ -6076,16 +5396,16 @@ function goodup_bandit_master_outfit_bad(task, objective)
 	return false
 end
 function goodup_bandit_master_outfit_plus(task, objective)
-  	return sak.have_item_namber("bandit_master_outfit_plus",1) ~= false
+	return has("bandit_master_outfit_plus")
 end
 function giveup_bandit_master_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit", 1)
+	lost("bandit_master_outfit")
 end
 function giveup_bandit_master_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit_bad", 1)
+	lost("bandit_master_outfit_bad")
 end
 function giveup_bandit_master_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit_plus", 1)
+	lost("bandit_master_outfit_plus")
 end
 function add_bandit_master_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_master_outfit_bad", "in")
@@ -6170,37 +5490,37 @@ function goodup_outfit_soldier_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_soldier_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_soldier_m1_plus",1) ~= false
+	return has("outfit_soldier_m1_plus")
 end
 function giveup_outfit_soldier_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1", 1)
+	lost("outfit_soldier_m1")
 end
 function giveup_outfit_soldier_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_bad", 1)
+	lost("outfit_soldier_m1_bad")
 end
 function giveup_outfit_soldier_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_good", 1)
+	lost("outfit_soldier_m1_good")
 end
 function giveup_outfit_soldier_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_default", 1)
+	lost("outfit_soldier_m1_default")
 end
 function giveup_outfit_soldier_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_static", 1)
+	lost("outfit_soldier_m1_static")
 end
 function giveup_outfit_soldier_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_kat_eye", 1)
+	lost("outfit_soldier_m1_kat_eye")
 end
 function giveup_outfit_soldier_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_psy", 1)
+	lost("outfit_soldier_m1_psy")
 end
 function giveup_outfit_soldier_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_blackwhite", 1)
+	lost("outfit_soldier_m1_blackwhite")
 end
 function giveup_outfit_soldier_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_bast", 1)
+	lost("outfit_soldier_m1_bast")
 end
 function giveup_outfit_soldier_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_soldier_m1_plus", 1)
+	lost("outfit_soldier_m1_plus")
 end
 function add_outfit_soldier_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_soldier_m1_bad", "in")
@@ -6327,37 +5647,37 @@ function goodup_neytral_exo_antigas_outfit_bast(task, objective)
 	return false
 end
 function goodup_neytral_exo_antigas_outfit_plus(task, objective)
-  	return sak.have_item_namber("neytral_exo_antigas_outfit_plus",1) ~= false
+	return has("neytral_exo_antigas_outfit_plus")
 end
 function giveup_neytral_exo_antigas_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit", 1)
+	lost("neytral_exo_antigas_outfit")
 end
 function giveup_neytral_exo_antigas_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_bad", 1)
+	lost("neytral_exo_antigas_outfit_bad")
 end
 function giveup_neytral_exo_antigas_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_good", 1)
+	lost("neytral_exo_antigas_outfit_good")
 end
 function giveup_neytral_exo_antigas_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_default", 1)
+	lost("neytral_exo_antigas_outfit_default")
 end
 function giveup_neytral_exo_antigas_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_static", 1)
+	lost("neytral_exo_antigas_outfit_static")
 end
 function giveup_neytral_exo_antigas_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_kat_eye", 1)
+	lost("neytral_exo_antigas_outfit_kat_eye")
 end
 function giveup_neytral_exo_antigas_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_psy", 1)
+	lost("neytral_exo_antigas_outfit_psy")
 end
 function giveup_neytral_exo_antigas_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_blackwhite", 1)
+	lost("neytral_exo_antigas_outfit_blackwhite")
 end
 function giveup_neytral_exo_antigas_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_bast", 1)
+	lost("neytral_exo_antigas_outfit_bast")
 end
 function giveup_neytral_exo_antigas_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_antigas_outfit_plus", 1)
+	lost("neytral_exo_antigas_outfit_plus")
 end
 function add_neytral_exo_antigas_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_exo_antigas_outfit_bad", "in")
@@ -6428,16 +5748,16 @@ function goodup_bandit_veteran_outfit_bad(task, objective)
 	return false
 end
 function goodup_bandit_veteran_outfit_plus(task, objective)
-  	return sak.have_item_namber("bandit_veteran_outfit_plus",1) ~= false
+	return has("bandit_veteran_outfit_plus")
 end
 function giveup_bandit_veteran_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit", 1)
+	lost("bandit_veteran_outfit")
 end
 function giveup_bandit_veteran_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit_bad", 1)
+	lost("bandit_veteran_outfit_bad")
 end
 function giveup_bandit_veteran_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit_plus", 1)
+	lost("bandit_veteran_outfit_plus")
 end
 function add_bandit_veteran_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_veteran_outfit_bad", "in")
@@ -6522,37 +5842,37 @@ function goodup_soldier_outfit_bast(task, objective)
 	return false
 end
 function goodup_soldier_outfit_plus(task, objective)
-  	return sak.have_item_namber("soldier_outfit_plus",1) ~= false
+	return has("soldier_outfit_plus")
 end
 function giveup_soldier_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit", 1)
+	lost("soldier_outfit")
 end
 function giveup_soldier_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_bad", 1)
+	lost("soldier_outfit_bad")
 end
 function giveup_soldier_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_good", 1)
+	lost("soldier_outfit_good")
 end
 function giveup_soldier_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_default", 1)
+	lost("soldier_outfit_default")
 end
 function giveup_soldier_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_static", 1)
+	lost("soldier_outfit_static")
 end
 function giveup_soldier_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_kat_eye", 1)
+	lost("soldier_outfit_kat_eye")
 end
 function giveup_soldier_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_psy", 1)
+	lost("soldier_outfit_psy")
 end
 function giveup_soldier_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_blackwhite", 1)
+	lost("soldier_outfit_blackwhite")
 end
 function giveup_soldier_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_bast", 1)
+	lost("soldier_outfit_bast")
 end
 function giveup_soldier_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("soldier_outfit_plus", 1)
+	lost("soldier_outfit_plus")
 end
 function add_soldier_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "soldier_outfit_bad", "in")
@@ -6679,37 +5999,37 @@ function goodup_exo_bandit_outfit_bast(task, objective)
 	return false
 end
 function goodup_exo_bandit_outfit_plus(task, objective)
-  	return sak.have_item_namber("exo_bandit_outfit_plus",1) ~= false
+	return has("exo_bandit_outfit_plus")
 end
 function giveup_exo_bandit_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit", 1)
+	lost("exo_bandit_outfit")
 end
 function giveup_exo_bandit_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_bad", 1)
+	lost("exo_bandit_outfit_bad")
 end
 function giveup_exo_bandit_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_good", 1)
+	lost("exo_bandit_outfit_good")
 end
 function giveup_exo_bandit_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_default", 1)
+	lost("exo_bandit_outfit_default")
 end
 function giveup_exo_bandit_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_static", 1)
+	lost("exo_bandit_outfit_static")
 end
 function giveup_exo_bandit_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_kat_eye", 1)
+	lost("exo_bandit_outfit_kat_eye")
 end
 function giveup_exo_bandit_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_psy", 1)
+	lost("exo_bandit_outfit_psy")
 end
 function giveup_exo_bandit_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_blackwhite", 1)
+	lost("exo_bandit_outfit_blackwhite")
 end
 function giveup_exo_bandit_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_bast", 1)
+	lost("exo_bandit_outfit_bast")
 end
 function giveup_exo_bandit_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("exo_bandit_outfit_plus", 1)
+	lost("exo_bandit_outfit_plus")
 end
 function add_exo_bandit_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "exo_bandit_outfit_bad", "in")
@@ -6836,37 +6156,37 @@ function goodup_nano_outfit_bast(task, objective)
 	return false
 end
 function goodup_nano_outfit_plus(task, objective)
-  	return sak.have_item_namber("nano_outfit_plus",1) ~= false
+	return has("nano_outfit_plus")
 end
 function giveup_nano_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit", 1)
+	lost("nano_outfit")
 end
 function giveup_nano_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_bad", 1)
+	lost("nano_outfit_bad")
 end
 function giveup_nano_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_good", 1)
+	lost("nano_outfit_good")
 end
 function giveup_nano_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_default", 1)
+	lost("nano_outfit_default")
 end
 function giveup_nano_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_static", 1)
+	lost("nano_outfit_static")
 end
 function giveup_nano_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_kat_eye", 1)
+	lost("nano_outfit_kat_eye")
 end
 function giveup_nano_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_psy", 1)
+	lost("nano_outfit_psy")
 end
 function giveup_nano_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_blackwhite", 1)
+	lost("nano_outfit_blackwhite")
 end
 function giveup_nano_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_bast", 1)
+	lost("nano_outfit_bast")
 end
 function giveup_nano_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_plus", 1)
+	lost("nano_outfit_plus")
 end
 function add_nano_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "nano_outfit_bad", "in")
@@ -6993,37 +6313,37 @@ function goodup_nano_outfit_addw_bast(task, objective)
 	return false
 end
 function goodup_nano_outfit_addw_plus(task, objective)
-  	return sak.have_item_namber("nano_outfit_addw_plus",1) ~= false
+	return has("nano_outfit_addw_plus")
 end
 function giveup_nano_outfit_addw(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw", 1)
+	lost("nano_outfit_addw")
 end
 function giveup_nano_outfit_addw_bad(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_bad", 1)
+	lost("nano_outfit_addw_bad")
 end
 function giveup_nano_outfit_addw_good(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_good", 1)
+	lost("nano_outfit_addw_good")
 end
 function giveup_nano_outfit_addw_default(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_default", 1)
+	lost("nano_outfit_addw_default")
 end
 function giveup_nano_outfit_addw_static(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_static", 1)
+	lost("nano_outfit_addw_static")
 end
 function giveup_nano_outfit_addw_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_kat_eye", 1)
+	lost("nano_outfit_addw_kat_eye")
 end
 function giveup_nano_outfit_addw_psy(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_psy", 1)
+	lost("nano_outfit_addw_psy")
 end
 function giveup_nano_outfit_addw_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_blackwhite", 1)
+	lost("nano_outfit_addw_blackwhite")
 end
 function giveup_nano_outfit_addw_bast(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_bast", 1)
+	lost("nano_outfit_addw_bast")
 end
 function giveup_nano_outfit_addw_plus(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addw_plus", 1)
+	lost("nano_outfit_addw_plus")
 end
 function add_nano_outfit_addw_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "nano_outfit_addw_bad", "in")
@@ -7150,37 +6470,37 @@ function goodup_nano_outfit_addh_bast(task, objective)
 	return false
 end
 function goodup_nano_outfit_addh_plus(task, objective)
-  	return sak.have_item_namber("nano_outfit_addh_plus",1) ~= false
+	return has("nano_outfit_addh_plus")
 end
 function giveup_nano_outfit_addh(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh", 1)
+	lost("nano_outfit_addh")
 end
 function giveup_nano_outfit_addh_bad(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_bad", 1)
+	lost("nano_outfit_addh_bad")
 end
 function giveup_nano_outfit_addh_good(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_good", 1)
+	lost("nano_outfit_addh_good")
 end
 function giveup_nano_outfit_addh_default(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_default", 1)
+	lost("nano_outfit_addh_default")
 end
 function giveup_nano_outfit_addh_static(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_static", 1)
+	lost("nano_outfit_addh_static")
 end
 function giveup_nano_outfit_addh_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_kat_eye", 1)
+	lost("nano_outfit_addh_kat_eye")
 end
 function giveup_nano_outfit_addh_psy(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_psy", 1)
+	lost("nano_outfit_addh_psy")
 end
 function giveup_nano_outfit_addh_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_blackwhite", 1)
+	lost("nano_outfit_addh_blackwhite")
 end
 function giveup_nano_outfit_addh_bast(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_bast", 1)
+	lost("nano_outfit_addh_bast")
 end
 function giveup_nano_outfit_addh_plus(first_speaker, second_speaker)
-	sak.out_item_namber("nano_outfit_addh_plus", 1)
+	lost("nano_outfit_addh_plus")
 end
 function add_nano_outfit_addh_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "nano_outfit_addh_bad", "in")
@@ -7307,37 +6627,37 @@ function goodup_stalker_france_killer_gaz_bast(task, objective)
 	return false
 end
 function goodup_stalker_france_killer_gaz_plus(task, objective)
-  	return sak.have_item_namber("stalker_france_killer_gaz_plus",1) ~= false
+	return has("stalker_france_killer_gaz_plus")
 end
 function giveup_stalker_france_killer_gaz(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz", 1)
+	lost("stalker_france_killer_gaz")
 end
 function giveup_stalker_france_killer_gaz_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_bad", 1)
+	lost("stalker_france_killer_gaz_bad")
 end
 function giveup_stalker_france_killer_gaz_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_good", 1)
+	lost("stalker_france_killer_gaz_good")
 end
 function giveup_stalker_france_killer_gaz_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_default", 1)
+	lost("stalker_france_killer_gaz_default")
 end
 function giveup_stalker_france_killer_gaz_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_static", 1)
+	lost("stalker_france_killer_gaz_static")
 end
 function giveup_stalker_france_killer_gaz_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_kat_eye", 1)
+	lost("stalker_france_killer_gaz_kat_eye")
 end
 function giveup_stalker_france_killer_gaz_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_psy", 1)
+	lost("stalker_france_killer_gaz_psy")
 end
 function giveup_stalker_france_killer_gaz_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_blackwhite", 1)
+	lost("stalker_france_killer_gaz_blackwhite")
 end
 function giveup_stalker_france_killer_gaz_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_bast", 1)
+	lost("stalker_france_killer_gaz_bast")
 end
 function giveup_stalker_france_killer_gaz_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_france_killer_gaz_plus", 1)
+	lost("stalker_france_killer_gaz_plus")
 end
 function add_stalker_france_killer_gaz_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_france_killer_gaz_bad", "in")
@@ -7464,37 +6784,37 @@ function goodup_stalker_usa_killer_gaz_bast(task, objective)
 	return false
 end
 function goodup_stalker_usa_killer_gaz_plus(task, objective)
-  	return sak.have_item_namber("stalker_usa_killer_gaz_plus",1) ~= false
+	return has("stalker_usa_killer_gaz_plus")
 end
 function giveup_stalker_usa_killer_gaz(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz", 1)
+	lost("stalker_usa_killer_gaz")
 end
 function giveup_stalker_usa_killer_gaz_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_bad", 1)
+	lost("stalker_usa_killer_gaz_bad")
 end
 function giveup_stalker_usa_killer_gaz_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_good", 1)
+	lost("stalker_usa_killer_gaz_good")
 end
 function giveup_stalker_usa_killer_gaz_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_default", 1)
+	lost("stalker_usa_killer_gaz_default")
 end
 function giveup_stalker_usa_killer_gaz_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_static", 1)
+	lost("stalker_usa_killer_gaz_static")
 end
 function giveup_stalker_usa_killer_gaz_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_kat_eye", 1)
+	lost("stalker_usa_killer_gaz_kat_eye")
 end
 function giveup_stalker_usa_killer_gaz_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_psy", 1)
+	lost("stalker_usa_killer_gaz_psy")
 end
 function giveup_stalker_usa_killer_gaz_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_blackwhite", 1)
+	lost("stalker_usa_killer_gaz_blackwhite")
 end
 function giveup_stalker_usa_killer_gaz_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_bast", 1)
+	lost("stalker_usa_killer_gaz_bast")
 end
 function giveup_stalker_usa_killer_gaz_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_usa_killer_gaz_plus", 1)
+	lost("stalker_usa_killer_gaz_plus")
 end
 function add_stalker_usa_killer_gaz_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_usa_killer_gaz_bad", "in")
@@ -7621,37 +6941,37 @@ function goodup_rus_spec_outfit_bast(task, objective)
 	return false
 end
 function goodup_rus_spec_outfit_plus(task, objective)
-  	return sak.have_item_namber("rus_spec_outfit_plus",1) ~= false
+	return has("rus_spec_outfit_plus")
 end
 function giveup_rus_spec_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit", 1)
+	lost("rus_spec_outfit")
 end
 function giveup_rus_spec_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_bad", 1)
+	lost("rus_spec_outfit_bad")
 end
 function giveup_rus_spec_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_good", 1)
+	lost("rus_spec_outfit_good")
 end
 function giveup_rus_spec_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_default", 1)
+	lost("rus_spec_outfit_default")
 end
 function giveup_rus_spec_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_static", 1)
+	lost("rus_spec_outfit_static")
 end
 function giveup_rus_spec_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_kat_eye", 1)
+	lost("rus_spec_outfit_kat_eye")
 end
 function giveup_rus_spec_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_psy", 1)
+	lost("rus_spec_outfit_psy")
 end
 function giveup_rus_spec_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_blackwhite", 1)
+	lost("rus_spec_outfit_blackwhite")
 end
 function giveup_rus_spec_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_bast", 1)
+	lost("rus_spec_outfit_bast")
 end
 function giveup_rus_spec_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("rus_spec_outfit_plus", 1)
+	lost("rus_spec_outfit_plus")
 end
 function add_rus_spec_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "rus_spec_outfit_bad", "in")
@@ -7778,37 +7098,37 @@ function goodup_military_exo_outfit_bast(task, objective)
 	return false
 end
 function goodup_military_exo_outfit_plus(task, objective)
-  	return sak.have_item_namber("military_exo_outfit_plus",1) ~= false
+	return has("military_exo_outfit_plus")
 end
 function giveup_military_exo_outfit(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit", 1)
+	lost("military_exo_outfit")
 end
 function giveup_military_exo_outfit_bad(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_bad", 1)
+	lost("military_exo_outfit_bad")
 end
 function giveup_military_exo_outfit_good(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_good", 1)
+	lost("military_exo_outfit_good")
 end
 function giveup_military_exo_outfit_default(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_default", 1)
+	lost("military_exo_outfit_default")
 end
 function giveup_military_exo_outfit_static(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_static", 1)
+	lost("military_exo_outfit_static")
 end
 function giveup_military_exo_outfit_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_kat_eye", 1)
+	lost("military_exo_outfit_kat_eye")
 end
 function giveup_military_exo_outfit_psy(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_psy", 1)
+	lost("military_exo_outfit_psy")
 end
 function giveup_military_exo_outfit_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_blackwhite", 1)
+	lost("military_exo_outfit_blackwhite")
 end
 function giveup_military_exo_outfit_bast(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_bast", 1)
+	lost("military_exo_outfit_bast")
 end
 function giveup_military_exo_outfit_plus(first_speaker, second_speaker)
-	sak.out_item_namber("military_exo_outfit_plus", 1)
+	lost("military_exo_outfit_plus")
 end
 function add_military_exo_outfit_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "military_exo_outfit_bad", "in")
@@ -7879,16 +7199,16 @@ function goodup_neytral_novice_outfit_m1_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_m1_plus",1) ~= false
+	return has("neytral_novice_outfit_m1_plus")
 end
 function giveup_neytral_novice_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_m1", 1)
+	lost("neytral_novice_outfit_m1")
 end
 function giveup_neytral_novice_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_m1_bad", 1)
+	lost("neytral_novice_outfit_m1_bad")
 end
 function giveup_neytral_novice_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_m1_plus", 1)
+	lost("neytral_novice_outfit_m1_plus")
 end
 function add_neytral_novice_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_m1_bad", "in")
@@ -7917,16 +7237,16 @@ function goodup_neytral_novice_outfit_cam_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_cam_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_cam_plus",1) ~= false
+	return has("neytral_novice_outfit_cam_plus")
 end
 function giveup_neytral_novice_outfit_cam(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam", 1)
+	lost("neytral_novice_outfit_cam")
 end
 function giveup_neytral_novice_outfit_cam_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_bad", 1)
+	lost("neytral_novice_outfit_cam_bad")
 end
 function giveup_neytral_novice_outfit_cam_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_plus", 1)
+	lost("neytral_novice_outfit_cam_plus")
 end
 function add_neytral_novice_outfit_cam_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_cam_bad", "in")
@@ -7955,16 +7275,16 @@ function goodup_neytral_novice_outfit_new_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_new_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_new_plus",1) ~= false
+	return has("neytral_novice_outfit_new_plus")
 end
 function giveup_neytral_novice_outfit_new(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_new", 1)
+	lost("neytral_novice_outfit_new")
 end
 function giveup_neytral_novice_outfit_new_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_new_bad", 1)
+	lost("neytral_novice_outfit_new_bad")
 end
 function giveup_neytral_novice_outfit_new_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_new_plus", 1)
+	lost("neytral_novice_outfit_new_plus")
 end
 function add_neytral_novice_outfit_new_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_new_bad", "in")
@@ -7993,16 +7313,16 @@ function goodup_neytral_novice_outfit_cam_1_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_cam_1_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_cam_1_plus",1) ~= false
+	return has("neytral_novice_outfit_cam_1_plus")
 end
 function giveup_neytral_novice_outfit_cam_1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_1", 1)
+	lost("neytral_novice_outfit_cam_1")
 end
 function giveup_neytral_novice_outfit_cam_1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_1_bad", 1)
+	lost("neytral_novice_outfit_cam_1_bad")
 end
 function giveup_neytral_novice_outfit_cam_1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_1_plus", 1)
+	lost("neytral_novice_outfit_cam_1_plus")
 end
 function add_neytral_novice_outfit_cam_1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_cam_1_bad", "in")
@@ -8031,16 +7351,16 @@ function goodup_neytral_novice_outfit_cam_2_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_cam_2_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_cam_2_plus",1) ~= false
+	return has("neytral_novice_outfit_cam_2_plus")
 end
 function giveup_neytral_novice_outfit_cam_2(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_2", 1)
+	lost("neytral_novice_outfit_cam_2")
 end
 function giveup_neytral_novice_outfit_cam_2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_2_bad", 1)
+	lost("neytral_novice_outfit_cam_2_bad")
 end
 function giveup_neytral_novice_outfit_cam_2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_2_plus", 1)
+	lost("neytral_novice_outfit_cam_2_plus")
 end
 function add_neytral_novice_outfit_cam_2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_cam_2_bad", "in")
@@ -8069,16 +7389,16 @@ function goodup_neytral_novice_outfit_cam_3_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_outfit_cam_3_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_outfit_cam_3_plus",1) ~= false
+	return has("neytral_novice_outfit_cam_3_plus")
 end
 function giveup_neytral_novice_outfit_cam_3(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_3", 1)
+	lost("neytral_novice_outfit_cam_3")
 end
 function giveup_neytral_novice_outfit_cam_3_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_3_bad", 1)
+	lost("neytral_novice_outfit_cam_3_bad")
 end
 function giveup_neytral_novice_outfit_cam_3_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_outfit_cam_3_plus", 1)
+	lost("neytral_novice_outfit_cam_3_plus")
 end
 function add_neytral_novice_outfit_cam_3_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_outfit_cam_3_bad", "in")
@@ -8107,16 +7427,16 @@ function goodup_neytral_novice_gaz_outfit_m1_bad(task, objective)
 	return false
 end
 function goodup_neytral_novice_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("neytral_novice_gaz_outfit_m1_plus",1) ~= false
+	return has("neytral_novice_gaz_outfit_m1_plus")
 end
 function giveup_neytral_novice_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_gaz_outfit_m1", 1)
+	lost("neytral_novice_gaz_outfit_m1")
 end
 function giveup_neytral_novice_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_gaz_outfit_m1_bad", 1)
+	lost("neytral_novice_gaz_outfit_m1_bad")
 end
 function giveup_neytral_novice_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_novice_gaz_outfit_m1_plus", 1)
+	lost("neytral_novice_gaz_outfit_m1_plus")
 end
 function add_neytral_novice_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_novice_gaz_outfit_m1_bad", "in")
@@ -8201,37 +7521,37 @@ function goodup_neytral_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_neytral_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("neytral_gaz_outfit_m1_plus",1) ~= false
+	return has("neytral_gaz_outfit_m1_plus")
 end
 function giveup_neytral_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1", 1)
+	lost("neytral_gaz_outfit_m1")
 end
 function giveup_neytral_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_bad", 1)
+	lost("neytral_gaz_outfit_m1_bad")
 end
 function giveup_neytral_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_good", 1)
+	lost("neytral_gaz_outfit_m1_good")
 end
 function giveup_neytral_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_default", 1)
+	lost("neytral_gaz_outfit_m1_default")
 end
 function giveup_neytral_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_static", 1)
+	lost("neytral_gaz_outfit_m1_static")
 end
 function giveup_neytral_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_kat_eye", 1)
+	lost("neytral_gaz_outfit_m1_kat_eye")
 end
 function giveup_neytral_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_psy", 1)
+	lost("neytral_gaz_outfit_m1_psy")
 end
 function giveup_neytral_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_blackwhite", 1)
+	lost("neytral_gaz_outfit_m1_blackwhite")
 end
 function giveup_neytral_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_bast", 1)
+	lost("neytral_gaz_outfit_m1_bast")
 end
 function giveup_neytral_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m1_plus", 1)
+	lost("neytral_gaz_outfit_m1_plus")
 end
 function add_neytral_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_gaz_outfit_m1_bad", "in")
@@ -8358,37 +7678,37 @@ function goodup_neytral_gaz_outfit_m2_bast(task, objective)
 	return false
 end
 function goodup_neytral_gaz_outfit_m2_plus(task, objective)
-  	return sak.have_item_namber("neytral_gaz_outfit_m2_plus",1) ~= false
+	return has("neytral_gaz_outfit_m2_plus")
 end
 function giveup_neytral_gaz_outfit_m2(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2", 1)
+	lost("neytral_gaz_outfit_m2")
 end
 function giveup_neytral_gaz_outfit_m2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_bad", 1)
+	lost("neytral_gaz_outfit_m2_bad")
 end
 function giveup_neytral_gaz_outfit_m2_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_good", 1)
+	lost("neytral_gaz_outfit_m2_good")
 end
 function giveup_neytral_gaz_outfit_m2_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_default", 1)
+	lost("neytral_gaz_outfit_m2_default")
 end
 function giveup_neytral_gaz_outfit_m2_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_static", 1)
+	lost("neytral_gaz_outfit_m2_static")
 end
 function giveup_neytral_gaz_outfit_m2_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_kat_eye", 1)
+	lost("neytral_gaz_outfit_m2_kat_eye")
 end
 function giveup_neytral_gaz_outfit_m2_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_psy", 1)
+	lost("neytral_gaz_outfit_m2_psy")
 end
 function giveup_neytral_gaz_outfit_m2_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_blackwhite", 1)
+	lost("neytral_gaz_outfit_m2_blackwhite")
 end
 function giveup_neytral_gaz_outfit_m2_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_bast", 1)
+	lost("neytral_gaz_outfit_m2_bast")
 end
 function giveup_neytral_gaz_outfit_m2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_m2_plus", 1)
+	lost("neytral_gaz_outfit_m2_plus")
 end
 function add_neytral_gaz_outfit_m2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_gaz_outfit_m2_bad", "in")
@@ -8515,37 +7835,37 @@ function goodup_neytral_gaz_outfit_v1_bast(task, objective)
 	return false
 end
 function goodup_neytral_gaz_outfit_v1_plus(task, objective)
-  	return sak.have_item_namber("neytral_gaz_outfit_v1_plus",1) ~= false
+	return has("neytral_gaz_outfit_v1_plus")
 end
 function giveup_neytral_gaz_outfit_v1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1", 1)
+	lost("neytral_gaz_outfit_v1")
 end
 function giveup_neytral_gaz_outfit_v1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_bad", 1)
+	lost("neytral_gaz_outfit_v1_bad")
 end
 function giveup_neytral_gaz_outfit_v1_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_good", 1)
+	lost("neytral_gaz_outfit_v1_good")
 end
 function giveup_neytral_gaz_outfit_v1_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_default", 1)
+	lost("neytral_gaz_outfit_v1_default")
 end
 function giveup_neytral_gaz_outfit_v1_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_static", 1)
+	lost("neytral_gaz_outfit_v1_static")
 end
 function giveup_neytral_gaz_outfit_v1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_kat_eye", 1)
+	lost("neytral_gaz_outfit_v1_kat_eye")
 end
 function giveup_neytral_gaz_outfit_v1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_psy", 1)
+	lost("neytral_gaz_outfit_v1_psy")
 end
 function giveup_neytral_gaz_outfit_v1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_blackwhite", 1)
+	lost("neytral_gaz_outfit_v1_blackwhite")
 end
 function giveup_neytral_gaz_outfit_v1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_bast", 1)
+	lost("neytral_gaz_outfit_v1_bast")
 end
 function giveup_neytral_gaz_outfit_v1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v1_plus", 1)
+	lost("neytral_gaz_outfit_v1_plus")
 end
 function add_neytral_gaz_outfit_v1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_gaz_outfit_v1_bad", "in")
@@ -8672,37 +7992,37 @@ function goodup_neytral_gaz_outfit_v2_bast(task, objective)
 	return false
 end
 function goodup_neytral_gaz_outfit_v2_plus(task, objective)
-  	return sak.have_item_namber("neytral_gaz_outfit_v2_plus",1) ~= false
+	return has("neytral_gaz_outfit_v2_plus")
 end
 function giveup_neytral_gaz_outfit_v2(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2", 1)
+	lost("neytral_gaz_outfit_v2")
 end
 function giveup_neytral_gaz_outfit_v2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_bad", 1)
+	lost("neytral_gaz_outfit_v2_bad")
 end
 function giveup_neytral_gaz_outfit_v2_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_good", 1)
+	lost("neytral_gaz_outfit_v2_good")
 end
 function giveup_neytral_gaz_outfit_v2_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_default", 1)
+	lost("neytral_gaz_outfit_v2_default")
 end
 function giveup_neytral_gaz_outfit_v2_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_static", 1)
+	lost("neytral_gaz_outfit_v2_static")
 end
 function giveup_neytral_gaz_outfit_v2_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_kat_eye", 1)
+	lost("neytral_gaz_outfit_v2_kat_eye")
 end
 function giveup_neytral_gaz_outfit_v2_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_psy", 1)
+	lost("neytral_gaz_outfit_v2_psy")
 end
 function giveup_neytral_gaz_outfit_v2_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_blackwhite", 1)
+	lost("neytral_gaz_outfit_v2_blackwhite")
 end
 function giveup_neytral_gaz_outfit_v2_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_bast", 1)
+	lost("neytral_gaz_outfit_v2_bast")
 end
 function giveup_neytral_gaz_outfit_v2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v2_plus", 1)
+	lost("neytral_gaz_outfit_v2_plus")
 end
 function add_neytral_gaz_outfit_v2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_gaz_outfit_v2_bad", "in")
@@ -8829,37 +8149,37 @@ function goodup_neytral_gaz_outfit_v3_bast(task, objective)
 	return false
 end
 function goodup_neytral_gaz_outfit_v3_plus(task, objective)
-  	return sak.have_item_namber("neytral_gaz_outfit_v3_plus",1) ~= false
+	return has("neytral_gaz_outfit_v3_plus")
 end
 function giveup_neytral_gaz_outfit_v3(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3", 1)
+	lost("neytral_gaz_outfit_v3")
 end
 function giveup_neytral_gaz_outfit_v3_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_bad", 1)
+	lost("neytral_gaz_outfit_v3_bad")
 end
 function giveup_neytral_gaz_outfit_v3_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_good", 1)
+	lost("neytral_gaz_outfit_v3_good")
 end
 function giveup_neytral_gaz_outfit_v3_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_default", 1)
+	lost("neytral_gaz_outfit_v3_default")
 end
 function giveup_neytral_gaz_outfit_v3_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_static", 1)
+	lost("neytral_gaz_outfit_v3_static")
 end
 function giveup_neytral_gaz_outfit_v3_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_kat_eye", 1)
+	lost("neytral_gaz_outfit_v3_kat_eye")
 end
 function giveup_neytral_gaz_outfit_v3_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_psy", 1)
+	lost("neytral_gaz_outfit_v3_psy")
 end
 function giveup_neytral_gaz_outfit_v3_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_blackwhite", 1)
+	lost("neytral_gaz_outfit_v3_blackwhite")
 end
 function giveup_neytral_gaz_outfit_v3_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_bast", 1)
+	lost("neytral_gaz_outfit_v3_bast")
 end
 function giveup_neytral_gaz_outfit_v3_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_gaz_outfit_v3_plus", 1)
+	lost("neytral_gaz_outfit_v3_plus")
 end
 function add_neytral_gaz_outfit_v3_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_gaz_outfit_v3_bad", "in")
@@ -8986,37 +8306,37 @@ function goodup_neytral_exo_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_neytral_exo_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("neytral_exo_gaz_outfit_m1_plus",1) ~= false
+	return has("neytral_exo_gaz_outfit_m1_plus")
 end
 function giveup_neytral_exo_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1", 1)
+	lost("neytral_exo_gaz_outfit_m1")
 end
 function giveup_neytral_exo_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_bad", 1)
+	lost("neytral_exo_gaz_outfit_m1_bad")
 end
 function giveup_neytral_exo_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_good", 1)
+	lost("neytral_exo_gaz_outfit_m1_good")
 end
 function giveup_neytral_exo_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_default", 1)
+	lost("neytral_exo_gaz_outfit_m1_default")
 end
 function giveup_neytral_exo_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_static", 1)
+	lost("neytral_exo_gaz_outfit_m1_static")
 end
 function giveup_neytral_exo_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_kat_eye", 1)
+	lost("neytral_exo_gaz_outfit_m1_kat_eye")
 end
 function giveup_neytral_exo_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_psy", 1)
+	lost("neytral_exo_gaz_outfit_m1_psy")
 end
 function giveup_neytral_exo_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_blackwhite", 1)
+	lost("neytral_exo_gaz_outfit_m1_blackwhite")
 end
 function giveup_neytral_exo_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_bast", 1)
+	lost("neytral_exo_gaz_outfit_m1_bast")
 end
 function giveup_neytral_exo_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("neytral_exo_gaz_outfit_m1_plus", 1)
+	lost("neytral_exo_gaz_outfit_m1_plus")
 end
 function add_neytral_exo_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "neytral_exo_gaz_outfit_m1_bad", "in")
@@ -9087,16 +8407,16 @@ function goodup_bandit_gaz_outfit_m1_bad(task, objective)
 	return false
 end
 function goodup_bandit_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("bandit_gaz_outfit_m1_plus",1) ~= false
+	return has("bandit_gaz_outfit_m1_plus")
 end
 function giveup_bandit_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_gaz_outfit_m1", 1)
+	lost("bandit_gaz_outfit_m1")
 end
 function giveup_bandit_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_gaz_outfit_m1_bad", 1)
+	lost("bandit_gaz_outfit_m1_bad")
 end
 function giveup_bandit_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_gaz_outfit_m1_plus", 1)
+	lost("bandit_gaz_outfit_m1_plus")
 end
 function add_bandit_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_gaz_outfit_m1_bad", "in")
@@ -9125,16 +8445,16 @@ function goodup_bandit_veteran_outfit_m1_bad(task, objective)
 	return false
 end
 function goodup_bandit_veteran_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("bandit_veteran_outfit_m1_plus",1) ~= false
+	return has("bandit_veteran_outfit_m1_plus")
 end
 function giveup_bandit_veteran_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit_m1", 1)
+	lost("bandit_veteran_outfit_m1")
 end
 function giveup_bandit_veteran_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit_m1_bad", 1)
+	lost("bandit_veteran_outfit_m1_bad")
 end
 function giveup_bandit_veteran_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_veteran_outfit_m1_plus", 1)
+	lost("bandit_veteran_outfit_m1_plus")
 end
 function add_bandit_veteran_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_veteran_outfit_m1_bad", "in")
@@ -9219,37 +8539,37 @@ function goodup_svoboda_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_svoboda_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("svoboda_gaz_outfit_m1_plus",1) ~= false
+	return has("svoboda_gaz_outfit_m1_plus")
 end
 function giveup_svoboda_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1", 1)
+	lost("svoboda_gaz_outfit_m1")
 end
 function giveup_svoboda_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_bad", 1)
+	lost("svoboda_gaz_outfit_m1_bad")
 end
 function giveup_svoboda_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_good", 1)
+	lost("svoboda_gaz_outfit_m1_good")
 end
 function giveup_svoboda_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_default", 1)
+	lost("svoboda_gaz_outfit_m1_default")
 end
 function giveup_svoboda_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_static", 1)
+	lost("svoboda_gaz_outfit_m1_static")
 end
 function giveup_svoboda_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_kat_eye", 1)
+	lost("svoboda_gaz_outfit_m1_kat_eye")
 end
 function giveup_svoboda_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_psy", 1)
+	lost("svoboda_gaz_outfit_m1_psy")
 end
 function giveup_svoboda_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_blackwhite", 1)
+	lost("svoboda_gaz_outfit_m1_blackwhite")
 end
 function giveup_svoboda_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_bast", 1)
+	lost("svoboda_gaz_outfit_m1_bast")
 end
 function giveup_svoboda_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_gaz_outfit_m1_plus", 1)
+	lost("svoboda_gaz_outfit_m1_plus")
 end
 function add_svoboda_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_gaz_outfit_m1_bad", "in")
@@ -9376,37 +8696,37 @@ function goodup_svoboda_heavy_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_svoboda_heavy_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("svoboda_heavy_gaz_outfit_m1_plus",1) ~= false
+	return has("svoboda_heavy_gaz_outfit_m1_plus")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1", 1)
+	lost("svoboda_heavy_gaz_outfit_m1")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_bad", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_bad")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_good", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_good")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_default", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_default")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_static", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_static")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_kat_eye", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_kat_eye")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_psy", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_psy")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_blackwhite", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_blackwhite")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_bast", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_bast")
 end
 function giveup_svoboda_heavy_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_heavy_gaz_outfit_m1_plus", 1)
+	lost("svoboda_heavy_gaz_outfit_m1_plus")
 end
 function add_svoboda_heavy_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_heavy_gaz_outfit_m1_bad", "in")
@@ -9533,37 +8853,37 @@ function goodup_svoboda_yellow_exo_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_svoboda_yellow_exo_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("svoboda_yellow_exo_outfit_m1_plus",1) ~= false
+	return has("svoboda_yellow_exo_outfit_m1_plus")
 end
 function giveup_svoboda_yellow_exo_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1", 1)
+	lost("svoboda_yellow_exo_outfit_m1")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_bad", 1)
+	lost("svoboda_yellow_exo_outfit_m1_bad")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_good", 1)
+	lost("svoboda_yellow_exo_outfit_m1_good")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_default", 1)
+	lost("svoboda_yellow_exo_outfit_m1_default")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_static", 1)
+	lost("svoboda_yellow_exo_outfit_m1_static")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_kat_eye", 1)
+	lost("svoboda_yellow_exo_outfit_m1_kat_eye")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_psy", 1)
+	lost("svoboda_yellow_exo_outfit_m1_psy")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_blackwhite", 1)
+	lost("svoboda_yellow_exo_outfit_m1_blackwhite")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_bast", 1)
+	lost("svoboda_yellow_exo_outfit_m1_bast")
 end
 function giveup_svoboda_yellow_exo_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("svoboda_yellow_exo_outfit_m1_plus", 1)
+	lost("svoboda_yellow_exo_outfit_m1_plus")
 end
 function add_svoboda_yellow_exo_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "svoboda_yellow_exo_outfit_m1_bad", "in")
@@ -9690,37 +9010,37 @@ function goodup_dolg_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_dolg_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("dolg_gaz_outfit_m1_plus",1) ~= false
+	return has("dolg_gaz_outfit_m1_plus")
 end
 function giveup_dolg_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1", 1)
+	lost("dolg_gaz_outfit_m1")
 end
 function giveup_dolg_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_bad", 1)
+	lost("dolg_gaz_outfit_m1_bad")
 end
 function giveup_dolg_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_good", 1)
+	lost("dolg_gaz_outfit_m1_good")
 end
 function giveup_dolg_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_default", 1)
+	lost("dolg_gaz_outfit_m1_default")
 end
 function giveup_dolg_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_static", 1)
+	lost("dolg_gaz_outfit_m1_static")
 end
 function giveup_dolg_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_kat_eye", 1)
+	lost("dolg_gaz_outfit_m1_kat_eye")
 end
 function giveup_dolg_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_psy", 1)
+	lost("dolg_gaz_outfit_m1_psy")
 end
 function giveup_dolg_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_blackwhite", 1)
+	lost("dolg_gaz_outfit_m1_blackwhite")
 end
 function giveup_dolg_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_bast", 1)
+	lost("dolg_gaz_outfit_m1_bast")
 end
 function giveup_dolg_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("dolg_gaz_outfit_m1_plus", 1)
+	lost("dolg_gaz_outfit_m1_plus")
 end
 function add_dolg_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "dolg_gaz_outfit_m1_bad", "in")
@@ -9847,37 +9167,37 @@ function goodup_killer_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_killer_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("killer_gaz_outfit_m1_plus",1) ~= false
+	return has("killer_gaz_outfit_m1_plus")
 end
 function giveup_killer_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1", 1)
+	lost("killer_gaz_outfit_m1")
 end
 function giveup_killer_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_bad", 1)
+	lost("killer_gaz_outfit_m1_bad")
 end
 function giveup_killer_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_good", 1)
+	lost("killer_gaz_outfit_m1_good")
 end
 function giveup_killer_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_default", 1)
+	lost("killer_gaz_outfit_m1_default")
 end
 function giveup_killer_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_static", 1)
+	lost("killer_gaz_outfit_m1_static")
 end
 function giveup_killer_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_kat_eye", 1)
+	lost("killer_gaz_outfit_m1_kat_eye")
 end
 function giveup_killer_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_psy", 1)
+	lost("killer_gaz_outfit_m1_psy")
 end
 function giveup_killer_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_blackwhite", 1)
+	lost("killer_gaz_outfit_m1_blackwhite")
 end
 function giveup_killer_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_bast", 1)
+	lost("killer_gaz_outfit_m1_bast")
 end
 function giveup_killer_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("killer_gaz_outfit_m1_plus", 1)
+	lost("killer_gaz_outfit_m1_plus")
 end
 function add_killer_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "killer_gaz_outfit_m1_bad", "in")
@@ -10004,37 +9324,37 @@ function goodup_monolit_gaz_outfit_m1_bast(task, objective)
 	return false
 end
 function goodup_monolit_gaz_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("monolit_gaz_outfit_m1_plus",1) ~= false
+	return has("monolit_gaz_outfit_m1_plus")
 end
 function giveup_monolit_gaz_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1", 1)
+	lost("monolit_gaz_outfit_m1")
 end
 function giveup_monolit_gaz_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_bad", 1)
+	lost("monolit_gaz_outfit_m1_bad")
 end
 function giveup_monolit_gaz_outfit_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_good", 1)
+	lost("monolit_gaz_outfit_m1_good")
 end
 function giveup_monolit_gaz_outfit_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_default", 1)
+	lost("monolit_gaz_outfit_m1_default")
 end
 function giveup_monolit_gaz_outfit_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_static", 1)
+	lost("monolit_gaz_outfit_m1_static")
 end
 function giveup_monolit_gaz_outfit_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_kat_eye", 1)
+	lost("monolit_gaz_outfit_m1_kat_eye")
 end
 function giveup_monolit_gaz_outfit_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_psy", 1)
+	lost("monolit_gaz_outfit_m1_psy")
 end
 function giveup_monolit_gaz_outfit_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_blackwhite", 1)
+	lost("monolit_gaz_outfit_m1_blackwhite")
 end
 function giveup_monolit_gaz_outfit_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_bast", 1)
+	lost("monolit_gaz_outfit_m1_bast")
 end
 function giveup_monolit_gaz_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("monolit_gaz_outfit_m1_plus", 1)
+	lost("monolit_gaz_outfit_m1_plus")
 end
 function add_monolit_gaz_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "monolit_gaz_outfit_m1_bad", "in")
@@ -10105,16 +9425,16 @@ function goodup_outfit_novice_m1_bad(task, objective)
 	return false
 end
 function goodup_outfit_novice_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_novice_m1_plus",1) ~= false
+	return has("outfit_novice_m1_plus")
 end
 function giveup_outfit_novice_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_novice_m1", 1)
+	lost("outfit_novice_m1")
 end
 function giveup_outfit_novice_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_novice_m1_bad", 1)
+	lost("outfit_novice_m1_bad")
 end
 function giveup_outfit_novice_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_novice_m1_plus", 1)
+	lost("outfit_novice_m1_plus")
 end
 function add_outfit_novice_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_novice_m1_bad", "in")
@@ -10143,16 +9463,16 @@ function goodup_outfit_bandit_m1_bad(task, objective)
 	return false
 end
 function goodup_outfit_bandit_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_bandit_m1_plus",1) ~= false
+	return has("outfit_bandit_m1_plus")
 end
 function giveup_outfit_bandit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_bandit_m1", 1)
+	lost("outfit_bandit_m1")
 end
 function giveup_outfit_bandit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_bandit_m1_bad", 1)
+	lost("outfit_bandit_m1_bad")
 end
 function giveup_outfit_bandit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_bandit_m1_plus", 1)
+	lost("outfit_bandit_m1_plus")
 end
 function add_outfit_bandit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_bandit_m1_bad", "in")
@@ -10181,16 +9501,16 @@ function goodup_bandit_master_outfit_m1_bad(task, objective)
 	return false
 end
 function goodup_bandit_master_outfit_m1_plus(task, objective)
-  	return sak.have_item_namber("bandit_master_outfit_m1_plus",1) ~= false
+	return has("bandit_master_outfit_m1_plus")
 end
 function giveup_bandit_master_outfit_m1(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit_m1", 1)
+	lost("bandit_master_outfit_m1")
 end
 function giveup_bandit_master_outfit_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit_m1_bad", 1)
+	lost("bandit_master_outfit_m1_bad")
 end
 function giveup_bandit_master_outfit_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("bandit_master_outfit_m1_plus", 1)
+	lost("bandit_master_outfit_m1_plus")
 end
 function add_bandit_master_outfit_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "bandit_master_outfit_m1_bad", "in")
@@ -10275,37 +9595,37 @@ function goodup_outfit_dolg_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_dolg_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_dolg_m1_plus",1) ~= false
+	return has("outfit_dolg_m1_plus")
 end
 function giveup_outfit_dolg_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1", 1)
+	lost("outfit_dolg_m1")
 end
 function giveup_outfit_dolg_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_bad", 1)
+	lost("outfit_dolg_m1_bad")
 end
 function giveup_outfit_dolg_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_good", 1)
+	lost("outfit_dolg_m1_good")
 end
 function giveup_outfit_dolg_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_default", 1)
+	lost("outfit_dolg_m1_default")
 end
 function giveup_outfit_dolg_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_static", 1)
+	lost("outfit_dolg_m1_static")
 end
 function giveup_outfit_dolg_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_kat_eye", 1)
+	lost("outfit_dolg_m1_kat_eye")
 end
 function giveup_outfit_dolg_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_psy", 1)
+	lost("outfit_dolg_m1_psy")
 end
 function giveup_outfit_dolg_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_blackwhite", 1)
+	lost("outfit_dolg_m1_blackwhite")
 end
 function giveup_outfit_dolg_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_bast", 1)
+	lost("outfit_dolg_m1_bast")
 end
 function giveup_outfit_dolg_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_dolg_m1_plus", 1)
+	lost("outfit_dolg_m1_plus")
 end
 function add_outfit_dolg_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_dolg_m1_bad", "in")
@@ -10432,37 +9752,37 @@ function goodup_outfit_killer_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_killer_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_killer_m1_plus",1) ~= false
+	return has("outfit_killer_m1_plus")
 end
 function giveup_outfit_killer_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1", 1)
+	lost("outfit_killer_m1")
 end
 function giveup_outfit_killer_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_bad", 1)
+	lost("outfit_killer_m1_bad")
 end
 function giveup_outfit_killer_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_good", 1)
+	lost("outfit_killer_m1_good")
 end
 function giveup_outfit_killer_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_default", 1)
+	lost("outfit_killer_m1_default")
 end
 function giveup_outfit_killer_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_static", 1)
+	lost("outfit_killer_m1_static")
 end
 function giveup_outfit_killer_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_kat_eye", 1)
+	lost("outfit_killer_m1_kat_eye")
 end
 function giveup_outfit_killer_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_psy", 1)
+	lost("outfit_killer_m1_psy")
 end
 function giveup_outfit_killer_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_blackwhite", 1)
+	lost("outfit_killer_m1_blackwhite")
 end
 function giveup_outfit_killer_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_bast", 1)
+	lost("outfit_killer_m1_bast")
 end
 function giveup_outfit_killer_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_killer_m1_plus", 1)
+	lost("outfit_killer_m1_plus")
 end
 function add_outfit_killer_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_killer_m1_bad", "in")
@@ -10589,37 +9909,37 @@ function goodup_outfit_specnaz_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_specnaz_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_specnaz_m1_plus",1) ~= false
+	return has("outfit_specnaz_m1_plus")
 end
 function giveup_outfit_specnaz_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1", 1)
+	lost("outfit_specnaz_m1")
 end
 function giveup_outfit_specnaz_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_bad", 1)
+	lost("outfit_specnaz_m1_bad")
 end
 function giveup_outfit_specnaz_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_good", 1)
+	lost("outfit_specnaz_m1_good")
 end
 function giveup_outfit_specnaz_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_default", 1)
+	lost("outfit_specnaz_m1_default")
 end
 function giveup_outfit_specnaz_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_static", 1)
+	lost("outfit_specnaz_m1_static")
 end
 function giveup_outfit_specnaz_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_kat_eye", 1)
+	lost("outfit_specnaz_m1_kat_eye")
 end
 function giveup_outfit_specnaz_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_psy", 1)
+	lost("outfit_specnaz_m1_psy")
 end
 function giveup_outfit_specnaz_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_blackwhite", 1)
+	lost("outfit_specnaz_m1_blackwhite")
 end
 function giveup_outfit_specnaz_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_bast", 1)
+	lost("outfit_specnaz_m1_bast")
 end
 function giveup_outfit_specnaz_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_specnaz_m1_plus", 1)
+	lost("outfit_specnaz_m1_plus")
 end
 function add_outfit_specnaz_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_specnaz_m1_bad", "in")
@@ -10746,37 +10066,37 @@ function goodup_outfit_stalker_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_stalker_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_stalker_m1_plus",1) ~= false
+	return has("outfit_stalker_m1_plus")
 end
 function giveup_outfit_stalker_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1", 1)
+	lost("outfit_stalker_m1")
 end
 function giveup_outfit_stalker_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_bad", 1)
+	lost("outfit_stalker_m1_bad")
 end
 function giveup_outfit_stalker_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_good", 1)
+	lost("outfit_stalker_m1_good")
 end
 function giveup_outfit_stalker_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_default", 1)
+	lost("outfit_stalker_m1_default")
 end
 function giveup_outfit_stalker_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_static", 1)
+	lost("outfit_stalker_m1_static")
 end
 function giveup_outfit_stalker_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_kat_eye", 1)
+	lost("outfit_stalker_m1_kat_eye")
 end
 function giveup_outfit_stalker_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_psy", 1)
+	lost("outfit_stalker_m1_psy")
 end
 function giveup_outfit_stalker_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_blackwhite", 1)
+	lost("outfit_stalker_m1_blackwhite")
 end
 function giveup_outfit_stalker_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_bast", 1)
+	lost("outfit_stalker_m1_bast")
 end
 function giveup_outfit_stalker_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m1_plus", 1)
+	lost("outfit_stalker_m1_plus")
 end
 function add_outfit_stalker_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_stalker_m1_bad", "in")
@@ -10903,37 +10223,37 @@ function goodup_outfit_stalker_m2_bast(task, objective)
 	return false
 end
 function goodup_outfit_stalker_m2_plus(task, objective)
-  	return sak.have_item_namber("outfit_stalker_m2_plus",1) ~= false
+	return has("outfit_stalker_m2_plus")
 end
 function giveup_outfit_stalker_m2(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2", 1)
+	lost("outfit_stalker_m2")
 end
 function giveup_outfit_stalker_m2_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_bad", 1)
+	lost("outfit_stalker_m2_bad")
 end
 function giveup_outfit_stalker_m2_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_good", 1)
+	lost("outfit_stalker_m2_good")
 end
 function giveup_outfit_stalker_m2_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_default", 1)
+	lost("outfit_stalker_m2_default")
 end
 function giveup_outfit_stalker_m2_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_static", 1)
+	lost("outfit_stalker_m2_static")
 end
 function giveup_outfit_stalker_m2_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_kat_eye", 1)
+	lost("outfit_stalker_m2_kat_eye")
 end
 function giveup_outfit_stalker_m2_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_psy", 1)
+	lost("outfit_stalker_m2_psy")
 end
 function giveup_outfit_stalker_m2_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_blackwhite", 1)
+	lost("outfit_stalker_m2_blackwhite")
 end
 function giveup_outfit_stalker_m2_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_bast", 1)
+	lost("outfit_stalker_m2_bast")
 end
 function giveup_outfit_stalker_m2_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_stalker_m2_plus", 1)
+	lost("outfit_stalker_m2_plus")
 end
 function add_outfit_stalker_m2_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_stalker_m2_bad", "in")
@@ -11060,37 +10380,37 @@ function goodup_stalker_outfit_m3_bast(task, objective)
 	return false
 end
 function goodup_stalker_outfit_m3_plus(task, objective)
-  	return sak.have_item_namber("stalker_outfit_m3_plus",1) ~= false
+	return has("stalker_outfit_m3_plus")
 end
 function giveup_stalker_outfit_m3(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3", 1)
+	lost("stalker_outfit_m3")
 end
 function giveup_stalker_outfit_m3_bad(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_bad", 1)
+	lost("stalker_outfit_m3_bad")
 end
 function giveup_stalker_outfit_m3_good(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_good", 1)
+	lost("stalker_outfit_m3_good")
 end
 function giveup_stalker_outfit_m3_default(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_default", 1)
+	lost("stalker_outfit_m3_default")
 end
 function giveup_stalker_outfit_m3_static(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_static", 1)
+	lost("stalker_outfit_m3_static")
 end
 function giveup_stalker_outfit_m3_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_kat_eye", 1)
+	lost("stalker_outfit_m3_kat_eye")
 end
 function giveup_stalker_outfit_m3_psy(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_psy", 1)
+	lost("stalker_outfit_m3_psy")
 end
 function giveup_stalker_outfit_m3_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_blackwhite", 1)
+	lost("stalker_outfit_m3_blackwhite")
 end
 function giveup_stalker_outfit_m3_bast(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_bast", 1)
+	lost("stalker_outfit_m3_bast")
 end
 function giveup_stalker_outfit_m3_plus(first_speaker, second_speaker)
-	sak.out_item_namber("stalker_outfit_m3_plus", 1)
+	lost("stalker_outfit_m3_plus")
 end
 function add_stalker_outfit_m3_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "stalker_outfit_m3_bad", "in")
@@ -11217,37 +10537,37 @@ function goodup_outfit_svoboda_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_svoboda_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_svoboda_m1_plus",1) ~= false
+	return has("outfit_svoboda_m1_plus")
 end
 function giveup_outfit_svoboda_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1", 1)
+	lost("outfit_svoboda_m1")
 end
 function giveup_outfit_svoboda_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_bad", 1)
+	lost("outfit_svoboda_m1_bad")
 end
 function giveup_outfit_svoboda_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_good", 1)
+	lost("outfit_svoboda_m1_good")
 end
 function giveup_outfit_svoboda_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_default", 1)
+	lost("outfit_svoboda_m1_default")
 end
 function giveup_outfit_svoboda_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_static", 1)
+	lost("outfit_svoboda_m1_static")
 end
 function giveup_outfit_svoboda_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_kat_eye", 1)
+	lost("outfit_svoboda_m1_kat_eye")
 end
 function giveup_outfit_svoboda_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_psy", 1)
+	lost("outfit_svoboda_m1_psy")
 end
 function giveup_outfit_svoboda_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_blackwhite", 1)
+	lost("outfit_svoboda_m1_blackwhite")
 end
 function giveup_outfit_svoboda_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_bast", 1)
+	lost("outfit_svoboda_m1_bast")
 end
 function giveup_outfit_svoboda_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_svoboda_m1_plus", 1)
+	lost("outfit_svoboda_m1_plus")
 end
 function add_outfit_svoboda_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_svoboda_m1_bad", "in")
@@ -11374,37 +10694,37 @@ function goodup_outfit_exo_m1_bast(task, objective)
 	return false
 end
 function goodup_outfit_exo_m1_plus(task, objective)
-  	return sak.have_item_namber("outfit_exo_m1_plus",1) ~= false
+	return has("outfit_exo_m1_plus")
 end
 function giveup_outfit_exo_m1(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1", 1)
+	lost("outfit_exo_m1")
 end
 function giveup_outfit_exo_m1_bad(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_bad", 1)
+	lost("outfit_exo_m1_bad")
 end
 function giveup_outfit_exo_m1_good(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_good", 1)
+	lost("outfit_exo_m1_good")
 end
 function giveup_outfit_exo_m1_default(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_default", 1)
+	lost("outfit_exo_m1_default")
 end
 function giveup_outfit_exo_m1_static(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_static", 1)
+	lost("outfit_exo_m1_static")
 end
 function giveup_outfit_exo_m1_kat_eye(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_kat_eye", 1)
+	lost("outfit_exo_m1_kat_eye")
 end
 function giveup_outfit_exo_m1_psy(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_psy", 1)
+	lost("outfit_exo_m1_psy")
 end
 function giveup_outfit_exo_m1_blackwhite(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_blackwhite", 1)
+	lost("outfit_exo_m1_blackwhite")
 end
 function giveup_outfit_exo_m1_bast(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_bast", 1)
+	lost("outfit_exo_m1_bast")
 end
 function giveup_outfit_exo_m1_plus(first_speaker, second_speaker)
-	sak.out_item_namber("outfit_exo_m1_plus", 1)
+	lost("outfit_exo_m1_plus")
 end
 function add_outfit_exo_m1_bad(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "outfit_exo_m1_bad", "in")
@@ -11460,182 +10780,182 @@ end
 
 -- Деньги
 
-function have_money(actor, num)
-	return db_actor:money() > reap.with_discount(num)
+function have_money(num)
+	return has_money(reap.with_discount(num))
 end
 
-function give_money(actor, num)
-	dialogs.relocate_money(db_actor, reap.with_discount(num), "out")
+function give_money(num)
+	lost_money(reap.with_discount(num))
 end
 
 function have_money_5000(actor,npc)
-	return have_money(actor, 5000)
+	return have_money(5000)
 end
 function give_money_5000(actor, npc)
-	give_money(actor, 5000)
+	give_money(5000)
 end
 function have_money_10000(actor,npc)
-	return have_money(actor, 10000)
+	return have_money(10000)
 end
 function give_money_10000(actor, npc)
-	give_money(actor, 10000)
+	give_money(10000)
 end
 function have_money_15000(actor,npc)
-	return have_money(actor, 15000)
+	return have_money(15000)
 end
 function give_money_15000(actor, npc)
-	give_money(actor, 15000)
+	give_money(15000)
 end
 function have_money_20000(actor,npc)
-	return have_money(actor, 20000)
+	return have_money(20000)
 end
 function give_money_20000(actor, npc)
-	give_money(actor, 20000)
+	give_money(20000)
 end
 function have_money_25000(actor,npc)
-	return have_money(actor, 25000)
+	return have_money(25000)
 end
 function give_money_25000(actor, npc)
-	give_money(actor, 25000)
+	give_money(25000)
 end
 function have_money_30000(actor,npc)
-	return have_money(actor, 30000)
+	return have_money(30000)
 end
 function give_money_30000(actor, npc)
-	give_money(actor, 30000)
+	give_money(30000)
 end
 function have_money_35000(actor,npc)
-	return have_money(actor, 35000)
+	return have_money(35000)
 end
 function give_money_35000(actor, npc)
-	give_money(actor, 35000)
+	give_money(35000)
 end
 function have_money_40000(actor,npc)
-	return have_money(actor, 40000)
+	return have_money(40000)
 end
 function give_money_40000(actor, npc)
-	give_money(actor, 40000)
+	give_money(40000)
 end
 function have_money_45000(actor,npc)
-	return have_money(actor, 45000)
+	return have_money(45000)
 end
 function give_money_45000(actor, npc)
-	give_money(actor, 45000)
+	give_money(45000)
 end
 function have_money_50000(actor,npc)
-	return have_money(actor, 50000)
+	return have_money(50000)
 end
 function give_money_50000(actor, npc)
-	give_money(actor, 50000)
+	give_money(50000)
 end
 function have_money_55000(actor,npc)
-	return have_money(actor, 55000)
+	return have_money(55000)
 end
 function give_money_55000(actor, npc)
-	give_money(actor, 55000)
+	give_money(55000)
 end
 function have_money_60000(actor,npc)
-	return have_money(actor, 60000)
+	return have_money(60000)
 end
 function give_money_60000(actor, npc)
-	give_money(actor, 60000)
+	give_money(60000)
 end
 function have_money_65000(actor,npc)
-	return have_money(actor, 65000)
+	return have_money(65000)
 end
 function give_money_65000(actor, npc)
-	give_money(actor, 65000)
+	give_money(65000)
 end
 function have_money_70000(actor,npc)
-	return have_money(actor, 70000)
+	return have_money(70000)
 end
 function give_money_70000(actor, npc)
-	give_money(actor, 70000)
+	give_money(70000)
 end
 function have_money_75000(actor,npc)
-	return have_money(actor, 75000)
+	return have_money(75000)
 end
 function give_money_75000(actor, npc)
-	give_money(actor, 75000)
+	give_money(75000)
 end
 function have_money_80000(actor,npc)
-	return have_money(actor, 80000)
+	return have_money(80000)
 end
 function give_money_80000(actor, npc)
-	give_money(actor, 80000)
+	give_money(80000)
 end
 function have_money_85000(actor,npc)
-	return have_money(actor, 85000)
+	return have_money(85000)
 end
 function give_money_85000(actor, npc)
-	give_money(actor, 85000)
+	give_money(85000)
 end
 function have_money_90000(actor,npc)
-	return have_money(actor, 90000)
+	return have_money(90000)
 end
 function give_money_90000(actor, npc)
-	give_money(actor, 90000)
+	give_money(90000)
 end
 function have_money_95000(actor,npc)
-	return have_money(actor, 95000)
+	return have_money(95000)
 end
 function give_money_95000(actor, npc)
-	give_money(actor, 95000)
+	give_money(95000)
 end
 function have_money_100000(actor,npc)
-	return have_money(actor, 100000)
+	return have_money(100000)
 end
 function give_money_100000(actor, npc)
-	give_money(actor, 100000)
+	give_money(100000)
 end
 function have_money_150000(actor,npc)
-	return have_money(actor, 150000)
+	return have_money(150000)
 end
 function give_money_150000(actor, npc)
-	give_money(actor, 150000)
+	give_money(150000)
 end
 function have_money_200000(actor,npc)
-	return have_money(actor, 200000)
+	return have_money(200000)
 end
 function give_money_200000(actor, npc)
-	give_money(actor, 200000)
+	give_money(200000)
 end
 function have_money_250000(actor,npc)
-	return have_money(actor, 250000)
+	return have_money(250000)
 end
 function give_money_250000(actor, npc)
-	give_money(actor, 250000)
+	give_money(250000)
 end
 function have_money_300000(actor,npc)
-	return have_money(actor, 300000)
+	return have_money(300000)
 end
 function give_money_300000(actor, npc)
-	give_money(actor, 300000)
+	give_money(300000)
 end
 
 -- Арты
 
 function give_af_armor_1(first_speaker, second_speaker)
-	sak.out_item_namber("af_armor_1", 1)
+	lost("af_armor_1")
 end
 function have_af_armor_1()
-	return sak.have_item_namber("af_armor_1",1) ~= false
+	return has("af_armor_1")
 end
 function give_af_armor_2(first_speaker, second_speaker)
-	sak.out_item_namber("af_armor_2", 1)
+	lost("af_armor_2")
 end
 function have_af_armor_2()
-	return sak.have_item_namber("af_armor_2",1) ~= false
+	return has("af_armor_2")
 end
 function give_af_armor_3(first_speaker, second_speaker)
-	sak.out_item_namber("af_armor_3", 1)
+	lost("af_armor_3")
 end
 function have_af_armor_3()
-	return sak.have_item_namber("af_armor_3",1) ~= false
+	return has("af_armor_3")
 end
 function give_af_armor_4(first_speaker, second_speaker)
-	sak.out_item_namber("af_armor_4", 1)
+	lost("af_armor_4")
 end
 function have_af_armor_4()
-	return sak.have_item_namber("af_armor_4",1) ~= false
+	return has("af_armor_4")
 end

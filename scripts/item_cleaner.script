@@ -29,7 +29,7 @@ local all_items = nil
 local total_count = 0
 
 function item_can_be_deleted(obj)
-	if obj and obj.parent_id and obj.parent_id > 0 and (obj.m_story_id==nil or obj.m_story_id==4294967296) and obj.section_name then
+	if obj and obj.parent_id and obj.parent_id > 0 and obj.section_name and not obj:is_story_object() then
 		for a=1,table.getn(always_offs_items),1 do
 			if always_offs_items[a]==obj:section_name() then
 				if all_items then

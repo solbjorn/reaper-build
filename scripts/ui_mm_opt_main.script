@@ -69,13 +69,6 @@ function options_dialog:InitControls()
 	self.message_box = CUIMessageBoxEx()
 
 	self.b_r2_restart_shown		= false
-
-	self.cap_download				= xml:InitStatic		("download_static",self)
-	self.text_download				= xml:InitStatic		("download_text",self)
-	self.download_progress			= xml:InitProgressBar	("progress_download", self)
-	self.btn_cancel_download		= xml:Init3tButton		("btn_cancel_download", self)
-	self:Register					(self.btn_cancel_download, "btn_cancel_download")
-
 end
 
 function options_dialog:UpdateControls()
@@ -115,42 +108,22 @@ function options_dialog:UpdateDependControls()
 	for i,j in pairs(self.m_preconditions) do
 		j				(i, _current_id)
 	end
---[[
-	if self.combo_r2:CurrentID()==1 then
-		self.ch_r2_sun:Enable			(true)
-		self.ch_r2_sun_det:Enable		(true)
-	else
-		self.ch_r2_sun:Enable			(false)
-		self.ch_r2_sun_det:Enable		(false)
-	end
-]]
 end
 
 function options_dialog:InitCallBacks()
-	self:AddCallback("tab",					ui_events.TAB_CHANGED,		self.OnTabChange,			self)
-	self:AddCallback("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic,		self)
-	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept,			self)
-	self:AddCallback("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel,			self)
-	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)
-	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)
-	self:AddCallback("combo_r2",			ui_events.LIST_ITEM_SELECT,	self.OnR2changed,			self)
-	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)
-	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)
-	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault,			self)
-	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
-
-	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
-
-end
-
-function options_dialog:OnBtnCheckUpdates()
-	local console			= get_console()
-	console:execute			("check_for_updates 1")
+	self:AddCallbackEx("tab",					ui_events.TAB_CHANGED,		self.OnTabChange)
+	self:AddCallbackEx("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic)
+	self:AddCallbackEx("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept)
+	self:AddCallbackEx("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel)
+	self:AddCallbackEx("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph)
+	self:AddCallbackEx("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound)
+	self:AddCallbackEx("combo_r2",			ui_events.LIST_ITEM_SELECT,	self.OnR2changed)
+	self:AddCallbackEx("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged)
+	self:AddCallbackEx("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic)
+	self:AddCallbackEx("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault)
 end
 
 function options_dialog:OnBtnDefault()
-	local console			= get_console()
---	console:execute			("cfg_load default_controls")
 	console:execute			("unbindall")
 
 	local opt				= COptionsManager()
@@ -187,9 +160,7 @@ function options_dialog:OnBtnDefSound()
 end
 
 function options_dialog:OnBtnAccept()
-
 	local opt = COptionsManager()
-	local console = get_console()
 
 	opt:SaveValues("mm_opt_video_preset")
 	opt:SaveValues("key_binding")
@@ -203,7 +174,6 @@ function options_dialog:OnBtnAccept()
 	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
 	self:GetHolder():start_stop_menu	(self,true)
 	self.owner:Show						(true)
-
 end
 
 function options_dialog:OnBtnCancel()
@@ -252,9 +222,6 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 	local res = CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 
 	if res==false then
-
-		local bind = dik_to_bind(dik)
-
 		if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 			if dik == DIK_keys.DIK_ESCAPE then
 				if self.dlg_video_adv:IsShown() then
@@ -274,37 +241,8 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 				end
 				self.tab:SetNewActiveTab(i)
 			end
-
 		end
 	end
 
 	return res
-end
-
-function options_dialog:Update()
-	CUIScriptWnd.Update(self)
-
-	local mm = main_menu.get_main_menu()
-	local sss = mm:GetPatchProgress()
-
-	if sss:GetInProgress() then
-		self.text_download:Show					(true)
-		self.cap_download:Show					(true)
-		self.download_progress:Show				(true)
-		local _progr							= sss:GetProgress()
-		self.download_progress:SetProgressPos	(_progr)
-		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
-		self.text_download:SetText				(str)
-		self.btn_cancel_download:Show			(true)
-	else
-		self.text_download:Show					(false)
-		self.cap_download:Show					(false)
-		self.download_progress:Show				(false)
-		self.btn_cancel_download:Show			(false)
-	end
-end
-
-function options_dialog:OnBtn_CancelDownload()
-	local mm = main_menu.get_main_menu()
-	mm:CancelDownload()
 end

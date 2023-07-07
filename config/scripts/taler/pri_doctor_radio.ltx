@@ -1,0 +1,18 @@
+[logic]
+active = ph_sound1
+;on_hit = hit
+
+[hit]
+on_info = %+pri_doctor_radio_off%
+
+[ph_sound1]
+tips = st_main_off
+snd = radio_april_full
+volume = 0.33
+on_info = {+pri_doctor_radio_off} nil
+on_use = ph_idle
+
+[ph_idle]
+tips = st_main_on
+on_info = {+pri_doctor_radio_off} nil
+on_use = ph_sound1

@@ -267,95 +267,123 @@ local grade_rnds = {
 
 local weap_conds = {
 	bandit		= 40,
+	dolg		= 60,
+	ecolog		= 60,
+	freedom		= 60,
+	green		= 60,
 	killer		= 75,
 	military	= 75,
 	monolith	= 20,
+	sniper		= 60,
+	stalker		= 60,
 	zombied		= 5
 }
 
 local math_ceil   = math.ceil
 local math_random = math.random
 
+function outfit_cond(grade, id, obj)
+	local rnd, add
+
+	rnd = grade * 10 + 10
+	add = 65 - grade * 10
+
+	obj:set_condition((math_random(rnd) + add) / 100)
+end
+
 function init_drop_settings()
-	local mul_by_level = {}
 	local death_ini = ini_file("misc\\death_generic.ltx")
-        local community_list = { "stalker", "dolg", "freedom", "bandit", "military", "zombied", "ecolog", "killer", "monolith", "arena_enemy", "actor_dolg", "sniper", "green"  }
 
-	local id, value = "", ""
-	local n, result
+	--' Множители и минимаксы для выпадения вещей в зависимости от уровня
+	local level_name = level.name()
+	if not death_ini:section_exist(level_name) then level_name = "default" end
 
-    for k,v in pairs(community_list) do
-        --' Необходимо заполнить таблицу
-        item_by_community[v] = {}
-        if death_ini:section_exist(v) then
-                    n = death_ini:line_count(v)
-                    for i=0,n-1 do
-                            result, id, value        = death_ini:r_line(v,i,"","")
-                                if tonumber(value) >= 0.4 then value = 0.2 end
-                                item_by_community[v][id] = 1000 * tonumber(value)
-                    end
-        end
-    end
+	--' Вспомогательная таблица. Чего здесь нет или что будет 0, будет удалено из списка для группировки
+	local mul_by_level = {}
+	local vvv
 
-    --' Заполняем таблицу зависимостей
-        n = death_ini:line_count("item_dependence")
-        for i=0,n-1 do
-                result, id, value        = death_ini:r_line("item_dependence",i,"","")
-                item_dependence[id] = {}
-                local vvv = parse_names(value)
-                for k,v in pairs(vvv) do
-                        item_dependence[id][v] = true
+	--' Заполняем новые для данной локации
+	death_ini:iterate_lines(level_name, function(result, id, value)
+		--' Если предмет запрещён для данной локации, просто не добавляем его в список
+		vvv = tonumber(value)
+		if vvv > 0 then
+			mul_by_level[id] = vvv
+		end
+	end)
+
+	local item_count_section, t, _min, _max
+	for i = 0, 3 do
+		--' Вероятности для выпадения вещей в зависимости от уровня сложности
+		item_count_section = "item_count_" .. i
+
+		--' Заполняем новые для данного уровня сложности
+		death_ini:iterate_lines(item_count_section, function(result, id, value)
+			--' Если предмет не был в списке для уровня вообще или он здесь запрещён, просто не добавляем его в список
+			if not mul_by_level[id] then return end
+
+			--' Нужно распарсить value в два значения
+			t = value:parse_nums()
+			if t[1] == nil then
+				abort("Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id))
+				return
+			end
+
+			_min = t[1]
+			_max = t[2] or _min
+			if _max < _min then _max = _min end
+			if _max == 0 then return end
+
+			if not count_by_level[id] then count_by_level[id] = { } end
+			count_by_level[id][i] = {
+				["min"]	= _min * mul_by_level[id],
+				["max"]	= _max * mul_by_level[id]
+			}
+		end)
+	end
+
+	--' Разрешения для выпадения вещей в зависимости от группировки
+	for k,v in pairs(weap_conds) do
+		--' Необходимо заполнить таблицу
+		--' Удаляем старые значения
+		item_by_community[k] = {}
+
+		--' Заполняем новые для данной группировки
+		death_ini:iterate_lines(k, function(result, id, value)
+			--' Если предмет не был в списке для локации вообще или он здесь запрещён, просто не добавляем его в список
+			if not mul_by_level[id] then return end
+
+			--' Если для предмета нету вероятности, то это ошибка!
+			if not count_by_level[id] then
+				abort("Error on [death_ini] declaration. Item [%s] is configured for community [%s], but has no probability for any difficulty", id, k)
+				return
+			end
+
+			--' Если предмет запрещён для данной группировки, просто не добавляем его в список
+			vvv = tonumber(value)
+			if vvv == 0 then return end
+			if vvv >= 0.4 then vvv = 0.2 end
+
+			item_by_community[k][id] = 1000 * vvv
+		end)
+	end
+
+	--' Предметы, которые нельзя удалять (квестовые например)
+	death_ini:iterate_lines("keep_items", function(result, id, value)
+		if value == "true" then
+			always_keep_item[id] = true
+		end
+	end)
+
+	--' Заполняем таблицу зависимостей
+	death_ini:iterate_lines("item_dependence", function(result, id, value)
+		item_dependence[id] = {}
+		vvv = string.parse_names(value)
+		for k,v in pairs(vvv) do
+			item_dependence[id][v] = true
 			if ammo_types[v] == nil then ammo_types[v] = {} end
 			ammo_types[v][id] = true
-                end
-        end
-
-        --' Множители и минимаксы для выпадения вещей в зависимости от уровня
-    local level_name = level.name()
-
-        if not death_ini:section_exist(level_name) then
-                level_name = "default"
-        end
-
-    n = death_ini:line_count(level_name)
-        for i=0,n-1 do
-                result, id, value        = death_ini:r_line(level_name,i,"","")
-        mul_by_level[id] = tonumber(value)
-        end
-
-    local item_count_section = "item_count_" .. level.get_game_difficulty()
-    n = death_ini:line_count(item_count_section)
-        for i=0,n-1 do
-                result, id, value        = death_ini:r_line(item_count_section,i,"","")
-        --' Нужно распарсить value в два значения
-        local t = parse_nums(value)
-                if t[1] == nil then
-            abort("Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id))
-        end
-        local min = t[1]
-        local max = t[2]
-        if max == nil then
-            max = min
-        end
-
-        if mul_by_level[id] == nil then
-            mul_by_level[id] = 0
-        end
-
-        min = tonumber(min) * mul_by_level[id]
-        max = tonumber(max) * mul_by_level[id]
-
-        count_by_level[id] = {min = min, max = max}
-        end
-
-         --' Предметы, которые нельзя удалять (квестовые например)
-    n = death_ini:line_count("keep_items")
-        for i=0,n-1 do
-                result, id, value        = death_ini:r_line("keep_items",i,"","")
-        if value == "true" then
-            always_keep_item[id] = true
-        end
-    end
+		end
+	end)
 end
 
 class "drop_manager"
@@ -367,15 +395,37 @@ function drop_manager:create_release_item()
 	local self_npc = self.npc
 	if self_npc == nil then return end
 	--' Спрашиваем у серверного объекта генерились ли предметы
-	local se_obj = alife():object(self_npc:id())
+	local se_obj = server_object(self_npc)
 	se_obj.death_droped = true
 
 	local npc_ammo = {}
-	self.ammo = npc_ammo
-	self.cond = weap_conds[self_npc:character_community()] or 60
+	local cond = weap_conds[self_npc:character_community()]
 
 	--' Запускаем итератор на удаление предметов
-	self_npc:iterate_inventory(keep_item, self)
+	self_npc:iterate_inventory(function(arg, item)
+		local section = item:section()
+		if section == "bolt" then return end
+
+		if always_offs_items[section] then
+			release(item)
+			return
+		end
+
+		if always_keep_item[section] or not item:is_weapon() then
+			item:set_condition(item:condition())
+			return
+		end
+
+		local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
+
+		--' Тут надо уменьшить кондишн оружия
+		item:set_condition((math_random(from-cond)+cond)*item:condition()/100)
+		item:set_ammo_elapsed(0)
+
+		for k, v in pairs(ammo_types[section]) do
+			npc_ammo[k] = v
+		end
+	end)
 
     --' Проверка на отсутствие спауна лута
     local ini = self_npc:spawn_ini()
@@ -389,11 +439,13 @@ function drop_manager:create_release_item()
 	local npc_pos, npc_lvid, npc_gvid, npc_id = self_npc:position(), self_npc:level_vertex_id(), self_npc:game_vertex_id(), self_npc:id()
     local spawn_items = item_by_community[self_npc:character_community()]
     if spawn_items then
-	local number
+	local diff = level.get_game_difficulty()
+	local count, number
 	for k,v in pairs(spawn_items) do
 		--' По каждому объекту необходимо получить зависимости
 		if item_dependence[k] == nil then
-			number = math_ceil(math_random(count_by_level[k].min, count_by_level[k].max))
+			count = count_by_level[k][diff]
+			number = count and math_ceil(math_random(count["min"], count["max"])) or 0
 			--' Необходимо заспавнить нужное количество.
 			for i=1,number do
 				--' Проверяем вероятность появить каждый объект в отдельности
@@ -403,7 +455,8 @@ function drop_manager:create_release_item()
 			end
 		elseif npc_ammo[k] then
 			--' По каждому объекту необходимо получить количество
-			number = math_ceil(math_random(count_by_level[k].min, count_by_level[k].max))
+			count = count_by_level[k][diff]
+			number = count and math_ceil(math_random(count["min"], count["max"])) or 0
 			--' Необходимо заспавнить нужное количество.
 			if number > 0 then
 				if ammo_section[k] == true then
@@ -448,9 +501,9 @@ function drop_manager:create_release_item()
 		if sect then
 			local grade = out_grades[sect] or 5
 			if math_random(1000) <= (grade_rnds[grade] or 250) then
-				local otf = alife():create(sect, npc_pos, npc_lvid, npc_gvid, npc_id)
+				local otf = create(sect, npc_pos, npc_lvid, npc_gvid, npc_id)
 				if otf then
-					amk.start_timer("amk.outfit_cond", 1, amk.pack_array_to_string({ grade, otf.id }))
+					level.client_spawn_manager():add(otf.id, 0, outfit_cond, grade)
 				end
 			end
 		end -- sect
@@ -461,39 +514,3 @@ function drop_manager:create_release_item()
 		db_actor:give_info_portion(info)
 	end
 end
-
---' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
-function keep_item(dm_obj, item)
-	if not item then return end
-	local sobj = alife():object(item:id())
-	if sobj == nil then return end
-
-	local section = item:section()
-	if section == "bolt" then
-		return false
-	end
-
-	if always_offs_items[section] then
-		alife():release(sobj, true)
-		return false
-	end
-
-	if always_keep_item[section] or not item:is_weapon() then
-		item:set_condition(item:condition())
-		return true
-	end
-
-	local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
-
-	--' Тут надо уменьшить кондишн оружия
-	item:set_condition((math_random(from-dm_obj.cond)+dm_obj.cond)*item:condition()/100)
-	item:set_ammo_elapsed(0)
-
-	for k, v in pairs(ammo_types[section]) do
-		dm_obj.ammo[k] = v
-	end
-
-	return true
-end
-
-init_drop_settings()

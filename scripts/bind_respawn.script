@@ -1,0 +1,31 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Respawn binder
+--------------------------------------------------------------------------------------------------------------------]]
+
+function bind(obj)
+	if not obj:spawn_ini() then return end
+
+	obj:bind_object(respawn_binder(obj))
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+class "respawn_binder" ( object_binder )
+function respawn_binder:__init( obj ) super( obj )
+end
+function respawn_binder:net_spawn( sobj )
+	if not object_binder.net_spawn( self, sobj ) then
+		return false
+	end
+
+	-- получить ссылку на настоящий серверный объект
+	self.se_respawn = server_object( sobj.id )
+	return true
+end
+function respawn_binder:net_destroy()
+	object_binder.net_destroy( self )
+end
+function respawn_binder:update( delta )
+	object_binder.update( self, delta )
+	self.se_respawn:update_online()
+end

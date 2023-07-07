@@ -2,6 +2,14 @@
 
 --' в работах поле object хранит id объекта
 
+local iam_any_clsid_monster = iam_any.clsid_monster
+local game_milliseconds = game.milliseconds
+local sf = string.format
+local table_sort = table.sort
+local utils_parse_params = utils.parse_params
+
+local CTime_0 = game.CTime()
+
 level_gulags = {
 	gen = gulag_general,
 	esc = gulag_escape,
@@ -18,8 +26,6 @@ level_gulags = {
 	sar = gulag_sarcofag,
 	amk = gulag_amk,
 
-	agr_u_bandits		= gulag_agroprom_underground,
-	agr_u_soldiers		= gulag_agroprom_underground,
 	offline_group		= gulag_dark_valley,
 	freedom_vs_duty		= gulag_radar,
 
@@ -84,7 +90,6 @@ function gulag:__init(smrttrn)
 	self.casualities = 0
 end
 
-local table_sort = table.sort
 -- загрузка работ
 function gulag:load_jobs()
 	self.Job                  = {} -- работы
@@ -116,7 +121,8 @@ function gulag:load_jobs()
 
 		if type( job.online ) == "string" then
 			job.online_condlist = job.online
-			job.online          = xr_logic.parse_condlist_q( job.online_condlist )
+			job.online = xr_logic.parse_condlist(job.online_condlist)
+			job.online = reap_misc.cached_condlist(job.online, 1000)
 		end
 	end
 
@@ -128,14 +134,13 @@ end
 
 -- подготовка гулага к работе
 function gulag:initialize()
-	self.ObjectJobPathName = {} --' по id. имя патрульного пути места работы персонажа
 	self.restrictors       = {} --' по id. назначенные гулагом рестрикторы для каждого персонажа
 
 	self:prepare_jobs()
 
 	local gulag_script_obj = level_gulags[self.type] or level_gulags[self.type_prefix]
 	if gulag_script_obj then
-		self.calculateStates = gulag_script_obj.load_states(self.name, self.type)
+		self.calculateStates = gulag_script_obj.load_states(self.type)
 	else
 		abort("ERROR: unrecognized type '%s' for gulag %s", self.type, self.name)
 		return
@@ -153,13 +158,15 @@ function gulag:initialize()
 
 	local condlist = get_field_string("switch_0")
 	if condlist then
-		self.state_switch_0 = xr_logic.parse_condlist_q( condlist )
+		self.state_switch_0 = xr_logic.parse_condlist(condlist)
+		self.state_switch_0 = reap_misc.cached_condlist(self.state_switch_0, 1000)
 	else
 		self.state_switch_0 = nil
 	end
 	condlist = get_field_string("switch_1")
 	if condlist then
-		self.state_switch_1 = xr_logic.parse_condlist_q( condlist )
+		self.state_switch_1 = xr_logic.parse_condlist(condlist)
+		self.state_switch_1 = reap_misc.cached_condlist(self.state_switch_1, 1000)
 	else
 		self.state_switch_1 = nil
 	end
@@ -180,9 +187,9 @@ function gulag:prepare_jobs()
 		path_name            = self:get_job_path_name( job )
 		ptrl                 = patrol( path_name )
 
-		job.path_name        = path_name
+		job.alife_task = CALifeSmartTerrainTask(path_name)
 		job.game_vertex_id   = ptrl:game_vertex_id( 0 )
-		job.level_id		 = game_graph():vertex(job.game_vertex_id):level_id()
+		job.level_id		 = graph:vertex(job.game_vertex_id):level_id()
 		job.position         = ptrl:point( 0 )
 
 		job_loaded           = self.JobLoaded[i] or empty_table
@@ -198,7 +205,6 @@ function gulag:prepare_jobs()
 		job        = self.Job[jobN]
 		if job ~= nil then
 			job.object = obj_id
-			self.ObjectJobPathName[obj_id] = job.path_name
 		end
 	end
 end
@@ -236,7 +242,6 @@ function gulag:job_exists_in_state_0( job )
 	return false
 end
 
-local utils_parse_params = utils.parse_params
 function gulag_cfg_get_condlist(ini, section, field)
   local str = ini:r_string(section, field)
   if not str then
@@ -250,13 +255,12 @@ function gulag_cfg_get_condlist(ini, section, field)
 
 	local t = {
 		name		= field,
-		condlist	= xr_logic.parse_condlist_q(par[1])
+		condlist	= xr_logic.parse_condlist(par[1])
 	}
 
   return t
 end
 
-local sf = string.format
 -- получить имя пути места работы
 function gulag:get_job_path_name( job )
 	local section = job.section
@@ -270,7 +274,7 @@ function gulag:get_job_path_name( job )
 			abort("xr_gulag: job '%s': unable to find section(s) for 'selective'",section)
 			return nil
 		else
-			active_section = xr_logic.pick_section_from_condlist(db_actor, npc, active_section_cond.condlist)
+			active_section = xr_logic.pick_section_from_condlist(npc, active_section_cond.condlist)
 			if not active_section then
 				abort("xr_gulag: job section '%s': section 'selective' has no conditionless else clause", section)
 				return nil
@@ -308,12 +312,11 @@ function gulag:get_job_path_name( job )
 	end
 end
 
-local utils_w_CTime = utils.w_CTime
 -- сохранения общего состояния гулага
 function gulag:save_common( packet )
 	packet:w_u8( self.casualities )
 	packet:w_u8( self.state )
-	utils_w_CTime( packet, self.stateBegin or smart_terrain.CTime_0 )
+	packet:w_CTime(self.stateBegin or CTime_0)
 
 	packet:w_u8(self.population)
 	if self.population_comed == 0 and self.stateChanged then
@@ -333,12 +336,11 @@ function gulag:save_common( packet )
 	end
 end
 
-local utils_r_CTime = utils.r_CTime
 -- восстановление общего состояния гулага
 function gulag:load_common( packet )
 	self.casualities = packet:r_u8()
 	self.state       = packet:r_u8()
-	self.stateBegin  = utils_r_CTime( packet )
+	self.stateBegin  = packet:r_CTime()
 
 	self.population					= packet:r_u8()
 	local n = packet:r_u8()
@@ -501,7 +503,7 @@ function gulag:clear_dead(obj_id)
 	if self.ObjectJob[obj_id] then
 		self:changeCasualities( 1 )
 		local job = self.Job[self.ObjectJob[obj_id]]
-		job.idle_after_death_end = game.time() + ( job.idle_after_death or job_idle_after_death ) * 1000
+		job.idle_after_death_end = game_milliseconds() + ( job.idle_after_death or job_idle_after_death ) * 1000
 	end
 
 	self.smrttrn:unregister_npc( self.npc_info[obj_id].se_obj )
@@ -530,19 +532,19 @@ function gulag:can_obj_begin_job( obj_id, obj )
 		local job = self.Job[jobN]
 
 		--' Спешл кейс, проверка только по вертексам графа
-		if job.position_threshold == "graph" then
+		if job ~= nil then
 			local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
-			local job_gv          = game_graph():vertex( job.game_vertex_id )
-			if obj_gv:level_vertex_id() == job_gv:level_vertex_id() then
-				return true
+			local job_gv = graph:vertex( job.game_vertex_id )
+			if obj_gv:level_id() == job_gv:level_id() then
+				if job.position_threshold == "graph" then
+					return obj_gv:level_vertex_id() == job_gv:level_vertex_id()
+				else
+					return obj_pos:distance_to( job.position ) < (job.position_threshold or job_position_threshold)
+				end
 			end
-			return false
 		end
-
-		return self:distance_to_job_location(obj_id, job) < (job.position_threshold or job_position_threshold)
-	else
-		return false
 	end
+	return false
 end
 
 -- сменить состояние гулага.
@@ -607,8 +609,8 @@ end
 -- работа доступна, когда время idle истекло (или не задано)
 -- и занята работа, от которой зависит данная работа.
 function gulag:availJob(job)
-	if job.begin == nil or game.time() - job.begin > job.idle then
-		if job.idle_after_death_end == nil or job.idle_after_death_end < game.time() then
+	if job.begin == nil or game_milliseconds() - job.begin > job.idle then
+		if job.idle_after_death_end == nil or job.idle_after_death_end < game_milliseconds() then
 			if job.fill_idle ~= nil then
 				if job.fill_idle == idle_none then
 					return false
@@ -624,7 +626,7 @@ end
 -- Текущая работа доступна, если не истекло ее время и занята работа, от которой она зависит
 function gulag:availCurrent(job)
 	if job.timeout == nil or
-	   job.begin == nil or game.time() - job.begin < job.timeout
+	   job.begin == nil or game_milliseconds() - job.begin < job.timeout
 	then
 		return true
 	else
@@ -669,16 +671,16 @@ end
 -- используется для определения ближайшего к месту работы персонажа.
 function gulag:distance_to_job_location( obj_id, job )
 	local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
-	local job_gv          = game_graph():vertex( job.game_vertex_id )
+	local job_gv          = graph:vertex( job.game_vertex_id )
 
 	if obj_gv:level_id() == job_gv:level_id() then
 		return obj_pos:distance_to( job.position )
 	else
-		return 10000
+		return obj_gv:game_point():distance_to( job_gv:game_point() )
 	end
 end
 
--- получить точку графа, на которой находится персонаж и его локальные координаты на уровне
+-- получить точку графа, на которой находится персонаж и его координаты на уровне
 -- в зависимости от того, в офлайне или в онлайне персонаж, берётся по разному
 function gulag:get_obj_game_vertex_and_position( obj_id )
 	local obj = self.Object[obj_id]
@@ -686,16 +688,16 @@ function gulag:get_obj_game_vertex_and_position( obj_id )
 	if obj == true then
 		obj = self.npc_info[obj_id].se_obj
 
-		return game_graph():vertex( obj.m_game_vertex_id ), obj.position
+		return graph:vertex( obj.m_game_vertex_id ), obj.position
 	else
-		return game_graph():vertex( obj:game_vertex_id() ), obj:position()
+		return graph:vertex( obj:game_vertex_id() ), obj:position()
 	end
 end
 
 -- найти ближайшего подходящего персонажа из списка
 function gulag:find_nearest_suitable_obj( objs, job )
 	local predicate = job.predicate
-	local min_dist  = 1000000
+	local min_dist  = -math.huge
 	local dist
 	local obj_nearest
 
@@ -703,7 +705,7 @@ function gulag:find_nearest_suitable_obj( objs, job )
 		if not predicate or predicate( self.npc_info[obj_id], self ) then
 			dist = self:distance_to_job_location( obj_id, job )
 
-			if dist < min_dist then
+			if dist > min_dist then
 				min_dist    = dist
 				obj_nearest = obj_id
 			end
@@ -859,7 +861,7 @@ function gulag:get_stype( obj_id )
 	local cls_id = self.npc_info[obj_id].class_id
 	if cls_id == clsid_script_stalker then
 		return modules.stype_stalker
-	elseif IsMonster( nil, cls_id ) then
+	elseif iam_any_clsid_monster(cls_id) then
 		return modules.stype_mobile
 	else
 		abort( "[smart_terrain %s] obj=%s clsid=%d: gulag supports stalkers and monsters only!", self.name, self.npc_info[obj_id].name, cls_id )
@@ -911,7 +913,6 @@ function gulag:setJob(obj_id, job)
 
 	self.Object_begin_job [obj_id] = false
 	self.ObjectJob        [obj_id] = job.num
-	self.ObjectJobPathName[obj_id] = job.path_name
 
 	self:setup_squad_and_group( obj_id, job )
 end
@@ -926,7 +927,7 @@ function gulag:beginJob( obj_id )
 
 	self.Object_begin_job[obj_id] = true
 
-	job.begin = game.time()
+	job.begin = game_milliseconds()
 
 	if job.fill_idle == idle_once then
 		job.fill_idle = idle_none
@@ -1034,19 +1035,12 @@ function gulag:getJob(obj_id)
 	return jobN and self.Job[jobN]
 end
 
--- возвращает имя пути места работы персонажа
-function gulag:get_obj_job_path_name( obj_id )
-	return self.ObjectJobPathName[obj_id]
-end
-
 -- освободить объект от работы
 function gulag:free_obj( obj_id )
 	local jobN = self.ObjectJob[obj_id]
 	if jobN then
 		self.ObjectJob[obj_id] = nil
 		self.Job[jobN].object  = nil
-
-		self.ObjectJobPathName[obj_id] = nil
 
 		self:setup_job_online( self.npc_info[obj_id].se_obj, nil )
 
@@ -1069,9 +1063,9 @@ end
 function gulag:free_obj_and_reinit( obj_id )
 	self:free_obj(obj_id)
 
-	local t = self.Object[obj_id]
-	if t ~= nil and t ~= true and self.Object_begin_job[obj_id] then
-		xr_logic.initialize_obj( t, nil, false, db_actor, self:get_stype( obj_id ) )
+	local o = level_object(obj_id)
+	if o ~= nil and self.Object_begin_job[obj_id] then
+		xr_logic.initialize_obj( o, nil, false, self:get_stype( obj_id ) )
 	end
 end
 
@@ -1130,7 +1124,7 @@ end
 
 -- получить персонажа, который в онлайне, и который ближе всего к указанной позиции
 function gulag:get_nearest_online_obj( pos )
-	local min_dist    = 100000000
+	local min_dist    = math.huge
 	local nearest_obj = nil
 	local d
 
@@ -1179,29 +1173,25 @@ function setup_gulag_and_logic_on_spawn( obj, st, sobject, stype, loaded )
 			if need_setup_logic then return end
 		end
 	end
-	xr_logic.initialize_obj(obj, st, loaded, db_actor, stype)
+	xr_logic.initialize_obj(obj, st, loaded, stype)
 end
 
 -- получить гулаг по имени смарта.
--- работает только для смартов, которые в онлайне.
+-- работает всегда
 function get_gulag_by_name( name )
-	local go_strn = db.zone_by_name[name]
+	local strn = server_object( name )
+	if not strn then return nil end
 
-	if go_strn then
-		local strn = alife():object( go_strn:id() )
+	strn:initialize_if_needed()
 
-		strn:initialize_if_needed()
-
-		return strn.gulag
-	else
-		return nil
-	end
+	return strn.gulag
 end
 
 -- получить гулаг по story id смарта
 -- работает всегда
 function get_gulag_by_sid( sid )
-	local strn = alife():story_object( sid )
+	local strn = story_object( sid )
+	if not strn then return nil end
 
 	strn:initialize_if_needed()
 
@@ -1220,12 +1210,10 @@ end
 -- получить гулаг персонажа
 -- obj=game_object
 function get_npc_gulag( obj )
-	local sim = alife()
-
-	obj = sim:object( obj:id() )
+	obj = server_object(obj)
 
 	if obj:smart_terrain_id() ~= 65535 then
-		local strn = sim:object( obj:smart_terrain_id() )
+		local strn = server_object( obj:smart_terrain_id() )
 
 		strn:initialize_if_needed()
 
@@ -1235,6 +1223,10 @@ function get_npc_gulag( obj )
 	end
 end
 
+function get_npc_gulag_name(obj)
+	local gg = get_npc_gulag(obj)
+	return gg and gg.name or "nil"
+end
 -- получить кол-во населения смарта по имени
 function getGulagPopulation( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
@@ -1294,19 +1286,6 @@ function resetJob( obj )
 	end
 end
 
-function clearJob( obj )
-	local sim = alife()
-
-	obj = sim:object( obj:id() )
-
-	if obj:smart_terrain_id() ~= 65535 then
-		local strn = sim:object( obj:smart_terrain_id() )
-
-		strn:initialize_if_needed()
-    strn:unregister_npc(obj)
-	end
-end
-
 function changeCasualities( name_or_sid, delta )
 	local gulag = get_gulag( name_or_sid )
 
@@ -1350,8 +1329,8 @@ function checkNpc(npc_community, is_stalker, gulag_params, se_obj)
 	local gulag_script_obj = level_gulags[gulag_params.type] or level_gulags[gulag_params.type_prefix]
 	if not gulag_script_obj then return false end
 	if is_stalker then
-		return gulag_script_obj.checkStalker(npc_community, gulag_params.type, nil, se_obj)
+		return gulag_script_obj.checkStalker(npc_community, gulag_params.type, se_obj)
 	else
-		return gulag_script_obj.checkMonster(npc_community, gulag_params.type, nil, se_obj)
+		return gulag_script_obj.checkMonster(npc_community, gulag_params.type)
 	end
 end

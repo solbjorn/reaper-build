@@ -1,10 +1,6 @@
 --[[
 ОПИСАНИЕ ФУНКЦИЙ
 
--- Выводит отладочное сообщение в лог, если скрипт активен (активный скрипт выбирается с помощью
--- переменной debug_info.trace_script).
-function trace(script_name, fmt, ...)
-
 -- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
 function to_str(what)
 
@@ -34,6 +30,8 @@ local string_gsub = string.gsub
 function to_str(what)
 	if what == nil then
 		return "<nil>"
+	elseif type(what) == "userdata" then
+		return "userdata"
 	else
 		return tostring(what)
 	end
@@ -245,15 +243,6 @@ function path_parse_waypoints_from_arglist(pathname, num_points, ...)
 	return rslt
 end
 
-function get_scheme_by_section(section)
-	local scheme = string_gsub(section, "%d", "")
-	local at, to = string_find(scheme, "@", 1, true)
-	if at and to then
-		scheme = string_sub(scheme, 1, at - 1)
-	end
-	return scheme
-end
-
 -- a | b | c  ==>  { 1 = "a", 2 = "b", 3 = "c" }
 function parse_params(params)
 	local rslt = {}
@@ -270,11 +259,6 @@ function is_day()
 	return hours >= 5 and hours < 22
 end
 
-function electro_art_enabled ()
-	local hours = level.get_time_hours()
-	return hours >= 0 and hours < 5
-end
-
 function no_need_to_rotate(npc, target_pos)
 	local y = yaw(npc:direction(), vector():set(target_pos):sub(npc:position()))
 
@@ -284,7 +268,7 @@ end
 function no_need_to_rotate_xz(npc, target_pos)
 	local dir1 = npc:direction()
 	dir1.y = 0
-	local dir2 =  vector():set(target_pos):sub(npc:position())
+	local dir2 = vector():set(target_pos):sub(npc:position())
 	dir2.y = 0
 	local y = yaw(dir1, dir2)
 
@@ -347,46 +331,6 @@ function npc_in_zone(npc, zone)
 	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
 end
 
-------------------------- запись/загрузка CTime ---------------------------
-local CTime_0
-
-if not editor() then
-	CTime_0 = game.CTime()
-end
-
--- запись CTime в пакет. если t=nil, то запишет один нулевой байт
-function w_CTime( p, t )
-	if t and not (t == CTime_0) then
-		local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
-		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
-
-		p:w_u8 ( Y - 2000 )
-		p:w_u8 ( M )
-		p:w_u8 ( D )
-		p:w_u8 ( h )
-		p:w_u8 ( m )
-		p:w_u8 ( s )
-		p:w_u16( ms )
-	else
-		p:w_u8 ( 0 )
-	end
-end
-
--- чтение CTime из пакета
-function r_CTime( p )
-	local Y = p:r_u8()
-
-	if Y ~= 0 then
-		local t = game.CTime()
-		local M, D, h, m, s, ms = p:r_u8(), p:r_u8(), p:r_u8(), p:r_u8(), p:r_u8(), p:r_u16()
-		t:set( Y + 2000,  M, D, h, m, s, ms)
-		return t
-	else
-		return CTime_0
-	end
-end
----------------------------------------------------------------------------
-
 -- отослать в ближайшую разрешённую ноду по направлению к заданной.
 -- возвращает vertex_id, в которое отправил персонажа
 function send_to_nearest_accessible_vertex( npc, v_id )
@@ -403,15 +347,10 @@ end
 -- происходит ли в данный момент смена уровня?
 -- нужно для того, чтобы объекты знали, какую информацию записывать при сохранении, а какую нет
 function level_changing()
-	local sim = alife()
+	if not alife() then return false end
 
-	if not sim then
-		return false
-	end
-
-	local actor_gv = game_graph():vertex( sim:actor().m_game_vertex_id )
-
-	return actor_gv:level_id() ~= sim:level_id()
+	local actor_gv = graph:vertex(g_alife:actor().m_game_vertex_id)
+	return actor_gv:level_id() ~= g_alife:level_id()
 end
 
 function parse_data_1v(npc,s)
@@ -429,7 +368,7 @@ function parse_data_1v(npc,s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist_q(state)
+				dat.state = xr_logic.parse_condlist(state)
 			end
 			t[tonumber(dist)] = dat
 		end
