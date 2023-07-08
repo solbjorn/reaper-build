@@ -1568,6 +1568,38 @@ function end_x18_dream(actor, npc)
   db_actor:give_info_portion("dar_x18_dream")
 end
 
+function activate_agr_u_controller_boss()
+	local se_obj = server_object("kat2_m_controller_old_0000")
+	if se_obj then
+		level.client_spawn_manager():add(se_obj.id, 0, switch_online)
+	end
+end
+
+function activate_x18_flame_boss()
+	local obj = level.object_by_name("dar_m_poltergeist_normal_flame_0000")
+	if obj then
+		switch_online(obj:id())
+	end
+end
+
+function activate_x16_controller_boss()
+	local obj = level.object_by_name("x16_m_controller_e")
+	if obj then
+		switch_online(obj:id())
+	end
+end
+
+function activate_x10_bloodsucker_boss()
+	local se_obj = server_object("bun_bloodsucker_prim")
+	if se_obj then
+		level.client_spawn_manager():add(se_obj.id, 0, switch_online)
+	end
+end
+
+function set_invisible(actor, npc, p)
+	npc:set_invisible(p[1] == "true")
+end
+
 function aes_final_movie(actor, npc)
   game.start_tutorial("mov_refuse_osoznanie")
 end

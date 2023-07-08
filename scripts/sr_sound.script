@@ -19,12 +19,42 @@ function action_sound:__init( obj, storage )
 end
 
 function action_sound:reset_scheme()
+	self.st.idle_end = 0
 	self.st.signals = {}
 	self.is_actor_inside = false
 	self.snd_obj = nil
+
+	self.slide_active = false
 end
 
 function action_sound:update( delta )
+	---------------------------------------
+	-- check for update of sliding sound
+	if self.slide_active and not self.snd_obj:playing() and self.st.sound_slide_once then
+		self.slide_active = false
+	end
+
+	if self.slide_active then
+		-- play sound
+		if not self.snd_obj:playing() then
+			self.snd_obj:play_at_pos(self.object, self.current, self.st.delay)
+		else
+			self.snd_obj:set_position(self.current)
+		end
+
+		-- update current position
+		local target_pos = vector():set(self.current)
+		target_pos:mad(self.dir, self.st.sound_slide_vel * delta / 1000)
+
+		if target_pos:distance_to(self.current) > self.current:distance_to(self.target) then
+			self.cur_point	= self:next_point()
+			self:set_positions()
+		else
+			self.current	= vector():set(target_pos)
+		end
+	end
+	---------------------------------------
+
 	local actor = db_actor
 
 	-- если мы ещё нигде, то не считать ни входа, ни выхода
@@ -51,23 +81,42 @@ function action_sound:update( delta )
 end
 
 function action_sound:on_enter( obj )
+	local mil = game.milliseconds()
+	if self.st.idle_end > mil then return end
+	self.st.idle_end = mil + self.st.idle
+
 	local pos
 
 	if self.st.pos_type == pos_obj then
 		pos = obj:position()
 	else
-		pos = self.st.path:point( math.random( 0, self.st.path:count()-1 ) )
+		if not self.st.sound_slide then
+			pos = self.st.path:point( math.random( 0, self.st.path:count()-1 ) )
+		else
+			self.slide_active = true
+			self.cur_point	  = 0
+			self:set_positions()
+			pos = self.st.path:point(self.cur_point)
+		end
 	end
 
-	local snd_name = self.st.sound_names[math.random(1, #self.st.sound_names)]
+	local snd_name = table.random(self.st.sound_names)
 
-	self.snd_obj	= xr_sound.get_safe_sound_object(snd_name)
+	self.snd_obj	= voice(snd_name)
 	if self.st.play_at_actor == false then
-		 self.snd_obj:play_at_pos( obj, pos, 0 )
+		 self.snd_obj:play_at_pos( obj, pos, self.st.delay )
 	else
-		 self.snd_obj:play_at_pos( obj, vector ():set (0, 0, 0), 0, sound_object.s2d )
+		 self.snd_obj:play_at_pos( obj, xyz(), self.st.delay, sound_object.s2d )
 	end
 	self.st.signals["sound_end"] = false
+end
+
+function action_sound:next_point()
+	if self.cur_point+1 < self.st.path:count() then
+		return self.cur_point+1
+	else
+		return 0
+	end
 end
 
 function action_sound:deactivate ()
@@ -75,6 +124,17 @@ function action_sound:deactivate ()
        self.snd_obj:stop ()
        self.snd_obj = nil
     end
+end
+
+function action_sound:set_positions()
+	if (self:next_point() == 0) then
+		self.slide_active = false
+		return
+	end
+
+	self.current	= self.st.path:point(self.cur_point)
+	self.target		= self.st.path:point(self:next_point())
+	self.dir		= vector():sub(self.target, self.current):normalize()
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +160,9 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 		return
 	end
 
-	local path = utils.cfg_get_string( ini, section, "position", obj, false, "", nil )
+	st.delay   = ini:r_u32_ex(section, "delay", 0)
+	st.idle    = ini:r_u32_ex(section, "idle", 0) * 1000 -- секунды->мс
+	local path = ini:r_string_ex(section, "position")
 	if path == nil then
 		st.pos_type = pos_obj
 	else
@@ -108,10 +170,18 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 		st.path = patrol( path )
 	end
 
-	st.play_at_actor = utils.cfg_get_bool (ini, section, "play_at_actor", obj, false)
-	if st.play_at_actor ~= nil and st.play_at_actor == true then
+	if ini:line_exist( section, "slide_velocity" ) then
+		st.sound_slide		= true
+		st.sound_slide_vel	= ini:r_u32_ex(section, "slide_velocity", 3)
+		st.sound_slide_once	= ini:r_bool_ex(section, "slide_sound_once", false)
+	else
+		st.sound_slide		= false
+	end
+
+	st.play_at_actor = ini:r_bool_ex(section, "play_at_actor", false)
+	if st.play_at_actor == true then
 		 if st.pos_type ~= pos_obj then
-				abort ("Can't define play sound at actor and path !!!")
+			abort ("Can't define play sound at actor and path !!!")
 		 end
 	end
 end

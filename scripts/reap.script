@@ -148,6 +148,7 @@ function new_game()
 	level_tasks.add_lchanger_location()
 	load_del_bolt = true
 
+	fix_all_spawn()
 	dmx_sleep_binder.place_of_sleep_spawn()
 	spawn_dynamic_fires()
 
@@ -435,13 +436,6 @@ end
  * Dynamic fires (former Dynamic Campfire)
 --]]---------------------------------------------------------------------------
 
-local remove_ammo = table.tohash({
-	"val_ammo_9x19_pbp_0000", "val_ammo_5.56x45_ap_0000", "val_ammo_5.56x45_ss190_0000",
-	"val_ammo_5.45x39_fmj_0001", "val_ammo_5.45x39_fmj_0003", "mil_wpn_pm_0000",
-	"mil_wpn_pm", "mil_ammo_5.56x45_ss0000", "mil_ammo_5.56x45_ss0002",
-	"mil_ammo_11.43x23_hydro0000", "mil_ammo_11.43x23_hydro0001"
-})
-
 local fire_excl = {
 	l06_rostok = {
 		zone_flame_0000		= "yantar_scientists_talk",
@@ -459,12 +453,11 @@ local level_flames
 local level_lights
 
 function cache_level_fires()
-	local ammo = curr_level == "l04_darkvalley" or curr_level == "l07_military"
 	local level_excl = fire_excl[curr_level]
+	local static = { }
 
 	level_flames = { }
 	level_lights = { }
-	local static = { }
 
 	local obj, sect, exc
 	for i = 1, 65534 do
@@ -491,8 +484,6 @@ function cache_level_fires()
 				if exc and has_info(exc) then
 					obj:disable_anomaly()
 				end
-			elseif ammo and remove_ammo[obj:name()] then
-				release(obj)
 			end
 		end
 	end
@@ -683,11 +674,30 @@ end
  * Misc
 --]]---------------------------------------------------------------------------
 
-function with_discount(num)
-	return math.floor(num * freeplay_stats:get_found_pda_discount())
+local remove_items = {
+	-- l04_darkvalley
+	"val_ammo_9x19_pbp_0000", "val_ammo_5.56x45_ap_0000", "val_ammo_5.56x45_ss190_0000",
+	"val_ammo_5.45x39_fmj_0001", "val_ammo_5.45x39_fmj_0003",
+
+	-- l07_military
+	"mil_wpn_pm_0000", "mil_wpn_pm", "mil_ammo_5.56x45_ss0000", "mil_ammo_5.56x45_ss0002",
+	"mil_ammo_11.43x23_hydro0000", "mil_ammo_11.43x23_hydro0001",
+
+	-- l10u_bunker
+	"bun_krovosos_nest"
+}
+
+function fix_all_spawn()
+	for i = 1, #remove_items do
+		release(remove_items[i])
+	end
 end
 
 function story_name(sid)
 	local sobj = sid and story_object(tonumber(sid))
 	return sobj and sobj:get_netpk("character_name")
+end
+
+function with_discount(num)
+	return math.floor(num * freeplay_stats:get_found_pda_discount())
 end

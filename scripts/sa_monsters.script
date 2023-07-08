@@ -32,6 +32,10 @@ local bloodsucker_vampire_states = {
 	completed = 4
 }
 ---------------------------------------------------------------------------------------------------
+local bloodsucker_vampire_unique = {
+	["bun_bloodsucker_prim"] = true
+}
+---------------------------------------------------------------------------------------------------
 function bloodsucker_vampire(obj)
 	if bloodsucker_vampire_check_conditions(obj) then
 		local state = bloodsucker_vampire_states.prepare
@@ -128,6 +132,10 @@ function bloodsucker_vampire_check_conditions(obj)
 	end
 	-- check actor state
 	if not (db_actor:is_actor_normal() or db_actor:is_actor_walking() or db_actor:is_actor_running()) then
+		return false
+	end
+	-- check unique bloodsuckers
+	if bloodsucker_vampire_unique[obj:name()] then
 		return false
 	end
 	-- check bloodsuckers near
