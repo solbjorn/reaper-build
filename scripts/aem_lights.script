@@ -307,7 +307,7 @@ function remove_all_aem_lamps()
 	for id=0, 65535 do
 		obj = level.object_by_id(id)
 		if obj ~= nil and obj:section() == "aem_lamp" then
-			alife():release(alife():object(id), true)
+			AI:release(AI:object(id), true)
 		end
 	end
 end
@@ -360,7 +360,7 @@ function create_lamp(pos, dir, visual, brightness, shadow, color)
 	packet:w_float(0.7)
 	packet:w_stringZ("bone_omni")
 
-	local se_obj = alife():create("aem_lamp", pos, lvid, gvid)
+	local se_obj = AI:create("aem_lamp", pos, lvid, gvid)
 	se_obj:STATE_Read(packet, packet:w_tell())
 
 	if dir ~= nil then

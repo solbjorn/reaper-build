@@ -48,7 +48,7 @@ function get_item_count()
 	total_count = 0
 	local cnt=0
 	for a=1,65534 do
-		local obj = alife():object(a)
+		local obj = AI:object(a)
 		if obj then
 			total_count = total_count + 1
 			if item_can_be_deleted(obj) then
@@ -71,7 +71,7 @@ function clean_items()
 					if amk_offline_alife and amk_offline_alife.clear_item_owner then
 						amk_offline_alife.clear_item_owner(obj_id)
 					end
-					alife():release(alife():object(obj_id), true)
+					AI:release(AI:object(obj_id), true)
 					table.remove(item, 1)
 					cnt = cnt - 1
 					if cnt <= max_items then break end

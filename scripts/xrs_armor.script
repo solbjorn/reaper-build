@@ -1469,7 +1469,7 @@ function check_armor(npc, item, just_report)
 						npc:position():distance_to(Actor:position())>100) then
 
 						change_vis(npc:id(),"actors\\"..suits_to_visuals[com][vis][math_random(#suits_to_visuals[com][vis])],armor_levels[vis],true)
-						alife():release(alife():object(item:id()))
+						AI:release(AI:object(item:id()))
 					end
 				end
 			end
@@ -1478,7 +1478,7 @@ function check_armor(npc, item, just_report)
 end
 
 function get_npc_level(id)
-	local sobj = alife():object(id)
+	local sobj = AI:object(id)
 	if sobj and sobj.rank and sobj:rank()~=0 then
 		return math.floor(sobj:rank()/upgrade_exp)
 	end
@@ -1615,7 +1615,7 @@ function change_vis(id, suit_vis, lvl, now)
 			end
 			convert_npc[id]="turn_off"
 		end
-		local sobj = alife():object(id)
+		local sobj = AI:object(id)
 		if sobj then
 			sobj:set_rank(upgrade_exp*lvl+math_random(1,50))
 		end
@@ -1626,7 +1626,7 @@ end
 
 function look_for_armor(id,vis)
 	if vis then
-		local sobj = alife():object(id)
+		local sobj = AI:object(id)
 		if sobj:health()<0.3 then return false end
 		sobj:modify_netpk("visual_name", vis)
 		return true
@@ -1637,10 +1637,9 @@ end
 local next_armor_min
 
 function update()
-	local sim = alife()
 	for k,v in pairs(convert_npc) do
 		local obj=level.object_by_id(k)
-		local sobj=sim:object(k)
+		local sobj=AI:object(k)
 		if sobj then
 			if obj~=nil and v=="turn_off" then
 				obj:stop_talk()
@@ -1670,10 +1669,10 @@ function update()
 		if time_ > next_armor_min then
 			stalkers={}
 			for a=1,65534 do
-				local sobj = sim:object(a)
+				local sobj = AI:object(a)
 				if sobj and sobj:is_stalker() and sobj:alive() and not sobj.wounded and not excluded_npcs[sobj:name()] then
 					if sobj.m_game_vertex_id and game_graph():valid_vertex_id(sobj.m_game_vertex_id) then
-						local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+						local map = AI:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 						if map and upgrade_top_lvl[map]~=nil then
 							local lvl = get_npc_level(a)
 							if lvl<upgrade_top_lvl[map] or math_random()<upgrade_over_top_chance then
@@ -1716,7 +1715,7 @@ function update()
 end
 
 function select_next_visual(id,now)
-	local sobj=alife():object(id)
+	local sobj=AI:object(id)
 	if sobj then
 		local level = get_npc_level(id)
 		local com = sobj:community()
@@ -1846,8 +1845,8 @@ function action_get_useful_armor:execute()
 	elseif self.end_time<time_global() then
 		local o = level.object_by_id(self.a.see_outfit)
 		local sect = o:section()
-		alife():release(alife():object(self.a.see_outfit))
-		alife():create(sect,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
+		AI:release(AI:object(self.a.see_outfit))
+		AI:create(sect,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
 		npc:clear_animations()
 	end
 end

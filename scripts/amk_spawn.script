@@ -123,7 +123,7 @@ function spawn_monster(monster_type, x_pos, y_pos, z_pos, level_vid, game_vid)
 	end
 	if (work_monster_lib[monster_type] ~= nil) then
 		monster_type = work_monster_lib[monster_type]
-		obj = alife():create(monster_type, spawn_pos, level_vid, game_vid)
+		obj = AI:create(monster_type, spawn_pos, level_vid, game_vid)
 	end
 end
 
@@ -153,7 +153,7 @@ function point_spawn_monster(monster_type, position_name, radius)
 		else
 			return nil
 		end
-		obj = alife():create(monster_type, spawn_pos, level_vid, game_vid)
+		obj = AI:create(monster_type, spawn_pos, level_vid, game_vid)
 		return obj
 	else
 		return nil

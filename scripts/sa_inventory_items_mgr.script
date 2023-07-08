@@ -40,7 +40,7 @@ end
 --]]-----------------------------------------------------------------------------------------------
 function artefacts_statistic(obj)
 	if obj:is_artefact() then
-		local se_obj = g_alife:object(obj:id())
+		local se_obj = AI:object(obj:id())
 		if not se_obj.already_taken then
 			local inv_name = read_line(obj:section(), "inv_name", "string")
 			actor_stats.add_points("artefacts", inv_name, 1, 1)
@@ -90,7 +90,7 @@ function repack_ammo()
 			)
 			for i, v in ipairs(ammo) do
 				if total_size == 0 then
-					g_alife:release(g_alife:object(v:id()), true)
+					AI:release(AI:object(v:id()), true)
 				elseif total_size >= box_size then
 					set_ammo_data(v, "box_size", box_size)
 					total_size = total_size - box_size

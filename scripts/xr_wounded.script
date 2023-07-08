@@ -23,7 +23,7 @@ function evaluator_wound:evaluate ()
     self.a.regen=npc:character_community()=="zombied" or npc:character_community()=="monolith"
   end
 
-  local sobj=alife():object(npc:id())
+  local sobj=AI:object(npc:id())
   if npc.health>0.95 and self.a.regen and tostring(xr_logic.pstor_retrieve(self.object, "wounded_state")) ~= "nil" then
     sobj.wounded=false
     self.a.wound_manager:hit_callback()
@@ -121,7 +121,7 @@ function action_wounded:execute ()
 		elseif tostring(victim) == "nil" then
 			victim = nil
 		else
-			victim = g_alife:story_object(victim)
+			victim = AI:story_object(victim)
 		end
 
 		if wound_manager_state == "psy_shoot" then
@@ -176,7 +176,7 @@ end
 function Cwound_manager:update()
   local hp  = 100*self.npc.health
   local psy = 100*self.npc.psy_health
-  local sobj=alife():object(self.npc:id())
+  local sobj=AI:object(self.npc:id())
   if sobj.wounded and (not self.a.regen) and (not self.medkit_eaten) then
     hp=1 -- симулируем раненость
   end
@@ -584,7 +584,7 @@ local smarts_avail = {}
 --local smarts_other = {}
 local wound_id
 function custom_change(npc)
-	local obj = alife():object(npc:id())
+	local obj = AI:object(npc:id())
 	local packet_wounded = amk.read_stalker_params(obj)
 	local level = level.name()
 	local obj_rank = get_npc_rank(npc)
@@ -594,7 +594,7 @@ function custom_change(npc)
 				local smarts_rank_min = vv[1]
 				local smarts_rank_max = vv[2]
 				if obj_rank and obj_rank >= smarts_rank_min and obj_rank <= smarts_rank_max then
-					local smart = alife():object(kk)
+					local smart = AI:object(kk)
 					if smart and smart:is_gulag_available() and smart.gulag_working then
 						if string_find(level,string_sub(kk,1,3)) then
 							table.insert(smarts_avail,smart)
@@ -618,7 +618,7 @@ function custom_change(npc)
 	end
 	local unreg_id = obj:smart_terrain_id()
 	if unreg_id ~= 65535 and npc:alive() then
-		local unreg = alife():object(unreg_id)
+		local unreg = AI:object(unreg_id)
 		if unreg then
 			unreg:unregister_npc(obj)
 		end
@@ -626,7 +626,7 @@ function custom_change(npc)
 end
 
 function get_npc_rank(obj)
-	local sobj = alife():object(obj:id())
+	local sobj = AI:object(obj:id())
 	if sobj and sobj.rank and sobj:rank()  then
 		return math.floor(sobj:rank()/290)
 	end
@@ -635,7 +635,7 @@ end
 
 function max_comp(i1,i2) -- возвращает true если i1 меньше i2
 	if wound_id then
-		local sobj = alife():object(wound_id)
+		local sobj = AI:object(wound_id)
 		local sobj_pos = sobj.position
 		return i1.position:distance_to(sobj_pos) < i2.position:distance_to(sobj_pos)
 	end

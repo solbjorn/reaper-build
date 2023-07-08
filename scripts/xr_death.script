@@ -18,9 +18,9 @@ function action_process_death:death_callback(victim, who)
 		if killer_id == 0 and victim:best_enemy() == nil then
 			killer_id = -1
 			if victim:relation(actor) ~= game_object.enemy then
-				local vic_smart_terrain_id = g_alife:object(victim:id()):smart_terrain_id()
+				local vic_smart_terrain_id = AI:object(victim:id()):smart_terrain_id()
 				if vic_smart_terrain_id and vic_smart_terrain_id ~= 65535 then
-					local smt_trn = g_alife:object(vic_smart_terrain_id)
+					local smt_trn = AI:object(vic_smart_terrain_id)
 					for id, npc_info in pairs( smt_trn.npc_info ) do
 						local buddy = level.object_by_id(id)
 						if buddy and buddy:alive() then

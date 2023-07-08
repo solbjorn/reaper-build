@@ -126,10 +126,10 @@ function c_net_packet:modify(sobj, ...)
 	self:set(t,sobj)
 
 	if sid then
-		g_alife:assign_story_id(sobj.id, sid)
+		AI:assign_story_id(sobj.id, sid)
 	end
 	if ssid then
-		g_alife:assign_spawn_story_id(sobj.id, ssid)
+		AI:assign_spawn_story_id(sobj.id, ssid)
 	end
 end
 
@@ -1497,8 +1497,8 @@ local execute_switchings = function()
 						if v.off == false and v.cnt == 1 then --/ phase-1: flag: need switch 'online->offline'
 							v.off = true --/ change flag -> need switch to 'online'
 							--/ set switchings 'online->offline'
-							g_alife:set_switch_online(id, false)
-							g_alife:set_switch_offline(id, true)
+							AI:set_switch_online(id, false)
+							AI:set_switch_offline(id, true)
 						else --/ already switched (v.off == 'nil')
 							can_switch = false --/ switches finished -> clear
 						end
@@ -1507,8 +1507,8 @@ local execute_switchings = function()
 					if v.off == true then --/ phase-2: need switch 'offline->online'
 						v.off,v.cnt = nil,1 --/ clear flag & reset count
 						--/ set switchings 'offline->online'
-						g_alife:set_switch_online (id, true)
-						g_alife:set_switch_offline(id, false)
+						AI:set_switch_online (id, true)
+						AI:set_switch_offline(id, false)
 					end
 				end
 			end

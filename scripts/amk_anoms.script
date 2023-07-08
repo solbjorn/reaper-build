@@ -182,18 +182,17 @@ function collect_info()
 	local lname=level.name()
 	on_anoms_per_level={}
 	local on_anoms,off_anoms=0,0
-	local sim = alife()
 	local sobj
 	for i=0,65534 do
-		sobj = sim:object(i)
+		sobj = AI:object(i)
 		if sobj then
 			if sobj:is_anomaly() then
-				local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+				local map = AI:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 				if not check_exclusion(sobj,map) then
 					local status=get_anomaly_status(sobj)
 					if status=="" or status=="del" then
 					  -- удаляем помеченные аномалии, и несюжетные стандартные
-						sim:release(sobj,true)
+						AI:release(sobj,true)
 					elseif status=="on" then
 						if on_anoms_per_level[map]==nil then
 							on_anoms_per_level[map]={}
@@ -479,14 +478,13 @@ end
 
 -- Включенные аномалии помечаются на удаление. На всех уровнях.
 function turn_off_all()
-	local sim = alife()
 	local sobj
 
 	for i=0,65534 do
-		sobj = sim:object(i)
+		sobj = AI:object(i)
 		if sobj then
 			if sobj:is_anomaly() then
-				local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+				local map = AI:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 				if not check_exclusion(sobj,map) then
 					local status=get_anomaly_status(sobj)
 					if status=="on" then
@@ -504,14 +502,13 @@ end
 
 -- Выключенные аномалии включаются. На всех уровнях.
 function after_blow_on()
-	local sim = alife()
 	local sobj
 
 	for i=0,65534 do
-		sobj = sim:object(i)
+		sobj = AI:object(i)
 		if sobj then
 			if sobj:is_anomaly() then
-				local map = sim:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
+				local map = AI:level_name(game_graph():vertex(sobj.m_game_vertex_id):level_id())
 				if not check_exclusion(sobj,map) then
 					local status=get_anomaly_status(sobj)
 					if status=="off" then
@@ -662,7 +659,6 @@ end
 local max_dynamic_restrictors_count=40
 
 function syncronize(npc)
-	local sim = alife()
 	local sobj
 
 	local nid=npc:id()
@@ -677,7 +673,7 @@ function syncronize(npc)
 		local disttbl={}
 		for id in pairs(anoms) do
 			local dist=0
-			sobj=sim:object(id)
+			sobj=AI:object(id)
 			if sobj then
 				dist=npc:position():distance_to_sqr(sobj.position)
 			else

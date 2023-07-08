@@ -151,7 +151,7 @@ function on_actor_update()
   if lost_cont_id > 0 then
     local n = get_inv_index(lost_cont_id)
 
-    if alife():object(lost_cont_id)==nil then
+    if AI:object(lost_cont_id)==nil then
       -- Контейнер использован. Показать меню
       arc_ui_1container_menu.show_menu(get_inv_index(lost_cont_id))
     else
@@ -175,7 +175,7 @@ function set_menu_showed(f)
 end
 
 function get_container_arts(cont_id)
-  local sobj = alife():object(cont_id)
+  local sobj = AI:object(cont_id)
   if sobj==nil then
     return nil
   end
@@ -198,7 +198,7 @@ function get_container_arts(cont_id)
 end
 
 function set_container_arts(cont_id, arts)
-  local sobj = alife():object(cont_id)
+  local sobj = AI:object(cont_id)
   if sobj==nil then
     return false
   end

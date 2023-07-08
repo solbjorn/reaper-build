@@ -15,7 +15,7 @@ end
 function check_ballast()
   local obj = nil
   if lost_ballast_id > 0 then
-    obj = alife():object(lost_ballast_id)
+    obj = AI:object(lost_ballast_id)
     if obj then
       arc.remove_obj(obj.id)
 
@@ -34,7 +34,7 @@ function check_ballast()
     end
 
     if t>0 then
-      alife():create_ammo("arc_ballast", a:position(),
+      AI:create_ammo("arc_ballast", a:position(),
         a:level_vertex_id(), a:game_vertex_id(), a:id(), t)
     end
 

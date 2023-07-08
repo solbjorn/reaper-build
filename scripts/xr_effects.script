@@ -157,14 +157,14 @@ end
 
 function give_item(actor, npc, p)
     if p[1] then
-        alife():create(p[1], npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+        AI:create(p[1], npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
     end
 end
 
 function give_items(actor, npc, p)
     local pos, lv_id, gv_id, npc_id = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
   for i, v in pairs(p) do
-        alife():create(v, pos, lv_id, gv_id, npc_id)
+        AI:create(v, pos, lv_id, gv_id, npc_id)
     end
 end
 
@@ -1093,13 +1093,10 @@ end
 
 function mil_bomb_explode (actor, npc)
     local source = nil
-    local sim = alife ()
-    if sim then
-       local se_obj = sim:story_object (723)
+       local se_obj = AI:story_object (723)
        if se_obj then
           source = level.object_by_id(se_obj.id)
        end
-    end
 
     if source == nil then
        return
@@ -1367,8 +1364,8 @@ function pri_drop_rpg_ammo(actor, npc)
 end
 
 function pri_give_ammo_og7b(actor, npc)
-    alife():create("ammo_og-7b", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
-    alife():create("ammo_og-7b", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+    AI:create("ammo_og-7b", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+    AI:create("ammo_og-7b", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
 end
 
 ---------------------------------------------------------
@@ -1622,13 +1619,10 @@ end
 ------------------------------------------------------------------------------------
 function destroy_monolith_generator(actor, npc)
     local source = nil
-    local sim = alife()
-    if sim then
-       local se_obj = sim:story_object(1305)
+       local se_obj = AI:story_object(1305)
        if se_obj then
           source = level.object_by_id(se_obj.id)
        end
-    end
 
     if source == nil then
        abort ("MONOLITH GENERATOR story id 1305 not found")
@@ -1803,11 +1797,11 @@ function play_zvuk2()
 end
 
 function spawn_krovosos()
-local obj = alife():create("bloodsucker_normal",vector():set(-113.27488708496,-16.462959289551,-53.749374389648),351,757)
+local obj = AI:create("bloodsucker_normal",vector():set(-113.27488708496,-16.462959289551,-53.749374389648),351,757)
 end
 
 function spawn_krovosos2()
-local obj = alife():create("bloodsucker_normal",vector():set(-105.32235717773,-16.462980270386,-18.557649612427),1111,710)
+local obj = AI:create("bloodsucker_normal",vector():set(-105.32235717773,-16.462980270386,-18.557649612427),1111,710)
 end
 
 --------------
@@ -1815,7 +1809,7 @@ end
 --------------
 -- в подземелье агропрома
 function create_sr3()
-local se_obj = alife():create("space_restrictor",vector():set(-95.296127319336,-16.464744567871,-4.9873023033142),1998,761)
+local se_obj = AI:create("space_restrictor",vector():set(-95.296127319336,-16.464744567871,-4.9873023033142),1998,761)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1824,7 +1818,7 @@ spawn_restrictor.rewrite_restrictor(se_obj, custom, 1.0)
 end
 
 function create_sr4()
-local se_obj = alife():create("space_restrictor",vector():set(-103.36071777344,-16.213626861572,-44.560150146484),1241,755)
+local se_obj = AI:create("space_restrictor",vector():set(-103.36071777344,-16.213626861572,-44.560150146484),1241,755)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1833,7 +1827,7 @@ spawn_restrictor.rewrite_restrictor(se_obj, custom, 1.0)
 end
 
 function create_sr5()
-local se_obj = alife():create("space_restrictor",vector():set(-72.414398193359,2.4857983589172,-116.41065979004),3256,797)
+local se_obj = AI:create("space_restrictor",vector():set(-72.414398193359,2.4857983589172,-116.41065979004),3256,797)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1842,7 +1836,7 @@ spawn_restrictor.rewrite_restrictor(se_obj, custom, 2.0)
 end
 
 function create_sr6()
-local se_obj = alife():create("space_restrictor",vector():set(-113.44139862061,-14.169027328491,-29.277599334717),369,780)
+local se_obj = AI:create("space_restrictor",vector():set(-113.44139862061,-14.169027328491,-29.277599334717),369,780)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1852,7 +1846,7 @@ end
 
 -- в Х18
 function create_sr8()
-local se_obj = alife():create("space_restrictor",vector():set(-0.8382523059845,-10.815600395203,-9.8239765167236),2672,1134)
+local se_obj = AI:create("space_restrictor",vector():set(-0.8382523059845,-10.815600395203,-9.8239765167236),2672,1134)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1861,7 +1855,7 @@ spawn_restrictor.rewrite_restrictor(se_obj, custom, 8.5)
 end
 
 function create_sr9()
-local se_obj = alife():create("space_restrictor",vector():set(-0.64052796363831,-10.764112472534,-10.320294380188),2670,1133)
+local se_obj = AI:create("space_restrictor",vector():set(-0.64052796363831,-10.764112472534,-10.320294380188),2670,1133)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1885,19 +1879,19 @@ function play_zvuk5()
 end
 
 function spawn_krovosos3()
-local obj = alife():create("bloodsucker_strong",vector():set(-2.0031547546387,-10.815952301025,26.333080291748),2460,1145)
+local obj = AI:create("bloodsucker_strong",vector():set(-2.0031547546387,-10.815952301025,26.333080291748),2460,1145)
 end
 
 function spawn_krovosos4()
-local obj = alife():create("bloodsucker_strong",vector():set(-2.2437686920166,-10.817986488342,10.569171905518),2438,1143)
+local obj = AI:create("bloodsucker_strong",vector():set(-2.2437686920166,-10.817986488342,10.569171905518),2438,1143)
 end
 
 function spawn_krovosos5()
-local obj = alife():create("bloodsucker_strong",vector():set(-2.6273674964905,-10.818544387817,-1.5016434192657),2329,1143)
+local obj = AI:create("bloodsucker_strong",vector():set(-2.6273674964905,-10.818544387817,-1.5016434192657),2329,1143)
 end
 
 function spawn_krovosos6()
-local obj = alife():create("bloodsucker_strong",vector():set(-6.3397164344788,-10.814113616943,-5.9057211875916),1956,1150)
+local obj = AI:create("bloodsucker_strong",vector():set(-6.3397164344788,-10.814113616943,-5.9057211875916),1956,1150)
 end
 
 -- Янтарь
@@ -1918,11 +1912,11 @@ function spawn_teleport34()
 end
 
 function spawn_controller()
-local obj = alife():create("m_controller_normal",vector():set(-10.052182197571,0.22448572516441,27.419820785522),77986,1512)
+local obj = AI:create("m_controller_normal",vector():set(-10.052182197571,0.22448572516441,27.419820785522),77986,1512)
 end
 
 function create_sr13()
-local se_obj = alife():create("space_restrictor",vector():set(41.420497894287,0.23940727114677,-101.4430847168),77962,1513)
+local se_obj = AI:create("space_restrictor",vector():set(41.420497894287,0.23940727114677,-101.4430847168),77962,1513)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -1931,11 +1925,11 @@ spawn_restrictor.rewrite_restrictor(se_obj, custom, 10)
 end
 
 function spawn_chimera()
-local obj = alife():create("chimera_strong",vector():set(88.911819458008,-0.04115504026413,-73.805587768555),77962,1513)
+local obj = AI:create("chimera_strong",vector():set(88.911819458008,-0.04115504026413,-73.805587768555),77962,1513)
 end
 
 function spawn_chimera2()
-local obj = alife():create("chimera_strong",vector():set(-19.945352554321,-0.17231740057468,-140.34425354004),77962,1513)
+local obj = AI:create("chimera_strong",vector():set(-19.945352554321,-0.17231740057468,-140.34425354004),77962,1513)
 end
 
 -- Х-10
@@ -1945,7 +1939,7 @@ function play_zvuk6()
 end
 
 function new_inventory11()
-local obj = alife():create("m_inventory_box11",vector():set(-30.228071212769,-21.02052116394,58.902126312256),2490,2748)
+local obj = AI:create("m_inventory_box11",vector():set(-30.228071212769,-21.02052116394,58.902126312256),2490,2748)
 end
 
 function spawn_teleport35()
@@ -1965,7 +1959,7 @@ function delete_teleport36()
 end
 
 function create_sr15()
-local se_obj = alife():create("space_restrictor",vector():set(-19.994720458984,-9.5514478683472,-35.59744644165),3400,2665)
+local se_obj = AI:create("space_restrictor",vector():set(-19.994720458984,-9.5514478683472,-35.59744644165),3400,2665)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -2006,7 +2000,7 @@ function delete_teleport40()
 end
 
 function create_sr16()
-local se_obj = alife():create("space_restrictor",vector():set(-1.298624753952,-7.4522504806519,-73.977745056152),5456,2661)
+local se_obj = AI:create("space_restrictor",vector():set(-1.298624753952,-7.4522504806519,-73.977745056152),5456,2661)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -2031,7 +2025,7 @@ function delete_teleport42()
 end
 
 function create_sr17()
-local se_obj = alife():create("space_restrictor",vector():set(-32.942707061768,-9.4474973678589,1.0606206655502),2026,2669)
+local se_obj = AI:create("space_restrictor",vector():set(-32.942707061768,-9.4474973678589,1.0606206655502),2026,2669)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..
@@ -2136,7 +2130,7 @@ function delete_teleport54()
 end
 
 function create_sr18()
-local se_obj = alife():create("space_restrictor",vector():set(-30.385196685791,-21.020092010498,55.938106536865), 1962, 2738)
+local se_obj = AI:create("space_restrictor",vector():set(-30.385196685791,-21.020092010498,55.938106536865), 1962, 2738)
 local custom = "[logic]\n"..
 "active = sr_idle\n"..
 "[sr_idle]\n"..

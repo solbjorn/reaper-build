@@ -27,7 +27,7 @@ graph = game_graph()
 screen = device()
 
 -- Следующие singletone классы задаются в start_game_callback
-g_alife = nil
+AI = nil
 netpacket = nil
 
 -- В init_container
@@ -64,7 +64,7 @@ end
 function start_game_callback()
 	init_clsids()
 
-	g_alife = alife()
+	AI = alife()
 	netpacket = m_netpk.c_net_packet()
 	game.get_start_time()
 
@@ -151,9 +151,9 @@ function say(s)
 	s:play_no_feedback(Actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
 end
 
--- Вместо has_alife_info, alife():has_info, Actor:has_info
+-- Вместо has_alife_info, AI:has_info, Actor:has_info
 function has_info(i)
-	return g_alife:has_info(0,i)
+	return AI:has_info(0,i)
 end
 has_alife_info = has_info
 
@@ -167,39 +167,39 @@ function disable_info(i)
 	return Actor:disable_info_portion(i)
 end
 
--- Вместо alife():create() все варианты
+-- Вместо AI:create() все варианты
 function create(...)
-	return g_alife:create(...)
+	return AI:create(...)
 end
 
--- Вместо alife():release(), alife():release(alife():object(id|name)) со всеми проверками.
+-- Вместо AI:release(), AI:release(AI:object(id|name)) со всеми проверками.
 -- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
 function release(o)
 	if not o then return end
 
 	o = server_object(o)
 	if o then
-		g_alife:release(o)
+		AI:release(o)
 	end
 end
 
--- Вместо alife():object(id|name)
+-- Вместо AI:object(id|name)
 -- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
 function server_object(o)
 	if not o then return nil end
 
 	if type(o) ~= "userdata" then		-- id или name
-		return g_alife:object(o)
+		return AI:object(o)
 	elseif o.section_name then			-- серверный объект
-		return g_alife:object(o.id)
+		return AI:object(o.id)
 	else								-- клиентский объект
-		return g_alife:object(o:id())
+		return AI:object(o:id())
 	end
 end
 
--- Вместо alife():story_object()
+-- Вместо AI:story_object()
 function story_object(o)
-	return g_alife:story_object(o)
+	return AI:story_object(o)
 end
 
 -- Уровень, на котором находится объект
@@ -209,7 +209,7 @@ end
 
 -- Название уровня, на котором находится объект
 function object_level_name(o)
-	return g_alife:level_name(object_level(o))
+	return AI:level_name(object_level(o))
 end
 
 -- Вместо level.object_by_id()
@@ -241,7 +241,7 @@ timer = nil
 
 -- Спавн телепортов
 function create_teleport(section, pos, lv, gv)
-	local o = g_alife:create(section, pos, lv, gv)
+	local o = AI:create(section, pos, lv, gv)
 	set_value(section, o.id)
 	return o
 end
@@ -332,15 +332,15 @@ end
 
 function switch_online(id)
 	if id == -1 then return end
-	g_alife:set_switch_online(id, true)
-	g_alife:set_switch_offline(id, false)
+	AI:set_switch_online(id, true)
+	AI:set_switch_offline(id, false)
 end
 
 function switch_offline(npc)
 	if not npc or ((npc:is_stalker() or npc:is_monster()) and not npc:alive()) then return end
 	local id = npc:id()
-	g_alife:set_switch_online(id, false)
-	g_alife:set_switch_offline(id, true)
+	AI:set_switch_online(id, false)
+	AI:set_switch_offline(id, true)
 end
 
 -- быстрый if

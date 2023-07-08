@@ -88,7 +88,7 @@ local points={
 
 function spawn_star(actor,npc,p1,p2)
     local a = points[math_random(#points)]
-	g_alife:create("amk_af_night_star", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	AI:create("amk_af_night_star", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
 
 	local m_where
 	if news_main then
@@ -118,10 +118,10 @@ function first_run()
 		sak.add_new_lcitem()
 
 		-- pri_space_restrictor_0011
-		local obj = alife():story_object(830)
+		local obj = AI:story_object(830)
 		if obj then
-			alife():release(obj)
-			alife():create(5877)
+			AI:release(obj)
+			AI:create(5877)
 		end
 
 		amk_anoms.pre_blow_off()
@@ -172,10 +172,10 @@ function check_spawn()
 
 	--спавним аномалии
 	--initial_spawn()
-	local obj = alife():story_object(6000)
+	local obj = AI:story_object(6000)
 	if not obj then
-		alife():create(6374)
-		obj = alife():story_object(6000)
+		AI:create(6374)
+		obj = AI:story_object(6000)
 	end
 
 	if amk_load_variable("freeplay",0)==1 then
@@ -233,7 +233,7 @@ function check_spawn()
 			Actor:iterate_inventory(
 				function(dummy,item)
 					if item:section()=="wpn_flame" then
-						alife():release(alife():object(item:id()))
+						AI:release(AI:object(item:id()))
 					end
 				end
 				,Actor)
@@ -266,9 +266,9 @@ end
 function freeplay()
 	amk_save_variable("freeplay",1)
 
-	local obj = alife():story_object(6001)
+	local obj = AI:story_object(6001)
 	if not obj then
-		alife():create(5963)
+		AI:create(5963)
 	end
 
 	for a=1,5 do
@@ -590,10 +590,10 @@ function check_af_transform(af,anom_id,anom_sect)
       end
 			if s.medusa~=-1 and s.drop~=-1 and s.koluchka~=-1 and s.blood~=-1 and check_af_transform_rank(2) then
 				level.add_pp_effector("teleport.ppe", 1524, false)
-				alife():release(alife():object(s.medusa), true)
-				alife():release(alife():object(s.drop), true)
-				alife():release(alife():object(s.koluchka), true)
-				alife():release(alife():object(s.blood), true)
+				AI:release(AI:object(s.medusa), true)
+				AI:release(AI:object(s.drop), true)
+				AI:release(AI:object(s.koluchka), true)
+				AI:release(AI:object(s.blood), true)
 				amk.del_variable("af_simbion_activation")
 				af_start_transform_timer(af_start_transform(75,25,"af_buliz","af_simbion") , pos ,0,5,0,"Симбион")
 				return
@@ -692,9 +692,6 @@ end
 --'*******************************************************************************
 local beakons={}
 function check_beacon_drop(obj)
-	local sim=not (alife()==nil)
-	local lp=level.present()
-	local dp=device()==nil or device():is_paused()
 	if obj:section()=="amk_metka" then
 		beakons[obj:id()]=true
 	end
@@ -1248,9 +1245,9 @@ end
 function initial_spawn(action)
 	local fr=0
 	for i=0,amk_hideouts.anom_count-1,1 do
-		local sobj = alife():story_object(amk_hideouts.anom_sid0+i)
+		local sobj = AI:story_object(amk_hideouts.anom_sid0+i)
 		if not sobj then
-			alife():create(i+amk_hideouts.anom_num0)
+			AI:create(i+amk_hideouts.anom_num0)
 			fr=1
 		end
 	end
@@ -1281,7 +1278,7 @@ function update_anoms()
 	local anoms=amk_load_variable("blowout_anoms",string.rep(string.char(128),math.ceil(amk_hideouts.anom_count/7)))
 	anomalies_state=unpack_anoms(anoms)
 	for i=amk_hideouts.anom_sid0,amk_hideouts.anom_sid0+amk_hideouts.anom_count-1,1 do
-		local sobj=alife():story_object(i)
+		local sobj=AI:story_object(i)
 		if sobj then
 			local obj=level_object_by_id(sobj.id)
 			if obj then
@@ -2353,26 +2350,25 @@ function spawn_fuel()
 	{-114.14, -0.00, 121.75, 43453, 1315},
 	{31.33, 5.60, -13.51, 4683, 1538}
 	}
-	local sim = g_alife
 	for k,v in pairs(ballons) do
 		if #v == 5 then
-			sim:create("amk_ballon",vector():set(v[1], v[2], v[3]), v[4], v[5])
+			AI:create("amk_ballon",vector():set(v[1], v[2], v[3]), v[4], v[5])
 		end
 	end
 	for k,v in pairs(kanisters) do
 		if #v == 5 then
-			sim:create("amk_kanistra",vector():set(v[1], v[2], v[3]), v[4], v[5])
+			AI:create("amk_kanistra",vector():set(v[1], v[2], v[3]), v[4], v[5])
 		end
 	end
 end
 
 -- БТР на блокпосту
 function spawn_military_btr()
-	spawn_military_tech_pack( alife():create("vehicle_btr",vector():set(-168.11, -29.71, -303.21),81808,38 ) ,"vehicle_btr")
-	spawn_military_tech_pack( alife():create("vehicle_btr",vector():set(-237.85, -26.23, -378.81),17147,14 ) ,"vehicle_btr")
-	spawn_military_tech_pack( alife():create("vehicle_btr",vector():set(-189.55,-0.24,-140.49),46901,559),"vehicle_btr")
-	spawn_military_tech_pack( alife():create("vehicle_btr",vector():set(-93.81,0,-185.82),146369,607),"vehicle_btr")
-	spawn_military_tech_pack( alife():create("helicopter",vector():set(-150.0,-40.0,-620.0),128298,11 ) ,"helicopter")
+	spawn_military_tech_pack( AI:create("vehicle_btr",vector():set(-168.11, -29.71, -303.21),81808,38 ) ,"vehicle_btr")
+	spawn_military_tech_pack( AI:create("vehicle_btr",vector():set(-237.85, -26.23, -378.81),17147,14 ) ,"vehicle_btr")
+	spawn_military_tech_pack( AI:create("vehicle_btr",vector():set(-189.55,-0.24,-140.49),46901,559),"vehicle_btr")
+	spawn_military_tech_pack( AI:create("vehicle_btr",vector():set(-93.81,0,-185.82),146369,607),"vehicle_btr")
+	spawn_military_tech_pack( AI:create("helicopter",vector():set(-150.0,-40.0,-620.0),128298,11 ) ,"helicopter")
 end
 
 function spawn_military_tech_pack(obj, spawn_item)
@@ -2661,7 +2657,7 @@ local respawners={}
 function spawn_unspawned_respawners()
 
 	for a=1,65534 do
-		local obj = alife():object(a)
+		local obj = AI:object(a)
 		if obj then
 			local oini = obj:spawn_ini()
 			if oini:line_exist ("respawn", "amk_name") == true then
@@ -2718,7 +2714,7 @@ function spawn_unspawned_respawners()
 			if flag==false then
 				local o = se_respawn.get_respawner_by_name(v)
 				if o then
-					alife():release(o)
+					AI:release(o)
 				end
 			end
 		end
@@ -2752,7 +2748,7 @@ function check_armor()
 			Actor:drop_item(weapon)
 			local tmpw = amk.spawn_item_in_inv("wpn_pkm1")
 			Actor:transfer_item(weapon, Actor)
-			alife():release(tmpw)
+			AI:release(tmpw)
 		end
 	end
 
@@ -2778,7 +2774,7 @@ function dezombify(id,v)
 		if npc:alive()==false then
 			return true
 		end
-		local sobj=alife():object(id)
+		local sobj=AI:object(id)
 		if sobj then
 			npc:set_character_community(v.comm,0,0)
 			npc:set_goodwill(v.gw,Actor)
@@ -2862,7 +2858,7 @@ function zomby_blow(obj)
 			h.type = hit.chemical_burn
 			Actor:hit(h)
 		end
-		alife():release(alife():object(obj:id()))
+		AI:release(AI:object(obj:id()))
 		return
 	end
 
@@ -2887,7 +2883,7 @@ function zomby_blow(obj)
 		Actor:hit(h)
 		end
 		spawn_skel(obj)
-		alife():release(alife():object(obj:id()))
+		AI:release(AI:object(obj:id()))
 	end
 end
 
@@ -2897,7 +2893,7 @@ function firebat_ammo()
 		Actor:iterate_inventory(
 			function(dummy,item)
 				if item:section()=="ammo_flame" then
-					alife():release(alife():object(item:id()))
+					AI:release(AI:object(item:id()))
 				end
 			end
 			, Actor)

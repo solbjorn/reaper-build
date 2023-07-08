@@ -48,11 +48,10 @@ function on_item_belt(obj)
 	local sect = obj:section()
 	if sect == "fake_bolt" then
 		local actor = Actor
-		local sim = g_alife
 
-		sim:release(sim:object(obj:id()), true)
-		local sobj = sim:create_ammo("bolt_box", actor:position(), actor:level_vertex_id(),
-					     actor:game_vertex_id(), 0, 1)
+		AI:release(AI:object(obj:id()), true)
+		local sobj = AI:create_ammo("bolt_box", actor:position(), actor:level_vertex_id(),
+					    actor:game_vertex_id(), 0, 1)
 		level.client_spawn_manager():add(sobj.id, 0, bolt_to_belt)
 	elseif sect == "bolt_box" then
 		local size = get_ammo_data(obj, "box_size")
@@ -163,7 +162,7 @@ end
 function drop_bolt()
 	local actor = Actor
 	del_bolt()
-	g_alife:create("fake_bolt", random_position(actor:position(), 1),
+	AI:create("fake_bolt", random_position(actor:position(), 1),
 		       actor:level_vertex_id(), actor:game_vertex_id())
 end
 

@@ -464,8 +464,8 @@ function CTreasure:give_treasure(k, hide)
 		v.active = true
 		-- Отправим тайник в оффлайн
 		if obj.online then
-			g_alife:set_switch_online(obj.id, false)
-			g_alife:set_switch_offline(obj.id, true)
+			AI:set_switch_online(obj.id, false)
+			AI:set_switch_offline(obj.id, true)
 			amk.convert_npc[obj.id] = 1 -- ставим в очередь на вывод в онлайн
 		end
 	else

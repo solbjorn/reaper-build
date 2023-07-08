@@ -1151,27 +1151,24 @@ end
 -- установить логику и сообщить смарту, что объект перешёл в онлайн.
 -- вызывается из net_spawn() объектов
 function setup_gulag_and_logic_on_spawn( obj, st, sobject, stype, loaded )
-	local sim = alife()
-	if sim then
-		local strn_id
+	local strn_id
 
-		if sobject.smart_terrain_id then
-			strn_id = sobject:smart_terrain_id()
-		else
-			strn_id = 65535
-		end
+	if sobject.smart_terrain_id then
+		strn_id = sobject:smart_terrain_id()
+	else
+		strn_id = 65535
+	end
 
-		if strn_id ~= 65535 then
-			local strn                   = sim:object( strn_id )
-			local need_setup_restrictors = strn.gulag.Object_begin_job[obj:id()]
-			local need_setup_logic       = need_setup_restrictors and not loaded
+	if strn_id ~= 65535 then
+		local strn                   = AI:object( strn_id )
+		local need_setup_restrictors = strn.gulag.Object_begin_job[obj:id()]
+		local need_setup_logic       = need_setup_restrictors and not loaded
 
-			strn:initialize_if_needed()
+		strn:initialize_if_needed()
 
-			strn.gulag:object_setup_online( obj:id(), obj, need_setup_logic, need_setup_restrictors )
+		strn.gulag:object_setup_online( obj:id(), obj, need_setup_logic, need_setup_restrictors )
 
-			if need_setup_logic then return end
-		end
+		if need_setup_logic then return end
 	end
 	xr_logic.initialize_obj(obj, st, loaded, stype)
 end

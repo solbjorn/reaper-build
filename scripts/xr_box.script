@@ -140,11 +140,11 @@ function create_items(obj, section, number, rnd)
 			y = math_random(30,50)/100
 			pos = obj:position():add(vector():set(x,y,z))
 			while left > box_size do
-				del_flag(g_alife:create_ammo(section, pos, lvid, gvid, 65535, box_size))
+				del_flag(AI:create_ammo(section, pos, lvid, gvid, 65535, box_size))
 				left = left - box_size
 			end
 			if left > 0 then
-				del_flag(g_alife:create_ammo(section, pos, lvid, gvid, 65535, left))
+				del_flag(AI:create_ammo(section, pos, lvid, gvid, 65535, left))
 			end
 		end
 	else
@@ -157,7 +157,7 @@ function create_items(obj, section, number, rnd)
 				x = math_random(-30,30)/100
 				z = math_random(-30,30)/100
 				y = math_random(30,50)/100
-				del_flag(g_alife:create(section, pos:add(vector():set(x,y,z)), lvid, gvid))
+				del_flag(AI:create(section, pos:add(vector():set(x,y,z)), lvid, gvid))
 			end
 		end
 	end
@@ -207,6 +207,6 @@ function create_obligatory_items(obj, item, count)
 		x = math_random(-30,30)/100
 		z = math_random(-30,30)/100
 		y = math_random(30,50)/100
-		del_flag(g_alife:create(item, pos:add(vector():set(x,y,z)), lvid, gvid))
+		del_flag(AI:create(item, pos:add(vector():set(x,y,z)), lvid, gvid))
 	end
 end

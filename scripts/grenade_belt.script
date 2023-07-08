@@ -92,13 +92,13 @@ function on_info(info_id)
 end
 
 function spawn_in_inv(sec)
-	local obj = alife():create(sec,Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id(),0)
+	local obj = AI:create(sec,Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id(),0)
 	return obj.id
 end
 
 function del_item(id)
-	local sobj=alife():object(id)
+	local sobj=AI:object(id)
 	if sobj then
-		alife():release(sobj,true)
+		AI:release(sobj,true)
 	end
 end

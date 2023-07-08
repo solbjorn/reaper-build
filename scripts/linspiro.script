@@ -30,7 +30,7 @@ function insert_custom_data(npc,actor)
 	end
 
 	local id = npc_:id()
-	local obj = alife():object(id)
+	local obj = AI:object(id)
 	if (obj) then
 		local t = amk.read_stalker_params(obj)
 		local cd = amk.parse_custom_data(t.custom)
@@ -57,7 +57,7 @@ function precond(npc, actor)
 
 	local zz = true
 	local id = npc_:id()
-	local obj = alife():object(id)
+	local obj = AI:object(id)
 	if (obj) then
 		local t = amk.read_stalker_params(obj)
 		local cd = amk.parse_custom_data(t.custom)
@@ -164,13 +164,13 @@ function enter_to_dolg(first_speaker, second_speaker)
 end
 function spawn_bar()
 	--Снайпер долговец на вышке
-	local obj = alife():create("bar_dolg_respawn_3",vector():set(184.15, 8.37, 96.34),45473,1186)
+	local obj = AI:create("bar_dolg_respawn_3",vector():set(184.15, 8.37, 96.34),45473,1186)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\npath_walk = bar_linspiro_sniper_camper1_path\npath_look = bar_linspiro_sniper_camper1_look1"
 	params.sid=481519
 	amk.write_stalker_params(params,obj)
 	--Ученный у петренка в халупе
-	local obj = alife():create("ecolog_linspiro",vector():set(208.84, 0.43, 64.94),50694,1203)
+	local obj = AI:create("ecolog_linspiro",vector():set(208.84, 0.43, 64.94),50694,1203)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=walker\ntrade=misc\\trade_professor.ltx\n[walker]\npath_walk = bar_linspiro_nayk_walk1\npath_look = bar_linspiro_nayk_look1\ncombat_ignore_cond=always"
 	params.sid=481520

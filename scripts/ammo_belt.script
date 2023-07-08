@@ -17,14 +17,13 @@ local se_respawn_create_ammo = se_respawn.create_ammo
 
 function on_inventory_open()
 	need_convert = false
-	local sim = g_alife
 	local t = {}
 	Actor:iterate_inventory(
 		function(npc,item)
 			local sect = ammo_fake_types[item:section()]
 			if sect then
 				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
-				sim:release(sim:object(item:id()), true)
+				AI:release(AI:object(item:id()), true)
 			end
 		end
 	)
@@ -37,7 +36,6 @@ end
 
 function on_inventory_close()
 	need_convert = true
-	local sim = g_alife
 	local t = {}
 	Actor:iterate_inventory(
 		function(npc,item)
@@ -45,7 +43,7 @@ function on_inventory_close()
 			if ammo_section[sect] and Actor:is_in_ruck(item) then
 				sect = sect .. "_fake"
 				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
-				sim:release(sim:object(item:id()), true)
+				AI:release(AI:object(item:id()), true)
 			end
 		end
 	)
@@ -61,7 +59,7 @@ function on_item_ruck(item)
 	if ammo_section[section] and need_convert == true then
 		local cnt = get_ammo_data(item, "box_size")
 
-		g_alife:release(g_alife:object(item:id()), true)
+		AI:release(AI:object(item:id()), true)
 		se_respawn_create_ammo(section .. "_fake", Actor:position(),
 				       Actor:level_vertex_id(),
 				       Actor:game_vertex_id(),

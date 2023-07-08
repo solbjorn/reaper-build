@@ -354,13 +354,13 @@ function death_callback(npc)
 		if v == npc:id() then has_medic[k]=nil break end
 	end
 	if npc:object("yad") then
-		alife():release(alife():object(npc:object("yad"):id()))
+		AI:release(AI:object(npc:object("yad"):id()))
 	end
 
 	if not npc:alive() then
 		local remove_medkits={}
 		npc:iterate_inventory(function (dummy, item)
-			if item==nil or alife():object(item:id())==nil then return end
+			if item==nil or AI:object(item:id())==nil then return end
 			for k,v in pairs(mk_types) do
 				if item:section()==v then
 					table.insert(remove_medkits, item:id())
@@ -369,7 +369,7 @@ function death_callback(npc)
 			end
 		end, npc)
 		for k,v in pairs(remove_medkits) do
-			alife():release(alife():object(v),true)
+			AI:release(AI:object(v),true)
 		end
 	end
 end
@@ -395,7 +395,7 @@ function npc_update(binder)
 	end
 
 	if not npc:object("yad") then
-		alife():create("yad",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
+		AI:create("yad",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
 	end
 
 	if not binder.medkit_update_time then binder.medkit_update_time=time_global()+5000 end
@@ -404,18 +404,18 @@ function npc_update(binder)
 		  npc:name()=="yantar_ecolog_general" then return end
 	if time_global()>binder.medkit_update_time then
 		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then
-			local sobj = alife():object(npc:id())
+			local sobj = AI:object(npc:id())
 			if sobj and sobj.rank and sobj:rank()~=0 then
-				if math.random()>0.2 then alife():create(mk_types[3%math.ceil(sobj:rank()/1000)+1],npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id()) end
+				if math.random()>0.2 then AI:create(mk_types[3%math.ceil(sobj:rank()/1000)+1],npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id()) end
 			end
 		end
 		if not npc:object("bandage") then
-			if math.random()>0.05 then alife():create("bandage",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id()) end
+			if math.random()>0.05 then AI:create("bandage",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id()) end
 		end
 		binder.medkit_update_time=time_global()+300000
 	end
 end
 
 function pickup(obj)
-	if obj:section()=="yad" then alife():release(alife():object(obj:id())) end
+	if obj:section()=="yad" then AI:release(AI:object(obj:id())) end
 end

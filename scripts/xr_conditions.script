@@ -102,11 +102,10 @@ function one_obj_in_zone(actor, zone, p)
 
     if obj1 then -- npc is online
 		if p[1] == 402 then
-			local sim = g_alife
 			if jail_door == nil then
 				if has_alife_info("val_prisoner_free") then return false end
 				for idb_ = 0, 65534, 1 do
-					local lobj = sim:object(idb_)
+					local lobj = AI:object(idb_)
 					if lobj ~= nil and lobj:name() == "val_prisoner_jail_door" then
 						jail_door = lobj
 						break
@@ -119,14 +118,14 @@ function one_obj_in_zone(actor, zone, p)
 				if not zone:inside(obj_pos) then
 					if has_alife_info("val_prisoner_door_unlocked") then return false end
 					if obj_pos.x > 47.1 and obj_pos.x < 48.3 and obj_pos.z > -54.8 and obj_pos.z < -52.8 then
-						sim:set_switch_online(jail_door.id, false)
-						sim:set_switch_offline(jail_door.id, true)
+						AI:set_switch_online(jail_door.id, false)
+						AI:set_switch_offline(jail_door.id, true)
 					end
 				end
 			else
 				if obj1:position().z < (jail_door.position.z - 0.3) then
-					sim:set_switch_offline(jail_door.id, false)
-					sim:set_switch_online(jail_door.id, true)
+					AI:set_switch_offline(jail_door.id, false)
+					AI:set_switch_online(jail_door.id, true)
 				end
 			end
 			return true

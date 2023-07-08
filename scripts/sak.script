@@ -54,7 +54,7 @@ function add_new_rostok()
 end
 
 function add_new_military_false()
-local obj = alife():story_object(5212)
+local obj = AI:story_object(5212)
 	level_map_spot(obj.id, "lchanger_up_location", "l12_stancia")
   Actor:give_info_portion("info_way_false")
   info_received()
@@ -88,9 +88,9 @@ amk_spawn_item("playboy10",vec:set(306.45,-38.06,-23.05),1930,69058)
 amk_spawn_item("playboy11",vec:set(30.92,-2.46,-41.34),1997,20510)
 amk_spawn_item("m_inventory_seif",vec:set(306.47,-39.39,-26.22),1930,69058)
 	for a=1000,20000,1 do
-		local obj=alife():object(a)
+		local obj=AI:object(a)
 		if obj and ((string_find(obj:name(),"af_") and not string_find(obj:name(),"esc_af_")  and not string_find(obj:name(),"pri_af_" ) and not string_find(obj:name(),"af_dumm")) or string_find(obj:name(),"esc_wpn")) then
-			alife():release(obj,true)
+			AI:release(obj,true)
 		end
 	end
 end
@@ -150,8 +150,8 @@ function add_battery_red()
 amk_spawn_item("af_dummy_battery_red",vector():set(668.9,-45.79,-39.93),1896,227187) --Рубиновая батарейка на Радаре
 end
 function add_order()
-local obj = alife():story_object(9115)
-alife():create("rad_document7",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+local obj = AI:story_object(9115)
+AI:create("rad_document7",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_two_corpses()
 	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(187.84,5.18,-360.68),938,386349)
@@ -162,7 +162,7 @@ function add_two_corpses()
 		tbl.updhealth = 0
 		amk.write_stalker_params(tbl, obj)
 	end
-	alife():create("scaintist_docs",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+	AI:create("scaintist_docs",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 	local obj=amk_spawn_item("yan_ecolog_respawn_2",vector():set(187.66,5.03,-375.97),938,386327)
 	if obj:is_stalker() then
 		local tbl = amk.read_stalker_params(obj)
@@ -182,13 +182,13 @@ function add_scaintist_body()
 		tbl.updhealth = 0
 		amk.write_stalker_params(tbl, obj)
 	end
-	alife():create("scaintist_pda",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+	AI:create("scaintist_pda",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_agroprom_box()
 	for a=1000,10000,1 do
-	local obj=alife():object(a)
+	local obj=AI:object(a)
 		if (obj and obj.name and obj:name() == "agr_quest_case_02") then
-		alife():release(obj, true)
+		AI:release(obj, true)
 		end
 	end
 	dialogs.relocate_item_section(Actor, "quest_case_02", "in")
@@ -197,8 +197,8 @@ function add_kontainer()
 amk_spawn_item("inventory_sakbox_05",vector():set(378,-52,-179.20),2097,101537)
 end
 function agroprom_wpm()
-local obj = alife():story_object(9115)
-alife():create("wpn_vintorez_m1",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+local obj = AI:story_object(9115)
+AI:create("wpn_vintorez_m1",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
 end
 function add_books()
 amk_spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530)
@@ -305,7 +305,7 @@ if rank == nil then rank = 3 end
    if not Actor:has_info(info_artmod) then
      return
    end
-   if alife():object(af:id())==nil then
+   if AI:object(af:id())==nil then
      return
    end
    if (af_sect==item1 or af_sect==item2 or af_sect==item3 or af_sect==item4) and Actor:has_info(info_artmod) then
@@ -342,10 +342,10 @@ if rank == nil then rank = 3 end
          s.ami=info_artmod
          startflag=false
 	end
-	if ((s.i1t~=-1) and (alife():object(s.i1t)==nil)) then s.i1t=-1 zombieflag=true end
-	if ((s.i2t~=-1) and (alife():object(s.i2t)==nil)) then s.i2t=-1 zombieflag=true end
-	if ((s.i3t~=-1) and (alife():object(s.i3t)==nil)) then s.i3t=-1 zombieflag=true end
-	if ((s.i4t~=-1) and (alife():object(s.i4t)==nil)) then s.i4t=-1 zombieflag=true end
+	if ((s.i1t~=-1) and (AI:object(s.i1t)==nil)) then s.i1t=-1 zombieflag=true end
+	if ((s.i2t~=-1) and (AI:object(s.i2t)==nil)) then s.i2t=-1 zombieflag=true end
+	if ((s.i3t~=-1) and (AI:object(s.i3t)==nil)) then s.i3t=-1 zombieflag=true end
+	if ((s.i4t~=-1) and (AI:object(s.i4t)==nil)) then s.i4t=-1 zombieflag=true end
 	if zombieflag then
 		if (s.i1t==-1 and s.i2t==-1 and s.i3t==-1 and s.i4t==-1) then
           s.i0t=-1
@@ -355,10 +355,10 @@ if rank == nil then rank = 3 end
 		end
 	end
 	if (s.i1t~=-1 and s.i2t~=-1 and s.i3t~=-1 and s.i4t~=-1) and amk_mod.check_af_transform_rank(rank) then
-        alife():release(alife():object(s.i1t))
-        alife():release(alife():object(s.i2t))
-        alife():release(alife():object(s.i3t))
-        alife():release(alife():object(s.i4t))
+        AI:release(AI:object(s.i1t))
+        AI:release(AI:object(s.i2t))
+        AI:release(AI:object(s.i3t))
+        AI:release(AI:object(s.i4t))
         level.add_pp_effector("teleport.ppe", 1524, false)
         amk.del_variable("artmod_activation")
         amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_buliz",item_targ) , pos ,0,0,5,game.translate_string(get_inv_name(item_targ)))
@@ -450,7 +450,7 @@ end
 end
 function agr_ratcatcher__id()
 for a=5000,6000,1 do
-		local obj=alife():object(a)
+		local obj=AI:object(a)
 		if (obj and obj.name and obj:name() == "agr_ratcatcher") then
 		--dbglog("Entered: "..obj:name().." id "..a.." sid "..obj.m_story_id) -- id~5564
 		amk.save_variable("agr_ratcatcher_id", a)
@@ -488,7 +488,7 @@ local nepis = {
 function deadman_to_life(art)
 	for a=1,#nepis,1 do
 		local npis=nepis[a]
-		local obj=alife():story_object(npis)
+		local obj=AI:story_object(npis)
 		if obj and obj:is_stalker() and not obj:alive() then
 			local name=obj:name()
 			local posobj=obj.position
@@ -496,7 +496,7 @@ function deadman_to_life(art)
 			if (posobj:distance_to(actorpos) < 2) then
 				amk_mod.af_flash(art)
 				release(obj)
-				create(g_alife:spawn_id(npis))
+				create(AI:spawn_id(npis))
 			end
 		end
 	end
@@ -505,7 +505,7 @@ end
 function nepis_umer()
 	for a=1,#nepis,1 do
 	local npis=nepis[a]
-	local obj=alife():story_object(npis)
+	local obj=AI:story_object(npis)
 	if obj and obj:is_stalker() and not obj:alive() then
 	local name=obj:name()
 		if not has_alife_info(name.."_umer") then
@@ -525,10 +525,10 @@ function nepis_umer()
 end
 function af_zone_off(af)
  local anom=amk_anoms.get_nearest_anomaly(Actor)
- local sid=alife():object(anom)
+ local sid=AI:object(anom)
   level.add_pp_effector("teleport.ppe", 1524, false)
   amk.remove_item(af)
-  alife():release(sid,true)
+  AI:release(sid,true)
 end
 function inv_item_cond(item,val)
 local obj=Actor:object(item)
@@ -702,11 +702,11 @@ elseif pos_in == "pripat" 	then 	name_level="l11_pripyat" b = points_pripat[1]
 elseif pos_in == "military" then 	name_level="l07_military" b = points_military[1]
 elseif pos_in == "yantar" 	then 	name_level="l08_yantar" b = points_yantar[1]
 elseif pos_in == "stancia" 	then 	name_level="l12_stancia" b = points_stancia[1]  end end
-obj1=alife():create("level_changer",vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+obj1=AI:create("level_changer",vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
 obj_tp=amk_spawn_item("zone_teleport",vector():set(a.position.x,a.position.y,a.position.z), a.gv, a.lv)
 obj_tport=obj_tp.id
 amk.save_variable("sak_teleport", obj_tport)
-if obj1 then local obj2 = alife():story_object(9120) local t = get_lc_data(obj2)
+if obj1 then local obj2 = AI:story_object(9120) local t = get_lc_data(obj2)
 t.story_id = sidlc
 t.dest_level_name = name_level
 t.dest_position = vector():set(b.position.x,b.position.y,b.position.z)
@@ -722,12 +722,12 @@ local lev={"l01_escape","l11_pripyat","l07_military","l08_yantar","l12u_sarcofag
 	for a=1,#sid,1 do
 	local sidlc=sid[a]
 	local lname=lev[a]
-	local obj=alife():story_object(sidlc)
+	local obj=AI:story_object(sidlc)
 		if obj and level.name()~=lname then
 		local objt = amk.load_variable("sak_teleport", 0)
-		alife():release(obj)
+		AI:release(obj)
 			if objt ~= 0 then
-                alife():release(alife():object(objt), true)
+                AI:release(AI:object(objt), true)
             end
 		amk.del_variable("sak_teleport")
 		end
@@ -911,7 +911,7 @@ function set_destroyable_data(t,sobj)
 end
 function switch_timer_stancia()
 	for a=2000,2100,1 do
-		local obj=alife():object(a)
+		local obj=AI:object(a)
 		if (obj and obj.name and obj:name() == "aes_space_restrictor_timer") then
 		local params=get_restrictor_data(obj)
 		--dbglog("Entered: "..obj:name().." id-"..a.." sid-"..obj.m_story_id) --id~2031
@@ -922,7 +922,7 @@ function switch_timer_stancia()
 end
 function switch_mil_matugalnik()
 	for a=10500,11500,1 do
-		local obj=alife():object(a)
+		local obj=AI:object(a)
 		if (obj and obj.name and obj:name() == "mil_physic_destroyable_object_0046") then
 		local params=get_destroyable_data(obj)
 		--dbglog("Entered: "..params.custom)
@@ -981,7 +981,7 @@ function repair_box_outfit(obj)
 end
 function repair_box_close(obj)
 	local objd = amk.load_variable("repair_box", 0)
-	local robjd = alife():object(objd)
+	local robjd = AI:object(objd)
 	if robjd and obj then
 		local pos=robjd.position
 		local lvid=robjd.level_vertex_id
@@ -1057,12 +1057,12 @@ function repair_box_close(obj)
 	self:GetHolder():start_stop_menu	(self,true)
 end
 function repair_box_closed(obj)
-	local robjd = alife():object(obj)
+	local robjd = AI:object(obj)
 	local pos=robjd.position
 	local lvid=robjd.level_vertex_id
 	local gvid=robjd.game_vertex_id
 		if robjd then
-			alife():release(alife():object(obj), true)
+			AI:release(AI:object(obj), true)
 		end
 	amk.del_variable("repair_box")
 	amk_spawn_item("repair_box_outfit",pos,gvid,lvid)
@@ -1152,12 +1152,12 @@ end
 function add_spot_of_docent(a)
 	local old_spot=amk.load_variable("spot_of_nps", 0)
 	if old_spot~=0 then
-		local obj_old = alife():story_object(old_spot)
+		local obj_old = AI:story_object(old_spot)
 		if obj_old then
 			amk.remove_spot_from_map(obj_old.id,'blue_location')
 		end
 	end
-	local obj = alife():story_object(a)
+	local obj = AI:story_object(a)
 	if obj and obj:is_stalker() then
 		amk.add_spot_on_map(obj.id,'blue_location',obj:name().."_sak")
 		old_spot=a
@@ -1167,7 +1167,7 @@ end
 function add_tail()
 	local lname = level.name()
 	if lname=="l04_darkvalley" then
-		local obj=alife():story_object(425)
+		local obj=AI:story_object(425)
 		if obj and obj:is_stalker() and obj:alive() then
 			if Actor:has_info("val_bandit_talk") then
 				Actor:set_character_community("stranger", 0, 0)

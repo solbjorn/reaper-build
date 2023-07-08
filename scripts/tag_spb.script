@@ -176,7 +176,7 @@ function trup_to_zombie (s_param)
 
         local vis = tag_get_npc_armor(level.object_by_id(trup_id))
 
-        zombie = alife():create(zombie_name,new_pos,l_v,g_v)
+        zombie = AI:create(zombie_name,new_pos,l_v,g_v)
 
         if zombie then
            local z = amk.read_stalker_params(zombie)
@@ -282,7 +282,7 @@ function tag_get_npc_armor(trup)  -- нехороша, надо б переделать
      local trup_rank = trup:character_rank()
      local cur_outfit= nil    -- определяется тем, кто м\переодеваться "bandit" "stalker" "neutral"
 
-     local net_p = amk.read_stalker_params(alife():object(trup:id())) -- серв.ID трупа
+     local net_p = amk.read_stalker_params(AI:object(trup:id())) -- серв.ID трупа
      if net_p then other_type = net_p.visual end
 
 --[[
@@ -379,10 +379,10 @@ end
 ----------------------------------------------------------------------
 
 function tag_drop_habar (trup,zombie)
-   if trup and alife():object(trup:id()) then
+   if trup and AI:object(trup:id()) then
       trup:iterate_inventory(         -- выбрасываем шмотье
                    function(dummy,item)
-                      if alife():object(item:id()) and item:parent() then
+                      if AI:object(item:id()) and item:parent() then
                          local i_section = item:section()
                          if not string.find("bolt,device_torch",i_section) and
                             item:parent() then
@@ -391,7 +391,7 @@ function tag_drop_habar (trup,zombie)
                          end
                       end
                    end,trup) -- end function
-      if alife():object(trup:id()) then
+      if AI:object(trup:id()) then
          -- пытаемся снять отметку с миникарты
 --         level_tasks.remove_location_safe(trup:id(), "deadbody_location")--_mini_spot")  deadbody_location
          level.map_remove_object_spot(trup:id(), "deadbody_mini_spot") -- фигня,не работает

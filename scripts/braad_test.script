@@ -83,9 +83,8 @@ local nepis = {
 }
 
 function dead_npc()
-	local sim = alife()
 	for a=1, #nepis do
-		local obj = sim:story_object(nepis[a])
+		local obj = AI:story_object(nepis[a])
 		if obj and obj:is_stalker() and not obj:alive() then
 			local info = obj:name() .. "_umer"
 			if not has_alife_info(info) then
@@ -103,28 +102,26 @@ end
 
 function setGulagEnemy()
 local npc,obj
-	local sim = alife()
 
 	for i, npc in pairs(db.creatures) do
         if npc:name() == "rostok_stalker" then
-            obj = sim:object(npc:id())
+            obj = AI:object(npc:id())
 			break
         end
     end
-	sim:create("wpn_mp5",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
-	sim:create("wpn_val",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
-	sim:create_ammo("ammo_5.56x45_ss190",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id,30)
+	AI:create("wpn_mp5",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
+	AI:create("wpn_val",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
+	AI:create_ammo("ammo_5.56x45_ss190",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id,30)
 end
 
 function bloodsucker()
-	local sim = alife()
 	local v = vector()
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
-	sim:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
+	AI:create("bloodsucker_strong",v:set(147.087142945,-0.00357154117,59.948166),39508,1228)
 end
 
 function main_friend(npc)
@@ -132,50 +129,47 @@ npc:set_relation(game_object.friend, Actor)
 end
 
 function zombie_blow()
-	local sim = alife()
 	local v = vector()
-	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
-	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
-	sim:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
-	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
-	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
-	sim:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
-	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-	sim:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
-	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-	sim:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
-	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
-	sim:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	AI:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	AI:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	AI:create("zombie_blow",v:set(-108.36364746,21.564731597,-35.483924865),312,1529)
+	AI:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	AI:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	AI:create("zombie_blow",v:set(-91.32671356,21.57417869,-23.8667068),741,1529)
+	AI:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	AI:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	AI:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	AI:create("zombie_blow",v:set(-146.986175537,-19.0885162,-72.52413177),1082,1457)
+	AI:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	AI:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	AI:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	AI:create("zombie_blow",v:set(-85.37963104248,-19.090393066,-49.233089447),9988,1495)
+	AI:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	AI:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	AI:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
+	AI:create("zombie_blow",v:set(-86.6029510498,-19.0902767,-171.46553039551),9340,1455)
 end
 
 function zasada_for()
-	local sim = alife()
 	local v = vector()
-	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	AI:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	AI:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	AI:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
+	AI:create("electro_chimera",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
 end
 
 function radar_man()
-	local sim = alife()
 	local v = vector()
-	sim:create("m_controller_old",v:set(-61.979244232178,-21.8962020874,35.8896102905),195,2727)
-	sim:create("m_controller_old",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
-	sim:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("m_controller_old",v:set(-61.979244232178,-21.8962020874,35.8896102905),195,2727)
+	AI:create("m_controller_old",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
+	AI:create("zombie_blow",v:set(0.86928582191467,-23.69577599,1.777916193),6155,2703)
 end
 
 function killactor (sid)
@@ -202,14 +196,13 @@ local npc = level_object_by_sid (9905)
 end
 
 function killactor_spawn()
-	local sim = alife()
 	local v = vector()
-	sim:create("killer_boevik2",v:set(43.09783554,-8.13079166,14.410468),345215,1582)
-	sim:create("killer_boevik1",v:set(59.50757599,-8.5839643,9.3478708),358211,1570)
-	sim:create("killer_boevik3",v:set(59.52076721,-8.7670116,22.850177765),358227,1559)
-	sim:create("killer_boevik4",v:set(40.780555725,-8.319325447,19.2897949),343015,1582)
-	sim:create("killer_boevik5",v:set(46.9849434,-8.1420059,20.492004),348191,1582)
-	sim:create("killer_boevik6",v:set(51.40478897,-8.08700466,13.5054283),351374,1582)
+	AI:create("killer_boevik2",v:set(43.09783554,-8.13079166,14.410468),345215,1582)
+	AI:create("killer_boevik1",v:set(59.50757599,-8.5839643,9.3478708),358211,1570)
+	AI:create("killer_boevik3",v:set(59.52076721,-8.7670116,22.850177765),358227,1559)
+	AI:create("killer_boevik4",v:set(40.780555725,-8.319325447,19.2897949),343015,1582)
+	AI:create("killer_boevik5",v:set(46.9849434,-8.1420059,20.492004),348191,1582)
+	AI:create("killer_boevik6",v:set(51.40478897,-8.08700466,13.5054283),351374,1582)
 end
 
 function sorok_pda()
@@ -221,20 +214,18 @@ function sorok_pda_sdal(first_speaker, second_speaker)
 end
 
 function chern_dogs()
-	local sim = alife()
 	local v = vector()
-	sim:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
-	sim:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
-	sim:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
-	sim:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
+	AI:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
+	AI:create("psy_dog_radar",v:set(338.74279785,-46.47824478,-163.8179168),86443,2086)
+	AI:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
+	AI:create("psy_dog_radar",v:set(354.486083984,-45.66619491577,-213.2041015625),95066,1872)
 end
 
 function create_monstr()
-	local sim = alife()
 local position = Actor:position()
 	position.x = position.x + 13
-	sim:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
-	sim:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
+	AI:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
+	AI:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
 end
 
 function kill_npc(sid)
@@ -250,7 +241,7 @@ function take_yakut_agro2_spot()
 end
 
 function new_comp()
-	alife():create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
+	AI:create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
 end
 
 function release_actor_items()
@@ -347,7 +338,6 @@ function release_actor_items()
 		["device_torch"] = true,
 		["wpn_flame"] = true}
     local obj
-    local sim = alife()
     local actor = Actor
     -- перебор вещей инвентаря
     local cnt = actor:object_count()
@@ -355,7 +345,7 @@ function release_actor_items()
         obj = actor:object(i)
         if not items[obj:section()] then
             -- удаление вещи
-            sim:release(sim:object(obj:id()), true)
+            AI:release(AI:object(obj:id()), true)
 		dream_:sleep(5+amk.load_variable("gg_need_sleep_nrg",0))
         end
     end
@@ -447,12 +437,12 @@ function give_money_30000()
 end
 
 function delete_smart()
-  local se_obj = alife():object("esc2_bloodsucker1")
+  local se_obj = AI:object("esc2_bloodsucker1")
   if se_obj then
-    alife():release(se_obj, true)
+    AI:release(se_obj, true)
   end
-  local se_obj = alife():object("ros_smart_stalker1")
+  local se_obj = AI:object("ros_smart_stalker1")
   if se_obj then
-    alife():release(se_obj, true)
+    AI:release(se_obj, true)
   end
 end

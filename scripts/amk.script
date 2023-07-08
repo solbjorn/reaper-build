@@ -150,7 +150,7 @@ end
 function spawn_item(spawn_item, pos, gv,lv)
   if gv==nil then gv=Actor:game_vertex_id() end
   if lv==nil then lv=Actor:level_vertex_id() end
-  return g_alife:create(spawn_item, pos, lv, gv)
+  return AI:create(spawn_item, pos, lv, gv)
 end
 
 --для спавна патронов используем spawn_ammo_in_inv
@@ -158,7 +158,7 @@ function spawn_item_in_inv(spawn_item,npc)
   if npc==nil then
     npc=Actor
   end
-  return g_alife:create(spawn_item,
+  return AI:create(spawn_item,
       npc:position(),
       npc:level_vertex_id(),
       npc:game_vertex_id(),
@@ -183,7 +183,7 @@ end
 -- удаляем объект из игры
 function remove_item(remove_item)
   if remove_item~=nil then
-    g_alife:release(g_alife:object(remove_item:id()), true)
+    AI:release(AI:object(remove_item:id()), true)
     return true
   end
   return false
@@ -255,7 +255,7 @@ function remove_item_from_inventory(remove_item,npc)
   if npc==nil then npc=Actor end
   if remove_item~=nil then
 --      npc:mark_item_dropped(remove_item)
-    g_alife:release(g_alife:object(remove_item:id()), true)
+    AI:release(AI:object(remove_item:id()), true)
     return true
   end
   return false
@@ -272,7 +272,7 @@ function __del_item(npc, item)
         return false
     end
 --    npc:mark_item_dropped(item)
-    g_alife:release(g_alife:object(item:id()), true)
+    AI:release(AI:object(item:id()), true)
 end
 ---------------------------
 
@@ -425,10 +425,9 @@ function on_actor_upade(delta)
 		amk_mod.on_blowout_hit_actor(true)
 	end
 
-	local sim = g_alife
 	local obj
 	for k,v in pairs(convert_npc) do
-		if sim:object(k) then
+		if AI:object(k) then
 			obj=level.object_by_id(k)
 			if obj==nil and v==true then
 				convert_npc[k]=false
@@ -436,8 +435,8 @@ function on_actor_upade(delta)
 			elseif obj and v==false then
 				convert_npc[k]=nil
 			elseif v==1 and obj then -- тайник не перешёл в оффлайн попытаемся его туда запихнуть.
-				sim:set_switch_online(k, false)
-				sim:set_switch_offline(k, true)
+				AI:set_switch_online(k, false)
+				AI:set_switch_offline(k, true)
 			elseif v==1 then -- тайник в оффлайне. выталкиваем.
 				convert_npc[k]=nil
 				switch_online(k)
@@ -483,7 +482,7 @@ function on_npc_go_offline(npc)
 	amk_anoms.unreg_in_anom_manager(npc)
 
 	if game_is_running() then
-		local sobj = g_alife:object(npc:id())
+		local sobj = AI:object(npc:id())
 		if sobj then
 			amk_offline_alife.process_trade(sobj)
 		end

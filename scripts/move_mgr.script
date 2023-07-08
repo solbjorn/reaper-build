@@ -239,7 +239,7 @@ function validate_accessibility(npc,ppname)
 			for j,o in ipairs(alist) do
 				-- Отключаем аномалию. И немедленно убираем её из рестрикторов непися.
 				-- Для остальных неписей она удалится на следующем апдейте
-				amk_anoms.set_anomaly_status(alife():object(o.id),"del")
+				amk_anoms.set_anomaly_status(AI:object(o.id),"del")
 				amk_anoms.remove_restriction(npc,o.id,o.name,true)
 			end
 		end

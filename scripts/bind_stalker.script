@@ -259,7 +259,7 @@ function motivator_binder:death_callback(victim, who)
 		sr_territory.issue_event(self_object, "death_callback", victim, who)
 	end
 
-	local se_obj = alife():object(self_object:id())
+	local se_obj = AI:object(self_object:id())
 	se_obj.death_light = sr_light.check_light(self_object)
 
   smart_terrain.on_death( self_object:id() )
@@ -360,7 +360,7 @@ function motivator_binder:update(delta)
 
 	local npc_alive = self_object:alive()
     if self.first_update == false then
-		if not npc_alive and alife():object(self_object:id()).death_droped ~= true then
+		if not npc_alive and AI:object(self_object:id()).death_droped ~= true then
 			death_manager.drop_manager(self_object):create_release_item()
 		elseif npc_alive then
 			trade_manager.first_update(self_object)
@@ -392,7 +392,7 @@ function motivator_binder:update(delta)
 			sr_light.check_light(self_object)
 			self.update_time = time_real_ms + 1000
 		else
-			local se_obj = g_alife:object(self_object:id())
+			local se_obj = AI:object(self_object:id())
 			if se_obj.death_light then
 				local torch = self_object:item_in_slot(9)
 				if torch then

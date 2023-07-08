@@ -114,7 +114,6 @@ function update()
 	end
 
 	local actor_pos = Actor:position()
-	local sim = alife()
 	local sdir = device().cam_dir
 	a = math_atan2(-sdir.x,sdir.z)
 	s,c = ms(a),mc(a)
@@ -141,7 +140,7 @@ function update()
 	end
 
 	for id,is_stalker in pairs(creatures) do
-		local so = sim:object(id)
+		local so = AI:object(id)
 		if so then
 			local o = level_object_by_id(id)
 			if o then

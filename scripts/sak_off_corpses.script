@@ -12,7 +12,7 @@ local tabl_weapons={}
 
 function off_corpses()
 	for a=1,65535,1 do
-	local obj = alife():object(a)
+	local obj = AI:object(a)
 		if obj then
 			local posobj = obj.position
 			local actorpos = Actor:position()
@@ -42,7 +42,7 @@ function off_corpses()
 			local  b = table.getn(tabl_corpses)
 			while b > summ_corpses*2 do
 				local corps = tabl_corpses[b]
-				alife():release(corps,true)
+				AI:release(corps,true)
 				table.remove(tabl_corpses,b)
 				b=b-1
 			end
@@ -52,7 +52,7 @@ function off_corpses()
 			while b > summ_corpses do
 				local corps = tabl_corpses[b]
 				if item_found(corps) == false then
-					alife():release(corps,true)
+					AI:release(corps,true)
 					table.remove(tabl_corpses,b)
 				end
 				b=b-1
@@ -62,7 +62,7 @@ function off_corpses()
 			local  b = table.getn(tabl_corpses)
 			while b > summ_corpses do
 				local corps = tabl_corpses[b]
-				alife():release(corps,true)
+				AI:release(corps,true)
 				table.remove(tabl_corpses,b)
 				b=b-1
 			end
@@ -76,7 +76,7 @@ function off_corpses()
 			local wpn_name = wpn:name()
 			if (get_dist_to_trup_9510(wpn) == true and get_dist_to_trup(wpn) == true and not string.find(wpn_name,"wpn_gauss") and not string.find(wpn_name,"wpn_svd") and not string.find(wpn_name,"wpn_vintorez") and not string.find(wpn_name,"wpn_svu") and not string.find(wpn_name,"wpn_fn2000") and not string.find(wpn_name,"wpn_saiga12c") and not string.find(wpn_name,"wpn_rpg7") and not string.find(wpn_name,"wpn_desert_eagle") and not string.find(wpn_name,"wpn_toz34") and not string.find(wpn_name,"wpn_rg-6")) then
 				local weapon = tabl_weapons[twa]
-				alife():release(weapon,true)
+				AI:release(weapon,true)
 				table.remove(tabl_weapons,twa)
 			end
 			twa=twa-1
@@ -88,7 +88,7 @@ function off_corpses()
 				local wpn_name = wpn:name()
 				if (get_dist_to_trup_9510(wpn) == true and not string.find(wpn_name,"wpn_svd") and not string.find(wpn_name,"wpn_vintorez") and not string.find(wpn_name,"wpn_svu") and not string.find(wpn_name,"wpn_rpg7") and not string.find(wpn_name,"wpn_rg-6")) then
 					local weapon = tabl_weapons[twb]
-					alife():release(weapon,true)
+					AI:release(weapon,true)
 					table.remove(tabl_weapons,twb)
 				end
 				twb=twb-1
@@ -97,7 +97,7 @@ function off_corpses()
 				local twc = table.getn(tabl_weapons)
 				while twc > summ_weapons do
 					local weapon = tabl_weapons[twc]
-					alife():release(weapon,true)
+					AI:release(weapon,true)
 					table.remove(tabl_weapons,twc)
 					twc=twc-1
 				end
@@ -130,7 +130,7 @@ function get_dist_to_trup_9510(wpn)
 end
 function item_found(corps)
 	for i=1,65535,1 do
-		local item = alife():object(i)
+		local item = AI:object(i)
 		if item then
 			if item.parent_id and item.parent_id == corps.id then
 				local item_name = item:name()

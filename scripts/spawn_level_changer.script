@@ -606,7 +606,7 @@ function create_level_changer(
 	p_dest_level,	-- название уровня, например "L11_Pripyat"
 	p_silent	-- следует задать 1, чтобы подавить вопрос о смене уровня (автоматический переход)
 )
-	local obj = alife():create("level_changer", p_position, p_lvertex_id, p_gvertex_id)
+	local obj = AI:create("level_changer", p_position, p_lvertex_id, p_gvertex_id)
 
 	local packet = net_packet()
 	obj:STATE_Write(packet)
@@ -868,12 +868,11 @@ function teleport_start(obj)
 end
 
 function remove_old_teleport()
-	local sim = alife()
 	local se_obj
 	for nam, tbl in pairs(places) do
-		se_obj = sim:story_object(tbl.sid)
+		se_obj = AI:story_object(tbl.sid)
 		if se_obj then
-			sim:release(se_obj, true)
+			AI:release(se_obj, true)
 		end
 	end
 end

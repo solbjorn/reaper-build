@@ -320,8 +320,8 @@ function freeplay_statistic:check_found_item(obj)
 
   if sect == "device_pda_rank" then
     self:check_found_pda_count()
-    local pda = alife():object(obj:id())
-    alife():release(pda, true)
+    local pda = AI:object(obj:id())
+    AI:release(pda, true)
 
     if not (device().precache_frame > 1) then
 		actor_stats.add_points("treasures", "st_pda_pda", 1, 1)
@@ -403,7 +403,7 @@ end
 function freeplay_statistic:give_item_on_death(victim, who)
   local rnd = math.random(100)
   if victim ~= nil and victim:is_stalker() and victim:character_community() ~= "zombied" and rnd <= 50 then
-    alife():create("device_pda_rank",victim:position(),victim:level_vertex_id(),victim:game_vertex_id(),victim:id())
+    AI:create("device_pda_rank",victim:position(),victim:level_vertex_id(),victim:game_vertex_id(),victim:id())
   end
 end
 

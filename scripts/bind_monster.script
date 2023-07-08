@@ -105,7 +105,7 @@ function generic_object_binder:update(delta)
 				if npc:id()~=0 and npc:clsid()==clsid.script_stalker and self.object:see(npc) and
 				   npc:character_community()~="zombied" and self.object:position():distance_to(npc:position())<30 then
 
-					local sobj=alife():object( npc:id() )
+					local sobj=AI:object( npc:id() )
 					if sobj and sobj.online then
 						local zomb = container:get("zombies", { })
 						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(Actor)}

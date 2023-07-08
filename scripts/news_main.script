@@ -1454,7 +1454,7 @@ function get_object_levelname(obj)
 			if (lvert ~= nil and lvert.level_id) then
 				local lid = lvert:level_id()
 				if (lid ~= nil) then
-					mlevel = g_alife:level_name(lid)
+					mlevel = AI:level_name(lid)
 				end
 			end
 			if mlevel == nil then mlevel = "nil" end
@@ -1495,7 +1495,6 @@ function check_news()
 end
 
 function add_spawned_object(obj)
-	local sim = alife()
 	if (obj and (obj:is_stalker() or obj:is_monster())) then
 		if obj.can_switch_online and obj:can_switch_online() == false then return end
 		local s_comm = get_npc_community(obj)
@@ -1524,10 +1523,10 @@ function add_spawned_object(obj)
 			if (obj.smart_terrain_id) then
 				m_obj = obj
 			else
-				m_obj = sim:object(s_id)
+				m_obj = AI:object(s_id)
 			end
 			if (m_obj and m_obj.smart_terrain_id and m_obj:smart_terrain_id() and m_obj:smart_terrain_id()~=65535 and news_data.smart_filters[s_comm]) then
-				local sm = sim:object(m_obj:smart_terrain_id())
+				local sm = AI:object(m_obj:smart_terrain_id())
 				if (sm and sm.name and sm:name()) then
 					local sn = sm:name()
 					for ks, vs in pairs (news_data.smart_filters[s_comm]) do
@@ -2557,7 +2556,7 @@ end
 function create_treasurebox()
 	local obj
 	local pos = Actor:position()
-	obj = alife():create("m_inventory_box", pos, Actor:level_vertex_id(), Actor:game_vertex_id())
+	obj = AI:create("m_inventory_box", pos, Actor:level_vertex_id(), Actor:game_vertex_id())
 	if (obj) then
 		local t = amk.get_invbox_data(obj)
 		t.custom = "[logic]\ncfg = scripts\\treasure_inventory_box.ltx"
@@ -2613,7 +2612,7 @@ end
 function point_is_far(point, lv, gv, distance)
 	if (Actor and point and lv and gv and distance and graph:valid_vertex_id(gv)) then
 		-- на одном ли уровне?
-		local map = g_alife:level_name(graph:vertex(gv):level_id())
+		local map = AI:level_name(graph:vertex(gv):level_id())
 		if (map and level.name() == map) then
 			-- ƒостаточно ли далеко?
 			if point:distance_to(Actor:position()) < distance then
