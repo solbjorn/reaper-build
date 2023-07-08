@@ -62,7 +62,7 @@ function evaluator_shoot:evaluate()
 		-- Проверка на то, что враг-игрок не подошел слишком близко
 		local best_enemy = self.object:best_enemy()
 		if best_enemy and
-		   best_enemy:id() == db_actor_id
+		   best_enemy:id() == 0
 		then
 		    if db_actor:position():distance_to(self.object:position()) > self.a.attack_actor_sqr then
 				return false
@@ -74,7 +74,7 @@ function evaluator_shoot:evaluate()
 		if best_danger then
 		   local bd_object = best_danger:object()
 		   if bd_object ~= nil and
-		      bd_object:id() == db_actor_id
+		      bd_object:id() == 0
 		   then
 				if best_danger:position():distance_to(self.object:position()) > self.a.attack_actor_sqr then
 					return false

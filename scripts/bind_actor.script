@@ -55,7 +55,7 @@ function actor_binder:net_spawn(data)
 	if self.actor_detector.init_time ~= -1 then
 		self.actor_detector:actor_enter()
 	end
-	actor_stats.add_to_ranking(db_actor_id)
+	actor_stats.add_to_ranking(0)
 
 	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
@@ -81,7 +81,7 @@ function actor_binder:net_destroy()
 	_G.time_game_ct = nil
 	_G.time_game_hours = nil
 
-	actor_stats.remove_from_ranking(db_actor_id)
+	actor_stats.remove_from_ranking(0)
 
 	db.del_actor(self.object)
 	-- отрегистрация в схеме биорадара

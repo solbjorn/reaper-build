@@ -144,7 +144,7 @@ function bloodsucker_vampire_check_conditions(obj)
 		if k ~= mob_id then
 			if obj:alive() and obj:clsid() == clsid_bloodsucker_s and distance_between(obj, db_actor) <= 30 then
 				local enemy = obj:get_enemy()
-				if enemy and enemy:id() == db_actor_id then
+				if enemy and enemy:id() == 0 then
 					return false
 				end
 			end

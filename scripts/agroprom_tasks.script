@@ -107,7 +107,7 @@ function agr_actor_enemy ()
 	local npc = level_object_by_sid (302)
 	if npc ~= nil then
 		local t = db.storage[npc:id()].death
-		return npc:relation(db_actor) == game_object.enemy or (t ~= nil and t.killer == db_actor_id)
+		return npc:relation(db_actor) == game_object.enemy or (t ~= nil and t.killer == 0)
 	end
 	return false
 end

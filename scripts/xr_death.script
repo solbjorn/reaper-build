@@ -15,7 +15,7 @@ function action_process_death:death_callback(victim, who)
 	local actor = db_actor
 	if who ~= nil then
 		killer_id = who:id()
-		if killer_id == db_actor_id and victim:best_enemy() == nil then
+		if killer_id == 0 and victim:best_enemy() == nil then
 			killer_id = -1
 			if victim:relation(actor) ~= game_object.enemy then
 				local vic_smart_terrain_id = g_alife:object(victim:id()):smart_terrain_id()
@@ -25,7 +25,7 @@ function action_process_death:death_callback(victim, who)
 						local buddy = level.object_by_id(id)
 						if buddy and buddy:alive() then
 							if buddy:see(actor) or buddy:position():distance_to(actor:position()) < 5 then
-								killer_id = db_actor_id
+								killer_id = 0
 								break
 							end
 						end

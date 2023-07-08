@@ -52,7 +52,7 @@ function on_item_belt(obj)
 
 		sim:release(sim:object(obj:id()), true)
 		local sobj = sim:create_ammo("bolt_box", actor:position(), actor:level_vertex_id(),
-					     actor:game_vertex_id(), db_actor_id, 1)
+					     actor:game_vertex_id(), 0, 1)
 		level.client_spawn_manager():add(sobj.id, 0, bolt_to_belt)
 	elseif sect == "bolt_box" then
 		local size = get_ammo_data(obj, "box_size")

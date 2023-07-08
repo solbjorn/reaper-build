@@ -192,7 +192,7 @@ end
 function enemy_gulag(actor, npc, p)
 	local enemy = db.storage[npc:id()].enemy
 
-	if enemy and enemy:alive() and enemy:id() ~= db_actor_id then
+	if enemy and enemy:alive() and enemy:id() ~= 0 then
         local g = xr_gulag.get_npc_gulag(enemy)
 
         if g ~= nil then
@@ -368,7 +368,7 @@ function val_nap1_check_fighting(actor, npc, p)
 	    npc1 = level_object_by_sid(v)
 	    if npc1 then
 	        enemy = npc1:best_enemy()
-		    if enemy and (enemy:id() == npc:id() or enemy:id() == db_actor_id) then
+		    if enemy and (enemy:id() == npc:id() or enemy:id() == 0) then
 			    return true
 		    end
 		end
@@ -565,7 +565,7 @@ function actor_enemy(actor, npc)
 	end
 
 	local t = db.storage[npc:id()].death
-	return t and t.killer == db_actor_id
+	return t and t.killer == 0
 end
 
 function gar_dm_nearest_bandit_n(npc, which)
@@ -614,12 +614,12 @@ end
 
 function hit_by_actor(actor, npc)
 	local t = db.storage[npc:id()].hit
-	return t ~= nil and t.who == db_actor_id
+	return t ~= nil and t.who == 0
 end
 
 function killed_by_actor(actor, npc)
 	local t = db.storage[npc:id()].death
-	return t ~= nil and t.killer == db_actor_id
+	return t ~= nil and t.killer == 0
 end
 
 function actor_has_weapon(actor, npc)
@@ -725,12 +725,12 @@ end
 -- текущий враг актёр?
 function fighting_actor(actor, npc)
     local enemy = db.storage[npc:id()].enemy
-    return enemy and enemy:id() == db_actor_id
+    return enemy and enemy:id() == 0
 end
 
 function dont_fighting_actor(actor, npc)
     local enemy = db.storage[npc:id()].enemy
-    return enemy and enemy:id() ~= db_actor_id
+    return enemy and enemy:id() ~= 0
 end
 
 -- текущий враг на расстоянии больше или равном 20м
@@ -823,7 +823,7 @@ function val_bandits_ci_actor(actor, npc, p)
 	local enemy = db.storage[npc:id()].enemy
 	local sid
 	if enemy and enemy:alive() then
-	    if enemy:id() == db_actor_id then
+	    if enemy:id() == 0 then
             return npc:position():distance_to_sqr(db_actor:position()) >= p[1] * p[1]
 	    end
 
@@ -1079,7 +1079,7 @@ function mil_actor_enemy (actor, npc)
 end
 
 function mil_actor_enemy_freedom (actor, npc)
-    if relation_registry.community_goodwill ("freedom", db_actor_id) < -500 then
+    if relation_registry.community_goodwill ("freedom", 0) < -500 then
        return true
     end
     return false

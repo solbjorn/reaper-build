@@ -31,7 +31,7 @@ function on_inventory_open()
 
 	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
 	for sec, num in pairs(t) do
-		se_respawn_create_ammo(sec, pos, lvid, gvid, db_actor_id, num)
+		se_respawn_create_ammo(sec, pos, lvid, gvid, 0, num)
 	end
 end
 
@@ -52,7 +52,7 @@ function on_inventory_close()
 
 	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
 	for sec, num in pairs(t) do
-		se_respawn_create_ammo(sec, pos, lvid, gvid, db_actor_id, num)
+		se_respawn_create_ammo(sec, pos, lvid, gvid, 0, num)
 	end
 end
 
@@ -65,6 +65,6 @@ function on_item_ruck(item)
 		se_respawn_create_ammo(section .. "_fake", db_actor:position(),
 				       db_actor:level_vertex_id(),
 				       db_actor:game_vertex_id(),
-				       db_actor_id, cnt)
+				       0, cnt)
 	end
 end

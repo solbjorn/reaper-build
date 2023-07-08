@@ -14,7 +14,7 @@ function action_territory:update(delta)
 	xr_logic.try_switch_to_another_section(self.object, self.st)
 end
 function action_territory:hit_callback(obj, amount, local_direction, who, bone_index)
-	if who:id() ~= db_actor_id then
+	if who:id() ~= 0 then
 		return
 	end
 	if obj:relation(db_actor) == game_object.enemy then
@@ -24,7 +24,7 @@ function action_territory:hit_callback(obj, amount, local_direction, who, bone_i
 	xr_logic.pick_section_from_condlist(obj, self.st.territory_hit)
 end
 function action_territory:death_callback(victim, who)
-	if who:id() ~= db_actor_id then
+	if who:id() ~= 0 then
 		return
 	end
   if xr_logic.pstor_retrieve(victim,"wasenemy",true) then

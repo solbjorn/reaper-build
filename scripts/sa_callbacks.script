@@ -184,7 +184,7 @@ end
 function monster_update(obj)
 	if obj:alive() and db.actor:alive() and not (actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state) then
 		local enemy = obj:get_enemy()
-		if enemy and obj:see(enemy) and enemy:id() == db_actor_id then
+		if enemy and obj:see(enemy) and enemy:id() == 0 then
 			sa_monsters.bloodsucker_vampire(obj)
 			sa_monsters.pseudodog_psy_effect(obj)
 			sa_monsters.burer_tele_attack(obj)

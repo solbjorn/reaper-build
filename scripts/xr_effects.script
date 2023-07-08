@@ -1220,7 +1220,7 @@ function val_escort_guard_death(actor, npc)
     disable_info("val_escort_guard" .. idx .. "_combat")
     give_info("val_escort_guard" .. idx .. "_dead")
 
-  if t ~= nil and (t.killer == db_actor_id or t.killer == -1) then
+  if t ~= nil and (t.killer == 0 or t.killer == -1) then
         give_info("val_escort_actor_helped")
   end
     --"on_info     = %-val_escort_guard1_combat +val_escort_guard1_dead%\n" ..
@@ -1232,7 +1232,7 @@ function val_escort_guard_hit(actor, npc)
   local t = db.storage[npc:id()].hit
 
   if t ~= nil then
-      if t.who == db_actor_id then
+      if t.who == 0 then
             give_info("val_escort_combat")
             give_info("val_escort_actor_helped")
             if not has_info("val_escort_nap1_start_combat") then
@@ -1385,7 +1385,7 @@ end
 function heli_set_enemy_actor(actor, npc)
   local st = db.storage[npc:id()]
   if not st.combat.enemy_id and db_actor:alive() then
-    st.combat.enemy_id = db_actor_id
+    st.combat.enemy_id = 0
 
     heli_snd.play_snd( st, heli_snd.snd_see_enemy, 1 )
   end

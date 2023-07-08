@@ -1654,7 +1654,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 
 			if task_desc.reward_relation ~= nil then
 				for kk,vv in pairs(task_desc.reward_relation) do
-					relation_registry.change_community_goodwill (kk, db_actor_id, tonumber(vv))
+					relation_registry.change_community_goodwill (kk, 0, tonumber(vv))
 				end
 			end
 
@@ -1688,7 +1688,7 @@ function CRandomTask:task_reward_storyline(task)
 
   if task_desc.reward_relation ~= nil then
     for kk,vv in pairs(task_desc.reward_relation) do
-      relation_registry.change_community_goodwill (kk, db_actor_id, tonumber(vv))
+      relation_registry.change_community_goodwill (kk, 0, tonumber(vv))
     end
   end
 

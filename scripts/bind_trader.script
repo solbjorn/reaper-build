@@ -88,7 +88,7 @@ end
 function trader_binder:death_callback(victim, who)
 	if not self.object then return end
 
-	if who:id() == db_actor_id then
+	if who:id() == 0 then
 		xr_statistic.addKillCount(self.object)
 		freeplay_stats:check_stalker_killed_count()
 	end

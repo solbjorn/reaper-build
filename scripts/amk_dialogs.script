@@ -3,7 +3,7 @@
 
 function make_kill_task_failed(actor,npc,p1,p2)
   local nid=npc:id()
-  if nid==db.actor:id() then
+  if nid==0 then
     nid=actor:id()
   end
   local targets=task_manager.amk_kill_targets()
@@ -49,7 +49,7 @@ end
 
 function frenzy_humanoid(talker,listener) -- можно вызывать как из фразы ГГ, так и NPC
   local tgt=talker
-  if tgt:id()==db.actor:id() then
+  if tgt:id()==0 then
     tgt=listener
   end
   local h = hit()
@@ -64,7 +64,7 @@ end
 
 function scare_humanoid(talker,listener) -- можно вызывать как из фразы ГГ, так и NPC
   local tgt=talker
-  if tgt:id()==db.actor:id() then
+  if tgt:id()==0 then
     tgt=listener
   end
   tgt:set_custom_panic_threshold(1.0)

@@ -502,7 +502,7 @@ end
 
 --колбэк на юзание объекта
 function on_use(victim, who)
-  if db_actor and who and who:id()==db_actor_id then
+  if db_actor and who and who:id()==0 then
 		amk_mod.check_usable_item(victim)
   end
 end
@@ -520,14 +520,14 @@ end
 
 function on_npc_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if db_actor and who and who:id()==db_actor_id and amount>0 then
+	if db_actor and who and who:id()==0 and amount>0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"npc")
 	end
 end
 
 function on_monster_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if db_actor and who and who:id()==db_actor_id and amount>0 then
+	if db_actor and who and who:id()==0 and amount>0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"monster")
 	end
 end

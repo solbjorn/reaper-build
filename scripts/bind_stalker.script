@@ -225,7 +225,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
       blowout_scheme.hit_callback(obj)
     end
 		local be = self_object:best_enemy()
-		if not be or ((be:id() ~= who:id() or who:id() == db_actor_id) and self_object:relation(who) == game_object_enemy) then
+		if not be or ((be:id() ~= who:id() or who:id() == 0) and self_object:relation(who) == game_object_enemy) then
 			self_object:set_sight(look_direction, who:position():sub(self_object:position()), false)
 		end
   end
@@ -244,7 +244,7 @@ function motivator_binder:death_callback(victim, who)
 	xrs_ai.npc_death_callback(self_object)
 	sa_callbacks.npc_death(victim, who)
 
-  if who:id() == db_actor_id then
+  if who:id() == 0 then
     xr_statistic.addKillCount(self_object)
 		freeplay_stats:check_stalker_killed_count()
   end
@@ -408,7 +408,7 @@ function motivator_binder:update(delta)
 	local ammo = active_item and active_item:is_weapon() and active_item:get_ammo_in_magazine() or nil
 	if ammo ~= nil then
                         local enemy = self_object:best_enemy()
-                        if enemy and enemy:id()==db_actor_id and self_object:see(db_actor) and self.prev_ammo>ammo then
+                        if enemy and enemy:id()==0 and self_object:see(db_actor) and self.prev_ammo>ammo then
                                 amk.npc_shot_actor(self_object)
                         end
 

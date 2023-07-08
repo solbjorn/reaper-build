@@ -199,7 +199,7 @@ function heli_die( obj )
 	heli:Die()
 
 	db.del_heli( obj )
-	if xr_logic.pstor_retrieve(obj, "last_hit", -1, true) == db_actor_id then
+	if xr_logic.pstor_retrieve(obj, "last_hit", -1, true) == 0 then
 		xr_statistic.addKillCount(obj)
 	end
 

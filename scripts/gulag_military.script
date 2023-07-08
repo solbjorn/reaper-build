@@ -623,7 +623,7 @@ function check_state (gulag)
        if this.check_enemy (gulag) == true then
           -- поскольку вопрос об отношении к актеру решаться не собирается, то выход будет именно таким.
           if gulag:npc_is_enemy_to_anybody (db.actor) == true then
-             relation_registry.set_community_goodwill ("freedom", db.actor:id (), -5000)
+             relation_registry.set_community_goodwill ("freedom", 0, -5000)
              xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, db.actor)
           end
           return 2
@@ -638,7 +638,7 @@ function check_state (gulag)
           db.actor:disable_info_portion ("mil_freedom_attack")
           -- поскольку вопрос об отношении к актеру решаться не собирается, то выход будет именно таким.
           if gulag:npc_is_enemy_to_anybody (db.actor) == true then
-             relation_registry.set_community_goodwill ("freedom", db.actor:id (), -5000)
+             relation_registry.set_community_goodwill ("freedom", 0, -5000)
              xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, db.actor)
              --xr_gulag.setGulagGoodwill ("mil_freedom", -5000, db.actor)
           end
@@ -685,7 +685,7 @@ function is_actor_enemy (gulag)
     for k,v in pairs(gulag.Object) do
         if v ~= true then
           local e = v:best_enemy ()
-          if e ~= nil and e:id () == db_actor_id then
+          if e ~= nil and e:id () == 0 then
              return true
           end
         end

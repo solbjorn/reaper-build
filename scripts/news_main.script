@@ -349,7 +349,7 @@ function on_npc_death(victim_, killer_)
 				aid = author.id
 			end
 		else
-			if (math_random() < 0.5 and db.actor and db.actor:id() ~= killer:id()) and (IsNpcStalker(killer)) then
+			if (math_random() < 0.5 and db.actor and 0 ~= killer:id()) and (IsNpcStalker(killer)) then
 				m_str = format_template_killer_act(victim)
 				s_from = get_npc_name(killer)
 			else
@@ -2635,7 +2635,7 @@ function get_nearest_stalker(level, point, dist_max, dist_min)
 			if v then
 				local stalker = server_object(v.id)
 				-- На одном ли уровне?
-				if stalker and stalker.id ~= db_actor_id and stalker.health and stalker.can_switch_online and stalker:can_switch_online() and stalker.m_game_vertex_id and graph:valid_vertex_id(stalker.m_game_vertex_id) then
+				if stalker and stalker.id ~= 0 and stalker.health and stalker.can_switch_online and stalker:can_switch_online() and stalker.m_game_vertex_id and graph:valid_vertex_id(stalker.m_game_vertex_id) then
 					local s_map = object_level_name(stalker)
 					if (map == s_map) then
 						if (stalker:health() > 0 and stalker.alive and stalker:alive()==true) then

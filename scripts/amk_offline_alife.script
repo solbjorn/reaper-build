@@ -131,7 +131,7 @@ end
 --on_death - не убиваем!
 --on_hit - не обрабатываем!
 function add_fresh_meat(obj)
-	if obj and obj.m_game_vertex_id and db.actor and db.actor:id() ~= obj.id then
+	if obj and obj.m_game_vertex_id and db.actor and 0 ~= obj.id then
 		if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 			local map=alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
 			if not off_npcs[map] then off_npcs[map]={monsters={},stalkers={},weapons={},artefacts={},inv_boxes={}} end
@@ -1678,7 +1678,7 @@ function check_box_trap_trigger(victim, box)
 end
 
 function do_drop_item(obj)
-	if (obj and db.actor and obj.id ~= db.actor:id()) then
+	if (obj and db.actor and obj.id ~= 0) then
 		if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
 			for z=1, table.getn(items[obj.parent_id]) do
 				if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
@@ -1692,7 +1692,7 @@ gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) -- Idler++-- корре
 end
 
 function do_drop_object(obj)
-	if (obj and db.actor and obj.id ~= db.actor:id()) then
+	if (obj and db.actor and obj.id ~= 0) then
 		clear_item_owner(obj.id)
 		do_drop_item(obj)
 		alife():release(alife():object(obj.id), true)
@@ -1732,7 +1732,7 @@ end
 
 function pick_item(npc, obj)
 	local new = nil
-	if npc and obj and db.actor and obj.id ~= db.actor:id() then
+	if npc and obj and db.actor and obj.id ~= 0 then
 		--npc does not take a weapon or an outfit if he already has the same
 		if npc_has_same_wo(npc, obj) then return new end
 
@@ -2870,7 +2870,7 @@ function get_item_box_cost(box_id)
 	if not items[box_id] then return res end
 
 	local sim=alife()
-	local whomid=db.actor:id()
+	local whomid=0
 	for iter=1, table.getn(items[box_id]) do
 		local v_itA = items[box_id][iter]
 		if v_itA then
