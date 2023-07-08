@@ -42,10 +42,10 @@ function actor_binder:net_spawn(data)
 	biodetector.add_obj(self.object)
 
 	_G.Actor = self.object
-	_G.inv = inventory.CInventory()
+	_G.Inventory = inventory.CInventory()
 	_G.hud = get_hud()
-	_G.aem = aem_manager.CArenaext()
-	_G.dream_ = dream.dream_mgr()
+	_G.Arena = aem_manager.CArenaext()
+	_G.Dream = dream.dream_mgr()
 
 	level.show_indicators()
 
@@ -85,9 +85,9 @@ function actor_binder:net_destroy()
 	actor_stats.remove_from_ranking(0)
 
 	_G.Actor = nil
-	_G.inv = nil
-	_G.aem = nil
-	_G.dream_ = nil
+	_G.Inventory = nil
+	_G.Arena = nil
+	_G.Dream = nil
 
 	db.del_obj(self.object)
 	-- отрегистрация в схеме биорадара
@@ -162,7 +162,7 @@ function actor_binder:take_item_from_box(box, item)
 
 	local story_id = box:story_id()
 	if story_id >= 5000 and story_id <= 10000 then
-		treasure:treasure_empty(box, story_id)
+		Treasure:treasure_empty(box, story_id)
 	end
 
 	--AMK UTILS--
@@ -328,7 +328,7 @@ function actor_binder:update(delta)
 	xr_sound_update_actor()
 
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
-	aem:update()
+	Arena:update()
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 
 	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
@@ -466,7 +466,7 @@ function actor_binder:save(packet)
 
 	sr_psy_antenna.save( packet )
 
-	treasure:save(packet)
+	Treasure:save(packet)
 	random_task:save(packet)
 
 	freeplay_stats:save(packet)
@@ -507,7 +507,7 @@ function actor_binder:load(reader)
 
 	sr_psy_antenna.load(reader)
 
-	treasure:load(reader)
+	Treasure:load(reader)
 	random_task:load(reader)
 
 	freeplay_stats:load(reader)

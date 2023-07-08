@@ -251,7 +251,7 @@ function restore_sun()
 	local sname = amk_load_variable("level_on_save","")
   amk_save_variable("level_on_save",lname)
   if sname=="l12_stancia_2" and lname=="l11_pripyat" then
-		dream_:sleep(1)
+		Dream:sleep(1)
   end
 
 	if not has_info("storyline_actor_start") then
@@ -334,7 +334,7 @@ end
 function test_sleep_pp()
 	local tmp=amk_load_variable("gg_need_sleep",0)
 	if tmp>360 then
-		dream_:sleep(5+amk_load_variable("gg_need_sleep_nrg",0))
+		Dream:sleep(5+amk_load_variable("gg_need_sleep_nrg",0))
 	end
 	if tmp>300 then
 		level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
@@ -1043,7 +1043,7 @@ function Run_Blowout_pp()
 	if blow_enabled>0 then
 		local bt=blowout_type()
 		if bt==2 and amk_load_variable("freeplay",0)~=2 then return end
-		dream_:stopper()
+		Dream:stopper()
 		amk_save_variable("blowout",1)
 		if bt<1 then
 			level.add_pp_effector("monolith_off.ppe", 2003, false)

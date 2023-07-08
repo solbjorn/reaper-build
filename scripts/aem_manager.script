@@ -2042,7 +2042,7 @@ end
 -- создание диалога выдачи боёв
 ---------------------------------------------------------------------------------------------------
 function dlg_init(dlg, npc)
-	aem:dlg_init(dlg)
+	Arena:dlg_init(dlg)
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -2061,7 +2061,7 @@ end
 -- проверка возможности показа в диалоге боя 'stakes'
 -------
 function is_stakes_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
-	name = aem:fight_by_phrase(tonumber(phr_curr))
+	name = Arena:fight_by_phrase(tonumber(phr_curr))
 	if name == "" then
 		return false
 	end
@@ -2072,7 +2072,7 @@ end
 -- проверка возможности показа в диалоге боя 'turnament'
 -------
 function is_turnament_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
-	name = aem:fight_by_phrase(tonumber(phr_curr))
+	name = Arena:fight_by_phrase(tonumber(phr_curr))
 	if name == "" then
 		return false
 	end
@@ -2105,25 +2105,25 @@ end
 -- ставка выиграла
 --
 function is_reward_stake_win()
-	if not aem:is_stake() then
+	if not Arena:is_stake() then
 		return false
 	end
-	return aem:is_stake_win()
+	return Arena:is_stake_win()
 end
 
 -- ставка проиграла
 --
 function is_reward_stake_fail()
-	if not aem:is_stake() then
+	if not Arena:is_stake() then
 		return false
 	end
-	return not aem:is_stake_win()
+	return not Arena:is_stake_win()
 end
 
 -- бой без ограничения времени
 --
 function is_reward_nostake_unlimit()
-	if aem:is_stake() then
+	if Arena:is_stake() then
 		return false
 	end
 	if Actor:has_info("aem_bonus") then
@@ -2135,7 +2135,7 @@ end
 -- бой с ограничением времени - победа
 --
 function is_reward_nostake_bonus()
-	if aem:is_stake() then
+	if Arena:is_stake() then
 		return false
 	end
 	if not has_info("aem_bonus") then
@@ -2147,7 +2147,7 @@ end
 -- бой с ограничением времени - ничья
 --
 function is_reward_nostake_timeover()
-	if aem:is_stake() then
+	if Arena:is_stake() then
 		return false
 	end
 	if not has_info("aem_bonus") or not has_info("aem_timeover") then
@@ -2159,7 +2159,7 @@ end
 -- бой с ограничением времени - фолл
 --
 function is_reward_nostake_foul()
-	if aem:is_stake() then
+	if Arena:is_stake() then
 		return false
 	end
 	if not has_info("aem_bonus") or not has_info("aem_timeover") then
@@ -2187,7 +2187,7 @@ end
 -- сборная
 --
 function is_init_stalkers()
-	return aem:is_stalkers_evil()
+	return Arena:is_stalkers_evil()
 end
 
 -- не сборная
@@ -2199,7 +2199,7 @@ end
 -- мутанты
 --
 function is_init_mutants()
-	return aem:get_mutants_time() >= delay_mut*24
+	return Arena:get_mutants_time() >= delay_mut*24
 end
 
 -- не мутанты
@@ -2216,17 +2216,17 @@ end
 -- инициализация мода
 -------
 function startup()
-	aem:startup()
+	Arena:startup()
 end
 
 function timeup()
-	aem:timeup()
+	Arena:timeup()
 end
 -------
 -- удаление мода
 -------
 function cleanup()
-	aem:cleanup()
+	Arena:cleanup()
 end
 
 -------
@@ -2247,7 +2247,7 @@ end
 -- 'суточная' переинициализация боёв
 -------
 function reinit()
-	aem:reinit()
+	Arena:reinit()
 end
 
 -------
@@ -2274,14 +2274,14 @@ function start_fight(npc1, npc2, dlg_name, phr_curr)
 		return
 	end
 
-	aem:start(tonumber(phr_curr))
+	Arena:start(tonumber(phr_curr))
 end
 
 -------
 -- закрытие боя и получение награды, если она есть
 -------
 function close_fight()
-	aem:close()
+	Arena:close()
 end
 
 -------

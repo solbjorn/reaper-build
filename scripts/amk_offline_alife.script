@@ -1466,9 +1466,9 @@ function send_metka_hide_box(boxobj, victim)
   amk.add_spot_on_map(boxobj.id, "treasure", sname.." cпрятал хабар в надежном месте")
 
   if boxobj.m_story_id then
-		local k = treasure.treasure_by_target[boxobj.m_story_id]
+		local k = Treasure.treasure_by_target[boxobj.m_story_id]
 		if k then
-			treasure.treasure_info[k].active = true
+			Treasure.treasure_info[k].active = true
 		end
   end
 
@@ -2535,8 +2535,8 @@ function take_item_from_box(box, item)
 	local needempty = true
 	local bstid = box:story_id()
 	if bstid then
-		local k = treasure.treasure_by_target[bstid]
-		if k and treasure.treasure_info[k] then
+		local k = Treasure.treasure_by_target[bstid]
+		if k and Treasure.treasure_info[k] then
 			needempty = false
 		end
 	end
@@ -2590,7 +2590,7 @@ function actor_update(delta)
 		if time_global() >= trap_timer then
 			trap_timer = nil
 			need_hit = true
-			dream_:sleep(2)
+			Dream:sleep(2)
 		end
 		return
 	end

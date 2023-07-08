@@ -34,15 +34,15 @@ netpacket = nil
 container = nil
 freeplay_stats = nil
 random_task = nil
-treasure = nil
-variable = nil
+Treasure = nil
+Variable = nil
 
 -- В bind_actor.net_spawn
 Actor = nil
-inv = nil
+Inventory = nil
 hud = nil
-aem = nil
-dream_ = nil
+Arena = nil
+Dream = nil
 
 curr_level = nil
 time_real_ms = nil
@@ -83,8 +83,8 @@ function init_container()
 		container = keyvals()
 		freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
 		random_task = task_manager.CRandomTask()
-		treasure = treasure_manager.CTreasure()
-		variable = xr_logic.CVariable()
+		Treasure = treasure_manager.CTreasure()
+		Variable = xr_logic.CVariable()
 	end
 end
 
@@ -109,27 +109,27 @@ del_map_spot = level.map_remove_object_spot
 
 -- переменные
 function set_value(var, value)
-	return variable:set(var, value)
+	return Variable:set(var, value)
 end
 function get_value(var, default, delete)
-	return variable:get(var, default, delete)
+	return Variable:get(var, default, delete)
 end
 function del_value(var)
-	return variable:del(var)
+	return Variable:del(var)
 end
 
 -- Инвентарь ГГ, объявляется в bind_actor.net_spawn
 function has(s, i)
-	return inv:has(s, i)
+	return Inventory:has(s, i)
 end
 function got(s, i)
-	inv:got(s, i)
+	Inventory:got(s, i)
 end
 function lost(s, i)
-	inv:lost(s, i)
+	Inventory:lost(s, i)
 end
 function transfer(v, s, t)
-	inv:transfer(v, s, t)
+	Inventory:transfer(v, s, t)
 end
 
 -- Деньги

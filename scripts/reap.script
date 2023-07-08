@@ -21,7 +21,7 @@ function net_destroy()
 end
 
 function actor_death(victim, who)
-	dream_:stopper()
+	Dream:stopper()
 	reap_misc.kill_online_controllers()
 
 	news_main.on_death(victim, who)
@@ -64,7 +64,7 @@ function item_take(obj)
 		Actor:move_to_ruck(obj)
 	end
 
-	inv:on_item_take(obj)
+	Inventory:on_item_take(obj)
 	bolt_ending.on_item_take(obj)
 
 	if obj:is_artefact() then
@@ -76,22 +76,22 @@ function item_take(obj)
 end
 
 function item_drop(obj)
-	inv:on_item_drop(obj)
+	Inventory:on_item_drop(obj)
 	bolt_ending.on_item_drop(obj)
 	grenade_belt.on_item_drop(obj)
 end
 
 function item_drop_from_belt(obj)
-	inv:on_item_move_from_belt(obj)
+	Inventory:on_item_move_from_belt(obj)
 	if obj:section() == "bioradar" then
-		biodetector.switch(inv:on_belt("bioradar") ~= nil)
+		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
 
 	bolt_ending.on_item_drop_from_belt(obj, true)
 end
 
 function item_belt(obj)
-	inv:on_item_belt(obj)
+	Inventory:on_item_belt(obj)
 	if obj:section() == "bioradar" then
 		biodetector.switch(true)
 	end
@@ -101,9 +101,9 @@ function item_belt(obj)
 end
 
 function item_move_from_belt(obj)
-	inv:on_item_move_from_belt(obj)
+	Inventory:on_item_move_from_belt(obj)
 	if obj:section() == "bioradar" then
-		biodetector.switch(inv:on_belt("bioradar") ~= nil)
+		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
 
 	bolt_ending.on_item_drop_from_belt(obj)
