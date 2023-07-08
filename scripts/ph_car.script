@@ -166,8 +166,8 @@ function action_car:reset_scheme(loading)
 	        if self.st.fire_target == "points" then
 	            self.state_firetarget = state_firetarget_points
 	        else
-	            if self.st.fire_target == "actor" and db_actor:alive() then
-	                self.target_obj = db_actor
+	            if self.st.fire_target == "actor" and Actor:alive() then
+	                self.target_obj = Actor
 	                self.state_firetarget = state_firetarget_enemy
 	            else
 	                n = tonumber(self.st.fire_target)
@@ -185,7 +185,7 @@ function action_car:reset_scheme(loading)
 	        if self.st.on_target_vis then
 	            vis = self.st.on_target_vis
 	            if vis.v1 == "actor" then
-	                vis.v1 = db_actor
+	                vis.v1 = Actor
 	                self.on_target_vis = vis
 	            else
 	                n = tonumber(vis.v1)
@@ -201,7 +201,7 @@ function action_car:reset_scheme(loading)
 	        if self.st.on_target_nvis then
 	            nvis = self.st.on_target_nvis
 	            if nvis.v1 == "actor" then
-	                nvis.v1 = db_actor
+	                nvis.v1 = Actor
 	                self.on_target_nvis = nvis
 	            else
 	                n = tonumber(nvis.v1)
@@ -792,7 +792,7 @@ function action_car:destroy_car()
 
 	xr_logic.mob_release(self.object)
 	if self.st.on_death_info ~= nil then
-	    db_actor:give_info_portion(self.st.on_death_info)
+	    Actor:give_info_portion(self.st.on_death_info)
 	end
 	self.destroyed = true
 end
@@ -968,7 +968,7 @@ function action_car:net_destroy()
 	if self.object and xr_logic.mob_captured(self.object) then
 	    xr_logic.mob_release(self.object)
 	    if self.st.on_death_info ~= nil then
-	        db_actor:give_info_portion(self.st.on_death_info)
+	        Actor:give_info_portion(self.st.on_death_info)
 	    end
 	end
 end

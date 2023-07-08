@@ -3,7 +3,7 @@ function add_krysyk_pomer_treasure()
 end
 
 function check_bes_dead()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("gar_hellcar_umer") and
         actor:has_info("val_pula_ammo_start") and
@@ -39,19 +39,19 @@ function check_bes_dead()
 end
 function smski_besu(st)
     if st==1 then
-                db.actor:give_info_portion("sms_pulya")
+                Actor:give_info_portion("sms_pulya")
                 amk.send_tip(game.translate_string("sms_pulya_text"),nil,nil,30, "dolg")
    elseif st==2 then
-                db.actor:give_info_portion("sms_lukash")
+                Actor:give_info_portion("sms_lukash")
                 amk.send_tip(game.translate_string("sms_lukash_text"),nil,nil,30, "lukash")
    elseif st==3 then
-                db.actor:give_info_portion("sms_serega")
+                Actor:give_info_portion("sms_serega")
                 amk.send_tip(game.translate_string("sms_serega_text"),nil,nil,30, "seryi")
    end
 end
 
 function check_krysyk_dead()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("bandit_krisyk_umer") and
         actor:has_info("bandit_krisyk_start") and
@@ -62,12 +62,12 @@ function check_krysyk_dead()
     end
 end
 function smska_borova()
-      db.actor:give_info_portion("sms_borov")
+      Actor:give_info_portion("sms_borov")
                 amk.send_tip(game.translate_string("sms_borov_text"),nil,nil,30, "borov")
 end
 
 function check_tolik_dead()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("esc_vagon_wounded_umer") and
         actor:has_info("mil_volk_resiver_start") and
@@ -82,7 +82,7 @@ function smska_volka()
                 amk.send_tip(game.translate_string("sms_volk_text"),nil,nil,30, "wolf")
 end
 function check_maks_dead()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("mil_freedom_member0018_umer") and
         actor:has_info("mil_max_teleport_08_start") and
@@ -93,11 +93,11 @@ function check_maks_dead()
     end
 end
 function smska_shurupa()
-      db.actor:give_info_portion("sms_shurup")
+      Actor:give_info_portion("sms_shurup")
                 amk.send_tip(game.translate_string("sms_shurup_text"),nil,nil,30, "freedom")
 end
 function check_yurik_dead()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("gar_dm_novice_umer") and
         actor:has_info("gar_dram_novice_mp5_m1_start") and
@@ -108,11 +108,11 @@ function check_yurik_dead()
     end
 end
 function smska_dana()
-      db.actor:give_info_portion("sms_dan")
+      Actor:give_info_portion("sms_dan")
                 amk.send_tip(game.translate_string("sms_dan_text"),nil,nil,30)
 end
 function check_sms_bioradar()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("bar_rescue_research_reward") and
         not actor:has_info("bioradar_newsinfo") then
@@ -121,11 +121,11 @@ function check_sms_bioradar()
     end
 end
 function smska_saharova()
-      db.actor:give_info_portion("sms_saharov")
+      Actor:give_info_portion("sms_saharov")
                 amk.send_tip(game.translate_string("sms_saharov_text"),nil,nil,30, "saharov")
 end
 function check_sms_awm()
-	local actor = db.actor
+	local actor = Actor
 
     if actor and actor:has_info("yan_kill_brain_done") and
         not actor:has_info("barman_newsinfo") then
@@ -134,7 +134,7 @@ function check_sms_awm()
     end
 end
 function smska_barmana()
-      db.actor:give_info_portion("sms_barman")
+      Actor:give_info_portion("sms_barman")
                 amk.send_tip(game.translate_string("sms_barman_text"),nil,nil,30, "barman")
 end
 

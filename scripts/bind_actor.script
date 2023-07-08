@@ -37,10 +37,11 @@ function actor_binder:net_spawn(data)
 
 	self.bCheckStart = true
 
-	db.add_actor(self.object)
+	db.add_obj(self.object)
 	-- регистрация в схеме биорадара
 	biodetector.add_obj(self.object)
 
+	_G.Actor = self.object
 	_G.inv = inventory.CInventory()
 	_G.hud = get_hud()
 	_G.aem = aem_manager.CArenaext()
@@ -83,7 +84,12 @@ function actor_binder:net_destroy()
 
 	actor_stats.remove_from_ranking(0)
 
-	db.del_actor(self.object)
+	_G.Actor = nil
+	_G.inv = nil
+	_G.aem = nil
+	_G.dream_ = nil
+
+	db.del_obj(self.object)
 	-- отрегистрация в схеме биорадара
 	biodetector.remove_obj(self.object)
 
@@ -127,12 +133,9 @@ function actor_binder:reinit()
 	_G.time_game_ct = game_get_game_time()
 	_G.time_game_hours = game.hours()
 
-  local npc_id = self.object:id()
-
-  db.storage[npc_id] = { }
-
-  self.st = db.storage[npc_id]
-  self.st.pstor = nil
+	self.st = { }
+	db.storage[0] = self.st
+	self.st.pstor = nil
 
   self.object:set_callback(callback.inventory_info, self.info_callback, self)
   self.object:set_callback(callback.article_info, self.article_callback, self)
@@ -173,10 +176,10 @@ function actor_binder:take_item_from_box(box, item)
 	respawner:remove_spawned(item:id())
 
 	local smt = db.strn_by_respawn[respawner:name()]
-	local npc = smt and smt.gulag:get_nearest_online_obj(db_actor:position())
+	local npc = smt and smt.gulag:get_nearest_online_obj(Actor:position())
 	if npc then
 		xr_sound.set_sound_play(npc, "reac_box")
-		xr_gulag.setGulagEnemy(smt:name(), db_actor)
+		xr_gulag.setGulagEnemy(smt:name(), Actor)
 	end
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -211,9 +214,9 @@ function actor_binder:on_item_take (obj)
 	freeplay_stats:check_found_item(obj)
 
 	if obj:is_outfit() then
-		local actor_outfit = db_actor:item_in_slot(6)
+		local actor_outfit = Actor:item_in_slot(6)
 		if actor_outfit and obj:id() ~= actor_outfit:id() then
-			db_actor:transfer_item(actor_outfit, db_actor)
+			Actor:transfer_item(actor_outfit, Actor)
 		end
 	end
 
@@ -415,8 +418,8 @@ function actor_binder:update(delta)
       self.object:give_info_portion("global_dialogs")
     end
 
-		local actor_outfit = db_actor:item_in_slot(6)
-		if actor_outfit then db_actor:transfer_item(actor_outfit, db_actor) end
+		local actor_outfit = Actor:item_in_slot(6)
+		if actor_outfit then Actor:transfer_item(actor_outfit, Actor) end
 
     self.bCheckStart = false
   end

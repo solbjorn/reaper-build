@@ -47,7 +47,7 @@ function spawn_teleport10()
 	  local t = amk.get_anomaly_data(se_obj)
         t.sid = 9885
         amk.set_anomaly_data(t, se_obj)
-	db.actor:give_info_portion("spawn_teleport10")
+	Actor:give_info_portion("spawn_teleport10")
 end
 
 function spawn_teleport11()
@@ -55,7 +55,7 @@ function spawn_teleport11()
 	  local t = amk.get_anomaly_data(se_obj)
         t.sid = 9886
         amk.set_anomaly_data(t, se_obj)
-	db.actor:give_info_portion("spawn_teleport11")
+	Actor:give_info_portion("spawn_teleport11")
 end
 
 function spawn_teleport12()
@@ -153,7 +153,7 @@ end
 
 -- удаляем устройство удаления телепорта
 function delete_item1()
-  local obj = db.actor:object("item_delete1")
+  local obj = Actor:object("item_delete1")
     if obj then
       local se_obj = alife():object(obj:id())
         if se_obj then
@@ -200,11 +200,11 @@ function teleportate1(x,y,z)
 	a.y = -1.1038855314255
 	a.z = 158.09979248047
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
+	Actor:set_actor_position(a)
 -- Звуковое сопровождение
 	local snd_obj = xr_sound.get_safe_sound_object([[anomaly\teleport_work_2]])
-	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-	db.actor:give_info_portion("net_teleport1")
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+	Actor:give_info_portion("net_teleport1")
 end
 
 function teleportate2(x,y,z)
@@ -215,11 +215,11 @@ function teleportate2(x,y,z)
 	a.y = -9.5469636917114
 	a.z = -127.85536193848
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
+	Actor:set_actor_position(a)
 	-- Звуковое сопровождение
 	local snd_obj = xr_sound.get_safe_sound_object([[monsters\controller\controller_script_attack_0]])
-	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-	db.actor:give_info_portion("net_teleport2")
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+	Actor:give_info_portion("net_teleport2")
 end
 
 function teleportate3(x,y,z)
@@ -230,8 +230,8 @@ function teleportate3(x,y,z)
 	a.y = 11.138046264648
 	a.z = 191.75315856934
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
-	db.actor:give_info_portion("net_teleport3")
+	Actor:set_actor_position(a)
+	Actor:give_info_portion("net_teleport3")
 end
 
 function teleportate4(x,y,z)
@@ -242,11 +242,11 @@ function teleportate4(x,y,z)
 	a.y = 0.079399138689041
 	a.z = 53.515247344971
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
+	Actor:set_actor_position(a)
 -- Звуковое сопровождение
 	local snd_obj = xr_sound.get_safe_sound_object([[monsters\controller\controller_script_attack_0]])
-	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-	db.actor:give_info_portion("net_teleport4")
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+	Actor:give_info_portion("net_teleport4")
 end
 
 function teleportate5(x,y,z)
@@ -257,8 +257,8 @@ function teleportate5(x,y,z)
 	a.y = -20.872562408447
 	a.z = 379.255859375
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
-	db.actor:give_info_portion("net_teleport5")
+	Actor:set_actor_position(a)
+	Actor:give_info_portion("net_teleport5")
 end
 
 function teleportate6(x,y,z)
@@ -269,8 +269,8 @@ function teleportate6(x,y,z)
 	a.y = -23.518999099731
 	a.z = -20.886423110962
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
-	db.actor:give_info_portion("net_teleport6")
+	Actor:set_actor_position(a)
+	Actor:give_info_portion("net_teleport6")
 end
 
 function teleportate7(x,y,z)
@@ -281,19 +281,19 @@ function teleportate7(x,y,z)
 	a.y = -53.103622436523
 	a.z = -274.568359375
 	-- Сама телепортация
-	db.actor:set_actor_position(a)
-	db.actor:give_info_portion("net_teleport7")
+	Actor:set_actor_position(a)
+	Actor:give_info_portion("net_teleport7")
 end
 
 function polet()
 local h = hit()
 h.power = 5
-h.direction = vector_rotate_y(db.actor:direction(), 90)
-h.draftsman = db.actor
+h.direction = vector_rotate_y(Actor:direction(), 90)
+h.draftsman = Actor
 h.impulse = 100
 h.type = hit.wound
-db.actor:hit(h)
-	db.actor:give_info_portion("polet")
+Actor:hit(h)
+	Actor:give_info_portion("polet")
 end
 
 -------------------------------------------------------------------------------

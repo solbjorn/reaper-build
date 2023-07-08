@@ -3,7 +3,7 @@
 --*************************************************************
 function npc_relacion(npc,actor)
 	local actor_, npc_
-	if db.actor and 0 ==npc:id() then
+	if Actor and 0 ==npc:id() then
 		actor_ = npc
 		npc_ = actor
 	else
@@ -21,7 +21,7 @@ end
 
 function insert_custom_data(npc,actor)
 	local actor_, npc_
-	if db.actor and 0 ==npc:id() then
+	if Actor and 0 ==npc:id() then
 		actor_ = npc
 		npc_ = actor
 	else
@@ -47,7 +47,7 @@ end
 
 function precond(npc, actor)
 	local actor_, npc_
-	if db.actor and 0 ==npc:id() then
+	if Actor and 0 ==npc:id() then
 		actor_ = npc
 		npc_ = actor
 	else
@@ -105,7 +105,7 @@ end
 --*************************************************************
 function rank_get(npc, actor)
 	local actor_, npc_
-	if db.actor and 0 ==npc:id() then
+	if Actor and 0 ==npc:id() then
 		actor_ = npc
 		npc_ = actor
 	else
@@ -113,7 +113,7 @@ function rank_get(npc, actor)
 		npc_ = npc
 	end
 
-	if db.actor:character_rank() > 300 then
+	if Actor:character_rank() > 300 then
 		return false
 	else
 		return true
@@ -122,7 +122,7 @@ end
 
 function have_a_item(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -137,7 +137,7 @@ end
 
 function out_item(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -151,7 +151,7 @@ end
 --Âîğîíèí
 function enter_to_dolg(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -191,7 +191,7 @@ local mods = {
 
 function have_mod(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -207,7 +207,7 @@ function have_mod(first_speaker, second_speaker)
 end
 function out_mod(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -261,7 +261,7 @@ local nagrad = {
 --ÊĞÎÂÎÑÎÑ
 function krovosos(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -274,7 +274,7 @@ end
 function out_krovosos(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -288,7 +288,7 @@ end
 --ÁŞĞÅĞ
 function burer(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -301,7 +301,7 @@ end
 function out_burer(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -315,7 +315,7 @@ end
 --ÏÑÅÂÄÎÑÎÁÀÊÈ
 function psevdodog(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -328,7 +328,7 @@ end
 function out_psevdodog(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -342,7 +342,7 @@ end
 --ÇÎÌÁÈ
 function zombie(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -355,7 +355,7 @@ end
 function out_zombie(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -369,7 +369,7 @@ end
 --ÑÍÎĞÊÈ
 function snork(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -382,7 +382,7 @@ end
 function out_snork(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -396,7 +396,7 @@ end
 --ÑÎÁÀÊÈ
 function dog(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -410,7 +410,7 @@ function out_dog(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(3,10)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -424,7 +424,7 @@ end
 --ÏËÎÒÈ
 function flesh(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -438,7 +438,7 @@ function out_flesh(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(3,10)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -452,7 +452,7 @@ end
 --ÊÀÁÀÍÛ
 function boar(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -466,7 +466,7 @@ function out_boar(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(3,10)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else

@@ -7,12 +7,12 @@ function nano_bronik_on_take(obj)
 end
 
 function nano_bronik()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -25,11 +25,11 @@ function nano_bronik()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -40,11 +40,11 @@ function nano_bronik()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -59,12 +59,12 @@ function nano_bronik()
 	end
 end
 function nano_bronik_bad()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_bad" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_bad" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -77,11 +77,11 @@ function nano_bronik_bad()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_bad")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -92,11 +92,11 @@ function nano_bronik_bad()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_bad")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -111,12 +111,12 @@ function nano_bronik_bad()
 	end
 end
 function nano_bronik_good()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_good" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_good" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -129,11 +129,11 @@ function nano_bronik_good()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_good")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -144,11 +144,11 @@ function nano_bronik_good()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_good")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -163,12 +163,12 @@ function nano_bronik_good()
 	end
 end
 function nano_bronik_default()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_default" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_default" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -181,11 +181,11 @@ function nano_bronik_default()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_default")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -196,11 +196,11 @@ function nano_bronik_default()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_default")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -215,12 +215,12 @@ function nano_bronik_default()
 	end
 end
 function nano_bronik_static()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_static" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_static" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -233,11 +233,11 @@ function nano_bronik_static()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_static")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -248,11 +248,11 @@ function nano_bronik_static()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_static")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -267,12 +267,12 @@ function nano_bronik_static()
 	end
 end
 function nano_bronik_kat_eye()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_kat_eye" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_kat_eye" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -285,11 +285,11 @@ function nano_bronik_kat_eye()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_kat_eye")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -300,11 +300,11 @@ function nano_bronik_kat_eye()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_kat_eye")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -319,12 +319,12 @@ function nano_bronik_kat_eye()
 	end
 end
 function nano_bronik_psy()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_psy" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_psy" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -337,11 +337,11 @@ function nano_bronik_psy()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_psy")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -352,11 +352,11 @@ function nano_bronik_psy()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_psy")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -371,12 +371,12 @@ function nano_bronik_psy()
 	end
 end
 function nano_bronik_blackwhite()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_blackwhite" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_blackwhite" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -389,11 +389,11 @@ function nano_bronik_blackwhite()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_blackwhite")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -404,11 +404,11 @@ function nano_bronik_blackwhite()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_blackwhite")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -423,12 +423,12 @@ function nano_bronik_blackwhite()
 	end
 end
 function nano_bronik_bast()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_bast" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_bast" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -441,11 +441,11 @@ function nano_bronik_bast()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_bast")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -456,11 +456,11 @@ function nano_bronik_bast()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_bast")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -475,12 +475,12 @@ function nano_bronik_bast()
 	end
 end
 function nano_bronik_plus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_plus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_plus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -493,11 +493,11 @@ function nano_bronik_plus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_plus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -508,11 +508,11 @@ function nano_bronik_plus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_plus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -527,12 +527,12 @@ function nano_bronik_plus()
 	end
 end
 function nano_bronik_badplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_badplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_badplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -545,11 +545,11 @@ function nano_bronik_badplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_badplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -560,11 +560,11 @@ function nano_bronik_badplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_badplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -579,12 +579,12 @@ function nano_bronik_badplus()
 	end
 end
 function nano_bronik_goodplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_goodplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_goodplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -597,11 +597,11 @@ function nano_bronik_goodplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_goodplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -612,11 +612,11 @@ function nano_bronik_goodplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_goodplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -631,12 +631,12 @@ function nano_bronik_goodplus()
 	end
 end
 function nano_bronik_defaultplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_defaultplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_defaultplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -649,11 +649,11 @@ function nano_bronik_defaultplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_defaultplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -664,11 +664,11 @@ function nano_bronik_defaultplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_defaultplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -683,12 +683,12 @@ function nano_bronik_defaultplus()
 	end
 end
 function nano_bronik_staticplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_staticplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_staticplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -701,11 +701,11 @@ function nano_bronik_staticplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_staticplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -716,11 +716,11 @@ function nano_bronik_staticplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_staticplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -735,12 +735,12 @@ function nano_bronik_staticplus()
 	end
 end
 function nano_bronik_kat_eyeplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_kat_eyeplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_kat_eyeplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -753,11 +753,11 @@ function nano_bronik_kat_eyeplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_kat_eyeplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -768,11 +768,11 @@ function nano_bronik_kat_eyeplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_kat_eyeplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -787,12 +787,12 @@ function nano_bronik_kat_eyeplus()
 	end
 end
 function nano_bronik_psyplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_psyplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_psyplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -805,11 +805,11 @@ function nano_bronik_psyplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_psyplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -820,11 +820,11 @@ function nano_bronik_psyplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_psyplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -839,12 +839,12 @@ function nano_bronik_psyplus()
 	end
 end
 function nano_bronik_blackwhiteplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_blackwhiteplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_blackwhiteplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -857,11 +857,11 @@ function nano_bronik_blackwhiteplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_blackwhiteplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -872,11 +872,11 @@ function nano_bronik_blackwhiteplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_blackwhiteplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -891,12 +891,12 @@ function nano_bronik_blackwhiteplus()
 	end
 end
 function nano_bronik_bastplus()
-	if db.actor:item_in_slot(6) and db.actor:item_in_slot(6):section() == "nano_outfit_bastplus" then
+	if Actor:item_in_slot(6) and Actor:item_in_slot(6):section() == "nano_outfit_bastplus" then
 		if art then
 			local num_art_buliz = 0
 			local num_art_spirit_4 = 0
-			for i=0, db.actor:object_count()-1 do
-				local item = db.actor:object(i)
+			for i=0, Actor:object_count()-1 do
+				local item = Actor:object(i)
 				if item:section() == "af_buliz" then
 					num_art_buliz = num_art_buliz + 1
 				end
@@ -909,11 +909,11 @@ function nano_bronik_bastplus()
 			else
 				if num_art_buliz >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_w"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addw_bastplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_buliz" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -924,11 +924,11 @@ function nano_bronik_bastplus()
 					end
 				elseif num_art_spirit_4 >= 5 then
 					amk.send_tip(game.translate_string("nano_mod_complete_h"),nil,nil,15)
-					amk.remove_item_from_inventory(db.actor:item_in_slot(6))
+					amk.remove_item_from_inventory(Actor:item_in_slot(6))
 					amk.spawn_item_in_inv("nano_outfit_addh_bastplus")
 					local num = 5
-					for i=0, db.actor:object_count()-1 do
-						local obj = db.actor:object(i)
+					for i=0, Actor:object_count()-1 do
+						local obj = Actor:object(i)
 						if obj:section() == "af_spirit_4" then
 							amk.remove_item_from_inventory(obj)
 							num = num - 1
@@ -944,162 +944,162 @@ function nano_bronik_bastplus()
 end
 
 function nano_health()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_bad()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_bad" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_bad" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_good()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_good" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_good" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_default()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_default" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_default" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_static()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_static" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_static" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_kat_eye()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_kat_eye" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_kat_eye" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_psy()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_psy" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_psy" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_blackwhite()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_blackwhite" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_blackwhite" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_bast()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_bast" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_bast" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_plus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_plus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_plus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_badplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_badplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_badplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_goodplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_goodplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_goodplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_defaultplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_defaultplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_defaultplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_staticplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_staticplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_staticplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_kat_eyeplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_kat_eyeplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_kat_eyeplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_psyplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_psyplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_psyplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_blackwhiteplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_blackwhiteplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_blackwhiteplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
 	end
 end
 function nano_health_bastplus()
-	if db.actor and db.actor:item_in_slot(6) and db.actor.health then
-		if db.actor:item_in_slot(6):section() == "nano_outfit_addh_bastplus" then
-			if db.actor.health < 1 then
+	if Actor and Actor:item_in_slot(6) and Actor.health then
+		if Actor:item_in_slot(6):section() == "nano_outfit_addh_bastplus" then
+			if Actor.health < 1 then
 				amk.start_timer("nano_health_start",0.1)
 			end
 		end
@@ -1107,7 +1107,7 @@ function nano_health_bastplus()
 end
 
 function nano_health_s()
-	db.actor.health = db.actor.health + 0.1
+	Actor.health = Actor.health + 0.1
 end
 
 -------------------------------------------------------------------------------
@@ -1153,7 +1153,7 @@ local nano_outs = {
 }
 
 function nano_update()
-	local out = db_actor:item_in_slot(6)
+	local out = Actor:item_in_slot(6)
 	local func = out and nano_outs[out:section()]
 
 	if func then func() end

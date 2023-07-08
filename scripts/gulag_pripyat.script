@@ -347,7 +347,7 @@ end
 
 gulags.pri_followers.state = function(gulag)
     local state = gulag.state
-    local actor = db_actor
+    local actor = Actor
 
     -- проверка не убежал ли актер далеко
     if has_alife_info("pri_followers_mission_accept") and not has_alife_info("pri_followers_actor_leave") then
@@ -1132,13 +1132,13 @@ gulags.pri_monolith.state = function(gulag)
                 local enemy = v:best_enemy()
                 if enemy ~= nil then
 					if enemy:is_stalker() then
-                        db_actor:give_info_portion("pri_monolith_base_attacked")
+                        Actor:give_info_portion("pri_monolith_base_attacked")
                         return 1
                     end
                 end
             end
         end
-        db_actor:disable_info_portion("pri_monolith_base_attacked")
+        Actor:disable_info_portion("pri_monolith_base_attacked")
     end
 
     return 0 -- normal state

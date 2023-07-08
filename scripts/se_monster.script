@@ -134,7 +134,7 @@ function se_monster:can_switch_online()
 	end
 
 	-- если игрока нет, то в оффлайн
-	if not db_actor then
+	if not Actor then
 		self.state = false
 		return false
 	end
@@ -158,7 +158,7 @@ function se_monster:can_switch_online()
 	if day_night_switch and not is_creature_day(self) then
 		if self.online then
 			local obj = level_object(self.id)
-			if ( obj ~= nil and db_actor:see(obj) ) then
+			if ( obj ~= nil and Actor:see(obj) ) then
 				self.state = true
 				return true
 			end

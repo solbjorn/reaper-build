@@ -699,7 +699,7 @@ function create_level_changer(
 end
 
 function jump(where)
-	local actor = db_actor
+	local actor = Actor
 	local place = places[where]
 
 	create_level_changer(place.sid, actor:position(), actor:level_vertex_id(),
@@ -850,7 +850,7 @@ function teleport_start(obj)
 
 	-- отбираем арт у ГГ, если нужно отобрать
 	if teleport.art then
-		local art = db_actor:object(teleport.art)
+		local art = Actor:object(teleport.art)
 		if art then
 			release(art)
 		else

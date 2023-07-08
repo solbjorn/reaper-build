@@ -63,9 +63,9 @@ end
 function _G.get_actor_data(param)
 	if param then
 		if param == "camera_type" then
-			return db_actor:get_actor_int(nil, 1328)
+			return Actor:get_actor_int(nil, 1328)
 		elseif param == "zoom_mode" then
-			return toboolean(bit_and(db_actor:get_actor_int(nil, 1480), 1))
+			return toboolean(bit_and(Actor:get_actor_int(nil, 1480), 1))
 		end
 	end
 end
@@ -73,7 +73,7 @@ end
 function _G.set_actor_data(param, value)
 	if param and value then
 		if param == "camera_type" then
-			db_actor:set_actor_int(1328, value)
+			Actor:set_actor_int(1328, value)
 		end
 	end
 end
@@ -119,7 +119,7 @@ function _G.play_safe_sound_object(sound_path, timeout, volume)
 		if not volume then
 			volume = 1.0
 		end
-		sound_object(sound_path):play_no_feedback(db_actor, sound_object.s2d, timeout, xyz(), volume)
+		sound_object(sound_path):play_no_feedback(Actor, sound_object.s2d, timeout, xyz(), volume)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ function _G.camera_rotate_on_position(pos, speed, action, ...)
 					current_angle = 1.57
 				end
 				current_angle = current_angle + speed / 1000
-				db_actor:set_camera_direction(xyz(current_angle, 0, 0))
+				Actor:set_camera_direction(xyz(current_angle, 0, 0))
 				return math.abs(current_angle - end_angle) < 0.01
 			end,
 			function()
@@ -260,7 +260,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function _G.get_item_place(obj, npc)
 	if not npc then
-		npc = db_actor
+		npc = Actor
 	end
 	if npc:is_in_slot(obj) then
 		return item_place.slot
@@ -313,7 +313,7 @@ function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 		if not header then header = sinfo[3] or translate("st_tip") end
 		if not timeout then timeout = 0 end
 		if not showtime then showtime = 5 end
-		if sound then sound_object("device\\pda\\"..sound):play(db_actor, timeout, sound_object.s2d) end
-		db_actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), timeout * 1000, showtime * 1000)
+		if sound then sound_object("device\\pda\\"..sound):play(Actor, timeout, sound_object.s2d) end
+		Actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), timeout * 1000, showtime * 1000)
 	end
 end

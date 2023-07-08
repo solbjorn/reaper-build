@@ -23,7 +23,7 @@ function amk_music:play()
   amk.oau_reason="play pre stop"
 		self:stop()
 	end
-  if not db.actor then
+  if not Actor then
     return
   end
   amk.oau_reason="play pre dir"
@@ -31,14 +31,14 @@ function amk_music:play()
   amk.oau_reason="play post dir"
 	dir.y=0
   amk.oau_reason="play pre play right "..type(self.right)
-	self.right:play_at_pos(db.actor,dir, 0, sound_object.s2d)
---	self.right:play_no_feedback(db.actor,sound_object.s2d, 0, dir, 1.0)
+	self.right:play_at_pos(Actor,dir, 0, sound_object.s2d)
+--	self.right:play_no_feedback(Actor,sound_object.s2d, 0, dir, 1.0)
   amk.oau_reason="play post play right"
 	dir.x=-dir.x
 	dir.z=-dir.z
   amk.oau_reason="play pre play left"
-	self.left:play_at_pos(db.actor,dir, 0, sound_object.s2d)
---	self.left:play_no_feedback(db.actor,sound_object.s2d, 0, dir, 1.0)
+	self.left:play_at_pos(Actor,dir, 0, sound_object.s2d)
+--	self.left:play_no_feedback(Actor,sound_object.s2d, 0, dir, 1.0)
   amk.oau_reason="play pre length"
 	self.end_time = time_global() + self.left:length()
   amk.oau_reason="play pre return"
@@ -50,17 +50,17 @@ function amk_music:play_at_time(time)
 	if self:playing() then
 		self:stop()
 	end
-  if not db.actor then
+  if not Actor then
     return
   end
 	local dir = screen.cam_right:set_length(0.1)
 	dir.y=0
-	self.right:play_at_pos(db.actor,dir, (time - time_global())/1000, sound_object.s2d)
---	self.right:play_no_feedback(db.actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
+	self.right:play_at_pos(Actor,dir, (time - time_global())/1000, sound_object.s2d)
+--	self.right:play_no_feedback(Actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
 	dir.x=-dir.x
 	dir.z=-dir.z
-	self.left:play_at_pos(db.actor,dir,  (time - time_global())/1000, sound_object.s2d)
---	self.left:play_no_feedback(db.actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
+	self.left:play_at_pos(Actor,dir,  (time - time_global())/1000, sound_object.s2d)
+--	self.left:play_no_feedback(Actor,sound_object.s2d, (time - time_global())/1000, dir, 1.0)
 	self.end_time = time + self.left:length()
 	self:set_volume(console:get_float('snd_volume_music'))
 	return self.end_time

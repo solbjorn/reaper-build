@@ -15,8 +15,8 @@ local saved_width = -1
 local detectors = { "detector_simple", "detector_advances", "detector_elite", "detector_elite_sak" }
 
 function update(bShow)
-	if (db.actor == nil) then return end
-	if (db.actor.radiation == nil) then return end
+	if (Actor == nil) then return end
+	if (Actor.radiation == nil) then return end
 	local hud_rad = get_hud()
 	local wnd_
 	if (hud_rad) then
@@ -78,9 +78,9 @@ function update(bShow)
 				end
 			end
 		end
-		local new_width = db.actor.radiation * p_width
+		local new_width = Actor.radiation * p_width
 		if (saved_width ~= new_width) then
-			if db.actor.radiation > 0.0 then
+			if Actor.radiation > 0.0 then
 				custom_static_rad:wnd():SetWidth(new_width)
 			else
 				custom_static_rad:wnd():SetWidth(new_width)

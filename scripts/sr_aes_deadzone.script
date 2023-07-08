@@ -101,7 +101,7 @@ function action_postprocess:update (delta)
 		return
 	end
 
-	self.actor_inside = self.object:inside(db_actor:position())
+	self.actor_inside = self.object:inside(Actor:position())
 
 	self:update_hit (delta)
 end
@@ -120,12 +120,12 @@ function action_postprocess:update_hit		(delta)
     h.power = self.hit_power
 	h.direction = vector ():set (0, 0, 0)
 	h.impulse	= 0
-	h.draftsman = db_actor
+	h.draftsman = Actor
 	h.type = hit.radiation
-	db.actor:hit (h)
+	Actor:hit (h)
 
 	h.type = hit.shock
-	db.actor:hit (h)
+	Actor:hit (h)
 
 end
 

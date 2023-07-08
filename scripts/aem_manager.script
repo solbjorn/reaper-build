@@ -15,7 +15,6 @@ local aem_only = false	-- (!!!МЕНЯТЬ ТОЛЬКО ОДИН РАЗ!!!) false - мод активируетс
 local time_def = nil	-- время в мире на момент начала игры (CTime)
 local update_time = game.CTime()
 
-local actor = db_actor
 local sim = g_alife
 local aem_storage
 
@@ -337,8 +336,8 @@ end
 -- выиграла ли ставка
 -------
 function CArenaext:is_stake_win()
-	return	((actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
-		 (actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0))
+	return	((Actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
+		 (Actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0))
 end
 
 -------
@@ -412,12 +411,12 @@ function CArenaext:on_death(npc, team)
 		aem_set_value("aem_" .. team, cnt)
 	end
 
-	if actor:has_info("aem_timeover") then
+	if Actor:has_info("aem_timeover") then
 		-- убийство по истечению времени наказуемо
-		actor:give_info_portion("aem_fight_foul")
-	elseif cnt == 0 and actor:dont_has_info("aem_fight_done") then
+		Actor:give_info_portion("aem_fight_foul")
+	elseif cnt == 0 and not has_info("aem_fight_done") then
 		-- команда уничтожена, необходимо закончить бой
-		actor:give_info_portion("aem_fight_done")
+		Actor:give_info_portion("aem_fight_done")
 		-- мигалки для ставочных боёв
 		local info = self:description(self:current())
 		if info.group ~= "turnament" and info.group ~= "stakes" then
@@ -435,7 +434,7 @@ function CArenaext:on_done_fight()
 	local info = self:description(name)
 
 	-- запрещаем бой для диалога
-	actor:give_info_portion(info.done)
+	Actor:give_info_portion(info.done)
 
 	local cnt_t1 = aem_get_value("aem_team1")
 	local cnt_t2 = aem_get_value("aem_team2")
@@ -481,7 +480,7 @@ function CArenaext:on_done_fight()
 	local cnt = table.getn(t)
 	local done = true
 	for i=1,cnt do
-		if actor:dont_has_info(self.fights[t[i]].done) then
+		if not has_info(self.fights[t[i]].done) then
 			done = false
 			break
 		end
@@ -500,12 +499,12 @@ function CArenaext:on_done_group(name)
 	local info = self.groups[name]
 
 	-- запрещаем группу для диалога
-	actor:give_info_portion(info.done)
+	Actor:give_info_portion(info.done)
 
 	-- проверим все группы, может уже все закончены?
 	local done = true
 	for id, info in pairs(self.groups) do
-		if actor:dont_has_info(info.done) then
+		if not has_info(info.done) then
 			done = false
 			break
 		end
@@ -521,7 +520,7 @@ end
 -------
 function CArenaext:on_done_all()
 	--printf("CArenaext:on_done_all()")
-	actor:give_info_portion("aem_done")
+	Actor:give_info_portion("aem_done")
 end
 
 -------
@@ -529,9 +528,9 @@ end
 -------
 function CArenaext:startup()
 	--printf("CArenaext:startup()")
-	if actor:dont_has_info("aem_startup") then
-		actor:give_info_portion("aem_spam")
-		actor:give_info_portion("aem_startup")
+	if not has_info("aem_startup") then
+		Actor:give_info_portion("aem_spam")
+		Actor:give_info_portion("aem_startup")
 
 		local ct = level.get_time_minutes()
 		aem_set_value("aem_ct", ct)
@@ -569,7 +568,7 @@ function CArenaext:timeup()
 	end
 	self.mt = self.nt
 	self.mk = 0
-	actor:give_info_portion(self.groups["special"].done)
+	Actor:give_info_portion(self.groups["special"].done)
 
 -- тест первой инициализации, что бы не ждать долго
 --	self.nt = time_get_next(self.lt - 3)
@@ -591,7 +590,7 @@ function CArenaext:timeup()
 -- тест сборной, перешедшей в следующую активацию
 --	self.nt = time_get_next(self.lt - 3)
 --	self.it = self.nt
---	actor:disable_info_portion(self.groups["special"].done)
+--	Actor:disable_info_portion(self.groups["special"].done)
 
 	aem_set_value("aem_lt", self.lt)
 	aem_set_value("aem_nt", self.nt)
@@ -634,7 +633,7 @@ function CArenaext:cleanup()
 
 	-- удаление инфопоршинов
 	for id, value in pairs(info) do
-		actor:disable_info_portion(value)
+		Actor:disable_info_portion(value)
 	end
 
 	-- удаление переменных
@@ -665,24 +664,24 @@ function CArenaext:reinit()
 	local name, info, t, tt, i, j, n, nn, cnt, rnd, fight
 
 	---- именно здесь, до установки info_portion-ов
-	local special = self:is_stalkers_evil() or actor:dont_has_info(self.groups["special"].done)
+	local special = self:is_stalkers_evil() or not has_info(self.groups["special"].done)
 
 	-- запрещаем все группы
 	for name, info in pairs(self.groups) do
-		actor:give_info_portion(info.done)
+		Actor:give_info_portion(info.done)
 	end
 
 	-- запрещаем все бои
 	for name, info in pairs(self.fights) do
-		actor:give_info_portion(info.done)
+		Actor:give_info_portion(info.done)
 	end
 
 	-- мутанты
 	info = self.groups["mutants"]
-	actor:disable_info_portion(info.done)	-- разрешаем группу мутантов
+	Actor:disable_info_portion(info.done)	-- разрешаем группу мутантов
 	if is_init_mutants() then			-- разрешаем все бои
 		for i, name in pairs(info.fights) do
-			actor:disable_info_portion(self.fights[name].done)
+			Actor:disable_info_portion(self.fights[name].done)
 		end
 	else						-- разрешаем 3-4 случайных боя
 		t = {}
@@ -693,7 +692,7 @@ function CArenaext:reinit()
 		for i=1, n do
 			cnt = table.getn(t)
 			rnd = math.random(cnt)
-			actor:disable_info_portion(self.fights[t[rnd]].done)
+			Actor:disable_info_portion(self.fights[t[rnd]].done)
 			table.remove(t, rnd)
 		end
 	end
@@ -702,7 +701,7 @@ function CArenaext:reinit()
 	t = {}
 	tt = {}
 	info = self.groups["stakes"]
-	actor:disable_info_portion(info.done)
+	Actor:disable_info_portion(info.done)
 	for i, name in pairs(info.teams1) do
 		table.insert(t, name)
 	end
@@ -723,18 +722,18 @@ function CArenaext:reinit()
 			rnd = math.random(cnt)
 			aem_set_value(fight.team2, tt[rnd])
 			table.remove(tt, rnd)
-			actor:disable_info_portion(fight.done)
+			Actor:disable_info_portion(fight.done)
 		else
 			aem_set_value(fight.team1, "")
 			aem_set_value(fight.team2, "")
-			actor:give_info_portion(fight.done)
+			Actor:give_info_portion(fight.done)
 		end
 	end
 
 	-- инициализация turnament
 	t = {}
 	info = self.groups["turnament"]
-	actor:disable_info_portion(info.done)
+	Actor:disable_info_portion(info.done)
 	for i, name in pairs(info.teams) do
 		table.insert(t, name)
 	end
@@ -747,19 +746,19 @@ function CArenaext:reinit()
 		rnd = math.random(cnt-1)
 		aem_set_value(fight.team2, t[rnd])
 		table.remove(t, rnd)
-		actor:disable_info_portion(fight.done)
+		Actor:disable_info_portion(fight.done)
 	end
 	fight = self.fights[info.fights[3]]
 	aem_set_value(fight.team1, "")
 	aem_set_value(fight.team2, "")
-	actor:disable_info_portion(fight.done)
+	Actor:disable_info_portion(fight.done)
 
 	-- инициализация остальных групп и боёв
 	if special then						-- бой со сборной
 		info = self.groups["special"]
-		actor:disable_info_portion(info.done)
+		Actor:disable_info_portion(info.done)
 		for i, name in pairs(info.fights) do
-			actor:disable_info_portion(self.fights[name].done)
+			Actor:disable_info_portion(self.fights[name].done)
 		end
 		-- сброс статистики, что бы фраза не появлялась в диалоге больше одного раза
 		-- если бой не завершить, то он перейдёт в следующую активацию по info_portion
@@ -780,7 +779,7 @@ function CArenaext:reinit()
 			rnd = math.random(cnt)
 			info = self.groups[t[rnd]]
 			table.remove(t, rnd)
-			actor:disable_info_portion(info.done)
+			Actor:disable_info_portion(info.done)
 
 			tt = {}
 			for j, name in pairs(info.fights) do  -- составление 'таблиц' боёв для каждой группы
@@ -790,7 +789,7 @@ function CArenaext:reinit()
 			for j=1, nn do
 				cnt = table.getn(tt)
 				rnd = math.random(cnt)
-				actor:disable_info_portion(self.fights[tt[rnd]].done)
+				Actor:disable_info_portion(self.fights[tt[rnd]].done)
 				table.remove(tt, rnd)
 			end
 		end
@@ -808,14 +807,14 @@ function CArenaext:reinit()
 	end
 
 	-- рестриктор, который будет выполнять озвучку и выход с арены
-	sim:create("aem_sound", vector():set(150.14, -14.16, 74.03), actor:level_vertex_id(), actor:game_vertex_id())
+	sim:create("aem_sound", vector():set(150.14, -14.16, 74.03), Actor:level_vertex_id(), Actor:game_vertex_id())
 
 	-- рестриктор, который будет выполнять функции таймера, при сражениях на время
-	sim:create("aem_timer", vector():set(150.14, -14.16, 74.03), actor:level_vertex_id(), actor:game_vertex_id())
+	sim:create("aem_timer", vector():set(150.14, -14.16, 74.03), Actor:level_vertex_id(), Actor:game_vertex_id())
 
 	self.it = self.nt
 	aem_set_value("aem_it", self.it)
-	actor:give_info_portion("aem_ready")
+	Actor:give_info_portion("aem_ready")
 end
 
 -------
@@ -824,8 +823,8 @@ end
 function CArenaext:update_slow(curr)
 	local id, npc, ctm, rt, ct
 
-	if aem_only == true and actor:dont_has_info("aem_startup") then
-		actor:give_info_portion("bar_arena_fight_8_done")
+	if aem_only == true and not has_info("aem_startup") then
+		Actor:give_info_portion("bar_arena_fight_8_done")
 		startup()
 	end
 
@@ -838,8 +837,8 @@ function CArenaext:update_slow(curr)
 			sim:release(npc)
 			if npc:alive() ~= true then
 				-- мёртвый
-				actor:give_info_portion("aem_arny_dead")
-				actor:give_info_portion("aem_arny_dis_1")
+				Actor:give_info_portion("aem_arny_dead")
+				Actor:give_info_portion("aem_arny_dis_1")
 				admin_dead()
 			else
 				-- живой
@@ -848,8 +847,8 @@ function CArenaext:update_slow(curr)
 				aem_set_value("aem_id", obj.id)
 			end
 		else
-			actor:give_info_portion("aem_arny_spread_out")
-			actor:give_info_portion("aem_arny_dis_2")
+			Actor:give_info_portion("aem_arny_spread_out")
+			Actor:give_info_portion("aem_arny_dis_2")
 			admin_dead()
 		end
 	end
@@ -867,17 +866,17 @@ function CArenaext:update_slow(curr)
 				if npc:alive() ~= true then
 					-- мёртвый
 					if npc:profile_name() == "aem_arny" then
-						actor:give_info_portion("aem_arny_dead")
-						actor:give_info_portion("aem_arny_dis_1")
+						Actor:give_info_portion("aem_arny_dead")
+						Actor:give_info_portion("aem_arny_dis_1")
 					elseif string.find(npc:name(), "aem_admin") then
-						actor:give_info_portion("aem_admin_dead")
+						Actor:give_info_portion("aem_admin_dead")
 					else
 						-- Арни(админа) порвало -> заспавнился левый id -> левый умер -> update
-						if actor:dont_has_info("aem_arny_dis_1") and actor:dont_has_info("aem_arny_dis_2") then
-							actor:give_info_portion("aem_arny_spread_out")
-							actor:give_info_portion("aem_arny_dis_2")
+						if not has_info("aem_arny_dis_1") and not has_info("aem_arny_dis_2") then
+							Actor:give_info_portion("aem_arny_spread_out")
+							Actor:give_info_portion("aem_arny_dis_2")
 						else
-							actor:give_info_portion("aem_admin_spread_out")
+							Actor:give_info_portion("aem_admin_spread_out")
 						end
 					end
 					admin_dead()
@@ -885,22 +884,22 @@ function CArenaext:update_slow(curr)
 					-- живой
 					if npc:profile_name() ~= "aem_arny" and not string.find(npc:name(), "aem_admin") then
 						-- уничтожен (порвало в аномалии)
-						if actor:dont_has_info("aem_arny_dis_1") and actor:dont_has_info("aem_arny_dis_2") then
-							actor:give_info_portion("aem_arny_spread_out")
-							actor:give_info_portion("aem_arny_dis_2")
+						if not has_info("aem_arny_dis_1") and not has_info("aem_arny_dis_2") then
+							Actor:give_info_portion("aem_arny_spread_out")
+							Actor:give_info_portion("aem_arny_dis_2")
 						else
-							actor:give_info_portion("aem_admin_spread_out")
+							Actor:give_info_portion("aem_admin_spread_out")
 						end
 						admin_dead()
 					end
 				end
 			else
 				-- уничтожен (порвало в аномалии)
-				if actor:dont_has_info("aem_arny_dis_1") and actor:dont_has_info("aem_arny_dis_2") then
-					actor:give_info_portion("aem_arny_spread_out")
-					actor:give_info_portion("aem_arny_dis_2")
+				if not has_info("aem_arny_dis_1") and not has_info("aem_arny_dis_2") then
+					Actor:give_info_portion("aem_arny_spread_out")
+					Actor:give_info_portion("aem_arny_dis_2")
 				else
-					actor:give_info_portion("aem_admin_spread_out")
+					Actor:give_info_portion("aem_admin_spread_out")
 				end
 				admin_dead()
 			end
@@ -913,11 +912,11 @@ function CArenaext:update_slow(curr)
 	if rt ~= nil then
 		if (curr + rt >= self.nt) and (self.lt + rt < self.nt) then
 			msg("aem_restore")
-			actor:disable_info_portion("aem_arny_dead")
-			actor:disable_info_portion("aem_admin_dead")
-			actor:disable_info_portion("aem_arny_spread_out")
-			actor:disable_info_portion("aem_admin_spread_out")
-			actor:give_info_portion("aem_spam")
+			Actor:disable_info_portion("aem_arny_dead")
+			Actor:disable_info_portion("aem_admin_dead")
+			Actor:disable_info_portion("aem_arny_spread_out")
+			Actor:disable_info_portion("aem_admin_spread_out")
+			Actor:give_info_portion("aem_spam")
 			admin_spawn()
 			aem_del_value("aem_rt")
 		end
@@ -935,13 +934,13 @@ function CArenaext:update_slow(curr)
 		end
 
 		if ctm >= ct + 5 - x then
-			if actor:has_info("aem_spam") then
+			if Actor:has_info("aem_spam") then
 				local txt = {"aem_drunk_1", "aem_drunk_2", "aem_drunk_3", "aem_drunk_4"}
 				local cnt = table.getn(txt)
 				local rnd = math.random(cnt)
 				msg(txt[rnd])
 			end
-			actor:give_info_portion("aem_go_bar")
+			Actor:give_info_portion("aem_go_bar")
 			aem_del_value("aem_ct")
 		end
 	end
@@ -958,38 +957,38 @@ function CArenaext:update()
 		self.nextupd = time_real_ms + 1000
 	end
 
-	if actor:has_info("aem_startup") then
-		if actor:has_info("aem_open") then
-			if actor:has_info("aem_done") then
+	if Actor:has_info("aem_startup") then
+		if Actor:has_info("aem_open") then
+			if Actor:has_info("aem_done") then
 				--printf("CArenaext:update(~aem_open)")
 				self.nt = time_get_next(curr + 1) -- хотя бы часовой перерыв
 				aem_set_value("aem_nt", self.nt)
-				actor:disable_info_portion("aem_done")
-				actor:disable_info_portion("aem_open")
-				actor:disable_info_portion("aem_ready")
-				if actor:has_info("aem_spam") then
+				Actor:disable_info_portion("aem_done")
+				Actor:disable_info_portion("aem_open")
+				Actor:disable_info_portion("aem_ready")
+				if Actor:has_info("aem_spam") then
 					msg("aem_msg_done")
 				end
 				-- отключение мегафона и освещения щита "Арена"
-				actor:disable_info_portion("aem_megafone")
+				Actor:disable_info_portion("aem_megafone")
 				--aem_lights.shield_off()
 				-- запомним время закрытия арены
 				local ct = level.get_time_minutes()
 				aem_set_value("aem_ct", ct)
 			elseif time_need_close(curr, self.nt) and
-				actor:dont_has_info("bar_arena_fight") and
-				actor:dont_has_info("aem_fight_wait")
+				not has_info("bar_arena_fight") and
+				not has_info("aem_fight_wait")
 			then
 				--printf("CArenaext:update(~aem_open)")
 				self.nt = time_get_next(curr + 1) -- хотя бы часовой перерыв
 				aem_set_value("aem_nt", self.nt)
-				actor:disable_info_portion("aem_open")
-				actor:disable_info_portion("aem_ready")
-				if actor:has_info("aem_spam") then
+				Actor:disable_info_portion("aem_open")
+				Actor:disable_info_portion("aem_ready")
+				if Actor:has_info("aem_spam") then
 					msg("aem_msg_close")
 				end
 				-- отключение мегафона и освещения щита "Арена"
-				actor:disable_info_portion("aem_megafone")
+				Actor:disable_info_portion("aem_megafone")
 				--aem_lights.shield_off()
 				-- запомним время закрытия арены
 				local ct = level.get_time_minutes()
@@ -998,15 +997,15 @@ function CArenaext:update()
 		else
 			if curr >= self.nt then
 				--printf("CArenaext:update(aem_open)")
-				actor:give_info_portion("aem_open")
-				actor:disable_info_portion("aem_go_bar")
+				Actor:give_info_portion("aem_open")
+				Actor:disable_info_portion("aem_go_bar")
 			elseif (curr + 3 >= self.nt) and (self.lt + 3 < self.nt) then
 				-- включение мегафона и освещения щита "Арена"
-				actor:give_info_portion("aem_megafone")
+				Actor:give_info_portion("aem_megafone")
 				--aem_lights.shield_on()
-				actor:disable_info_portion("aem_go_bar")
+				Actor:disable_info_portion("aem_go_bar")
 			end
-			if actor:has_info("aem_spam") then
+			if Actor:has_info("aem_spam") then
 				if (curr >= self.nt) and (self.lt < self.nt) then
 					msg("aem_msg_open")
 				elseif (curr + 3 >= self.nt) and (self.lt + 3 < self.nt) then
@@ -1028,7 +1027,7 @@ function CArenaext:update()
 		end
 
 		-- проверка на разрыв диалога после передачи денег для ставки
-		if not actor:is_talking() and actor:has_info("aem_fight_wait") then
+		if not Actor:is_talking() and Actor:has_info("aem_fight_wait") then
 			self:start_stake()
 		end
 
@@ -1052,7 +1051,7 @@ function CArenaext:start(phr_id)
 	aem_set_value("aem_cr", name)
 
 	-- запомним группировку ГГ
-	aem_set_value("aem_cm", actor:character_community())
+	aem_set_value("aem_cm", Actor:character_community())
 
 	local info = self.fights[name]
 
@@ -1085,16 +1084,16 @@ function CArenaext:start(phr_id)
 		end
 
 		-- ставка
-		if actor:has_info("aem_stake1") then
+		if Actor:has_info("aem_stake1") then
 			manage_money(stake1, "out")
-		elseif actor:has_info("aem_stake2") then
+		elseif Actor:has_info("aem_stake2") then
 			manage_money(stake2, "out")
-		elseif actor:has_info("aem_stake3") then
+		elseif Actor:has_info("aem_stake3") then
 			manage_money(stake3, "out")
 		end
 
 		-- отложенный старт
-		actor:give_info_portion("aem_fight_wait")
+		Actor:give_info_portion("aem_fight_wait")
 
 	elseif info.group == "turnament" then
 
@@ -1119,16 +1118,16 @@ function CArenaext:start(phr_id)
 		end
 
 		-- ставка
-		if actor:has_info("aem_stake1") then
+		if Actor:has_info("aem_stake1") then
 			manage_money(stake1, "out")
-		elseif actor:has_info("aem_stake2") then
+		elseif Actor:has_info("aem_stake2") then
 			manage_money(stake2, "out")
-		elseif actor:has_info("aem_stake3") then
+		elseif Actor:has_info("aem_stake3") then
 			manage_money(stake3, "out")
 		end
 
 		-- отложенный старт
-		actor:give_info_portion("aem_fight_wait")
+		Actor:give_info_portion("aem_fight_wait")
 
 	else
 
@@ -1150,7 +1149,7 @@ function CArenaext:start(phr_id)
 		self.grenads = aem_grenade.unload1()
 
 		-- запускаем кучу логики, завязанную на этот info_portion
-		actor:give_info_portion("bar_arena_fight")
+		Actor:give_info_portion("bar_arena_fight")
 
 	end
 end
@@ -1160,7 +1159,7 @@ end
 -------
 function CArenaext:start_stake()
 	-- отключаем отложенный старт
-	actor:disable_info_portion("aem_fight_wait")
+	Actor:disable_info_portion("aem_fight_wait")
 
 	-- 'волшебный' ящичек
 	local box = level_object_by_sid(574)
@@ -1168,15 +1167,15 @@ function CArenaext:start_stake()
 	put_items_to_box_exept(box, self.keep_items)
 
 	-- ГГ временно пополняет ряды торговцев
-	actor:set_character_community("trader",0,0)
+	Actor:set_character_community("trader",0,0)
 
 	-- телепортация к зрителям
 	level.add_pp_effector ("teleport.ppe", 2006, false)
-	actor:set_actor_position(vector():set(140.05,-13.387,108.039))
-	actor:set_actor_direction(1.57)
+	Actor:set_actor_position(vector():set(140.05,-13.387,108.039))
+	Actor:set_actor_direction(1.57)
 
 	-- запускаем кучу логики, завязанную на этот info_portion
-	actor:give_info_portion("bar_arena_fight")
+	Actor:give_info_portion("bar_arena_fight")
 
 	-- смена группировки для team2
 	local npc
@@ -1200,11 +1199,11 @@ function CArenaext:finish()
 	self:on_done_fight()
 
 	-- телепортация к Арни
-	bar_arena_teleport_2_tp(actor)
+	bar_arena_teleport_2_tp(Actor)
 
 	-- ГГ покидает ряды торговцев
 	local community = aem_get_value("aem_cm")
-	actor:set_character_community(community,0,0)
+	Actor:set_character_community(community,0,0)
 	aem_del_value("aem_cm")
 
 	-- удаление оружия, незаконно вынесеного с арены
@@ -1213,11 +1212,11 @@ function CArenaext:finish()
 	end
 
 	-- 'волшебный' ящичек
-	bar_arena_teleport_2_box(actor)
+	bar_arena_teleport_2_box(Actor)
 
 	-- перезапуск логики рестриктов
-	actor:disable_info_portion("bar_arena_fight")
-	actor:disable_info_portion("bar_arena_fight_begin")
+	Actor:disable_info_portion("bar_arena_fight")
+	Actor:disable_info_portion("bar_arena_fight_begin")
 
 	-- массовое убийство врагов, оставшихся на арене после выхода ГГ
 	local bot
@@ -1240,51 +1239,51 @@ function CArenaext:close()
 	local info = self.fights[name]
 
 	if info.group == "turnament" or info.group == "stakes" then
-		if (actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
-		   (actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0) then
+		if (Actor:has_info("aem_stake_team1") and aem_get_value("aem_team1") > 0) or
+		   (Actor:has_info("aem_stake_team2") and aem_get_value("aem_team2") > 0) then
 			local money = 0
-			if actor:has_info("aem_stake1") then
+			if Actor:has_info("aem_stake1") then
 				money = stake1 + math.random(stake1*perc_min/100, stake1*perc_max/100)
-			elseif actor:has_info("aem_stake2") then
+			elseif Actor:has_info("aem_stake2") then
 				money = stake2 + math.random(stake2*perc_min/100, stake2*perc_max/100)
-			elseif actor:has_info("aem_stake3") then
+			elseif Actor:has_info("aem_stake3") then
 				money = stake3 + math.random(stake3*perc_min/100, stake3*perc_max/100)
 			end
 			manage_money(money, "in")
 		else
 			manage_money(0, "in")
 		end
-		actor:disable_info_portion("aem_stake_team1")
-		actor:disable_info_portion("aem_stake_team2")
-		actor:disable_info_portion("aem_stake1")
-		actor:disable_info_portion("aem_stake2")
-		actor:disable_info_portion("aem_stake3")
+		Actor:disable_info_portion("aem_stake_team1")
+		Actor:disable_info_portion("aem_stake_team2")
+		Actor:disable_info_portion("aem_stake1")
+		Actor:disable_info_portion("aem_stake2")
+		Actor:disable_info_portion("aem_stake3")
 	else
 
-		if actor:has_info("aem_fight_foul") then
+		if Actor:has_info("aem_fight_foul") then
 			manage_money(info.money, "out")
-		elseif actor:has_info("aem_timeover") then
+		elseif Actor:has_info("aem_timeover") then
 			manage_money(0, "in")
 		else
 			manage_money(info.money, "in")
 
-			if actor:has_info("aem_bonus") and actor:dont_has_info("aem_timeover") then
+			if Actor:has_info("aem_bonus") and not has_info("aem_timeover") then
 				local money = 0
-				if actor:has_info("aem_bonus_5s") then
+				if Actor:has_info("aem_bonus_5s") then
 					money = info.bonus_5s
-				elseif actor:has_info("aem_bonus_10s") then
+				elseif Actor:has_info("aem_bonus_10s") then
 					money = info.bonus_10s
-				elseif actor:has_info("aem_bonus_15s") then
+				elseif Actor:has_info("aem_bonus_15s") then
 					money = info.bonus_15s
-				elseif actor:has_info("aem_bonus_20s") then
+				elseif Actor:has_info("aem_bonus_20s") then
 					money = info.bonus_20s
-				elseif actor:has_info("aem_bonus_30s") then
+				elseif Actor:has_info("aem_bonus_30s") then
 					money = info.bonus_30s
-				elseif actor:has_info("aem_bonus_40s") then
+				elseif Actor:has_info("aem_bonus_40s") then
 					money = info.bonus_40s
-				elseif actor:has_info("aem_bonus_50s") then
+				elseif Actor:has_info("aem_bonus_50s") then
 					money = info.bonus_50s
-				elseif actor:has_info("aem_bonus_60s") then
+				elseif Actor:has_info("aem_bonus_60s") then
 					money = info.bonus_60s
 				end
 
@@ -1293,24 +1292,24 @@ function CArenaext:close()
 				end
 			end
 		end
-		actor:disable_info_portion("aem_bonus")
-		actor:disable_info_portion("aem_bonus_5s")
-		actor:disable_info_portion("aem_bonus_10s")
-		actor:disable_info_portion("aem_bonus_15s")
-		actor:disable_info_portion("aem_bonus_20s")
-		actor:disable_info_portion("aem_bonus_30s")
-		actor:disable_info_portion("aem_bonus_40s")
-		actor:disable_info_portion("aem_bonus_50s")
-		actor:disable_info_portion("aem_bonus_60s")
-		actor:disable_info_portion("aem_timeover")
-		actor:disable_info_portion("aem_fight_foul")
+		Actor:disable_info_portion("aem_bonus")
+		Actor:disable_info_portion("aem_bonus_5s")
+		Actor:disable_info_portion("aem_bonus_10s")
+		Actor:disable_info_portion("aem_bonus_15s")
+		Actor:disable_info_portion("aem_bonus_20s")
+		Actor:disable_info_portion("aem_bonus_30s")
+		Actor:disable_info_portion("aem_bonus_40s")
+		Actor:disable_info_portion("aem_bonus_50s")
+		Actor:disable_info_portion("aem_bonus_60s")
+		Actor:disable_info_portion("aem_timeover")
+		Actor:disable_info_portion("aem_fight_foul")
 	end
 
 	-- сброс освещения после боя
 	--aem_lights.lights_reset()
 	aem_lights.remove_all_aem_lamps()
 
-	actor:disable_info_portion("aem_fight_done")
+	Actor:disable_info_portion("aem_fight_done")
 	aem_del_value("aem_cr")
 	aem_del_value("aem_team1")
 	aem_del_value("aem_team2")
@@ -1839,9 +1838,9 @@ end
 -- void put_items_to_box(game_object box, {["section1"]=true, ["section2"]=true, ...} items)
 -------
 function put_items_to_box(box, items)
-	db_actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item) 
 		if items[item:section()] == true then
-			db_actor:transfer_item(item, box)
+			Actor:transfer_item(item, box)
 		end
 	end)
 end
@@ -1851,9 +1850,9 @@ end
 -- void put_items_to_box_exept(game_object box, {["section1"]=true, ["section2"]=true, ...} exept)
 -------
 function put_items_to_box_exept(box, exept)
-	db_actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item) 
 		if exept[item:section()] ~= true then
-			db_actor:transfer_item(item, box)
+			Actor:transfer_item(item, box)
 		end
 	end)
 end
@@ -1863,7 +1862,7 @@ end
 -- void clear_items({["section1"]=true, ["section2"]=true, ...} items)
 -------
 function clear_items(items)
-	db_actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item) 
 		if items[item:section()] == true then
 			release(item)
 		end
@@ -1941,7 +1940,7 @@ end
 -- binder для привязки админов к 'bar_restrictor'
 -------
 function bind_admin(npc)
-	if actor:has_info("aem_go_bar") then
+	if Actor:has_info("aem_go_bar") then
 		npc:add_restrictions("bar_restrictor", "")
 	else
 		npc:remove_all_restrictions()
@@ -1962,7 +1961,7 @@ end
 -- получение и отнятие денег без передачи NPC
 ---------------------------------------------------------------------------------------------------
 function manage_money(num, type)
-	if actor then
+	if Actor then
 		if type == "in" then
 			got_money(num)
 		elseif type == "out" then
@@ -1976,10 +1975,10 @@ end
 ---------------------------------------------------------------------------------------------------
 function msg(text)
 	local npc, who, icon, msg, snd
-	if actor:has_info("aem_arny_dead") or
-		actor:has_info("aem_admin_dead") or
-		actor:has_info("aem_arny_spread_out") or
-		actor:has_info("aem_admin_spread_out") then
+	if Actor:has_info("aem_arny_dead") or
+		Actor:has_info("aem_admin_dead") or
+		Actor:has_info("aem_arny_spread_out") or
+		Actor:has_info("aem_admin_spread_out") then
 		who = game.translate_string("aem_barman")
 		icon = Frect():set(332,235,84,45)
 	else
@@ -1997,8 +1996,8 @@ function msg(text)
 
 	msg = game.translate_string(text)
 	snd = xr_sound.get_safe_sound_object([[device\pda\pda_tip]])
-	snd:play_no_feedback(actor, sound_object.s2d, 0, vector(), 1.0)
-	actor:give_game_news("%c[255,238,155,23]"..who..":\\n%c[default]"..msg, "ui\\ui_iconstotal", icon, 0, 15000)
+	snd:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+	Actor:give_game_news("%c[255,238,155,23]"..who..":\\n%c[default]"..msg, "ui\\ui_iconstotal", icon, 0, 15000)
 end
 
 function npc(npc)
@@ -2055,8 +2054,8 @@ end
 -- проверка возможности показа в диалоге ветки дополнительных боёв
 -------
 function is_stakes_or_turnament_valid()
-	return	actor:dont_has_info(aem.groups["stakes"].done) or
-		actor:dont_has_info(aem.groups["turnament"].done)
+	return	not has_info(aem.groups["stakes"].done) or
+		not has_info(aem.groups["turnament"].done)
 end
 
 -------
@@ -2067,7 +2066,7 @@ function is_stakes_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
 	if name == "" then
 		return false
 	end
-	return actor:dont_has_info(aem.fights[name].done)
+	return not has_info(aem.fights[name].done)
 end
 
 -------
@@ -2078,26 +2077,26 @@ function is_turnament_valid(npc1, npc2, dlg_name, phr_prev, phr_curr)
 	if name == "" then
 		return false
 	end
-	return actor:dont_has_info(aem.fights[name].done)
+	return not has_info(aem.fights[name].done)
 end
 
 -------
 -- проверка наличия денег на ставку
 -------
 function has_money_1()
-	return actor:money() >= stake1
+	return Actor:money() >= stake1
 end
 
 function has_money_2()
-	return actor:money() >= stake2
+	return Actor:money() >= stake2
 end
 
 function has_money_3()
-	return actor:money() >= stake3
+	return Actor:money() >= stake3
 end
 
 function hasnt_money()
-	return actor:money() < stake1
+	return Actor:money() < stake1
 end
 
 -------
@@ -2128,7 +2127,7 @@ function is_reward_nostake_unlimit()
 	if aem:is_stake() then
 		return false
 	end
-	if actor:has_info("aem_bonus") then
+	if Actor:has_info("aem_bonus") then
 		return false
 	end
 	return true
@@ -2140,10 +2139,10 @@ function is_reward_nostake_bonus()
 	if aem:is_stake() then
 		return false
 	end
-	if actor:dont_has_info("aem_bonus") then
+	if not has_info("aem_bonus") then
 		return false
 	end
-	return actor:dont_has_info("aem_timeover")
+	return not has_info("aem_timeover")
 end
 
 -- бой с ограничением времени - ничья
@@ -2152,10 +2151,10 @@ function is_reward_nostake_timeover()
 	if aem:is_stake() then
 		return false
 	end
-	if actor:dont_has_info("aem_bonus") or actor:dont_has_info("aem_timeover") then
+	if not has_info("aem_bonus") or not has_info("aem_timeover") then
 		return false
 	end
-	return actor:dont_has_info("aem_fight_foul")
+	return not has_info("aem_fight_foul")
 end
 
 -- бой с ограничением времени - фолл
@@ -2164,10 +2163,10 @@ function is_reward_nostake_foul()
 	if aem:is_stake() then
 		return false
 	end
-	if actor:dont_has_info("aem_bonus") or actor:dont_has_info("aem_timeover") then
+	if not has_info("aem_bonus") or not has_info("aem_timeover") then
 		return false
 	end
-	return actor:has_info("aem_fight_foul")
+	return Actor:has_info("aem_fight_foul")
 end
 
 -------
@@ -2257,21 +2256,21 @@ end
 -------
 function start_fight(npc1, npc2, dlg_name, phr_curr)
 -- отсекание случая закрытия арены во время диалога
-	if actor:dont_has_info("aem_ready") then
-		actor:disable_info_portion("aem_bonus")
-		actor:disable_info_portion("aem_bonus_5s")
-		actor:disable_info_portion("aem_bonus_10s")
-		actor:disable_info_portion("aem_bonus_15s")
-		actor:disable_info_portion("aem_bonus_20s")
-		actor:disable_info_portion("aem_bonus_30s")
-		actor:disable_info_portion("aem_bonus_40s")
-		actor:disable_info_portion("aem_bonus_50s")
-		actor:disable_info_portion("aem_bonus_60s")
-		actor:disable_info_portion("aem_stake_team1")
-		actor:disable_info_portion("aem_stake_team2")
-		actor:disable_info_portion("aem_stake1")
-		actor:disable_info_portion("aem_stake2")
-		actor:disable_info_portion("aem_stake3")
+	if not has_info("aem_ready") then
+		Actor:disable_info_portion("aem_bonus")
+		Actor:disable_info_portion("aem_bonus_5s")
+		Actor:disable_info_portion("aem_bonus_10s")
+		Actor:disable_info_portion("aem_bonus_15s")
+		Actor:disable_info_portion("aem_bonus_20s")
+		Actor:disable_info_portion("aem_bonus_30s")
+		Actor:disable_info_portion("aem_bonus_40s")
+		Actor:disable_info_portion("aem_bonus_50s")
+		Actor:disable_info_portion("aem_bonus_60s")
+		Actor:disable_info_portion("aem_stake_team1")
+		Actor:disable_info_portion("aem_stake_team2")
+		Actor:disable_info_portion("aem_stake1")
+		Actor:disable_info_portion("aem_stake2")
+		Actor:disable_info_portion("aem_stake3")
 		dialogs.break_dialog(npc1, npc2)
 		return
 	end
@@ -2290,26 +2289,26 @@ end
 -- функция части инициализации смерти аренных менеджеров
 -------
 function admin_dead()
-	if actor:has_info("aem_arny_dead") then
+	if Actor:has_info("aem_arny_dead") then
 		msg("aem_arny_dead")
-	elseif actor:has_info("aem_arny_spread_out") then
+	elseif Actor:has_info("aem_arny_spread_out") then
 		msg("aem_arny_spread_out")
-	elseif actor:has_info("aem_admin_dead") then
+	elseif Actor:has_info("aem_admin_dead") then
 		local txt = {"aem_barm_1", "aem_barm_2", "aem_barm_3", "aem_barm_4"}
 		local cnt = table.getn(txt)
 		local rnd = math.random(cnt)
 		msg(txt[rnd])
-	elseif actor:has_info("aem_admin_spread_out") then
+	elseif Actor:has_info("aem_admin_spread_out") then
 		msg("aem_admin_spread_out")
 	end
 
-	if actor:dont_has_info("aem_startup") then
+	if not has_info("aem_startup") then
 		timeup()
 	end
 
 	-- иммитируется закрытие арены
-	actor:disable_info_portion("aem_spam")
-	actor:disable_info_portion("aem_megafone")
+	Actor:disable_info_portion("aem_spam")
+	Actor:disable_info_portion("aem_megafone")
 
 	rt = math.random(5,11)
 	aem_set_value("aem_rt", rt)

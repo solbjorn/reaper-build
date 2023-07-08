@@ -24,7 +24,7 @@ end
 
 function good_bye(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -45,7 +45,7 @@ end
 
 function give_flamethrower_worked(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -65,7 +65,7 @@ end
 
 function clear_parts(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -96,7 +96,7 @@ end
 
 function clear_fuel(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -163,28 +163,28 @@ function out_flamethrower(first_speaker, second_speaker)
 end
 
 function have_a_fire_kolobok()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("af_fireball") ~= nil and actor:dont_has_info("flamethrower_quest_fireball") and actor:has_info("flamethrower_quest_start") then
 		actor:give_info_portion("flamethrower_quest_fireball")
     end
 end
 
 function have_a_trubki()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("trubka") ~= nil and actor:dont_has_info("flamethrower_quest_trubki") then
 		actor:give_info_portion("flamethrower_quest_trubki")
 	end
 end
 
 function have_a_manometr()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("manometr") ~= nil and actor:dont_has_info("flamethrower_quest_manometr") then
 		actor:give_info_portion("flamethrower_quest_manometr")
     end
 end
 
 function have_a_vodko()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:has_info("flamethrower_quest_start")
     then
 		if has("vodka", 10) then
@@ -196,7 +196,7 @@ function have_a_vodko()
 end
 
 function have_a_gorelka()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("gorelka") ~= nil and actor:dont_has_info("flamethrower_quest_gorelka") then
 		actor:give_info_portion("flamethrower_quest_gorelka")
     end
@@ -219,7 +219,7 @@ function have_a_af_fireball(stalker, player)
 end
 
 function have_a_drink()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("vodka") ~= nil then
 		return true
 	end
@@ -231,7 +231,7 @@ function have_a_fuel()
 end
 
 function have_30000()
-	if db.actor and db.actor:money() >= 30000 then
+	if Actor and Actor:money() >= 30000 then
 		return true
 	else
 		return false
@@ -239,7 +239,7 @@ function have_30000()
 end
 
 function have_2000()
-	if db.actor and db.actor:money() >= 2000 then
+	if Actor and Actor:money() >= 2000 then
 		return true
 	else
 		return false
@@ -247,7 +247,7 @@ function have_2000()
 end
 
 function have_a_ballon()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("amk_ballon") ~= nil then
 		return true
 	end
@@ -255,7 +255,7 @@ function have_a_ballon()
 end
 
 function have_a_kanistra()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("amk_kanistra") ~= nil then
 		return true
 	end
@@ -263,7 +263,7 @@ function have_a_kanistra()
 end
 
 function have_a_flamethrower()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("wpn_flame") ~= nil then
 		return true
 	end
@@ -311,7 +311,7 @@ end
 
 function start_reload(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -329,7 +329,7 @@ end
 
 function start_find_and_reload(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -402,7 +402,7 @@ end
 
 function reload(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -427,7 +427,7 @@ end
 
 function set_ammo(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else

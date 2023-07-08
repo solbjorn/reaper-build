@@ -138,11 +138,11 @@ function spawn_ban_trup_npc()
 end
 
 function trup_otprav_sms()
-	if db.actor ~= nil and
+	if Actor ~= nil and
 		has_alife_info("find_corpse_military_x16") and
 		not has_alife_info("find_corpse_military_x16_done")
 	then
-		db.actor:give_info_portion("find_corpse_military_x16_done")
+		Actor:give_info_portion("find_corpse_military_x16_done")
 		amk.send_tip("Получены данные на КПК",nil,nil,20,"military")
 		alife():create("banderos_documents", vector():set(7.07,-7.85,-13.68), 7641, 2693)
 	end

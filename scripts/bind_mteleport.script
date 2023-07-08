@@ -35,7 +35,7 @@ function actor_update(delta)
 	local i,v,acter_poz,s
 
 	-- Получим позицию актера (что-бы каждый раз не запрашивать)
-	acter_poz = db.actor:position()
+	acter_poz = Actor:position()
 	-- Проверяем наши телепорты
 	for i, v in pairs(teleport_binders) do
 		s = v.parametrs
@@ -47,9 +47,9 @@ function actor_update(delta)
 				if time_global() >= s.time then
 					-- время отведенное на показ спецэфектов прошло
 					-- производим телепортацию
-					db.actor:set_actor_position(xyz(s.poz_x,s.poz_y,s.poz_z))
+					Actor:set_actor_position(xyz(s.poz_x,s.poz_y,s.poz_z))
 					if s.rotate ~= nil then
-						db.actor:set_actor_direction(s.rotate)
+						Actor:set_actor_direction(s.rotate)
 					end
 					-- выполняем функции рестриктора
 					if s.info then

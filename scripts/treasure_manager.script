@@ -342,7 +342,7 @@ function CTreasure:use(npc)
 	if npc:character_community() == "zombied" then return end
 
 	--lootmoney start
-	if (npc and db_actor) then
+	if (npc and Actor) then
 		lootmoney.lootmoney(npc)
 	end
 	--lootmoney end
@@ -483,7 +483,7 @@ function CTreasure:treasure_empty(box, box_story_id)
 	if v.active then
 		freeplay_stats:check_found_secrets_count()
 		actor_stats.add_points("treasures", v.name, 1, 1)
-		db_actor:set_character_rank(db_actor:character_rank() + 1)
+		Actor:set_character_rank(Actor:character_rank() + 1)
 		amk_offline_alife.empty_treasure(box:id())
 
 		-- если тайник не именной, то переведен его в онлайн для следующей выдачи

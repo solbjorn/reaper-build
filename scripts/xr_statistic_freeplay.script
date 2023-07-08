@@ -13,7 +13,7 @@ function freeplay_statistic:__init()
 end
 
 function freeplay_statistic:check_actor_money()
-	local actor_money = db.actor:money()
+	local actor_money = Actor:money()
     local trader_ranks = {
                             [1] = "1000",
                             [2] = "10000",
@@ -26,7 +26,7 @@ function freeplay_statistic:check_actor_money()
     for k,v in pairs(trader_ranks) do
         if actor_money >= tonumber(v) and not has_alife_info("trader_freeplay_reward_task_"..k.."_start") then
             news_manager.send_tip( "trader_freeplay_reward_tips_"..k, nil, "trader", nil )
-            db.actor:give_info_portion("trader_freeplay_reward_task_"..k.."_start")
+            Actor:give_info_portion("trader_freeplay_reward_task_"..k.."_start")
         end
     end
 end
@@ -45,7 +45,7 @@ function freeplay_statistic:check_stalker_killed_count()
     for k,v in pairs(military_ranks) do
         if self.stalker_killed == tonumber(v) and not has_alife_info("military_freeplay_reward_task_"..k.."_start") then
             news_manager.send_tip( "military_freeplay_reward_tips_"..k, nil, "stalker", nil )
-            db.actor:give_info_portion("military_freeplay_reward_task_"..k.."_start")
+            Actor:give_info_portion("military_freeplay_reward_task_"..k.."_start")
         end
     end
 end
@@ -103,7 +103,7 @@ function freeplay_statistic:check_found_secrets_count()
     for k,v in pairs(barman_ranks) do
         if self.secrets_found == tonumber(v) and not has_alife_info("barman_freeplay_reward_task_"..k.."_start") then
             news_manager.send_tip( "barman_freeplay_reward_tips_"..k, nil, "barman", nil )
-            db.actor:give_info_portion("barman_freeplay_reward_task_"..k.."_start")
+            Actor:give_info_portion("barman_freeplay_reward_task_"..k.."_start")
         end
     end
 end
@@ -144,7 +144,7 @@ function freeplay_statistic:check_found_pda_count()
      for k,v in pairs(svoboda_ranks) do
          if self.pda_found == tonumber(v) and not has_alife_info("svoboda_freeplay_reward_task_"..k.."_start") then
              news_manager.send_tip( "svoboda_freeplay_reward_tips_"..k, nil, "freedom", nil )
-             db.actor:give_info_portion("svoboda_freeplay_reward_task_"..k.."_start")
+             Actor:give_info_portion("svoboda_freeplay_reward_task_"..k.."_start")
          end
      end
 end
@@ -172,49 +172,49 @@ function freeplay_statistic:check_monster_killed_count(npc)
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[1]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_1", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_1_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_1_objective_1_done")
             self.monster_killed = 0
         end
     elseif boar and has_alife_info("dolg_freeplay_reward_task_2_start") and not has_alife_info("dolg_freeplay_reward_task_2_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[2]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_2", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_2_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_2_objective_1_done")
             self.monster_killed = 0
         end
     elseif snork and has_alife_info("dolg_freeplay_reward_task_3_start") and not has_alife_info("dolg_freeplay_reward_task_3_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[3]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_3", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_3_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_3_objective_1_done")
             self.monster_killed = 0
         end
     elseif poltergeist and has_alife_info("dolg_freeplay_reward_task_4_start") and not has_alife_info("dolg_freeplay_reward_task_4_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[4]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_4", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_4_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_4_objective_1_done")
              self.monster_killed = 0
         end
     elseif gigant and has_alife_info("dolg_freeplay_reward_task_5_start") and not has_alife_info("dolg_freeplay_reward_task_5_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[5]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_5", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_5_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_5_objective_1_done")
             self.monster_killed = 0
         end
     elseif bloodsucker and has_alife_info("dolg_freeplay_reward_task_6_start") and not has_alife_info("dolg_freeplay_reward_task_6_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[6]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_6", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_6_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_6_objective_1_done")
             self.monster_killed = 0
         end
     elseif controller and has_alife_info("dolg_freeplay_reward_task_7_start") and not has_alife_info("dolg_freeplay_reward_task_7_objective_1_done") then
         self.monster_killed = self.monster_killed + 1
         if self.monster_killed ==  tonumber(dolg_ranks[7]) then
              news_manager.send_tip( "dolg_freeplay_reward_tips_7", nil, "dolg", nil )
-             db.actor:give_info_portion("dolg_freeplay_reward_task_7_objective_1_done")
+             Actor:give_info_portion("dolg_freeplay_reward_task_7_objective_1_done")
              self.monster_killed = 0
         end
     end
@@ -271,7 +271,7 @@ function freeplay_statistic:check_found_artefact_count(cost)
     for k,v in pairs(ecolog_ranks) do
         if self.artefact_found >= tonumber(v) and not has_alife_info("ecolog_freeplay_reward_task_"..k.."_start") then
             news_manager.send_tip( "ecolog_freeplay_reward_tips_"..k, nil, "ecolog", nil )
-            db.actor:give_info_portion("ecolog_freeplay_reward_task_"..k.."_start")
+            Actor:give_info_portion("ecolog_freeplay_reward_task_"..k.."_start")
         end
     end
 end
@@ -297,7 +297,7 @@ end
 
 --' Функция проверки достижения актёром ранга(вызывается из bind_actor.script из actor_binder:update)
 function freeplay_statistic:check_actor_rank()
-    local actor_rank = db.actor:character_rank()
+    local actor_rank = Actor:character_rank()
     local trader_ranks = {
                             [1] = "10",
                             [2] = "50",
@@ -310,7 +310,7 @@ function freeplay_statistic:check_actor_rank()
     for k,v in pairs(trader_ranks) do
         if actor_rank >= tonumber(v) and not has_alife_info("neutral_freeplay_reward_task_"..k.."_start") then
             news_manager.send_tip( "neutral_freeplay_reward_tips_"..k, nil, "stalker", nil )
-            db.actor:give_info_portion("neutral_freeplay_reward_task_"..k.."_start")
+            Actor:give_info_portion("neutral_freeplay_reward_task_"..k.."_start")
         end
     end
 end
@@ -325,7 +325,7 @@ function freeplay_statistic:check_found_item(obj)
 
     if not (device().precache_frame > 1) then
 		actor_stats.add_points("treasures", "st_pda_pda", 1, 1)
-		db_actor:set_character_rank(db_actor:character_rank() + 1)
+		Actor:set_character_rank(Actor:character_rank() + 1)
     end
 	return
   end

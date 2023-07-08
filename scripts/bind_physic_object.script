@@ -97,10 +97,10 @@ function generic_physics_binder:update(delta)
       local health=self.object:get_car() and self.object:get_car():GetfHealth()
       if health then
 			if health < 0 then
-				self:death_callback(self.object, db_actor)
+				self:death_callback(self.object, Actor)
 			elseif self.health-health>0.001 then
           self.health=health
-          self:hit_callback(self.object, self.health-health, vector():set(1,0,0), db.actor, 0)
+          self:hit_callback(self.object, self.health-health, vector():set(1,0,0), Actor, 0)
           self.nofixonhit=nil
         end
       end

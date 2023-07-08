@@ -96,7 +96,7 @@ function action_wounded:execute ()
     h.power = 0
     h.direction = self.object:direction()
     h.bone = "bip01_spine"
-    h.draftsman = db_actor
+    h.draftsman = Actor
     h.impulse = 0
     h.type = hit.wound
     self.object:hit(h)
@@ -117,7 +117,7 @@ function action_wounded:execute ()
 
 		local victim = xr_logic.pstor_retrieve(self.object, "wounded_victim")
 		if victim == "actor" then
-			victim = db_actor
+			victim = Actor
 		elseif tostring(victim) == "nil" then
 			victim = nil
 		else
@@ -264,7 +264,7 @@ function Cwound_manager:process_hp_wound(hp)
 	local key = self:get_key_from_distance(self.a.hp_state, hp)
 	if key ~= nil then
 		local r1,r2, key_state
-		if self.npc:see(db_actor) then
+		if self.npc:see(Actor) then
 			key_state = self.a.hp_state_see[key]
 			if key_state.state then
 				r1 = xr_logic.pick_section_from_condlist(self.npc, key_state.state)
@@ -529,7 +529,7 @@ function help_wounded(npc)
 
 	amk.start_timer("healing_enemies", math.random(20, 30), npc:id(), npc:character_community())
 	npc:set_character_community("stalker", 0, 0)
-	npc:set_relation(game_object.friend, db_actor)
+	npc:set_relation(game_object.friend, Actor)
 end
 	local smarts = {
 		l01_escape = {

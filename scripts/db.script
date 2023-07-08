@@ -5,7 +5,6 @@
 
 zone_by_name        = {}
 storage             = {}
-actor               = nil
 heli                = {}
 story_by_id         = {}
 trader        = nil
@@ -30,20 +29,6 @@ end
 function del_zone( zone )
   zone_by_name[zone:name()] = nil
 	storage[zone:id()] = nil
-end
-
-function add_actor( obj )
-	_G.db_actor = obj
-
-  actor = obj
-  add_obj( obj )
-end
-
-function del_actor()
-  del_obj( actor )
-  actor = nil
-
-	_G.db_actor = nil
 end
 
 function add_heli(obj)

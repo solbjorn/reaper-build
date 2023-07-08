@@ -5,7 +5,7 @@ function unload1()
 	--printf("unload1")
 	local sim = alife()
 	local sys = system_ini()
-	local actor = db.actor
+	local actor = Actor
 	local lvid = actor:level_vertex_id()
 	local gvid = actor:game_vertex_id()
 	local pos = actor:position()
@@ -86,7 +86,7 @@ function unload2(ids)
 	end
 	for i, id in pairs(ids) do
 		obj = level.object_by_id(id)
-		obj:transfer_item(obj, db.actor)
+		obj:transfer_item(obj, Actor)
 	end
 	return true
 end

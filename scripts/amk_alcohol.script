@@ -239,7 +239,7 @@ end
 --смерть от передоза --тестовая функция, надо доработать эффекторы
 function amk_alcohol_poison_death()
 	level.add_cam_effector("camera_effects\\head_shot.anm", 5001, false, "")
-	db.actor:kill(db.actor)
+	Actor:kill(Actor)
 end
 --
 --ГГ засыпает с перепоя
@@ -252,12 +252,12 @@ end
 --ГГ "получает" похмелье
 function amk_alcohol_good_morning()
 	local h = hit()
-	h.draftsman = db.actor
+	h.draftsman = Actor
 	h.type = hit.fire_wound
 	h.direction = vector():set(0, 0, 0)
 	h.power = alc_hp_lose_after_sober
 	h.impulse = 1
-	db.actor:hit(h)
+	Actor:hit(h)
 	level.add_pp_effector("alcohol.ppe", 3000, false)
    	ap.a = 0
 end
@@ -281,12 +281,12 @@ end
 function amk_lose_hp(game_time)
 	if ap.b0 == 1 then
 		local h = hit()
-		h.draftsman = db.actor
+		h.draftsman = Actor
 		h.type = hit.fire_wound
 		h.direction = vector():set(0, 0, 0)
 		h.power = alc_hp_lose
 		h.impulse = 1
-		db.actor:hit(h)
+		Actor:hit(h)
 		ap.d0 = 1
 		ap.d1 = game_time + alc_time_lose_hp*60 --hours
 		amk.send_tip(game.translate_string("alc_need_drink_big"),nil,nil,5)

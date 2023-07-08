@@ -1171,7 +1171,7 @@ function CRandomTask:have_completed_job(actor, npc)
        self.task_info[v].status == "completed"
     then
 			if not is_find_task[self.task_info[v].type] then return true end
-			return db_actor:object(self.task_info[v].target) ~= nil
+			return Actor:object(self.task_info[v].target) ~= nil
     end
   end
   return false
@@ -1249,7 +1249,7 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
   if task_desc.time ~= nil then
     time = task_desc.time * 1000
   end
-  db_actor:give_task(task,time,false)
+  Actor:give_task(task,time,false)
 
   --' дизаблим все остальные задания данного типа, так как игрок не может одновременно обладать двумя заданиями одного типа.
   self.task_info[self.task_id_by_yes_phrase_id[p2]].status = "selected"
@@ -1278,7 +1278,7 @@ function CRandomTask:action_refuse_task(actor, npc, p1, p2)
 end
 --' Проверяем, не выполнен ли таск
 function CRandomTask:task_complete(p1, p2)
-  if db_actor == nil then
+  if Actor == nil then
     return false
   end
 
@@ -1326,7 +1326,7 @@ function CRandomTask:task_complete(p1, p2)
         return true
       end
 		elseif is_find_task[sel_task.type] then
-			if db_actor:object(sel_task.target) then
+			if Actor:object(sel_task.target) then
 				sel_task.status = "completed"
 				return true
 			end
@@ -1404,7 +1404,7 @@ function CRandomTask:action_task_show(npc, actor)
 		local task_desc = self.task_info[v]
 		if self:task_avail(actor, npc, nil, nil, task_desc.init_phrase_id, false) then
 			local task_texture, task_rect = get_texture_info(icon_task_by_type[task_desc.type])
-			db_actor:give_talk_message(translate(task_desc.name).."\\n"..translate("st_task_time").." "..self:transform_number_to_date(task_desc.time), task_texture, task_rect,"iconed_answer_item")
+			Actor:give_talk_message(translate(task_desc.name).."\\n"..translate("st_task_time").." "..self:transform_number_to_date(task_desc.time), task_texture, task_rect,"iconed_answer_item")
     end
   end
 end
@@ -1462,7 +1462,7 @@ function CRandomTask:check_task_props(task_id)
   end
 
   --' Проверка по кондлисту
-	if xr_logic.pick_section_from_condlist(db_actor, task_desc.condlist) == nil then
+	if xr_logic.pick_section_from_condlist(Actor, task_desc.condlist) == nil then
 		task_desc.enabled_props = false
     return
   end
@@ -1580,7 +1580,7 @@ function CRandomTask:completed_task(actor, npc, p1, p2, p3)
   local task_desc=self.task_info[tid]
   if task_desc.status~="completed" then return false end
 	if is_find_task[task_desc.type] then
-		return db_actor:object(task_desc.target) ~= nil
+		return Actor:object(task_desc.target) ~= nil
 	end
 	return true
 end
@@ -1649,7 +1649,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 			end
 
 			if task_desc.reward_reputation ~= nil then
-				db_actor:change_character_reputation(task_desc.reward_reputation)
+				Actor:change_character_reputation(task_desc.reward_reputation)
 			end
 
 			if task_desc.reward_relation ~= nil then
@@ -1665,7 +1665,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 			end
 
 			actor_stats.add_points("quests", desc, 1, 1)
-			db_actor:set_character_rank(db_actor:character_rank() + 1)
+			Actor:set_character_rank(Actor:character_rank() + 1)
 		end
 	end
 end
@@ -1675,7 +1675,7 @@ function CRandomTask:task_reward_storyline(task)
 	local task_desc = self.task_info[task:get_id()]
 	if not task_desc then
 		actor_stats.add_points("quests", translate(task:get_title()), 1, 1)
-		db_actor:set_character_rank(db_actor:character_rank() + 1)
+		Actor:set_character_rank(Actor:character_rank() + 1)
 		return
 	end
 	if task_desc.type ~= "storyline" then
@@ -1683,7 +1683,7 @@ function CRandomTask:task_reward_storyline(task)
 	end
 
   if task_desc.reward_reputation ~= nil then
-		db_actor:change_character_reputation(task_desc.reward_reputation)
+		Actor:change_character_reputation(task_desc.reward_reputation)
   end
 
   if task_desc.reward_relation ~= nil then
@@ -1699,7 +1699,7 @@ function CRandomTask:task_reward_storyline(task)
 	end
 
 	actor_stats.add_points("quests", desc, 1, 1)
-	db_actor:set_character_rank(db_actor:character_rank() + 1)
+	Actor:set_character_rank(Actor:character_rank() + 1)
 end
 
 --' Создается диалог актера, в котором будут приниматься задания
@@ -2052,16 +2052,16 @@ end
 
 	local task_texture, task_rect = get_texture_info("ui_iconsTotal_find_item")
 	if reward_text ~= nil and reward_text ~= "" then
-		db_actor:give_talk_message("Я тебе за это дам вот что:", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
-		db_actor:give_talk_message(reward_text, task_texture, task_rect,"iconed_trade_info")
+		Actor:give_talk_message("Я тебе за это дам вот что:", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+		Actor:give_talk_message(reward_text, task_texture, task_rect,"iconed_trade_info")
 	end
 
 	if reward_money ~= nil then
 		task_texture, task_rect = get_texture_info("ui_iconsTotal_found_money")
 		if reward_text == "" then
-			db_actor:give_talk_message(reward_money .. " RU (" .. game.translate_string("return_for_reward") .. ")", task_texture, task_rect, "iconed_trade_info")
+			Actor:give_talk_message(reward_money .. " RU (" .. game.translate_string("return_for_reward") .. ")", task_texture, task_rect, "iconed_trade_info")
 		else
-			db_actor:give_talk_message(reward_money .. " RU", task_texture, task_rect,"iconed_trade_info")
+			Actor:give_talk_message(reward_money .. " RU", task_texture, task_rect,"iconed_trade_info")
 		end
 	end
 

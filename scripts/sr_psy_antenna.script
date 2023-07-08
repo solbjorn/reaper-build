@@ -86,12 +86,12 @@ function PsyAntenna:update_psy_hit(dt)
 			psy_hit.power 				= power
 			psy_hit.direction 			= vector():set( 0, 0, 0 )
 			psy_hit.impulse 			= 0
-			psy_hit.draftsman 			= db_actor
+			psy_hit.draftsman 			= Actor
 			psy_hit.type 				= hit.telepatic
-			db_actor:hit				(psy_hit)
+			Actor:hit				(psy_hit)
 
-			if db_actor.health < 0.01 and db_actor:alive() then
-				db_actor:kill( db_actor )
+			if Actor.health < 0.01 and Actor:alive() then
+				Actor:kill( Actor )
 			end
 		end
 	end
@@ -107,17 +107,17 @@ function PsyAntenna:generate_phantoms()
 			if phantom_manager:phantom_count() < self.phantom_max then
 				local radius = self.phantom_spawn_radius * ( math.random()/2.0+0.5 )
 				local ang    = self.phantom_fov * math.random() - self.phantom_fov * 0.5
-				local dir    = vector_rotate_y( db_actor:direction(), ang )
+				local dir    = vector_rotate_y( Actor:direction(), ang )
 
-				phantom_manager.spawn_phantom( db_actor:position():add( dir:mul(radius) ) )
+				phantom_manager.spawn_phantom( Actor:position():add( dir:mul(radius) ) )
 			end
 		end
 	end
 end
 function PsyAntenna:update_sound()
 	if not self.sound_initialized then
-		self.sound_obj_left:play_at_pos		(db_actor, vector():set(-1, 0, 1), 0, sound_object.s2d + sound_object.looped)
-		self.sound_obj_right:play_at_pos	(db_actor, vector():set( 1, 0, 1), 0, sound_object.s2d + sound_object.looped)
+		self.sound_obj_left:play_at_pos		(Actor, vector():set(-1, 0, 1), 0, sound_object.s2d + sound_object.looped)
+		self.sound_obj_right:play_at_pos	(Actor, vector():set( 1, 0, 1), 0, sound_object.s2d + sound_object.looped)
 
 		self.sound_initialized = true
 	end
@@ -274,12 +274,12 @@ function action_psy_antenna:update()
 end
 function action_psy_antenna:switch_state()
 	if self.state ~= state_inside then
-		if self.object:inside( db_actor:position() ) then
+		if self.object:inside( Actor:position() ) then
 			self:zone_enter()
 			return
 		end
 	else
-		if not self.object:inside( db_actor:position() ) then
+		if not self.object:inside( Actor:position() ) then
 			self:zone_leave()
 			return
 		end

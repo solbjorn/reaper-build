@@ -274,14 +274,14 @@ function docent_krovosos_jaw_have()
 	return has("mutant_krovosos_jaw",2) and has("device_pda_npc",20)
 end
 function docent_have_done()
-	if (db.actor:has_info("docent_detector1_done")) and (db.actor:has_info("docent_detector2_done")) and (db.actor:has_info("docent_detector3_done")) then
+	if (Actor:has_info("docent_detector1_done")) and (Actor:has_info("docent_detector2_done")) and (Actor:has_info("docent_detector3_done")) then
 	return false
 	else
 	return true
 	end
 end
 function docent_have_have()
-	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
+	if Actor:has_info("sak_gold_fish_have") or Actor:has_info("sak_find_seif_have") or Actor:has_info("sak_repair_box_have") or Actor:has_info("sak_reward_outfit_have") then
 	return true
 	else
 	return false
@@ -1045,14 +1045,14 @@ function sak_reward_outfit_have()
 	return has("militaryspec_outfit_bast")
 end
 function sak_have_start()
-	if db.actor:has_info("sak_gold_fish_start") or db.actor:has_info("sak_find_seif_start") or db.actor:has_info("sak_repair_box_start") or db.actor:has_info("sak_reward_outfit_start") then
+	if Actor:has_info("sak_gold_fish_start") or Actor:has_info("sak_find_seif_start") or Actor:has_info("sak_repair_box_start") or Actor:has_info("sak_reward_outfit_start") then
 	return true
 	else
 	return false
 	end
 end
 function sak_have_have()
-	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
+	if Actor:has_info("sak_gold_fish_have") or Actor:has_info("sak_find_seif_have") or Actor:has_info("sak_repair_box_have") or Actor:has_info("sak_reward_outfit_have") then
 	return true
 	else
 	return false
@@ -1147,24 +1147,24 @@ function bar_dolg_leader_find_case_have()
 end
 local armor_profit_margin = 5
 function sak_repair_precond(trader, actor)
-	local item_in_slot_6 = db.actor:item_in_slot(6)
+	local item_in_slot_6 = Actor:item_in_slot(6)
 	if item_in_slot_6 ~= nil and 1 > item_in_slot_6:condition() + 0.01 then
 		 return true
 	else return false
 	end
 end
 function sak_check_money_s6(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(6)
+	local item_in_slot = Actor:item_in_slot(6)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
-		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
+		if item_repair_cost > 0 and Actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
 		end
 	end
 	return false
 end
 function sak_repiar_armor_s6(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(6)
+	local item_in_slot = Actor:item_in_slot(6)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
@@ -1176,13 +1176,13 @@ function repair_costs(first_speaker, second_speaker)
 
 	local item_name_and_price = ""
 	local item_repair_cost = 0
-	if db.actor ~= nil then
-		local item_in_slot_6 = db.actor:item_in_slot(6)
+	if Actor ~= nil then
+		local item_in_slot_6 = Actor:item_in_slot(6)
 		if item_in_slot_6 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_6:condition()) * item_in_slot_6:cost() * armor_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_2").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
-				db.actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
+				Actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
 			end
 		end
 	end
@@ -1258,25 +1258,25 @@ function mica_have()
 	return has("af_ameba_mica")
 end
 function actor_2500_have()
-  return db.actor:money()>=2500
+  return Actor:money()>=2500
 end
 function actor_9000_have()
-  return db.actor:money()>=9000
+  return Actor:money()>=9000
 end
 function actor_20000_have()
-  return db.actor:money()>=20000
+  return Actor:money()>=20000
 end
 function actor_5000_have()
-  return db.actor:money()>=5000
+  return Actor:money()>=5000
 end
 function actor_15000_have()
-  return db.actor:money()>=15000
+  return Actor:money()>=15000
 end
 function actor_10000_have()
-  return db.actor:money()>=10000
+  return Actor:money()>=10000
 end
 function actor_30000_have()
-  return db.actor:money()>=30000
+  return Actor:money()>=30000
 end
 function give_soul()
 	lost("af_soul")

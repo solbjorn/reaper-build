@@ -39,8 +39,8 @@ function evaluator_contact:evaluate()
 
    if xrs_armor.pickupers[self.object:id()]==true then return false end
 
-  if db_actor then
-    if not db_actor:alive() then
+  if Actor then
+    if not Actor:alive() then
       return false
     end
 -- Red75 +
@@ -111,7 +111,7 @@ function action_meet_wait:execute ()
 
   local victim = nil
   if meet_manager.victim == "actor" then
-    victim = db_actor
+    victim = Actor
   elseif meet_manager.victim == "nil" then
     victim = nil
   else
@@ -124,11 +124,11 @@ function action_meet_wait:execute ()
     h.power = 0
     h.direction = self.object:direction()
     h.bone = "bip01_spine"
-    h.draftsman = db_actor
+    h.draftsman = Actor
     h.impulse = 0
     h.type = hit.wound
     self.object:hit(h)
-    self.object:set_relation(game_object.enemy, db_actor)
+    self.object:set_relation(game_object.enemy, Actor)
   else
     -- является ли текущий звук синхронным для текущего стейта
     for k,v in pairs(self.a.syndata) do
@@ -226,7 +226,7 @@ function Cmeet_manager:update()
     self.sound = "nil"
     return
   end
-  if self.a.precond == "visibility" and not self.npc:see(db_actor) and not self.npc:is_talking() then
+  if self.a.precond == "visibility" and not self.npc:see(Actor) and not self.npc:is_talking() then
     self.state = "nil"
     self.sound = "nil"
     return
@@ -235,7 +235,7 @@ function Cmeet_manager:update()
   if self.npc:is_talking() then
     self.dist = 0
   else
-    self.dist = self.npc:position():distance_to(db_actor:position())
+    self.dist = self.npc:position():distance_to(Actor:position())
   end
 
   self.victim = self:process_victim()
@@ -275,9 +275,9 @@ end
 function Cmeet_manager:process_meet()
   local key
   local is_talking = self.npc:is_talking()
-	local act = db_actor:active_item()
+	local act = Actor:active_item()
 	if act and act:is_weapon() and not act:is_binoculars() and
-       self.npc:relation(db_actor) ~= game_object.friend and self:actor_targets_npc(self.npc)
+       self.npc:relation(Actor) ~= game_object.friend and self:actor_targets_npc(self.npc)
     then
     key = self:get_key_from_distance(self.a.meet_state_wpn)
     if key ~= nil then
@@ -319,7 +319,7 @@ function Cmeet_manager:process_meet()
 end
 function Cmeet_manager:process_victim()
   local key
-	local act = db_actor:active_item()
+	local act = Actor:active_item()
 	if act and act:is_weapon() then
     key = self:get_key_from_distance(self.a.victim_wpn)
     if key ~= nil then
@@ -335,7 +335,7 @@ function Cmeet_manager:process_victim()
 end
 
 function Cmeet_manager:actor_targets_npc(npc)
-  local dangerang=1/npc:position():distance_to(db_actor:position())
+  local dangerang=1/npc:position():distance_to(Actor:position())
 	local ang=horz_angle(screen.cam_dir,npc:position():sub(screen.cam_pos))
   local tgt=ang>-dangerang and ang<dangerang
   if tgt then
@@ -364,7 +364,7 @@ function Cmeet_manager:get_key_from_distance(t)
 end
 function Cmeet_manager:get_key_from_zone(t)
   for k,v in pairs(t) do
-    if utils.npc_in_zone(db_actor, db.zone_by_name[v.zone]) then
+    if utils.npc_in_zone(Actor, db.zone_by_name[v.zone]) then
       return k
     end
   end
@@ -383,14 +383,14 @@ function Cmeet_manager:process_use()
   end
 
   local t
-	local act = db_actor:active_item()
+	local act = Actor:active_item()
 	if act and act:is_weapon() and not act:is_binoculars() then
     t = xr_logic.pick_section_from_condlist(self.npc, self.a.use_wpn)
   else
     t = xr_logic.pick_section_from_condlist(self.npc, self.a.use)
   end
   -- проверка по дистанции
-  if (is_talking and self.npc:position():distance_to_sqr(db_actor:position()) > 9) and
+  if (is_talking and self.npc:position():distance_to_sqr(Actor:position()) > 9) and
     t ~= "self"
   then
     self.npc:stop_talk()
@@ -407,7 +407,7 @@ function Cmeet_manager:process_use()
 		-- Eсли npc враг (Р.М.А.).
 		self.npc:enable_talk()
     if not is_talking then
-      db_actor:run_talk_dialog(self.npc)
+      Actor:run_talk_dialog(self.npc)
     end
   end
 end
@@ -759,7 +759,7 @@ end
 function cannot_talk_by_weapon(npc)
 	local st = db.storage[npc:id()].meet
 	if st then
-		local act = db_actor:active_item()
+		local act = Actor:active_item()
 		if not act or not act:is_weapon() then return false end
 
     if st.use then

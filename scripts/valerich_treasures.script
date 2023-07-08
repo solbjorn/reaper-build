@@ -242,7 +242,7 @@ local sound_spawn = {
 
 function spawn_next(n)
 	-- удаляем старую записку
-	amk.remove_item(db_actor:object("val_zapis_"..tostring(n-1)))
+	amk.remove_item(Actor:object("val_zapis_"..tostring(n-1)))
 
 	if n <= #treasures then
 		-- выбираем где спавнить
@@ -283,9 +283,9 @@ function spawn_next(n)
 		say(table.random(sound_spawn))
 		amk_particle.amk_particle({
 			particle	= "amk\\zomb_explode",
-			pos		= db_actor:position()
+			pos		= Actor:position()
 		})
-		amk.spawn_skel(db_actor)
+		amk.spawn_skel(Actor)
 		give_info("coll_end")
 	end
 end

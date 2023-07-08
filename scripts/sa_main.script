@@ -51,7 +51,7 @@ end
  * Scope zoom mode callback
 --]]-----------------------------------------------------------------------------------------------
 function scope_zoom_mode_callback()
-	local active_item = db_actor:active_item()
+	local active_item = Actor:active_item()
 	if active_item and active_item:is_weapon() then
 		if get_weapon_data(active_item, "zoom_mode") and get_weapon_data(active_item, "scope_enabled") and get_weapon_data(active_item, "scope_texture") and not get_weapon_data(active_item, "grenade_mode") then
 			if not actor_flags.scope_zoom_mode then
@@ -89,15 +89,15 @@ function yantar_psy_blowout()
 	if not has_info("yan_labx16_switcher_3_end") then
 		if level.name() == "l08_yantar" and not (actor_flags.sleep_state or yantar_tasks.yan_scientist_raid_now()) then
 			local need_hit, khit = amk_mod.blowout_khit()
-			if db_actor:object("good_psy_helmet") then
+			if Actor:object("good_psy_helmet") then
 				khit = 0.05
-			elseif db_actor:object("bad_psy_helmet") then
+			elseif Actor:object("bad_psy_helmet") then
 				khit = 0.2 * khit
 			else
 				khit = 0.35 * khit
 			end
 			if khit < 0.05 then khit = 0.05 end
-			db_actor.psy_health = -khit
+			Actor.psy_health = -khit
 			play_safe_sound_object([[ambient\blowout]])
 			play_safe_sound_object([[characters_voice\scenario\yantar\psy_voices_1]])
 			level.add_pp_effector("yantar_blowout.ppe", effector_ids.yantar_blowout, false)
@@ -118,7 +118,7 @@ function bunker_cooling_sound()
 		if not has_info("bar_deactivate_radar_done") then
 			if not (cooling_snd and cooling_snd:playing()) then
 				cooling_snd = sound_object("ambient\\cooling_run")
-				cooling_snd:play_at_pos(db_actor, vector(), 0, sound_object.s2d + sound_object.looped)
+				cooling_snd:play_at_pos(Actor, vector(), 0, sound_object.s2d + sound_object.looped)
 			end
 		elseif cooling_snd then
 			play_safe_sound_object("ambient\\cooling_stop")

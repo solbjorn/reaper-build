@@ -91,7 +91,7 @@ function evaluator_danger:evaluate()
 	    bd_type == danger_object_bullet_ricochet)
 	then
 		if self_obj:best_enemy() == nil and
-		   self_obj:relation(db_actor) ~= game_object_enemy
+		   self_obj:relation(Actor) ~= game_object_enemy
 		then
       if bd_type ~= danger_object_bullet_ricochet or time_global()-best_danger:time()>10000 then
         return false

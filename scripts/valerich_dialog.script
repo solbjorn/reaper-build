@@ -35,7 +35,7 @@ end
 
 --'удаляем последнюю записку
 function release_zap_coll()
-	local zap=db_actor:object("val_zapis_55")
+	local zap=Actor:object("val_zapis_55")
 	if zap then
 		release(server_object(zap:id()))
 	end
@@ -43,5 +43,5 @@ end
 
 --'проверяем последнюю записку в рюкзаке
 function val_zapis_est()
-	return db_actor:object("val_zapis_55") ~= nil
+	return Actor:object("val_zapis_55") ~= nil
 end

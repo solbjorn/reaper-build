@@ -15,7 +15,7 @@ function off_corpses()
 	local obj = alife():object(a)
 		if obj then
 			local posobj = obj.position
-			local actorpos = db.actor:position()
+			local actorpos = Actor:position()
 			local npc_name = obj:name()
 			if (obj:is_stalker() and not obj:alive() and obj.m_story_id~=48800 and obj.m_story_id~=48801 and obj.m_story_id~=48802 and npc_name~="ecolog_wound_bunker" and npc_name~="dead_military_bunker1" and npc_name~="dead_military_bunker2" and npc_name~="ecolog_dead_bunker1" and npc_name~="ecolog_dead_bunker2" and npc_name~="dead_military_esc" and obj.m_story_id~=9660 and npc_name~="radar_monolit_dead" and npc_name~="agr_ratcatcher" and npc_name~="amk_mini_bar_voron" and npc_name~="amk_mini_bar_kulinar" and npc_name~="esc_stalker_corpse" and npc_name~="esc_stalker_corps1" and npc_name~="esc_stalker_corps1_0000" and npc_name~="esc_stalker_corps1_0001" and npc_name~="esc_stalker" and npc_name~="esc_trup_bratka" and npc_name~="esc_stalker_0000" and npc_name~="esc_trup_scene" and npc_name~="aes_stalker_0000" and npc_name~="aes_stalker" and npc_name~="dar_stalker0001" and npc_name~="dar_stalker" and npc_name~="gar_stalker_0000" and npc_name~="gar_stalker_0001" and npc_name~="gar_stalker_0002" and npc_name~="gar_stalker_0003" and npc_name~="gar_stalker_0004" and npc_name~="gar_stalker_0005" and npc_name~="agr_stalker_0000" and npc_name~="agr_stalker_0001" and npc_name~="agr_stalker_0002" and npc_name~="agr_stalker_0003" and npc_name~="agr_stalker_0004" and npc_name~="agr_stalker_0005" and npc_name~="val_sos_dead1" and npc_name~="val_sos_dead2" and npc_name~="val_escort_bandit1_dead" and npc_name~="val_escort_bandit2_dead" and npc_name~="val_lager_bandit16_0000" and npc_name~="bar_stalker" and npc_name~="rostok_stalker" and npc_name~="rostok_dead_stalker_01" and npc_name~="rostok_dead_stalker_03" and npc_name~="rostok_dead_stalker_02" and npc_name~="bar_ecolog_crush_dead" and npc_name~="bar_ecolog_crush_dead_0000" and npc_name~="bar_ecolog_crush_dead_0001" and npc_name~="rostok_dead_stalker_0000" and npc_name~="bar_ecolog_crush_dead_0002" and npc_name~="bar_ecolog_crush_dead_0003" and npc_name~="yan_stalker" and npc_name~="mil_stalker_0004" and npc_name~="mil_stalker_0001" and npc_name~="mil_stalker_0002" and npc_name~="mil_stalker" and npc_name~="mil_stalker_0000" and npc_name~="rad_stalker_dead" and npc_name~="rad_stalker_0005_dead" and npc_name~="rad_stalker_0006_dead_scientist" and npc_name~="rad_stalker_0007_dead_scientist" and npc_name~="rad_stalker_0008_dead_scientist" and npc_name~="mil_Svoboda_zombi_stalker" and npc_name~="kat_bandit_0006" and npc_name~="trup_voennogo" and npc_name~="banderos_advokat" and npc_name~="banderos_killer_tiran") then
 				if posobj:distance_to(actorpos) > dist_to_corpses then
@@ -144,6 +144,6 @@ function item_found(corps)
 end
 
 function max_comp(i1,i2) -- возвращает true если i1 меньше i2
-	local actorpos = db.actor:position()
+	local actorpos = Actor:position()
 	return i1.position:distance_to(actorpos) < i2.position:distance_to(actorpos)
 end

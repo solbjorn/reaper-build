@@ -31,7 +31,7 @@ function action_abuse_hit:initialize()
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
 
-	state_mgr.set_state(self.object, "punch", nil, nil, {look_object = db.actor}, {animation = true})
+	state_mgr.set_state(self.object, "punch", nil, nil, {look_object = Actor}, {animation = true})
 	xr_sound.set_sound_play(self.object, "use_abuse")
 	news_main.on_abuse(self.object)
 end

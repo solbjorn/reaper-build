@@ -314,9 +314,9 @@ function heli_move:process_attack_params( path_info, index )
 		self.heliObject:SetEnemy( self.patrol_look:point( self.look_index ) )
 
 	elseif target == "actor" or target == "a" then
-		if db_actor then
-			self.heliObject:LookAtPoint( db_actor:position(), true )
-			self.heliObject:SetEnemy( db_actor )
+		if Actor then
+			self.heliObject:LookAtPoint( Actor:position(), true )
+			self.heliObject:SetEnemy( Actor )
 		else
 			self.heliObject:ClearEnemy()
 		end

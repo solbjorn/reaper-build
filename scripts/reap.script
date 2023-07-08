@@ -59,9 +59,9 @@ end
 
 function item_take(obj)
 	local sect = obj:section()
-	if screen.precache_frame <= 1 and db_actor:is_in_slot(obj) and
+	if screen.precache_frame <= 1 and Actor:is_in_slot(obj) and
 	   config:r_bool_cache(sect, "default_to_ruck", true) then
-		db_actor:move_to_ruck(obj)
+		Actor:move_to_ruck(obj)
 	end
 
 	inv:on_item_take(obj)
@@ -126,8 +126,8 @@ function take_item_from_box(box, item)
 	if box:section() == "m_inventory_box" and box:is_inv_box_empty() then
 		local sim = g_alife
 		level.start_stop_menu(level.main_input_receiver(), true)
-		sim:create("treasure_item", box:position(), db_actor:level_vertex_id(),
-			   db_actor:game_vertex_id())
+		sim:create("treasure_item", box:position(), Actor:level_vertex_id(),
+			   Actor:game_vertex_id())
 		sim:release(sim:object(box:id()))
 	end
 
@@ -160,7 +160,7 @@ end
 
 function actor_save(packet)
 	local flags = 0
-	if db_actor:active_slot() < 10 then
+	if Actor:active_slot() < 10 then
 		flags = bit_or(flags, 1)
 	end
 
@@ -186,14 +186,14 @@ function load_slot_hide()
 		bolt_ending.del_bolt()
 		load_del_bolt = nil
 
-		if db_actor:active_slot() == inventory_slots.BOLT then
+		if Actor:active_slot() == inventory_slots.BOLT then
 			return
 		end
 	end
 
-	load_slot_item = db_actor:active_item()
+	load_slot_item = Actor:active_item()
 	if load_slot_item then
-		db_actor:move_to_ruck(load_slot_item)
+		Actor:move_to_ruck(load_slot_item)
 		load_slot_item = load_slot_item:id()
 	end
 end
@@ -204,16 +204,16 @@ function load_slot_restore()
 	if not load_slot_item then return end
 
 	if load_slot_act then
-		db_actor:move_to_slot_and_activate(load_slot_item)
+		Actor:move_to_slot_and_activate(load_slot_item)
 	else
-		db_actor:move_to_slot(load_slot_item)
+		Actor:move_to_slot(load_slot_item)
 	end
 	load_slot_item = nil
 	load_slot_act = nil
 end
 
 function drop_weapon(punch)
-	local actor = db_actor
+	local actor = Actor
 	local active_item = actor:active_item()
 	if active_item then
 		local active_sect = active_item:section()
@@ -235,28 +235,28 @@ function wpn_show_enable(info_id)
 	ammo_belt.on_info(info_id)
 	grenade_belt.on_info(info_id)
 
-	db_actor:restore_weapon()
+	Actor:restore_weapon()
 	local act = get_value("last_slot", 10, true)
 	if act < 10 then
 		level.parked_call(function()
-			db_actor:activate_slot(act)
+			Actor:activate_slot(act)
 		end)
 	end
 end
 
 function wpn_hide_disable(info_id)
-	local act = db_actor:active_slot()
+	local act = Actor:active_slot()
 	if act < 10 then
-		if (act == 1 or act == 2) and db_actor:active_item():get_ammo_in_magazine() == 0 then
+		if (act == 1 or act == 2) and Actor:active_item():get_ammo_in_magazine() == 0 then
 			level.parked_call(function()
-				db_actor:activate_slot(-1)
+				Actor:activate_slot(-1)
 			end)
 		else
-			db_actor:activate_slot(-1)
+			Actor:activate_slot(-1)
 		end
 		set_value("last_slot", act)
 	end
-	db_actor:hide_weapon()
+	Actor:hide_weapon()
 
 	ammo_belt.on_info(info_id)
 	grenade_belt.on_info(info_id)
@@ -281,7 +281,7 @@ local info_fn = {
 		end
 	end,
 	ui_trade = function(info_id)
-		if db_actor:is_talking() then
+		if Actor:is_talking() then
 			ammo_belt.on_info(info_id)
 			grenade_belt.on_info(info_id)
 		else
@@ -313,7 +313,7 @@ local gg_kick = config:r_u32_ex("gg_kick", "enabled", 0) > 0
 local sleep_cs = nil
 
 function hit_effectors(amount)
-	if gg_kick ~= true or amount <= 0.05 or not db_actor:alive() then
+	if gg_kick ~= true or amount <= 0.05 or not Actor:alive() then
 		return
 	end
 
@@ -326,7 +326,7 @@ function hit_effectors(amount)
 
 	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
 	local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 
 	if math.random() < (amount / 2) then
 		drop_weapon()

@@ -3,16 +3,16 @@ function remove_obj(obj_id)
 end
 
 function remove_item(item_section)
-  local a = db.actor
+  local a = Actor
 
-  local obj = db.actor:object(item_section)
+  local obj = Actor:object(item_section)
 
   remove_obj(obj:id())
 end
 
 function spawn_item_in_inv(spawn_item,npc)
   if npc==nil then
-    npc=db.actor
+    npc=Actor
   end
   return alife():create(spawn_item,
       npc:position(),
@@ -22,7 +22,7 @@ function spawn_item_in_inv(spawn_item,npc)
 end
 
 function give_item(item_section)
-  local a = db.actor
+  local a = Actor
 
   return alife():create(item_section, a:position(), a:level_vertex_id(), a:game_vertex_id(), a:id())
 end

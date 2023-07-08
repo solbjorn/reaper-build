@@ -15,7 +15,7 @@ end
 function evaluator_need_punch:evaluate()
 	if xr_sleeper.is_npc_asleep(self.object) then return false end
 	local rank = amk_offline_alife.get_be_enemy(self.object:id())
-	return rank > 0 and rank < amk_offline_alife.enemy_level_angry and self.object:position():distance_to(db.actor:position()) <= min_check_dist
+	return rank > 0 and rank < amk_offline_alife.enemy_level_angry and self.object:position():distance_to(Actor:position()) <= min_check_dist
 end
 
 class "evaluator_need_trade" (property_evaluator)
@@ -24,12 +24,12 @@ function evaluator_need_trade:__init(storage, name) super (nil, name)
 end
 
 function evaluator_need_trade:is_vip()
-	return (self.object:character_community()=="stalker" and self.object:relation(db.actor) == game_object.friend) or (self.object:is_story_object() and self.object:story_id() ~= 424)
+	return (self.object:character_community()=="stalker" and self.object:relation(Actor) == game_object.friend) or (self.object:is_story_object() and self.object:story_id() ~= 424)
 end
 
 function evaluator_need_trade:evaluate()
 	if not self.object:is_talk_enabled() or xr_sleeper.is_npc_asleep(self.object) then return false end
-	local whom = db.actor
+	local whom = Actor
 	local dist = self.object:position():distance_to(whom:position())
 	if dist > min_check_dist then
 		npc_traded[self.object:id()] = nil
@@ -62,11 +62,11 @@ function action_punch_activity:initialize()
 	else
 		self.move_type = "run"
 	end
-	db.actor:stop_talk()
+	Actor:stop_talk()
 end
 
 function action_punch_activity:do_move()
-	local whom = db.actor
+	local whom = Actor
 	if self.is_story then
 		--a story NPC is calling Mecheniy
 		if whom:see(self.object) then
@@ -90,7 +90,7 @@ end
 
 function action_punch_activity:execute()
 	action_base.execute(self)
-	local whom = db.actor
+	local whom = Actor
 
 	if self.state == state_looking then
 		if self.object:see(whom) then
@@ -103,7 +103,7 @@ function action_punch_activity:execute()
 		if dist < 7 and amk_offline_alife.get_be_enemy(self.object:id()) > amk_offline_alife.enemy_level_hit then
 			--if a NPC wants to kill Mecheniy switch to enemy status
 			amk_offline_alife.set_be_enemy_f(self.object:id(), amk_offline_alife.enemy_level_angry)
-			self.object:set_relation(game_object.enemy, db.actor)
+			self.object:set_relation(game_object.enemy, Actor)
 		elseif dist < neer_dist and self.object:see(whom) then
 			--a NPC has reached Mecheniy and can punch him now
 			self.object:set_movement_type(move.stand)
@@ -147,7 +147,7 @@ function action_trade_activity:execute()
 		npc_traded[self.object:id()] = true
 		return
 	end
-	local whom = db.actor
+	local whom = Actor
 	local dist = self.object:position():distance_to(whom:position())
 	if dist < neer_trade_dist then
 		state_mgr.set_state(self.object, "wait_trade", nil, nil, { look_object = whom }, {animation = true})
@@ -157,7 +157,7 @@ function action_trade_activity:execute()
 end
 
 function action_trade_activity:finalize()
-	local whom = db.actor
+	local whom = Actor
 	local dist = self.object:position():distance_to(whom:position())
 	if dist <= (neer_trade_dist + 1) and whom:see(self.object) and self.object:see(whom) then
 		npc_traded[self.object:id()] = true

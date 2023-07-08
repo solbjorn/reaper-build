@@ -6,9 +6,9 @@ function osoznanie_decline(npc, actor)
 	actor:stop_talk()
 	xr_effects.enable_ui()
 	local point = patrol("con_way_if_reject_to_st2")
-	db_actor:set_actor_position(point:point(0))
+	Actor:set_actor_position(point:point(0))
 	local dir = point:point(1):sub(point:point(0))
-	db_actor:set_actor_direction(-dir:getH())
+	Actor:set_actor_direction(-dir:getH())
 	timer("xr_effects.enable_ui", 10, true)
 end
 

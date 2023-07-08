@@ -50,7 +50,7 @@ local nagrad = {
 --20 БУТЫЛОК ВОДКИ
 function prines_vodku(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -63,7 +63,7 @@ end
 function otdal_vodku(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -78,7 +78,7 @@ end
 ---10 БУТЫЛОК ВОДКИ
 function malo_vodki(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -92,7 +92,7 @@ function otdal_malo_vodki(first_speaker, second_speaker)
 	local item = ""
 	local count = math.random(2,3)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -113,7 +113,7 @@ end
 --проверяем наличие артов у ГГ артов
 function est_li_art(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -126,7 +126,7 @@ end
 --отдаём арты Сахару
 function otdat_art(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -138,8 +138,8 @@ end
 
 --вызываем функцию из таска при появлении (взятии) арта в инвентаре
 	function vzial_art(task, objective)
-	if db.actor ~= nil then
-		return db.actor:object("banderos_art") ~= nil
+	if Actor ~= nil then
+		return Actor:object("banderos_art") ~= nil
 	end
 	return false
 end
@@ -163,16 +163,16 @@ end
 
 --вызываем функцию из таска при появлении (взятии) РГ в инвентаре
 function vzial_rg(task, objective)
-	if db.actor ~= nil then
-		return db.actor:object("wpn_rg6_m1") ~= nil
+	if Actor ~= nil then
+		return Actor:object("wpn_rg6_m1") ~= nil
 	end
 	return false
 end
 
 --вступление в Свободу
 function actor_set_freedom(actor, npc)
-	if db.actor then
-		db.actor:set_character_community("actor_freedom", 0, 0)
+	if Actor then
+		Actor:set_character_community("actor_freedom", 0, 0)
 	end
 	return true
 end
@@ -192,7 +192,7 @@ end
 --проверяем наличие КПК у ГГ
 function have_pda_svoboda(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -206,7 +206,7 @@ end
 function out_pda_svoboda(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -228,7 +228,7 @@ end
 function out_one_pda_svoboda(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -247,7 +247,7 @@ end
 ---ПРИНЁС ТРИ КПК ФРИМЕНАМ
 function have_pda_dolg(first_speaker, second_speaker)
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -260,7 +260,7 @@ end
 function out_pda_dolg(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -283,7 +283,7 @@ end
 function out_one_pda_dolg(first_speaker, second_speaker)
 	local item = ""
 	local actor, trader
-	if db.actor and 0 == first_speaker:id() then
+	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
 		trader = second_speaker
 	else
@@ -319,8 +319,8 @@ function prines_kpk_tirana(first_speaker, second_speaker)
 
 --вызываем функцию из таска при появлении (взятии) КПК в инвентаре
 	function vzial_kpk_tirana(task, objective)
-	if db.actor ~= nil then
-		return db.actor:object("device_tiran_pda") ~= nil
+	if Actor ~= nil then
+		return Actor:object("device_tiran_pda") ~= nil
 	end
 	return false
 end
@@ -348,8 +348,8 @@ function prines_documenty(first_speaker, second_speaker)
 
 --вызываем функцию из таска при появлении (взятии) документов в инвентаре
 	function vzial_documenty(task, objective)
-	if db.actor ~= nil then
-		return db.actor:object("banderos_documents") ~= nil
+	if Actor ~= nil then
+		return Actor:object("banderos_documents") ~= nil
 	end
 	return false
 end

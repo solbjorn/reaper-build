@@ -237,15 +237,15 @@ function ev_see_stuff:evaluate()
 		end
 	end
 
-	if npc:relation(db_actor) == game_object.enemy and (db_actor:alive() and db_actor:see(npc)) then
+	if npc:relation(Actor) == game_object.enemy and (Actor:alive() and Actor:see(npc)) then
 		if res then
 			freeGObject(self.st)
 			local wpn = npc:active_item() or npc:best_weapon()
 			npc:set_item(object.idle, wpn)
-			local dir = db_actor:position():sub(npc:position()):add(vector():set(0,1,0))
+			local dir = Actor:position():sub(npc:position()):add(vector():set(0,1,0))
 			npc:set_sight(look.direction, dir)
 			npc:set_mental_state(anim.danger)
-			npc:enable_memory_object(db_actor, true)
+			npc:enable_memory_object(Actor, true)
 		end
 		self.st.actor_see_us = time_global() + 60000
 		return false

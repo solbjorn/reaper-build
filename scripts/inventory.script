@@ -27,7 +27,7 @@ function CInventory:lost(sect, count)
 	if not count then count = 1 end
 
 	local cnt = 0
-	db_actor:iterate_inventory(function(dummy, item)
+	Actor:iterate_inventory(function(dummy, item)
 		if cnt < count and item:section() == sect then
 			release(item)
 			cnt = cnt + 1
@@ -41,9 +41,9 @@ end
 -- Передаем один предмет
 function CInventory:transfer(victim, sect, type)
 	if type == "in" then
-		victim:transfer_item(victim:object(sect), db_actor)
+		victim:transfer_item(victim:object(sect), Actor)
 	elseif type == "out" then
-		db_actor:transfer_item(db_actor:object(sect), victim)
+		Actor:transfer_item(Actor:object(sect), victim)
 	end
 	news_manager.relocate_item(type, sect)
 end

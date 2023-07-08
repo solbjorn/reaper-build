@@ -6,9 +6,9 @@ local weapon_profit_margin = 1.3
 local armor_profit_margin = 1.2
 
 function trader_repair_precond(trader, actor)
-	local item_in_slot_1 = db.actor:item_in_slot(1)
-	local item_in_slot_2 = db.actor:item_in_slot(2)
-	local item_in_slot_6 = db.actor:item_in_slot(6)
+	local item_in_slot_1 = Actor:item_in_slot(1)
+	local item_in_slot_2 = Actor:item_in_slot(2)
+	local item_in_slot_6 = Actor:item_in_slot(6)
 	if item_in_slot_1 ~= nil and 1 > item_in_slot_1:condition() + 0.01 then return true
 	elseif item_in_slot_2 ~= nil and 1 > item_in_slot_2:condition() + 0.01 then return true
 	elseif item_in_slot_6 ~= nil and 1 > item_in_slot_6:condition() + 0.01 then return true
@@ -17,10 +17,10 @@ function trader_repair_precond(trader, actor)
 end
 
 function trader_check_money_s1(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(1)
+	local item_in_slot = Actor:item_in_slot(1)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
-		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
+		if item_repair_cost > 0 and Actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
 		end
 	end
@@ -28,10 +28,10 @@ function trader_check_money_s1(trader, actor)
 end
 
 function trader_check_money_s2(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(2)
+	local item_in_slot = Actor:item_in_slot(2)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
-		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
+		if item_repair_cost > 0 and Actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
 		end
 	end
@@ -39,10 +39,10 @@ function trader_check_money_s2(trader, actor)
 end
 
 function trader_check_money_s6(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(6)
+	local item_in_slot = Actor:item_in_slot(6)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
-		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
+		if item_repair_cost > 0 and Actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
 			return true
 		end
 	end
@@ -50,7 +50,7 @@ function trader_check_money_s6(trader, actor)
 end
 
 function trader_repiar_weapon_s1(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(1)
+	local item_in_slot = Actor:item_in_slot(1)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		item_in_slot:set_condition(1)
@@ -59,7 +59,7 @@ function trader_repiar_weapon_s1(trader, actor)
 end
 
 function trader_repiar_weapon_s2(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(2)
+	local item_in_slot = Actor:item_in_slot(2)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * weapon_profit_margin )
 		item_in_slot:set_condition(1)
@@ -68,7 +68,7 @@ function trader_repiar_weapon_s2(trader, actor)
 end
 
 function trader_repiar_armor_s6(trader, actor)
-	local item_in_slot = db.actor:item_in_slot(6)
+	local item_in_slot = Actor:item_in_slot(6)
 	if item_in_slot ~= nil then
 		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
 		amk_mod.repair_armor(1)
@@ -81,30 +81,30 @@ function repair_costs(first_speaker, second_speaker)
 
 	local item_name_and_price = ""
 	local item_repair_cost = 0
-	if db.actor ~= nil then
-		local item_in_slot_1 = db.actor:item_in_slot(1)
-		local item_in_slot_2 = db.actor:item_in_slot(2)
-		local item_in_slot_6 = db.actor:item_in_slot(6)
+	if Actor ~= nil then
+		local item_in_slot_1 = Actor:item_in_slot(1)
+		local item_in_slot_2 = Actor:item_in_slot(2)
+		local item_in_slot_6 = Actor:item_in_slot(6)
 
 		if item_in_slot_1 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_1:condition()) * item_in_slot_1:cost() * weapon_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_0").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
-				db.actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
+				Actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
 			end
 		end
 		if item_in_slot_2 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_2:condition()) * item_in_slot_2:cost() * weapon_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_1").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
-				db.actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
+				Actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
 			end
 		end
 		if item_in_slot_6 ~= nil then
 			item_repair_cost = math.floor( (1-item_in_slot_6:condition()) * item_in_slot_6:cost() * armor_profit_margin )
 			if item_repair_cost > 0 then
 				item_name_and_price = game.translate_string("list_trader_repair_2").." %c[255,238,155,23]"..item_repair_cost.." рублей%c[default]"
-				db.actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
+				Actor:give_talk_message(item_name_and_price, task_texture, task_rect, "iconed_trade_info")
 			end
 		end
 	end
@@ -123,7 +123,7 @@ function trader_miniquest_precond(trader, actor)
 end
 
 function trader_check_money_miniquest(trader, actor)
-	return db_actor:money() >= 100
+	return Actor:money() >= 100
 end
 
 function trader_miniquest_transfer(trader, actor)
@@ -183,7 +183,7 @@ function otday_art (first_speaker, second_speaker)
 end
 
 function have_a_art()
-    local actor = db.actor
+    local actor = Actor
     if actor ~= nil and actor:object("amk_af_night_star") ~= nil and actor:dont_has_info("test_quest_art_vziat") then
 actor:give_info_portion("test_quest_art_vziat")
     end
@@ -241,7 +241,7 @@ function is_not_tutorial()
 end
 
 function is_not_tutorial_art(actor, trader)
-	local tutorial_artefact = db.actor:object("af_blood_tutorial")
+	local tutorial_artefact = Actor:object("af_blood_tutorial")
 	if (has_alife_info("tutorial_artefact_start") and not has_alife_info("tutorial_artefact_done")
 		and  tutorial_artefact ~= nil) or has_alife_info("tutorial_artefact_done")
 	then
@@ -334,7 +334,7 @@ end
 
 function transfer_medikit_to_fox (player, wounded)
 	wounded:set_relation(game_object.friend, player)
-	db.actor:give_info_portion("escape_fox_heal")
+	Actor:give_info_portion("escape_fox_heal")
 end
 
 function give_weapon_to_actor (trader, actor)
@@ -373,7 +373,7 @@ end
 
 --' Escape trader artefact
 function have_artefact_from_fleshes(first_speaker, second_speaker)
-	local actor = db.actor
+	local actor = Actor
 	if actor ~= nil and
 	   (actor:object("af_vyvert") ~= nil or
 	   actor:object("af_gravi") ~= nil or

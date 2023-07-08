@@ -47,7 +47,7 @@ function notify_on_use(victim, who)
 
 		-- Мы не согласны говорить
 		if victim:best_enemy() ~= nil and not xr_wounded.is_wounded(victim) then
-			if victim:relation(db_actor) ~= game_object.enemy then
+			if victim:relation(Actor) ~= game_object.enemy then
 				-- Во время боя
 				xr_sound.set_sound_play(victim, "use_no_fight")
 			end

@@ -18,17 +18,17 @@ local max_belt_af = read_line("inventory", "max_belt_af")
 function update_artefacts_belt_lock(obj)
 	if obj:is_artefact() then
 		local af_count = 0
-		db_actor:iterate_inventory(
+		Actor:iterate_inventory(
 			function(dummy, obj)
-				if obj:is_artefact() and db_actor:is_on_belt(obj) then
+				if obj:is_artefact() and Actor:is_on_belt(obj) then
 					af_count = af_count + 1
 				end
 			end
 		)
 		local lock = af_count >= max_belt_af
-		db_actor:iterate_inventory(
+		Actor:iterate_inventory(
 			function(dummy, obj)
-				if obj:is_artefact() and db_actor:is_in_ruck(obj) then
+				if obj:is_artefact() and Actor:is_in_ruck(obj) then
 					set_inventory_item_flag(obj, inventory_item_flags.belt, not lock)
 				end
 			end
@@ -44,7 +44,7 @@ function artefacts_statistic(obj)
 		if not se_obj.already_taken then
 			local inv_name = read_line(obj:section(), "inv_name", "string")
 			actor_stats.add_points("artefacts", inv_name, 1, 1)
-			db_actor:set_character_rank(db_actor:character_rank() + 1)
+			Actor:set_character_rank(Actor:character_rank() + 1)
 			se_obj.already_taken = true
 		end
 	end
@@ -73,11 +73,11 @@ function check_ammo(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function repack_ammo()
-	if need_to_repack and not db_actor:is_talking() then
+	if need_to_repack and not Actor:is_talking() then
 		local repack = function(section, box_size, place)
 			local ammo = {}
 			local total_size = 0
-			db_actor:iterate_inventory(
+			Actor:iterate_inventory(
 				function(dummy, obj)
 					if obj:section() == section and get_item_place(obj) == place then
 						local current_size = get_ammo_data(obj, "box_size")

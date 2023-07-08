@@ -44,7 +44,7 @@ local last_health
 ---------------------------------------------------------------------------------------------------
 function actor_hit(obj, amount, local_direction, who, bone_index)
 	if last_health then
-		reap.hit_effectors(last_health - db_actor.health)
+		reap.hit_effectors(last_health - Actor.health)
 	end
 	last_health = nil
 end
@@ -83,7 +83,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function item_belt(obj)
 	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
-	if db_actor:belt_count() > 1 then
+	if Actor:belt_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_belt(obj)
@@ -96,7 +96,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function item_ruck(obj)
 	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
-	if db_actor:ruck_count() > 1 then
+	if Actor:ruck_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
 	reap.item_ruck(obj)
@@ -137,7 +137,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function hit_effector()
 	if not last_health then
-		last_health = db_actor.health
+		last_health = Actor.health
 	end
 end
 ---------------------------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ end
 --]]-----------------------------------------------------------------------------------------------
 function npc_use(obj, who)
 	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
-		db.actor:give_info_portion("ui_dead_body")
+		Actor:give_info_portion("ui_dead_body")
 	end
 end
 ---------------------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ end
  * MONSTER
 --]]-----------------------------------------------------------------------------------------------
 function monster_update(obj)
-	if obj:alive() and db.actor:alive() and not (actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state) then
+	if obj:alive() and Actor:alive() and not (actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state) then
 		local enemy = obj:get_enemy()
 		if enemy and obj:see(enemy) and enemy:id() == 0 then
 			sa_monsters.bloodsucker_vampire(obj)
@@ -200,6 +200,6 @@ end
 ---------------------------------------------------------------------------------------------------
 function monster_use(obj, who)
 	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
-		db.actor:give_info_portion("ui_dead_body")
+		Actor:give_info_portion("ui_dead_body")
 	end
 end

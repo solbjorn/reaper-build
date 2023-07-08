@@ -26,7 +26,7 @@ local falses = {
 function false_info()
 	local entry = falses[level.name()]
 	if entry and not has_info(entry.give) and has_info(entry.has) then
-		db_actor:give_info_portion(entry.give)
+		Actor:give_info_portion(entry.give)
 	end
 end
 
@@ -69,12 +69,12 @@ function checking_use_item(obj)
 
 	local entry = always_items[sect]
 	if entry then
-		if has_info(entry.has) then db_actor:give_info_portion(entry.give) end
+		if has_info(entry.has) then Actor:give_info_portion(entry.give) end
 		return
 	end
 
 	local entry = items[level.name()]
-	if entry and sect == entry.item then db_actor:give_info_portion(entry.info) end
+	if entry and sect == entry.item then Actor:give_info_portion(entry.info) end
 end
 
 local nepis = {
@@ -89,7 +89,7 @@ function dead_npc()
 		if obj and obj:is_stalker() and not obj:alive() then
 			local info = obj:name() .. "_umer"
 			if not has_alife_info(info) then
-				db.actor:give_info_portion(info)
+				Actor:give_info_portion(info)
 			end
 		end
 	end
@@ -97,8 +97,8 @@ end
 
 function main_braad(npc)
 npc:set_character_community("ecolog", 0, 0)
-npc:set_relation(game_object.friend, db.actor)
-db.actor:give_info_portion( "freeman_braad_one" )
+npc:set_relation(game_object.friend, Actor)
+Actor:give_info_portion( "freeman_braad_one" )
 end
 
 function setGulagEnemy()
@@ -128,7 +128,7 @@ function bloodsucker()
 end
 
 function main_friend(npc)
-npc:set_relation(game_object.friend, db.actor)
+npc:set_relation(game_object.friend, Actor)
 end
 
 function zombie_blow()
@@ -183,22 +183,22 @@ local npc = level_object_by_sid (9623)
     if npc == nil or npc:alive () == false then
        return
     end
-    npc:set_relation (game_object.enemy, db.actor)
+    npc:set_relation (game_object.enemy, Actor)
 local npc = level_object_by_sid (9624)
     if npc == nil or npc:alive () == false then
        return
     end
-    npc:set_relation (game_object.enemy, db.actor)
+    npc:set_relation (game_object.enemy, Actor)
 local npc = level_object_by_sid (9625)
     if npc == nil or npc:alive () == false then
        return
     end
-    npc:set_relation (game_object.enemy, db.actor)
+    npc:set_relation (game_object.enemy, Actor)
 local npc = level_object_by_sid (9905)
     if npc == nil or npc:alive () == false then
        return
     end
-    npc:set_relation (game_object.enemy, db.actor)
+    npc:set_relation (game_object.enemy, Actor)
 end
 
 function killactor_spawn()
@@ -231,10 +231,10 @@ end
 
 function create_monstr()
 	local sim = alife()
-local position = db.actor:position()
+local position = Actor:position()
 	position.x = position.x + 13
-	sim:create("burer_strong", position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
-	sim:create("burer_strong", position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
+	sim:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
+	sim:create("burer_strong", position, Actor:level_vertex_id(), Actor:game_vertex_id())
 end
 
 function kill_npc(sid)
@@ -348,7 +348,7 @@ function release_actor_items()
 		["wpn_flame"] = true}
     local obj
     local sim = alife()
-    local actor = db.actor
+    local actor = Actor
     -- перебор вещей инвентаря
     local cnt = actor:object_count()
     for i=0, cnt-1 do
@@ -362,8 +362,8 @@ function release_actor_items()
 end
 
 function release_actor_money()
-  local num = db.actor:money()
-  db.actor:give_money(-num)
+  local num = Actor:money()
+  Actor:give_money(-num)
 end
 
 function friendactor(community1, community2)
@@ -371,7 +371,7 @@ relation_registry.set_community_goodwill ("stalker", "actor", 2000)
 end
 
 function atak_larger_have(task, info)
-	local actor = db.actor
+	local actor = Actor
 	if actor and
 	   actor:has_info("snip_esc1_dead") and
 	   actor:has_info("snip_esc2_dead") and
@@ -391,7 +391,7 @@ function atak_larger_have(task, info)
 end
 
 function zahar_naemnik_have(task, info)
-	local actor = db.actor
+	local actor = Actor
 	if actor and
 	   actor:has_info("naem_zahar1_dead") and
 	   actor:has_info("naem_zahar2_dead") and
@@ -405,7 +405,7 @@ function zahar_naemnik_have(task, info)
 end
 
 function check_npc_dead()
-	local actor = db.actor
+	local actor = Actor
     if actor and actor:has_info("esc_dan_umer") and actor:has_info("informator_pda_start") and not actor:has_info("informator_pda_have") and not actor:has_info("informator_pda_done") and not actor:has_info("esc_dan_umer_newsinfo1") then
                 amk.start_timer("sms_new",math_random(30,60))
                actor:give_info_portion("esc_dan_umer_newsinfo1")
@@ -421,12 +421,12 @@ function check_npc_dead()
 end
 
 function sms_new()
-    db.actor:give_info_portion("sms_new_dan1")
+    Actor:give_info_portion("sms_new_dan1")
                 amk.send_tip(game.translate_string("sms_new_dan1_text"),nil,nil,30)
 end
 
 function check_ecolog_dead()
-	local actor = db.actor
+	local actor = Actor
     if actor and actor:has_info("ucen_talk_est") and not actor:has_info("esc_dan_umer_newsinfo4") then
                 amk.start_timer("sms_new1",math_random(140,170))
                actor:give_info_portion("esc_dan_umer_newsinfo4")
@@ -434,7 +434,7 @@ function check_ecolog_dead()
 end
 
 function sms_new1()
-    db.actor:give_info_portion("sms_new_dan2")
+    Actor:give_info_portion("sms_new_dan2")
                 amk.send_tip(game.translate_string("sms_new_dan2_text"),nil,nil,30)
 end
 

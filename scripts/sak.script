@@ -56,7 +56,7 @@ end
 function add_new_military_false()
 local obj = alife():story_object(5212)
 	level_map_spot(obj.id, "lchanger_up_location", "l12_stancia")
-  db.actor:give_info_portion("info_way_false")
+  Actor:give_info_portion("info_way_false")
   info_received()
 end
 function add_new_item_in(item,sidlh)
@@ -125,7 +125,7 @@ function add_seif()
 amk_spawn_item("inventory_sakbox_03",vector():set(15.52,-12.43,8.59),1156,5132) --Ñויפ ג ןמהחולוכüו X-18
 end
 function give_seif(obj)
-amk.remove_item_from_inventory_by_name(obj,db.actor)
+amk.remove_item_from_inventory_by_name(obj,Actor)
 amk_spawn_item("m_inventory_seif",vector():set(34.37,-3.37,-37.29),1997,21736)  --ןונוהאקא סויפא
 end
 function add_decoder()
@@ -191,7 +191,7 @@ function add_agroprom_box()
 		alife():release(obj, true)
 		end
 	end
-	dialogs.relocate_item_section(db.actor, "quest_case_02", "in")
+	dialogs.relocate_item_section(Actor, "quest_case_02", "in")
 end
 function add_kontainer()
 amk_spawn_item("inventory_sakbox_05",vector():set(378,-52,-179.20),2097,101537)
@@ -269,7 +269,7 @@ if string_find(anom_sect,"_mincer")~=nil then
   artmod(nearest_anomaly,af,"af_fireball","af_blood","af_ameba_slug","mutant_krovosos_jaw","info_artmod_electra_moonlight_mincer","af_electra_moonlight")
   artmod(nearest_anomaly,af,"af_electra_flash","af_vyvert","af_fireball","mutant_psevdodog_tail","info_artmod_ameba_slug_mincer","af_ameba_mica")
   artmod(nearest_anomaly,af,"af_ameba_mica","af_rusty_sea-urchin","af_gold_fish","af_night_star","info_artmod_dummy_glassbeads_mincer","af_dummy_glassbeads",4)
-  if af_sect=="af_dummy_spring_red" and db.actor:has_info("info_red_spring") then af_zone_off(af) end
+  if af_sect=="af_dummy_spring_red" and Actor:has_info("info_red_spring") then af_zone_off(af) end
 end
 if string_find(anom_sect,"_mosquito_bald")~=nil then
   artmod(nearest_anomaly,af,"af_vyvert","af_blood","vodka","mutant_dog_tail","info_artmod_mincer_meat_mosquito_bald","af_mincer_meat",2)
@@ -278,7 +278,7 @@ if string_find(anom_sect,"_mosquito_bald")~=nil then
   artmod(nearest_anomaly,af,"af_mincer_meat","af_vyvert","af_fireball","mutant_flesh_eye","info_artmod_cristall_mosquito_bald","af_cristall")
   artmod(nearest_anomaly,af,"af_ameba_slime","af_blood","af_rusty_kristall","mutant_krovosos_jaw","info_artmod_rusty_sea-urchin_mosquito_bald","af_rusty_sea-urchin")
   artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_mincer_meat","af_night_star","info_artmod_dummy_dummy_mosquito_bald","af_dummy_dummy")
-  if af_sect=="af_dummy_pellicle_red" and db.actor:has_info("info_red_pellicle") then af_zone_off(af) end
+  if af_sect=="af_dummy_pellicle_red" and Actor:has_info("info_red_pellicle") then af_zone_off(af) end
 end
 if string_find(anom_sect,"_gravi_zone")~=nil then
   artmod(nearest_anomaly,af,"af_vyvert","af_medusa","kolbasa","mutant_dog_tail","info_artmod_ameba_slug_gravi_zone","af_ameba_slug",2)
@@ -287,7 +287,7 @@ if string_find(anom_sect,"_gravi_zone")~=nil then
   artmod(nearest_anomaly,af,"af_rusty_thorn","af_medusa","af_rusty_kristall","mutant_psevdodog_tail","info_artmod_night_star_gravi_zone","af_night_star")
   artmod(nearest_anomaly,af,"af_electra_flash","af_cristall_flower","af_ameba_slug","mutant_snork_leg","info_artmod_soul_gravi_zone","af_soul")
   artmod(nearest_anomaly,af,"af_ameba_mica","af_cristall","af_gold_fish","af_soul","info_artmod_dummy_pellicle_gravi_zone","af_dummy_pellicle",4)
-  if af_sect=="af_dummy_battery_red" and db.actor:has_info("info_red_battery") then af_zone_off(af) end
+  if af_sect=="af_dummy_battery_red" and Actor:has_info("info_red_battery") then af_zone_off(af) end
 end
 if string_find(anom_sect,"_ice")~=nil then
 	artmod(nearest_anomaly,af,"af_dummy_dummy","af_rusty_sea-urchin","af_gold_fish","af_night_star","life_heart_final","af_life_heart",6)
@@ -302,13 +302,13 @@ local pos=af:position()
 local startflag=false
 local zombieflag=false
 if rank == nil then rank = 3 end
-   if not db.actor:has_info(info_artmod) then
+   if not Actor:has_info(info_artmod) then
      return
    end
    if alife():object(af:id())==nil then
      return
    end
-   if (af_sect==item1 or af_sect==item2 or af_sect==item3 or af_sect==item4) and db.actor:has_info(info_artmod) then
+   if (af_sect==item1 or af_sect==item2 or af_sect==item3 or af_sect==item4) and Actor:has_info(info_artmod) then
 			local s = get_value("artmod_activation", { i0t = -1 })
       if s.i0t~=nearest_anomaly then
         s.i0t=nearest_anomaly
@@ -371,7 +371,7 @@ end
 function artmod01(af,item,item_targ,info_zone_off)
 local af_sect=af:section()
 local pos=af:position()
-	if af_sect==item and db.actor:has_info(info_zone_off) and amk_mod.check_af_transform_rank(4) then
+	if af_sect==item and Actor:has_info(info_zone_off) and amk_mod.check_af_transform_rank(4) then
       amk_mod.af_flash(af)
       amk_mod.af_start_transform_timer(amk_mod.af_start_transform(99,1,af_sect,item_targ), pos ,0,0,5,game.translate_string(get_inv_name(item_targ)))
     end
@@ -392,28 +392,28 @@ end
 function check_used_item(obj)
 arc_main.get_item(obj)
 local info=nil
-if level.name()=="l03_agroprom" and obj:section()=="amk_zapiska" then add_new_escape_100() amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l10_radar" and obj:section()=="rad_document6" then add_new_darkvalley_107() amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l03_agroprom" and obj:section()=="rad_document6" then info="info_artmod_rusty_thorn_buzz" amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l01_escape" and obj:section()=="rad_document6" then info="info_artmod_rusty_kristall_mincer" amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()=="l10_radar" and obj:section()=="sak_document" then add_new_radar_106() amk.drop_item(db.actor,obj) amk.remove_item(obj)
-elseif level.name()~="l03_agroprom" and db.actor:has_info("ratcatcher_order_done") then info="ratcatcher_out"
-elseif level.name()~="l05_bar" and db.actor:has_info("info_way_false") then info="informer_out"
-elseif not db.actor:has_info("info_way104a") and obj:section()=="ara_pda" then  add_new_rostok_105()  add_new_mil_104()
-elseif not db.actor:has_info("info_artmod_electra_flash_zharka") and obj:section()=="sak_document2" then info="info_artmod_electra_flash_zharka"
-elseif not db.actor:has_info("info_artmod_drops_mincer") and obj:section()=="garbage_pda" then info="info_artmod_drops_mincer"
-elseif not db.actor:has_info("info_artmod_ameba_mica_galant") and obj:section()=="rad_pda" then info="info_artmod_ameba_mica_galant"
-elseif not db.actor:has_info("info_artmod_fireball_buzz") and obj:section()=="volkodav_pda" then info="info_artmod_fireball_buzz"
-elseif obj:section()=="outfit_bandit_m1" and not db.actor:has_info("esc_shustryi_outfit")
+if level.name()=="l03_agroprom" and obj:section()=="amk_zapiska" then add_new_escape_100() amk.drop_item(Actor,obj) amk.remove_item(obj)
+elseif level.name()=="l10_radar" and obj:section()=="rad_document6" then add_new_darkvalley_107() amk.drop_item(Actor,obj) amk.remove_item(obj)
+elseif level.name()=="l03_agroprom" and obj:section()=="rad_document6" then info="info_artmod_rusty_thorn_buzz" amk.drop_item(Actor,obj) amk.remove_item(obj)
+elseif level.name()=="l01_escape" and obj:section()=="rad_document6" then info="info_artmod_rusty_kristall_mincer" amk.drop_item(Actor,obj) amk.remove_item(obj)
+elseif level.name()=="l10_radar" and obj:section()=="sak_document" then add_new_radar_106() amk.drop_item(Actor,obj) amk.remove_item(obj)
+elseif level.name()~="l03_agroprom" and Actor:has_info("ratcatcher_order_done") then info="ratcatcher_out"
+elseif level.name()~="l05_bar" and Actor:has_info("info_way_false") then info="informer_out"
+elseif not Actor:has_info("info_way104a") and obj:section()=="ara_pda" then  add_new_rostok_105()  add_new_mil_104()
+elseif not Actor:has_info("info_artmod_electra_flash_zharka") and obj:section()=="sak_document2" then info="info_artmod_electra_flash_zharka"
+elseif not Actor:has_info("info_artmod_drops_mincer") and obj:section()=="garbage_pda" then info="info_artmod_drops_mincer"
+elseif not Actor:has_info("info_artmod_ameba_mica_galant") and obj:section()=="rad_pda" then info="info_artmod_ameba_mica_galant"
+elseif not Actor:has_info("info_artmod_fireball_buzz") and obj:section()=="volkodav_pda" then info="info_artmod_fireball_buzz"
+elseif obj:section()=="outfit_bandit_m1" and not Actor:has_info("esc_shustryi_outfit")
 then info="esc_shustryi_outfit"
-elseif obj:section()=="sak_book4" and not db.actor:has_info("doktor_alife")
+elseif obj:section()=="sak_book4" and not Actor:has_info("doktor_alife")
 then info="doktor_alife" info_doktor()
 elseif obj:section()=="repair_item_outfit" or obj:section()=="repair_item_weapon" then repair_box_close(obj)
 end
-  if info==nil or db.actor:has_info(info) then
+  if info==nil or Actor:has_info(info) then
     return
   end
-  db.actor:give_info_portion(info)
+  Actor:give_info_portion(info)
 end
 
 local point_drop={
@@ -430,7 +430,7 @@ local point_drop={
 	}
 
 function check_droped_item(obj)
-	local actor = db_actor
+	local actor = Actor
 	local vec = vector()
 
 arc_main.lose_item(obj)
@@ -492,7 +492,7 @@ function deadman_to_life(art)
 		if obj and obj:is_stalker() and not obj:alive() then
 			local name=obj:name()
 			local posobj=obj.position
-			local actorpos=db.actor:position()
+			local actorpos=Actor:position()
 			if (posobj:distance_to(actorpos) < 2) then
 				amk_mod.af_flash(art)
 				release(obj)
@@ -509,29 +509,29 @@ function nepis_umer()
 	if obj and obj:is_stalker() and not obj:alive() then
 	local name=obj:name()
 		if not has_alife_info(name.."_umer") then
-			db.actor:give_info_portion(name.."_umer")
+			Actor:give_info_portion(name.."_umer")
 		end
 	end
 	end
 	if has_alife_info("mil_Svoboda_trader_plan_faze") and  has_alife_info("agr_ratcatcher_umer") then
-	db.actor:give_info_portion("mil_Svoboda_trader_plan_2faze") add_sak_plan()
+	Actor:give_info_portion("mil_Svoboda_trader_plan_2faze") add_sak_plan()
 	elseif (has_alife_info("esc_vagon_wounded_umer") or has_alife_info("esc_wolf_umer")) and not has_alife_info("mil_volk_resiver_fail") then
-	db.actor:give_info_portion("mil_volk_resiver_fail")
+	Actor:give_info_portion("mil_volk_resiver_fail")
 	elseif (has_alife_info("bar_dolg_ivancov_umer") or has_alife_info("mil_freedom_member0021_umer")) and not has_alife_info("bar_ivancov_rg6_fail") then
-	db.actor:give_info_portion("bar_ivancov_rg6_fail")
+	Actor:give_info_portion("bar_ivancov_rg6_fail")
 	elseif (has_alife_info("about_life_heart_sahar") and has_alife_info("about_life_heart_sidor") and has_alife_info("about_life_heart_barman")) and not has_alife_info("about_life_heart_done") then
-	db.actor:give_info_portion("about_life_heart_done")
+	Actor:give_info_portion("about_life_heart_done")
 	end
 end
 function af_zone_off(af)
- local anom=amk_anoms.get_nearest_anomaly(db.actor)
+ local anom=amk_anoms.get_nearest_anomaly(Actor)
  local sid=alife():object(anom)
   level.add_pp_effector("teleport.ppe", 1524, false)
   amk.remove_item(af)
   alife():release(sid,true)
 end
 function inv_item_cond(item,val)
-local obj=db.actor:object(item)
+local obj=Actor:object(item)
 	if obj~=nil then
 	  obj:set_condition(val)
 	end
@@ -935,7 +935,7 @@ function switch_mil_matugalnik()
 end
 local rep_percent=0.1
 function repair_box_outfit(obj)
-	local actor=db.actor
+	local actor=Actor
 	local dir=device().cam_dir
 	local a=vector() a.y=math.atan2(dir.x,dir.z)
 	local xdelta=math.sin(a.y)
@@ -950,8 +950,8 @@ function repair_box_outfit(obj)
 		for a=0,65534 do
 			local objg=level.object_by_id(a)
 			if objg then
-				if (objg and ((objg:is_stalker() and amk.get_npc_relation(objg, db_actor) == "enemy") or
-				objg:is_monster()) and objg:position():distance_to(db.actor:position())<40 and objg:see(db.actor))
+				if (objg and ((objg:is_stalker() and amk.get_npc_relation(objg, Actor) == "enemy") or
+				objg:is_monster()) and objg:position():distance_to(Actor:position())<40 and objg:see(Actor))
 				then
 				enemy=true
 				break
@@ -989,9 +989,9 @@ function repair_box_close(obj)
 		local repiout =amk.load_variable("repair_item_outfit", 0)
 		local repiweap =amk.load_variable("repair_item_weapon", 0)
 		local slot = 0
-		local slot_1 = db.actor:item_in_slot(1)
-		local slot_2 = db.actor:item_in_slot(2)
-		local armor = db.actor:item_in_slot(6)
+		local slot_1 = Actor:item_in_slot(1)
+		local slot_2 = Actor:item_in_slot(2)
+		local armor = Actor:item_in_slot(6)
 		if (slot_1 ~= nil) then
 			slot = 1
 		end
@@ -1095,10 +1095,10 @@ function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "medkit", "in")
 end
 function set_community(actor, npc)
-	db.actor:set_character_community("stranger", 0, 0)
+	Actor:set_character_community("stranger", 0, 0)
 end
 function drink_vodka()
-	db.actor:eat(db.actor:object("vodka"))
+	Actor:eat(Actor:object("vodka"))
 end
 function take_trasure(npc, npc1)
 	treasure:pick_one(npc)
@@ -1110,25 +1110,25 @@ function have_trasure(first_speaker, second_speaker)
 	end
 
 	if math_random() <= tres then
-		db.actor:give_info_portion("have_sak_treasure")
+		Actor:give_info_portion("have_sak_treasure")
 	else
-		db.actor:give_info_portion("havent_sak_treasure")
+		Actor:give_info_portion("havent_sak_treasure")
 	end
 end
 function zombie_checkup()
-	if db.actor ~= nil then
+	if Actor ~= nil then
 		if math_random() > 0.7 then
 		local a=math_random()
 		local h = hit()
-		h.draftsman = db.actor
+		h.draftsman = Actor
 		h.type = hit.telepatic
 		h.power = 0.3+a/2
 		h.impulse = 1.0
-		db.actor:hit(h)
+		Actor:hit(h)
 		h.type = hit.strike
-		db.actor:hit(h)
+		Actor:hit(h)
 		h.type = hit.radiation
-		db.actor:hit(h)
+		Actor:hit(h)
 		level.add_pp_effector("alcohol.ppe", 100, false)
 		local rnd=math_random(1,6)
 		local snd_obj
@@ -1145,7 +1145,7 @@ function zombie_checkup()
 			elseif rnd==6 then
 			snd_obj = 	xr_sound.get_safe_sound_object([[characters_voice\human_01\stalker\fight\hit\hit_8]])
 			end
-			snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+			snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 		end
 	end
 end
@@ -1169,14 +1169,14 @@ function add_tail()
 	if lname=="l04_darkvalley" then
 		local obj=alife():story_object(425)
 		if obj and obj:is_stalker() and obj:alive() then
-			if db.actor:has_info("val_bandit_talk") then
-				db.actor:set_character_community("stranger", 0, 0)
+			if Actor:has_info("val_bandit_talk") then
+				Actor:set_character_community("stranger", 0, 0)
 			end
 		else
-			db.actor:set_character_community("actor", 0, 0)
+			Actor:set_character_community("actor", 0, 0)
 		end
 	else
-		db.actor:set_character_community("actor", 0, 0)
+		Actor:set_character_community("actor", 0, 0)
 	end
 
 	amk_anoms.generate_arts()

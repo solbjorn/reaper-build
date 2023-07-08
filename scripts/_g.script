@@ -38,7 +38,7 @@ treasure = nil
 variable = nil
 
 -- В bind_actor.net_spawn
-db_actor = nil
+Actor = nil
 inv = nil
 hud = nil
 aem = nil
@@ -94,7 +94,7 @@ end
 
 -- запущена ли игра
 function game_is_running()
-	return level.present() and db_actor and db_actor:alive() or false
+	return level.present() and Actor and Actor:alive() or false
 end
 
 -- Короткие имена для частых функций
@@ -134,37 +134,37 @@ end
 
 -- Деньги
 function got_money(m)
-	db_actor:give_money(m)
+	Actor:give_money(m)
 	news_manager.relocate_money("in", m)
 end
 function lost_money(m)
-	db_actor:give_money(-m)
+	Actor:give_money(-m)
 	news_manager.relocate_money("out", m)
 end
 function has_money(m)
-	return db_actor:money() >= m
+	return Actor:money() >= m
 end
 
 -- Проиграть звук
 function say(s)
 	if type(s) == "string" then s = voice(s) end
-	s:play_no_feedback(db_actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
+	s:play_no_feedback(Actor, sound_object.s2d, 0, xyz(0,0,0), 1.0)
 end
 
--- Вместо has_alife_info, alife():has_info, db.actor:has_info
+-- Вместо has_alife_info, alife():has_info, Actor:has_info
 function has_info(i)
 	return g_alife:has_info(0,i)
 end
 has_alife_info = has_info
 
--- Вместо db.actor:give_info_portion
+-- Вместо Actor:give_info_portion
 function give_info(i)
-	return db_actor:give_info_portion(i)
+	return Actor:give_info_portion(i)
 end
 
--- Вместо db.actor:disable_info_portion
+-- Вместо Actor:disable_info_portion
 function disable_info(i)
-	return db_actor:disable_info_portion(i)
+	return Actor:disable_info_portion(i)
 end
 
 -- Вместо alife():create() все варианты

@@ -1377,7 +1377,7 @@ end
 function load_states(type)
 	if type == "gar_hellcar_group" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if actor ~= nil then
 				if has_alife_info("gar_alarm") then
 					if has_alife_info("gar_bandits_killed") then
@@ -1396,7 +1396,7 @@ function load_states(type)
 
 	if type == "gar_bandit_agr" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if actor ~= nil then
 				if gulag.state == 1 then
 					if has_alife_info("gar_counter_fire") then
@@ -1425,7 +1425,7 @@ function load_states(type)
 
 	if type == "gar_seryi_bandits" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if actor ~= nil then
 				if gulag.state == 0 then
 					if gar_seryi_killed() then

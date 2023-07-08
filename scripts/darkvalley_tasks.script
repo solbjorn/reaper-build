@@ -2,7 +2,7 @@
 -- Proceed
 ----------------------------------------------------------------------------------------------------
 function proceed()
-    local actor = db.actor
+    local actor = Actor
 
 	if not has_alife_info("dar_document4") and
 		actor:object("dar_document4") then
@@ -72,11 +72,11 @@ end
 -- Common functions
 ----------------------------------------------------------------------------------------------------
 function has_darklab_key(task, objective)
-	return db.actor:object("borov_flash") ~= nil
+	return Actor:object("borov_flash") ~= nil
 end
 
 function has_darklab_documents(task, objective)
-	return db.actor:object("dar_document4") ~= nil
+	return Actor:object("dar_document4") ~= nil
 end
 
 function escort_task_done(task, objective)

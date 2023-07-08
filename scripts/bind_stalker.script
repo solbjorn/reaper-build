@@ -378,11 +378,11 @@ function motivator_binder:update(delta)
 	end
 
 	if time_real_ms > self.update_time then
-                        if amk.get_npc_relation(self_object,db_actor)=="enemy" and self_object:alive() and self_object.health>0.01 then
-                                        if self_object:see(db_actor) then
+                        if amk.get_npc_relation(self_object,Actor)=="enemy" and self_object:alive() and self_object.health>0.01 then
+                                        if self_object:see(Actor) then
                                                 amk.enemy_see_actor(self_object,"npc")
                                         end
-                                        if db_actor:see(self_object) then
+                                        if Actor:see(self_object) then
                                                 amk.actor_see_enemy(self_object,"npc")
                                         end
                         end
@@ -408,7 +408,7 @@ function motivator_binder:update(delta)
 	local ammo = active_item and active_item:is_weapon() and active_item:get_ammo_in_magazine() or nil
 	if ammo ~= nil then
                         local enemy = self_object:best_enemy()
-                        if enemy and enemy:id()==0 and self_object:see(db_actor) and self.prev_ammo>ammo then
+                        if enemy and enemy:id()==0 and self_object:see(Actor) and self.prev_ammo>ammo then
                                 amk.npc_shot_actor(self_object)
                         end
 

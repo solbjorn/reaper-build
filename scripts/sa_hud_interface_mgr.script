@@ -34,8 +34,8 @@ function CHudInterfaceMgr:update()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:reload_static()
-	local active_slot = db_actor:active_slot()
-	local active_item = db_actor:active_item()
+	local active_slot = Actor:active_slot()
+	local active_item = Actor:active_item()
 	if (active_slot == 1 or active_slot == 2) and active_item:get_ammo_in_magazine() <= round(get_weapon_data(active_item, "mag_size") / 5) then
 		hud:AddCustomStatic("gun_reload", true)
 	else

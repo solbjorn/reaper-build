@@ -94,7 +94,7 @@ function healing_enemies_handler(id, com)
 	local npc = level_object(id)
 	if math.random(1,100) > 80 then
 		npc:set_character_community(com)
-		npc:set_relation(game_object.enemy, db_actor)
+		npc:set_relation(game_object.enemy, Actor)
 	else
 		xr_wounded.custom_change(npc)
 	end
@@ -148,15 +148,15 @@ end
 --спавним объекты на карту
 --для спавна неписей смотрим config\creatures\spawn_sections.ltx - там написаны имена секций для разных типов неписей
 function spawn_item(spawn_item, pos, gv,lv)
-  if gv==nil then gv=db_actor:game_vertex_id() end
-  if lv==nil then lv=db_actor:level_vertex_id() end
+  if gv==nil then gv=Actor:game_vertex_id() end
+  if lv==nil then lv=Actor:level_vertex_id() end
   return g_alife:create(spawn_item, pos, lv, gv)
 end
 
 --для спавна патронов используем spawn_ammo_in_inv
 function spawn_item_in_inv(spawn_item,npc)
   if npc==nil then
-    npc=db_actor
+    npc=Actor
   end
   return g_alife:create(spawn_item,
       npc:position(),
@@ -168,7 +168,7 @@ end
 --используем для спавна патронов
 function spawn_ammo_in_inv(spawn_item,number,npc)
   if npc==nil then
-    npc=db_actor
+    npc=Actor
   end
   if number > 0 then
     return se_respawn.create_ammo(spawn_item,
@@ -252,7 +252,7 @@ end
 
 --удаляем предмет из инвентаря
 function remove_item_from_inventory(remove_item,npc)
-  if npc==nil then npc=db_actor end
+  if npc==nil then npc=Actor end
   if remove_item~=nil then
 --      npc:mark_item_dropped(remove_item)
     g_alife:release(g_alife:object(remove_item:id()), true)
@@ -275,14 +275,6 @@ function __del_item(npc, item)
     g_alife:release(g_alife:object(item:id()), true)
 end
 ---------------------------
-
---проверка запущена ли игра
-function check_game()
-  if level.present() and (db_actor ~= nil) and db_actor:alive() then
-    return true
-  end
-  return false
-end
 
 --записываем переменную
 save_variable = set_value
@@ -490,7 +482,7 @@ end
 function on_npc_go_offline(npc)
 	amk_anoms.unreg_in_anom_manager(npc)
 
-	if check_game()==true then
+	if game_is_running() then
 		local sobj = g_alife:object(npc:id())
 		if sobj then
 			amk_offline_alife.process_trade(sobj)
@@ -502,7 +494,7 @@ end
 
 --колбэк на юзание объекта
 function on_use(victim, who)
-  if db_actor and who and who:id()==0 then
+  if Actor and who and who:id()==0 then
 		amk_mod.check_usable_item(victim)
   end
 end
@@ -520,14 +512,14 @@ end
 
 function on_npc_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if db_actor and who and who:id()==0 and amount>0 then
+	if Actor and who and who:id()==0 and amount>0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"npc")
 	end
 end
 
 function on_monster_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if db_actor and who and who:id()==0 and amount>0 then
+	if Actor and who and who:id()==0 and amount>0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"monster")
 	end
 end
@@ -560,7 +552,7 @@ function on_game_load()
 	gps_habar.on_game_load() --idler++--
 end
 
--- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db_actor недоступен!
+-- Эта функция вызывается самой первой. Онлайновые объекты недоступны! Actor недоступен!
 function on_game_start()
 	init_item_use_acts()
 	amk_mod.on_game_start()

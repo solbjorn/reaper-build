@@ -19,7 +19,7 @@ function on_inventory_open()
 	need_convert = false
 	local sim = g_alife
 	local t = {}
-	db_actor:iterate_inventory(
+	Actor:iterate_inventory(
 		function(npc,item)
 			local sect = ammo_fake_types[item:section()]
 			if sect then
@@ -29,7 +29,7 @@ function on_inventory_open()
 		end
 	)
 
-	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
+	local pos, lvid, gvid = Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id()
 	for sec, num in pairs(t) do
 		se_respawn_create_ammo(sec, pos, lvid, gvid, 0, num)
 	end
@@ -39,10 +39,10 @@ function on_inventory_close()
 	need_convert = true
 	local sim = g_alife
 	local t = {}
-	db_actor:iterate_inventory(
+	Actor:iterate_inventory(
 		function(npc,item)
 			local sect = item:section()
-			if ammo_section[sect] and db_actor:is_in_ruck(item) then
+			if ammo_section[sect] and Actor:is_in_ruck(item) then
 				sect = sect .. "_fake"
 				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
 				sim:release(sim:object(item:id()), true)
@@ -50,7 +50,7 @@ function on_inventory_close()
 		end
 	)
 
-	local pos, lvid, gvid = db_actor:position(), db_actor:level_vertex_id(), db_actor:game_vertex_id()
+	local pos, lvid, gvid = Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id()
 	for sec, num in pairs(t) do
 		se_respawn_create_ammo(sec, pos, lvid, gvid, 0, num)
 	end
@@ -62,9 +62,9 @@ function on_item_ruck(item)
 		local cnt = get_ammo_data(item, "box_size")
 
 		g_alife:release(g_alife:object(item:id()), true)
-		se_respawn_create_ammo(section .. "_fake", db_actor:position(),
-				       db_actor:level_vertex_id(),
-				       db_actor:game_vertex_id(),
+		se_respawn_create_ammo(section .. "_fake", Actor:position(),
+				       Actor:level_vertex_id(),
+				       Actor:game_vertex_id(),
 				       0, cnt)
 	end
 end

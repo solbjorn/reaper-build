@@ -12,7 +12,7 @@ end
 
 function action_process_death:death_callback(victim, who)
 	local killer_id
-	local actor = db_actor
+	local actor = Actor
 	if who ~= nil then
 		killer_id = who:id()
 		if killer_id == 0 and victim:best_enemy() == nil then

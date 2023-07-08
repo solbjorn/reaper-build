@@ -46,7 +46,7 @@ function zombie_team (z_m)
    local i,j
    local level_num = string.sub (level.name(),2,3)
    if z_m then zombie_max = z_m
-   elseif db.actor:character_rank()>500 then zombie_max = zombie_max * 2
+   elseif Actor:character_rank()>500 then zombie_max = zombie_max * 2
    end
    -- ищем подходящих покойников на уровне и пишем их в табличку
      for j,trup in pairs (db.creatures) do
@@ -57,7 +57,7 @@ function zombie_team (z_m)
         end
         if trup_name and zombie_c<zombie_max and tag_trup_sid[j]==nil and
            string.find(trup_name,"respawn") and not string.find(trup_name,"zombie") and not string.find(trup_name,"ecolog")
---           and trup:position():distance_to(db.actor:position())<20 and db.actor:see(trup)  -- ОТЛАДКА
+--           and trup:position():distance_to(Actor:position())<20 and Actor:see(trup)  -- ОТЛАДКА
            then
            zombie_c = zombie_c+1
                            -- 0.8,ОТЛАДКА : 10.8
@@ -124,7 +124,7 @@ function trup_to_zombie (s_param)
            if math.random(0,15)<t then --0,12 ОТЛАДКА 10,12
                local skel = nil
                if math.random()< 0.4 then
-                  skel = amk.spawn_item("breakable_object",e_pos,db.actor:game_vertex_id(),db.actor:level_vertex_id())  -- (c) AMK
+                  skel = amk.spawn_item("breakable_object",e_pos,Actor:game_vertex_id(),Actor:level_vertex_id())  -- (c) AMK
                end
                if skel then
                   t = amk.get_breakable_data(skel)
@@ -200,7 +200,7 @@ function trup_to_zombie (s_param)
 
            tag_drop_habar(level.object_by_id(trup_id),zombie)  -- грохаем тушку
 
-           if not db.actor:see(trup) then  -- придумалась ерунда какая-то
+           if not Actor:see(trup) then  -- придумалась ерунда какая-то
               amk.send_tip ("Подбор пароля. Абонент "..trup_human_name.." блокирован.","Системное сообщение",1,7,"gen_info","news")
            end
         end -- zombie Ok
@@ -240,24 +240,24 @@ end
 function tag_im_alone(trup, mode)
    if trup then
       local i,j,k
-      i = trup:position():distance_to(db.actor:position())
+      i = trup:position():distance_to(Actor:position())
       if i<5 then -- актер получает хит чтоб близко не стоял
           local h = hit()
             h.impulse = 0
             h.direction = vector():set(0,0,0)
-	    h.draftsman = db.actor
+	    h.draftsman = Actor
  	    h:bone("bip01_spine")
-	    h.power = db.actor.health/(2*i) -- полжизни отнимем ..
+	    h.power = Actor.health/(2*i) -- полжизни отнимем ..
 	    h.type = hit.telepatic
-	    db.actor:hit(h)
+	    Actor:hit(h)
             j = string.find("..F.ABZ",mode)
             if j then
-               h.power = (db.actor.health*(0.1*j))/i -- но не добьем !
+               h.power = (Actor.health*(0.1*j))/i -- но не добьем !
   	       h.type = hit.shock
-	       db.actor:hit(h)
+	       Actor:hit(h)
             end
-            if db.actor:alive() then -- звон в ухах
-               sound_from_npc(db.actor,[[affects\tinnitus3a]],2)
+            if Actor:alive() then -- звон в ухах
+               sound_from_npc(Actor,[[affects\tinnitus3a]],2)
             end
        end
       if i<2 or i>130 then return false end

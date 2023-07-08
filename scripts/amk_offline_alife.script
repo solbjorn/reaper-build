@@ -131,7 +131,7 @@ end
 --on_death - не убиваем!
 --on_hit - не обрабатываем!
 function add_fresh_meat(obj)
-	if obj and obj.m_game_vertex_id and db.actor and 0 ~= obj.id then
+	if obj and obj.m_game_vertex_id and Actor and 0 ~= obj.id then
 		if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 			local map=alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
 			if not off_npcs[map] then off_npcs[map]={monsters={},stalkers={},weapons={},artefacts={},inv_boxes={}} end
@@ -1477,10 +1477,10 @@ function send_metka_hide_box(boxobj, victim)
   end
 
   local pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
-  pda_news:play(db.actor, 0, sound_object.s2d)
+  pda_news:play(Actor, 0, sound_object.s2d)
   local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
   local lname = news_main.get_level_name(news_main.get_object_levelname(boxobj))
-  db.actor:give_game_news(lname..". "..sname.." спр€тал хабар в надежном месте", task_texture, task_rect, 0, 5000)
+  Actor:give_game_news(lname..". "..sname.." спр€тал хабар в надежном месте", task_texture, task_rect, 0, 5000)
 end
 
 function npc_put_trap_box(victim, box, habarcost)
@@ -1678,7 +1678,7 @@ function check_box_trap_trigger(victim, box)
 end
 
 function do_drop_item(obj)
-	if (obj and db.actor and obj.id ~= 0) then
+	if (obj and Actor and obj.id ~= 0) then
 		if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
 			for z=1, table.getn(items[obj.parent_id]) do
 				if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
@@ -1692,7 +1692,7 @@ gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) -- Idler++-- корре
 end
 
 function do_drop_object(obj)
-	if (obj and db.actor and obj.id ~= 0) then
+	if (obj and Actor and obj.id ~= 0) then
 		clear_item_owner(obj.id)
 		do_drop_item(obj)
 		alife():release(alife():object(obj.id), true)
@@ -1732,7 +1732,7 @@ end
 
 function pick_item(npc, obj)
 	local new = nil
-	if npc and obj and db.actor and obj.id ~= 0 then
+	if npc and obj and Actor and obj.id ~= 0 then
 		--npc does not take a weapon or an outfit if he already has the same
 		if npc_has_same_wo(npc, obj) then return new end
 
@@ -2216,13 +2216,13 @@ end
 
 function sobj_is_far(obj, distance)
 	local result = true
-	if (db.actor and obj and distance and obj.position and db.actor.position ) then
+	if (Actor and obj and distance and obj.position and Actor.position ) then
 		-- на одном ли уровне?
 		if obj.m_game_vertex_id and game_graph():valid_vertex_id(obj.m_game_vertex_id) then
 		local map = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
 		if (map and level.name() == map) then
 			-- ƒостаточно ли далеко?
-			if (obj.position:distance_to(db.actor:position()) < distance) then
+			if (obj.position:distance_to(Actor:position()) < distance) then
 				result = false
 			end
 		end
@@ -2479,9 +2479,9 @@ function give_treasure(npc)
 			amk.remove_spot_from_map(iter, "treasure")
 			amk.add_spot_on_map(iter, "treasure", sname.." cпр€тал хабар в надежном месте")
 			local pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
-			pda_news:play(db.actor, 0, sound_object.s2d)
+			pda_news:play(Actor, 0, sound_object.s2d)
 			local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
-			db.actor:give_game_news(lname..". ’абар спр€тан в надежном месте", task_texture, task_rect, 0, 5000)
+			Actor:give_game_news(lname..". ’абар спр€тан в надежном месте", task_texture, task_rect, 0, 5000)
 			if box.m_story_id then
 				table_insert(boxlist, box.m_story_id)
 			end
@@ -2616,7 +2616,7 @@ function actor_update(delta)
 					trap_rank = box.trap_rank
 					set_box_trapped(iter, 0)
 					trap_explosion(inv_box)
-					if not db.actor:item_in_slot(6) then
+					if not Actor:item_in_slot(6) then
 						trap_hit_actor(true)
 						return
 					end
@@ -2637,7 +2637,7 @@ function check_body_trap(body_id)
 	if not(body and body:is_stalker() and body.alive and not body:alive()) then return end
 	trap_explosion(body)
 
-	if not db.actor:item_in_slot(6) then
+	if not Actor:item_in_slot(6) then
 		trap_hit_actor(true)
 	else
 		trap_hit_actor()
@@ -2672,7 +2672,7 @@ function trap_hit_armor()
 		armor_damage = 0.2
 	end
 
-	local armor = db.actor:item_in_slot(6)
+	local armor = Actor:item_in_slot(6)
 	if armor then
 		local protection = utils.cfg_get_number(config, armor:section(), "explosion_protection", nil, false, 0.4)
 		if protection <= 0 then protection = 0.05 end
@@ -2703,11 +2703,11 @@ function trap_hit_actor(strong)
 
     h.power = hit_power
     h.impulse = 1
-	h.draftsman = db.actor
+	h.draftsman = Actor
 	h.direction = vector():set(0,0,0)
 	h:bone("bip01_spine")
     h.type = hit.fire_wound
-	db.actor:hit(h)
+	Actor:hit(h)
 
 	level.add_pp_effector("amk_shoot.ppe", 2011, false)
 end
@@ -2721,16 +2721,16 @@ function trap_explosion(box)
 	local h = hit()
     h.power = 0.01
     h.impulse = 500
-	h.draftsman = db.actor
+	h.draftsman = Actor
 
 	local bpos = box.position
 	amk_particle.amk_particle({particle=[[explosions\explosion_dynamite]], pos=bpos, sound=[[weapons\rpg7_explode]]})
-	local apos = db.actor:position()
+	local apos = Actor:position()
 	local dist = box.position:distance_to(apos)
 	if dist > 0 then
 		h.direction = vector():set((apos.x - bpos.x)/dist, (apos.y - bpos.y)/dist, (apos.z - bpos.z)/dist)
 		h.type = hit.explosion
-		db.actor:hit(h)
+		Actor:hit(h)
 	end
 	trap_hit_armor()
 	trap_hit_stalkers(bpos)
@@ -2956,21 +2956,21 @@ function empty_treasure(box_id)
 	for iter, angl in pairs(angles) do
 		--spawn a creature behind the actor
 		local radius = 3
-		local dir = vector_rotate_y(db.actor:direction(), angl)
-		local lv = level.vertex_in_direction(db.actor:level_vertex_id(), dir, radius)
+		local dir = vector_rotate_y(Actor:direction(), angl)
+		local lv = level.vertex_in_direction(Actor:level_vertex_id(), dir, radius)
 		if not lv or lv == 65535 then
-			lv = db.actor:level_vertex_id()
-			pos = db.actor:position():add(vector():set(dir.x * radius, 0, dir.z * radius))
+			lv = Actor:level_vertex_id()
+			pos = Actor:position():add(vector():set(dir.x * radius, 0, dir.z * radius))
 		else
 			pos = level.vertex_position(lv)
 		end
-		sim:create(spawn_maps[lname].creatures[st], pos, lv, db.actor:game_vertex_id())
+		sim:create(spawn_maps[lname].creatures[st], pos, lv, Actor:game_vertex_id())
 	end
 
 	local sname = spawn_maps[lname].sounds[st]
 	if pos and sname and sanem~="" then
 		local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_01\]]..sname)
-		snd_obj:play_at_pos(db.actor, pos)
+		snd_obj:play_at_pos(Actor, pos)
 		reap.drop_weapon()
 	end
 end
@@ -3078,8 +3078,8 @@ function check_be_enemy()
 					if angry_npc_timer[iter] then
 						if time_global() >= angry_npc_timer[iter] then
 							angry_npc_timer[iter] = nil
-							npc:set_relation(game_object.neutral, db.actor)
-							local rel = npc:relation(db.actor)
+							npc:set_relation(game_object.neutral, Actor)
+							local rel = npc:relation(Actor)
 							if rel and rel~=game_object.enemy then
 								set_be_enemy_f(iter, enemy_level_hit)
 							end
@@ -3088,7 +3088,7 @@ function check_be_enemy()
 						angry_npc_timer[iter] = time_global() + be_enemy_time
 					end
 				else
-					local rel = npc:relation(db.actor)
+					local rel = npc:relation(Actor)
 					if rel and rel == game_object.enemy then
 						-- an enemy NPC cannot punch Mecheniy
 						clear_be_enemy(iter)

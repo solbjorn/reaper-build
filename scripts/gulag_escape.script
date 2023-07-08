@@ -2123,7 +2123,7 @@ function load_states(type)
 
 	if type == "esc_blokpost" then
 		return function (gulag)
-			local actor = db.actor
+			local actor = Actor
 			if not actor then
 				return gulag.state
 			end
@@ -2152,7 +2152,7 @@ function load_states(type)
 
 	if type == "esc_lager" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if not actor then
 				return gulag.state
 			end
@@ -2171,7 +2171,7 @@ function load_states(type)
 
 	if type == "esc_bridge" then
 		return function(gulag)
-			if db.actor ~= nil then
+			if Actor ~= nil then
 				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
 					return 0  -- הוםü
 				else
@@ -2203,7 +2203,7 @@ function load_states(type)
 
 	if type == "esc_dogs_to_fox" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if not has_alife_info("escape_stalker_dog_spawn") then
 				return 0 -- מפפכאים
 			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then
@@ -2216,7 +2216,7 @@ function load_states(type)
 
 	if type == "esc_specnaz" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if has_alife_info("esc_raid1_start") then
 				return 1
 			end
@@ -2236,7 +2236,7 @@ function load_states(type)
 
 	if type == "esc_killers" then
 		return function(gulag)
-			local actor = db.actor
+			local actor = Actor
 			if not actor then
 				return gulag.state
 			end

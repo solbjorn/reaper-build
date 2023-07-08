@@ -22,9 +22,9 @@ function on_item_take(obj)
 			-- выкидываем только движковый стартовый
 			reap.load_del_bolt = true
 		end
-		if not db_actor:is_in_slot(obj) then
+		if not Actor:is_in_slot(obj) then
 			create("fake_bolt", xyz(), 0, 0, 0)
-			db_actor:drop_item_and_teleport(obj, xyz())
+			Actor:drop_item_and_teleport(obj, xyz())
 		end
 
 		del_value("b_dr")
@@ -33,21 +33,21 @@ function on_item_take(obj)
 end
 
 function on_item_drop(obj)
-	if obj:section() == "bolt" and not db_actor:item_in_slot(5) then
+	if obj:section() == "bolt" and not Actor:item_in_slot(5) then
 		set_value("b_dr", true)
 	end
 end
 
 function bolt_to_belt(id, obj)
 	level.parked_call(function()
-		db_actor:move_to_belt(obj)
+		Actor:move_to_belt(obj)
 	end)
 end
 
 function on_item_belt(obj)
 	local sect = obj:section()
 	if sect == "fake_bolt" then
-		local actor = db_actor
+		local actor = Actor
 		local sim = g_alife
 
 		sim:release(sim:object(obj:id()), true)
@@ -59,7 +59,7 @@ function on_item_belt(obj)
 		boxes[obj:id()] = obj
 		redraw = true
 
-		if not db_actor:object("bolt") and get_value("b_dr") then
+		if not Actor:object("bolt") and get_value("b_dr") then
 			amk.spawn_item_in_inv("bolt")
 			use_one(obj, size)
 		end
@@ -67,7 +67,7 @@ function on_item_belt(obj)
 end
 
 function fake_bolt_drop(id, obj)
-	db_actor:drop_item(obj)
+	Actor:drop_item(obj)
 end
 
 function on_item_drop_from_belt(obj, drop)
@@ -90,7 +90,7 @@ function on_item_drop_from_belt(obj, drop)
 end
 
 function update()
-	if db_actor:active_slot() == 5 and not level.main_input_receiver() then
+	if Actor:active_slot() == 5 and not level.main_input_receiver() then
 		if st and redraw then
 			local bolt_cnt = 0
 			for id, obj in pairs(boxes) do
@@ -157,11 +157,11 @@ function remove_bolt()
 end
 
 function del_bolt()
-	db_actor:drop_item_and_teleport(db_actor:object("bolt"), xyz(0, 0, 0))
+	Actor:drop_item_and_teleport(Actor:object("bolt"), xyz(0, 0, 0))
 end
 
 function drop_bolt()
-	local actor = db_actor
+	local actor = Actor
 	del_bolt()
 	g_alife:create("fake_bolt", random_position(actor:position(), 1),
 		       actor:level_vertex_id(), actor:game_vertex_id())

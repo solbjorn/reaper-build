@@ -164,11 +164,11 @@ function send_tip(news_id, timeout, sender, showtime, sender_id)
 	if showtime == nil then showtime = 5000 end
 
 	--' Играем дефолтный звук
-	pda_tips:play(db_actor, 0, sound_object.s2d)
+	pda_tips:play(Actor, 0, sound_object.s2d)
 	local sound = news[news_id]
 	if sound ~= nil then
 		--' Играем звук забитый
-		sound:play(db_actor, 1, sound_object.s2d)
+		sound:play(Actor, 1, sound_object.s2d)
 
 		--' Необходимо поставить время показа по длине сцены
 		showtime = sound:length() + 1500
@@ -186,7 +186,7 @@ function send_tip(news_id, timeout, sender, showtime, sender_id)
 	local header = sinfo[3] or (sender_id and reap.story_name(sender_id)) or translate("st_tip")
 
 	local news_text = "%c[sender]" .. header .. "\\n" .. "%c[default]" .. translate(news_id)
-	db_actor:give_game_news(news_text, "ui\\ui_iconsTotal", rect, 0, showtime)
+	Actor:give_game_news(news_text, "ui\\ui_iconsTotal", rect, 0, showtime)
 
 	return true
 end
@@ -195,7 +195,7 @@ function send_tip_nosound(news_id, timeout, sender)
 	if news_id == nil then return end
 
 	--' Играем дефолтный звук
-	pda_tips:play(db_actor, 0, sound_object.s2d)
+	pda_tips:play(Actor, 0, sound_object.s2d)
 	return news[news_id]
 end
 
@@ -210,7 +210,7 @@ local randtask = {
 }
 
 function send_task(type, _task, objective)
-	if db_actor == nil then return false end
+	if Actor == nil then return false end
 
 	local task_title = _task:get_title()
 	local task_time = string.find(task_title, "\\n", 1, true)
@@ -221,7 +221,7 @@ function send_task(type, _task, objective)
 	local objective_index = objective:get_idx() + 1
 
 	--' Играем дефолтный звук
-	pda_task:play(db_actor, 0, sound_object.s2d)
+	pda_task:play(Actor, 0, sound_object.s2d)
 
 	-- цвет сообщения
 	local text_color = "%c[sender]"
@@ -295,11 +295,11 @@ function send_task(type, _task, objective)
 		end
 	end
 
-	if db_actor:is_talking() then
-		db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+	if Actor:is_talking() then
+		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
 	--выдаем в любом случае чтобы попало в дневник
-	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 10000)
+	Actor:give_game_news(news_text, task_texture, task_rect, 0, 10000)
 end
 
 function send_encyclopedy(_type, group, name)
@@ -309,7 +309,7 @@ function send_encyclopedy(_type, group, name)
 		[2] = "news_task",		-- Задания
 		[3] = "news_info"		-- Вырезанный раздел, но пусть будет
 	}
-	pda_news:play(db_actor, 0, sound_object.s2d)
+	pda_news:play(Actor, 0, sound_object.s2d)
 	if _type == 2 then group = string.match(group, "^[^/]+") end
 	local sinfo = tips_icons["encyclopedia"]
 	local task_texture, task_rect = "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47)
@@ -318,83 +318,83 @@ function send_encyclopedy(_type, group, name)
 	if _type~=2 then
 		news_text = news_text..":%c[255,255,255,127] "..translate(name)
 	end
-	if db_actor:is_talking() then
-		db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+	if Actor:is_talking() then
+		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
-	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+	Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 end
 
 function send_treasure(name, level_name)
-	pda_news:play(db_actor, 0, sound_object.s2d)
+	pda_news:play(Actor, 0, sound_object.s2d)
 
 	local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
 	local news_text = "%c[sender]"..translate("st_found_new_treasure")..
 		"\\n".."%c[120,255,120,160]"..translate(level_name)..
 		": %c[170,200,200,200]"..translate(name)
-	if db_actor:is_talking() then
-		db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+	if Actor:is_talking() then
+		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
-	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+	Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 end
 
 function send_level_changer(from, to)
-	pda_news:play(db_actor, 0, sound_object.s2d)
+	pda_news:play(Actor, 0, sound_object.s2d)
 
 	local sinfo = tips_icons["encyclopedia"]
 	local task_texture, task_rect = "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47)
 	local news_text = "%c[sender]" .. translate("st_new_level_changer").. "\\n" ..
 		"%c[255,255,255,0]" .. translate(from) .. " - " .. translate(to)
 
-	if db_actor:is_talking() then
-		db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+	if Actor:is_talking() then
+		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
-	db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+	Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 end
 
 function relocate_item(type, item, count)
-	if db_actor == nil then return false end
+	if Actor == nil then return false end
 	if not count then count = 1 end
 	--' Играем дефолтный звук
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
 		local news_text = "%c[255,105,239,146]"..translate("general_in_item").."\\n".."%c[default]"..iif(count>1,count.."x ","")..get_inv_name(item)
-		if db_actor:is_talking() then
-			db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+		if Actor:is_talking() then
+			Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 		else
-			db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+			Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 		end
 	elseif type == "out" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_lost_thing")
 		local news_text = "%c[255,255,085,085]"..translate("general_out_item").."\\n".."%c[default]"..iif(count>1,count.."x ","")..get_inv_name(item)
-		if db_actor:is_talking() then
-			db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+		if Actor:is_talking() then
+			Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 		else
-			db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+			Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 		end
 	end
 end
 
 function relocate_money(type, amount)
-	if db_actor == nil then return false end
+	if Actor == nil then return false end
 
 	--' Играем дефолтный звук
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_money")
 		local news_text = "%c[255,105,239,146]"..translate("general_in_money").."\\n".."%c[default]"..translate(tostring(amount))
 
-		if db_actor:is_talking() then
-			db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+		if Actor:is_talking() then
+			Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 		else
-			db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+			Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 		end
 	elseif type == "out" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_lost_money")
 		local news_text = "%c[255,255,085,085]"..translate("general_out_money").."\\n".."%c[default]"..translate(tostring(amount))
 
-		if db_actor:is_talking() then
-			db_actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
+		if Actor:is_talking() then
+			Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 		else
-			db_actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
+			Actor:give_game_news(news_text, task_texture, task_rect, 0, 5000)
 		end
 	end
 end

@@ -29,7 +29,7 @@ function cheat:InitControls()
 	self:Register(xml:Init3tButton("btn_1", self),"btn_1")
 	self:Register(xml:Init3tButton("btn_2", self),"btn_2")
 	self:Register(xml:Init3tButton("btn_3", self),"btn_3")
-	if db.actor.health < 0.9 then
+	if Actor.health < 0.9 then
 		self:Register(xml:Init3tButton("btn_4", self),"btn_4")
 	end
 	-- кнопка выхода
@@ -41,7 +41,7 @@ function cheat:InitCallBacks()
 	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.cheat1, self)
 	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.cheat2, self)
 	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.cheat3, self)
-	if db.actor.health < 0.9 then
+	if Actor.health < 0.9 then
 		self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.cheat4, self)
 	end
 	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
@@ -89,15 +89,6 @@ end
 function cheat:cheat4()
 		dream_:sleep()
 		self:on_quit()
-end
-
-function cheat:check_game()
-	-- возвращает true если запущена игра
-	local check = false
-	if level.present() and (db.actor ~= nil) and db.actor:alive() then
-		check = true
-	end
-	return check
 end
 
 function cheat:on_quit()

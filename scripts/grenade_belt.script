@@ -43,13 +43,13 @@ end
 
 function on_item_slot(obj)
 	if grenades_1[obj:section()] and not grenades_on_belt[obj:id()] then
-		db_actor:move_to_ruck(obj)
+		Actor:move_to_ruck(obj)
 	end
 end
 
 function on_item_drop(obj)
 	local id = grenades_on_belt[obj:id()]
-	if id and has_alife_info("ui_inventory_hide") and not has_alife_info("ui_car_body") and not db.actor:is_talking() then
+	if id and has_alife_info("ui_inventory_hide") and not has_alife_info("ui_car_body") and not Actor:is_talking() then
 		grenades_on_belt[obj:id()] = nil
 		del_item(id)
 	end
@@ -60,7 +60,7 @@ function on_info(info_id)
 		need_convert = false
 
 		local sect
-		db_actor:iterate_inventory(
+		Actor:iterate_inventory(
 			function(dummy,item)
 				sect = item:section()
 				if grenades_1[sect] then
@@ -75,11 +75,11 @@ function on_info(info_id)
 	elseif info_id=="ui_inventory_hide" or info_id=="ui_car_body_hide" or info_id=="ui_trade_hide" then
 		need_convert = true
 		local sect
-		db_actor:iterate_inventory(
+		Actor:iterate_inventory(
 			function(dummy,item)
 				sect = item:section()
 				if grenades[sect] then
-					if not db_actor:is_on_belt(item) then
+					if not Actor:is_on_belt(item) then
 						del_item(item:id())
 						spawn_in_inv("fake_" .. sect)
 					else
@@ -92,7 +92,7 @@ function on_info(info_id)
 end
 
 function spawn_in_inv(sec)
-	local obj = alife():create(sec,db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),0)
+	local obj = alife():create(sec,Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id(),0)
 	return obj.id
 end
 

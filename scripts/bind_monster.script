@@ -108,7 +108,7 @@ function generic_object_binder:update(delta)
 					local sobj=alife():object( npc:id() )
 					if sobj and sobj.online then
 						local zomb = container:get("zombies", { })
-						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(db_actor)}
+						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(Actor)}
 						npc:set_character_community("zombied",0,0)
 						local orgtbl=amk.read_stalker_params(sobj)
 						if (not string.find(orgtbl.profile,"_zombi")) then
@@ -124,7 +124,7 @@ function generic_object_binder:update(delta)
             if (self.object:clsid()==clsid.dog_s or self.object:clsid()==clsid_bloodsucker_s) and self.object:alive() and self.object.health>0.05 then
 		    local npc=self.object:get_enemy()
 		    if npc then
-			if npc:id()==0 and db_actor:see(self.object) and self.object:see(db_actor) and math.random()<0.2 then
+			if npc:id()==0 and Actor:see(self.object) and self.object:see(Actor) and math.random()<0.2 then
 			    local tag_w_down = true
 		  	    local tag_dist = 1
                 if self.object:clsid()==clsid.dog_s then -- DOG attack
@@ -136,16 +136,16 @@ function generic_object_binder:update(delta)
 			       h:bone("bip01_spine") -- чтобы учитывалась броня
 			       h.draftsman = self.object
 			       h.direction = self.object:direction()
-			       db_actor:hit(h)
+			       Actor:hit(h)
 			       tag_w_down = math.random()<0.02
 			    else -- Bloodsucker attack
-			       tag_dist = db_actor:position():distance_to(self.object:bone_position("bip01_head"))
+			       tag_dist = Actor:position():distance_to(self.object:bone_position("bip01_head"))
 			    end
 
 			    if tag_w_down and tag_dist<7 then
-			       local active_item = db_actor:active_item()
+			       local active_item = Actor:active_item()
 			         if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-			         db_actor:drop_item(active_item)
+			         Actor:drop_item(active_item)
 			       end
 			    end
 		        end
@@ -156,10 +156,10 @@ function generic_object_binder:update(delta)
 
 	if time_real_ms > self.next_update then
 		if self.object.health>0.03 then
-			if self.object:see(db_actor) and db_actor:position():distance_to(self.object:position())<40 then
+			if self.object:see(Actor) and Actor:position():distance_to(self.object:position())<40 then
 				amk.enemy_see_actor(self.object,"monster")
 			end
-			if db_actor:see(self.object) and db_actor:position():distance_to(self.object:position())<80 then
+			if Actor:see(self.object) and Actor:position():distance_to(self.object:position())<80 then
 				amk.actor_see_enemy(self.object,"monster")
 			end
 		end
@@ -249,7 +249,7 @@ function generic_object_binder:death_callback(victim, who)
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
-	h.direction = db_actor:position():sub(self.object:position())
+	h.direction = Actor:position():sub(self.object:position())
 	h:bone("pelvis")
 	h.power = 1
 	h.impulse = 10
@@ -311,23 +311,23 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 	if obj:section()=="electro_chimera" and time_real_ms>(self.charge_time or 0) then
 	amk_particle_amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
 
-	local dist = db_actor:position():distance_to(obj:bone_position("bip01_spine"))
+	local dist = Actor:position():distance_to(obj:bone_position("bip01_spine"))
 
  	-- эл.химера поражает ГГ ударом и э.шоком ближе 20м
 	if dist > 0.2 and dist < 20 then
             local tag_ch_pos = obj:bone_position("bip01_spine")  -- spine1 or head ??
-            local tag_ac_pos = db_actor:position()
+            local tag_ac_pos = Actor:position()
 	    local tag_m       --TAG,Mon correct shock power (AMK=15)
 
             local h = hit()
 
  	    h.impulse = 0
             h.direction = vector():set(0,0,0)
-	    h.draftsman = db_actor
+	    h.draftsman = Actor
  	    h:bone("bip01_spine") -- чтобы учитывалась броня
 	    h.power = 1/dist
 	    h.type = hit.strike
-	    db_actor:hit(h)
+	    Actor:hit(h)
 
             if level.rain_factor() > 0.02 then
   	       h.direction = vector():set(0,-1,0)
@@ -347,7 +347,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
             end -- нет дождя
 	    h.power = tag_m/dist
    	    h.type = hit.shock
-	    db_actor:hit(h)
+	    Actor:hit(h)
 	end -- dist<20m
 
 -- TAG Химера "поражает" НПС на виду у ГГ
@@ -362,7 +362,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
                 local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
                 if  rnd>3 then rnd=rnd+2 end
                 local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd))
-                snd_obj:play_at_pos(db_actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d )
+                snd_obj:play_at_pos(Actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d )
            else --dist
                 if math.random()<0.3 then
                    if math.random()>0.5 then

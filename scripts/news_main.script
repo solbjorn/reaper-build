@@ -349,7 +349,7 @@ function on_npc_death(victim_, killer_)
 				aid = author.id
 			end
 		else
-			if (math_random() < 0.5 and db.actor and 0 ~= killer:id()) and (IsNpcStalker(killer)) then
+			if (math_random() < 0.5 and Actor and 0 ~= killer:id()) and (IsNpcStalker(killer)) then
 				m_str = format_template_killer_act(victim)
 				s_from = get_npc_name(killer)
 			else
@@ -2556,8 +2556,8 @@ end
 
 function create_treasurebox()
 	local obj
-	local pos = db.actor:position()
-	obj = alife():create("m_inventory_box", pos, db.actor:level_vertex_id(), db.actor:game_vertex_id())
+	local pos = Actor:position()
+	obj = alife():create("m_inventory_box", pos, Actor:level_vertex_id(), Actor:game_vertex_id())
 	if (obj) then
 		local t = amk.get_invbox_data(obj)
 		t.custom = "[logic]\ncfg = scripts\\treasure_inventory_box.ltx"
@@ -2566,7 +2566,7 @@ function create_treasurebox()
 end
 
 function on_miniquest_reward(trader)
-	if (trader and db.actor) then
+	if (trader and Actor) then
 		local money = 0
 		local items = ""
 		local story_id = -1
@@ -2611,12 +2611,12 @@ function on_miniquest_reward(trader)
 end
 
 function point_is_far(point, lv, gv, distance)
-	if (db_actor and point and lv and gv and distance and graph:valid_vertex_id(gv)) then
+	if (Actor and point and lv and gv and distance and graph:valid_vertex_id(gv)) then
 		-- на одном ли уровне?
 		local map = g_alife:level_name(graph:vertex(gv):level_id())
 		if (map and level.name() == map) then
 			-- ƒостаточно ли далеко?
-			if point:distance_to(db_actor:position()) < distance then
+			if point:distance_to(Actor:position()) < distance then
 				return false
 			end
 		end

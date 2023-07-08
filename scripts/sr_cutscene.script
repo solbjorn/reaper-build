@@ -31,7 +31,7 @@ function action_cutscene:reset_scheme()
 
     self.st.signals = {} --' обнуляем сигналы
 
-	self:switch_state(db_actor)
+	self:switch_state(Actor)
 
 end
 
@@ -41,7 +41,7 @@ end
 function action_cutscene:update( delta )
 
 	--' храним персонажа локально (так быстрее обращаться)
-    local actor = db_actor
+    local actor = Actor
 
     if self.ui_disabled then
         if cutscene_finished == true then
@@ -104,11 +104,11 @@ function action_cutscene:zone_enter()
 	--' тут нужно запустить сцену
 
     --' телепорт в выбранную точку
-    xr_effects.teleport_actor(db.actor, nil, {self.st.point, self.st.look})
+    xr_effects.teleport_actor(Actor, nil, {self.st.point, self.st.look})
     level.add_pp_effector (self.st.pp_effector, 234, false)
 
 	level.add_cam_effector2(self.st.cam_effector, 123, false, "sr_cutscene.effector_callback")
-    xr_effects.disable_ui(db.actor, nil)
+    xr_effects.disable_ui(Actor, nil)
     self.ui_disabled = true
 	cutscene_finished = false
 

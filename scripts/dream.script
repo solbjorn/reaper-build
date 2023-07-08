@@ -11,13 +11,13 @@ function dream_mgr:__init()
 end
 
 function dream_mgr:sleep(scale) -- Время сна в часах
-	if not scale then scale = (1 - db_actor.health) * 6 end
+	if not scale then scale = (1 - Actor.health) * 6 end
 	amk_mod.reduce_need_sleep(scale)
 	self:main(scale)
 end
 
 function dream_mgr:main(scale)
-	db_actor:stop_talk()
+	Actor:stop_talk()
 	level.disable_input()
 	self:hp_corrector(scale)
 	self.actor_is_sleeping = true
@@ -40,7 +40,7 @@ function dream_mgr:stopper()
 	level.set_time_factor(config:r_float_cache("alife", "time_factor"))
 	actor_flags.sleep_state = false
 	self.actor_is_sleeping = false
-	if db_actor:alive() then
+	if Actor:alive() then
 		level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
 		level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
 		level.add_pp_effector("total_recall.ppe", 2008, false)
@@ -202,9 +202,9 @@ end
 
 function dream_mgr:hp_corrector(scale)
 	if scale then
-		self.hp = math.min(scale/6 + db_actor.health, 1)
-	elseif db_actor.health > self.hp then
-		db_actor.health = self.hp - db_actor.health
+		self.hp = math.min(scale/6 + Actor.health, 1)
+	elseif Actor.health > self.hp then
+		Actor.health = self.hp - Actor.health
 	end
 end
 

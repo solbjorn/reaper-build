@@ -9,12 +9,12 @@ local math_random = math.random
 function disable_ui_elements(actor, npc, p)
     for i, v in pairs(p) do
         if v == "all" then
-            db_actor:hide_weapon()
+            Actor:hide_weapon()
             level.disable_input()
             level.hide_indicators()
             break
         elseif v == "weapon" then
-            db_actor:hide_weapon()
+            Actor:hide_weapon()
         elseif v == "input" then
             level.disable_input()
         elseif v == "hud" then
@@ -28,20 +28,20 @@ function enable_ui_elements(actor, npc, p)
         if v == "all" then
             level.show_indicators()
             level.enable_input()
-            db_actor:restore_weapon()
+            Actor:restore_weapon()
             break
         elseif v == "hud" then
             level.show_indicators()
         elseif v == "input" then
             level.enable_input()
         elseif v == "weapon" then
-            db_actor:restore_weapon()
+            Actor:restore_weapon()
         end
     end
 end
 
 function disable_ui()
-    db_actor:hide_weapon()
+    Actor:hide_weapon()
     level.disable_input()
     level.hide_indicators()
 end
@@ -49,7 +49,7 @@ end
 function enable_ui()
     level.show_indicators()
     level.enable_input()
-    db_actor:restore_weapon()
+    Actor:restore_weapon()
 end
 
 function run_cam_effector(actor, npc, p)
@@ -110,9 +110,9 @@ function teleport_actor(actor, npc, p)
   local point = patrol(p[1])
   local look = patrol(p[2])
 
-  db_actor:set_actor_position(point:point(0))
+  Actor:set_actor_position(point:point(0))
   local dir = look:point(0):sub(point:point(0))
-  db_actor:set_actor_direction(-dir:getH())
+  Actor:set_actor_direction(-dir:getH())
 end
 
 -----------------------------------------------------------------------------
@@ -121,8 +121,8 @@ function drop_actor_inventory(actor, npc, p)
 	if not p[1] then return end
 	local drop_point = patrol(p[1]):point(0)
 
-	db_actor:inventory_for_each(function(item)
-		db_actor:drop_item_and_teleport(item, drop_point)
+	Actor:inventory_for_each(function(item)
+		Actor:drop_item_and_teleport(item, drop_point)
 	end)
 end
 
@@ -202,7 +202,7 @@ function monster_berserk(actor, npc)
 end
 
 function activate_bolt(actor, npc)
-  db_actor:activate_slot(5)
+  Actor:activate_slot(5)
 end
 
 --[[
@@ -352,7 +352,7 @@ end
 function play_snd(actor, npc, p)
   if p[1] then
     local snd_obj = xr_sound.get_safe_sound_object(p[1])
-    snd_obj:play_no_feedback(db_actor, sound_object.s2d, p[2] or 0, vector(), 1.0)
+    snd_obj:play_no_feedback(Actor, sound_object.s2d, p[2] or 0, vector(), 1.0)
   end
 end
 
@@ -393,7 +393,7 @@ end
 -- сделать актёра врагом персонажам, которые в онлайне под указанным смартом
 function set_gulag_enemy_actor( actor, npc, p )
   if p[1] then
-    xr_gulag.setGulagEnemy(p[1], db_actor)
+    xr_gulag.setGulagEnemy(p[1], Actor)
   end
 end
 
@@ -413,14 +413,14 @@ end
 
 -- постпроцесс и влияние удара в морду
 function actor_punch(npc)
-	if db_actor:position():distance_to_sqr(npc:position()) > 4 then
+	if Actor:position():distance_to_sqr(npc:position()) > 4 then
 		return
 	end
 
 	reap.drop_weapon(true)
 	set_inactivate_input_time(punch_recovery_time)
 	local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 
 	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
 	level.add_pp_effector("amk_shoot.ppe", 2011, false)
@@ -429,7 +429,7 @@ end
 
 -- Принудительное усыпание игрока на радаре.
 function force_actor_sleep(npc)
-  db_actor:actor_sleep(24, 0)
+  Actor:actor_sleep(24, 0)
 end
 
 -- забывание обиды
@@ -474,7 +474,7 @@ function gar_dm_bandits_fight(actor, npc)
     return
   end
 
-	local ignore_actor = distance_between(db_actor, novice) > 25
+	local ignore_actor = distance_between(Actor, novice) > 25
 	local bandits = {
 		101,
 		102,
@@ -486,7 +486,7 @@ function gar_dm_bandits_fight(actor, npc)
 			bandit:set_character_community("bandit", 0, 0)
 			novice:set_relation(game_object.enemy, bandit)
 			if not ignore_actor then
-				bandit:set_relation(game_object.enemy, db_actor)
+				bandit:set_relation(game_object.enemy, Actor)
 			end
 			bandit:set_relation(game_object.enemy, novice)
 		end
@@ -518,7 +518,7 @@ end
 function gar_hellcar_victory(actor, npc)
 	if not has_alife_info("gar_hellcar_tips_end") and has_alife_info("gar_hellcar_help") and not has_alife_info("gar_hellcar_thanks") then
 		news_manager.send_tip("gar_hellcar_victory", 0, "bes", 0)
-		db_actor:give_info_portion("gar_hellcar_tips_end")
+		Actor:give_info_portion("gar_hellcar_tips_end")
 	end
 end
 
@@ -577,15 +577,15 @@ function gar_mapspot_blockpost (actor, npc)
 end
 
 function actor_friend(actor, npc)
-  npc:set_relation(game_object.friend, db_actor)
+  npc:set_relation(game_object.friend, Actor)
 end
 
 function actor_neutral(actor, npc)
-  npc:set_relation(game_object.neutral, db_actor)
+  npc:set_relation(game_object.neutral, Actor)
 end
 
 function actor_enemy(actor, npc)
-  npc:set_relation(game_object.enemy, db_actor)
+  npc:set_relation(game_object.enemy, Actor)
 end
 
 function give_all_quests(actor, npc)
@@ -626,18 +626,18 @@ end
 function mil_paul_frost_dead (actor, npc)
     local gulag = xr_gulag.get_gulag_by_name ("mil_freedom")
     if (gulag) then
-       gulag:set_relation (game_object.neutral, db_actor)
+       gulag:set_relation (game_object.neutral, Actor)
     end
 end
 
 function set_freedom_actor_enemy (actor, npc)
     local luk = level_object_by_sid (707)
-    actor_enemy (db_actor, luk)
+    actor_enemy (Actor, luk)
 end
 
 function military_dolg_dead (actor, npc)
     -- если нет актера, то вылетаем с грохотом и треском
-    if db_actor == nil then return end
+    if Actor == nil then return end
 
 	-- проапдейтим количество мертвых долговцев
 	local mil_dolg_killed = get_value("mil_dolg_killed", 0) + 1
@@ -692,7 +692,7 @@ end
 function bar_ecolog_spam_5(actor, npc)
   if not has_alife_info("bar_heli_scene_volkodav_die") and not has_alife_info("bar_ecolog_saw_chase") then
     news_manager.send_tip("bar_freedom_chase", nil, "ecolog", nil, 503)
-    db_actor:give_info_portion("bar_ecolog_saw_chase")
+    Actor:give_info_portion("bar_ecolog_saw_chase")
   end
 end
 function bar_ecolog_hit(actor, npc)
@@ -706,7 +706,7 @@ end
 function bar_freedom_angry_actor(actor,npc)
   if has_alife_info("bar_ecolog_crush_actor_enemy")
   then
-    npc:set_relation(game_object.enemy, db_actor)
+    npc:set_relation(game_object.enemy, Actor)
   end
 end
 function bar_freedom_defence_ecolog(actor,npc)
@@ -732,7 +732,7 @@ function rostok_kruglov_attract_1(actor,npc)
   local tips_sound = news_manager.send_tip_nosound("bar_freedom_chase", 0, "ecolog")
   if tips_sound ~= nil then
     --' Играем звук забитый
-    tips_sound:play(db_actor, 0, sound_object.s2d)
+    tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
 function rostok_kruglov_attract_2(actor,npc)
@@ -740,7 +740,7 @@ function rostok_kruglov_attract_2(actor,npc)
   local tips_sound = news_manager.send_tip_nosound("rostok_kruglov_follow_2",3000, "ecolog")
   if tips_sound ~= nil then
     --' Играем звук забитый
-    tips_sound:play(db_actor, 0, sound_object.s2d)
+    tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
 function rostok_kruglov_ambush(actor,npc)
@@ -748,7 +748,7 @@ function rostok_kruglov_ambush(actor,npc)
   local tips_sound = news_manager.send_tip_nosound("rostok_kruglov_follow_3", 0, "ecolog")
   if tips_sound ~= nil then
     --' Играем звук забитый
-    tips_sound:play(db_actor, 0, sound_object.s2d)
+    tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
 function bar_crush_heli_down(actor,npc)
@@ -765,14 +765,14 @@ function bar_freedom_attack_attract_actor(actor,npc)
 function bar_freedom_attack_start(actor,npc)
     if not has_alife_info("bar_freedom_defence_ecolog") then
       news_manager.send_tip("bar_freedom_attack", nil, "volkodav", nil, 509)
-            db_actor:give_info_portion("bar_freedom_defence_ecolog")
+            Actor:give_info_portion("bar_freedom_defence_ecolog")
     end
   end
 function bar_arena_hit(actor, npc)
   local h = hit()
   h.power = 0.01
   h.direction = npc:direction()
-  h.draftsman = db_actor
+  h.draftsman = Actor
   h.impulse = 1
   h.type = hit.wound
   npc:hit(h)
@@ -807,21 +807,21 @@ function bar_territory_logic(actor, npc)
     if dialogs.actor_in_dolg(actor,npc) then
       if has_alife_info("bar_dolg_territory_kill") then
 				news_manager.send_tip("bar_territory_dolg_kill", nil, sender_icon, nil, 507)
-        xr_gulag.setGulagEnemy("bar_dolg_general", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_veterans", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_bunker", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava_2", db_actor)
-        xr_gulag.setGulagEnemy("bar_visitors", db_actor)
+        xr_gulag.setGulagEnemy("bar_dolg_general", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava_2", Actor)
+        xr_gulag.setGulagEnemy("bar_visitors", Actor)
         return
       end
       if has_alife_info("bar_dolg_territory_3_hit") then
 				news_manager.send_tip("bar_territory_dolg_3_hit", nil, sender_icon, nil, 507)
-        xr_gulag.setGulagEnemy("bar_dolg_general", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_veterans", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_bunker", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava_2", db_actor)
+        xr_gulag.setGulagEnemy("bar_dolg_general", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava_2", Actor)
         return
       end
       if has_alife_info("bar_dolg_territory_2_hit") then
@@ -834,29 +834,29 @@ function bar_territory_logic(actor, npc)
       end
     else
       if has_alife_info("bar_dolg_territory_kill") then
-        db_actor:give_info_portion("bar_territory_nodolg_kill")
+        Actor:give_info_portion("bar_territory_nodolg_kill")
 				news_manager.send_tip("bar_territory_nodolg_kill", nil, sender_icon, nil, 507)
-        xr_gulag.setGulagEnemy("bar_dolg_general", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_veterans", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_bunker", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava_2", db_actor)
-        xr_gulag.setGulagEnemy("bar_visitors", db_actor)
+        xr_gulag.setGulagEnemy("bar_dolg_general", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava_2", Actor)
+        xr_gulag.setGulagEnemy("bar_visitors", Actor)
         return
       end
       if has_alife_info("bar_dolg_territory_2_hit") then
-        db_actor:give_info_portion("bar_territory_nodolg_2_hit")
+        Actor:give_info_portion("bar_territory_nodolg_2_hit")
 				news_manager.send_tip("bar_territory_nodolg_2_hit", nil, sender_icon, nil, 507)
-        xr_gulag.setGulagEnemy("bar_dolg_general", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_veterans", db_actor)
-        xr_gulag.setGulagEnemy("bar_dolg_bunker", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava", db_actor)
-		xr_gulag.setGulagEnemy("bar_zastava_2", db_actor)
-        xr_gulag.setGulagEnemy("bar_visitors", db_actor)
+        xr_gulag.setGulagEnemy("bar_dolg_general", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
+        xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava", Actor)
+		xr_gulag.setGulagEnemy("bar_zastava_2", Actor)
+        xr_gulag.setGulagEnemy("bar_visitors", Actor)
         return
       end
       if has_alife_info("bar_dolg_territory_1_hit") then
-        db_actor:give_info_portion("bar_territory_nodolg_1_hit")
+        Actor:give_info_portion("bar_territory_nodolg_1_hit")
 				news_manager.send_tip("bar_territory_nodolg_1_hit", nil, sender_icon, nil, 507)
         return
       end
@@ -870,16 +870,16 @@ function bar_psih_come(actor, npc)
 end
 
 function bar_actor_is_enemy(actor, npc)
-      xr_gulag.setGulagEnemy("bar_dolg_general", db_actor)
-      xr_gulag.setGulagEnemy("bar_dolg_veterans", db_actor)
-      xr_gulag.setGulagEnemy("bar_dolg_bunker", db_actor)
-      xr_gulag.setGulagEnemy("bar_visitors", db_actor)
+      xr_gulag.setGulagEnemy("bar_dolg_general", Actor)
+      xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
+      xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
+      xr_gulag.setGulagEnemy("bar_visitors", Actor)
 end
 
 function bar_actor_enemy_set (actor, npc)
     local dog = level_object_by_sid (509)
     if dog ~= nil then
-       dog:set_relation (game_object.enemy, db_actor)
+       dog:set_relation (game_object.enemy, Actor)
     end
 end
 
@@ -949,8 +949,8 @@ local arena_equip = {
 function bar_arena_teleport()
   local inv_box_1 = level_object_by_sid (573)
 
-	db_actor:inventory_for_each(function(item)
-		db_actor:transfer_item(item, inv_box_1)
+	Actor:inventory_for_each(function(item)
+		Actor:transfer_item(item, inv_box_1)
 	end)
 
 	local spawn_items
@@ -967,10 +967,10 @@ function bar_arena_teleport()
 end
 
 function arena_act_slot(sect)
-	local obj = db_actor:object(sect)
+	local obj = Actor:object(sect)
 
-	db_actor:move_to_slot(obj)
-	db_actor:activate_slot(get_inventory_item_data(obj, "slot"))
+	Actor:move_to_slot(obj)
+	Actor:activate_slot(get_inventory_item_data(obj, "slot"))
 end
 
 function bar_arena_weapon_slot()
@@ -985,23 +985,23 @@ end
 function bar_arena_teleport_2b()
 	xr_zones.purge_arena_items("bar_arena")
 	del_value("arena_counter")
-	db_actor:set_actor_position(patrol("t_walk_2"):point(0))
+	Actor:set_actor_position(patrol("t_walk_2"):point(0))
 	local dir = patrol("t_look_2"):point(0):sub(patrol("t_walk_2"):point(0))
-	db_actor:set_actor_direction(-dir:getH())
+	Actor:set_actor_direction(-dir:getH())
 end
 
 function bar_arena_teleport_2_tp()
 	level.add_pp_effector ("blink.ppe", 234, false)
 
-	db_actor:set_actor_position(vector():set(219.3,16,128.3))
-	db_actor:set_actor_direction(-vector():set(-1,0,0):getH())
+	Actor:set_actor_position(vector():set(219.3,16,128.3))
+	Actor:set_actor_direction(-vector():set(-1,0,0):getH())
 
 	timer("xr_effects.bar_arena_teleport_2b", 200, true)
 end
 
 function bar_arena_teleport_2_box()
 	local player_arena_item_ids = { }
-	db_actor:inventory_for_each(function(item)
+	Actor:inventory_for_each(function(item)
 		player_arena_item_ids[#player_arena_item_ids + 1] = item
 	end)
 
@@ -1017,13 +1017,13 @@ end
 
 function barman_give_extra_task (actor, npc)
   if has_alife_info ("agroprom_military_case_done") and not has_alife_info ("bar_darklab_document_start") then
-    db_actor:give_info_portion("barman_job_1")
+    Actor:give_info_portion("barman_job_1")
     return
   elseif has_alife_info ("bar_darklab_document_done") and not has_alife_info ("bar_x16_documents_start") then
-    db_actor:give_info_portion("barman_job_2")
+    Actor:give_info_portion("barman_job_2")
     return
   elseif has_alife_info ("bar_x16_documents_done") and not has_alife_info ("bar_deactivate_radar_start") then
-    db_actor:give_info_portion("barman_job_3")
+    Actor:give_info_portion("barman_job_3")
     return
   end
   return
@@ -1031,7 +1031,7 @@ end
 
 function trader_extra_task (actor, npc)
   if has_alife_info ("esc_serious_talk") and not has_alife_info ("agroprom_military_case") then
-    db_actor:give_info_portion("trader_job")
+    Actor:give_info_portion("trader_job")
     return
   end
   return
@@ -1039,7 +1039,7 @@ end
 
 function scientist_extra_task (actor, npc)
   if has_alife_info ("yan_find_scientist_done") and not has_alife_info ("yan_find_vasilyev_start") then
-    db_actor:give_info_portion("scientist_job")
+    Actor:give_info_portion("scientist_job")
     return
   end
   return
@@ -1080,14 +1080,14 @@ end
 function mil_actor_enemy_set (actor, npc)
     local sniper = level_object_by_sid (704)
     if sniper ~= nil then
-       sniper:set_relation (game_object.enemy, db_actor)
+       sniper:set_relation (game_object.enemy, Actor)
     end
 end
 
 function mil_actor_enemy_reset (actor, npc)
     local sniper = level_object_by_sid (704)
     if sniper ~= nil then
-       sniper:set_relation (game_object.neutral, db_actor)
+       sniper:set_relation (game_object.neutral, Actor)
     end
 end
 
@@ -1140,7 +1140,7 @@ function sar2_monolith_explode (actor, npc)
     h.power = 1000;
     h.direction = vector():set( 1, 0, 0 );
     h.impulse = 1;
-    h.draftsman = db_actor
+    h.draftsman = Actor
     h.type = hit.chemical_burn;
     monolith:hit (h);
 end
@@ -1164,14 +1164,14 @@ function mil_remove_cook_map_spot (actor, npc)
 end
 
 function mil_emeny_nearest (actor, npc)
-    if db_actor == nil or db_actor:alive () == false then
+    if Actor == nil or Actor:alive () == false then
        return
     end
 
     local gulag = xr_gulag.get_gulag_by_name ("mil_freedom")
     if gulag == nil then return end
 
-    if gulag:npc_is_enemy_to_anybody(db_actor) then
+    if gulag:npc_is_enemy_to_anybody(Actor) then
        give_info("mil_enemy_nearest")
     end
 end
@@ -1192,18 +1192,18 @@ end
 function mil_cap_mapspot_remove (stalker1, stalker2)
     if has_alife_info("mil_fblockpost_spot") then
        level_tasks.remove_location_safe (724, "mil_fblockpost_location")
-       db_actor:disable_info_portion ("mil_fblockpost_spot_remove")
+       Actor:disable_info_portion ("mil_fblockpost_spot_remove")
     end
 end
 
 function set_actor_enemy_for_freedom (actor, npc)
-    xr_gulag.setGulagEnemy ("mil_freedom", db_actor)
+    xr_gulag.setGulagEnemy ("mil_freedom", Actor)
 end
 
 -- GARBAGE
 
 function gar_send_dolg_warning()
-  if db_actor then
+  if Actor then
     if xr_gulag.getGulagPopulation("gar_dolg") > 0 then
       news_manager.send_tip("gar_dolg_warning", 0, "dolg")
     end
@@ -1256,7 +1256,7 @@ function val_escort_guard_combat(actor, npc)
 
     give_info("val_escort_guard" .. idx .. "_combat")
 
-    if npc:see(db_actor) then
+    if npc:see(Actor) then
         if not has_alife_info("val_escort_nap1_start_combat") then
             give_info("val_escort_captive_enemy")
         end
@@ -1279,7 +1279,7 @@ end
 -- kill
 -------------------------------------------------------------------------------------
 function killactor (actor, npc)
-    npc:set_relation (game_object.enemy, db_actor)
+    npc:set_relation (game_object.enemy, Actor)
 end
 
 function kill(actor, npc)
@@ -1311,7 +1311,7 @@ end
 
 function agr_knockdown ()
   local snd_obj = xr_sound.get_safe_sound_object([[affects\tinnitus3a]])
-  snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 end
 
@@ -1319,8 +1319,8 @@ function agr_contuz (actor, npc)
     local sound_obj_l   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_l]] )
         local sound_obj_r   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_r]] )
 
-    sound_obj_l:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
-    sound_obj_r:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
+    sound_obj_l:play_no_feedback(Actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
+    sound_obj_r:play_no_feedback(Actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
 end
 
 function agr_cam_effect ()
@@ -1329,7 +1329,7 @@ function agr_cam_effect ()
 end
 
 function agr_weapon(actor, npc)
-  if db_actor ~= nil then db_actor:activate_slot(2)
+  if Actor ~= nil then Actor:activate_slot(2)
   end
 end
 function agr_hold_enemy(actor, npc)
@@ -1338,7 +1338,7 @@ function agr_hold_enemy(actor, npc)
   local h  = hit()
   h.power     = 0.01
   h.direction = vector():set( 1, 0, 0 )
-  h.draftsman = db_actor
+  h.draftsman = Actor
   h.impulse   = 1
   h.type      = hit.wound
 
@@ -1384,7 +1384,7 @@ end
 
 function heli_set_enemy_actor(actor, npc)
   local st = db.storage[npc:id()]
-  if not st.combat.enemy_id and db_actor:alive() then
+  if not st.combat.enemy_id and Actor:alive() then
     st.combat.enemy_id = 0
 
     heli_snd.play_snd( st, heli_snd.snd_see_enemy, 1 )
@@ -1442,8 +1442,8 @@ function aes_grenade_explode (actor, npc)
 end
 
 function aes_kill_actor (actor, npc)
-    if db_actor ~= nil and db_actor.health > 0 then
-       db_actor:kill (db_actor)
+    if Actor ~= nil and Actor.health > 0 then
+       Actor:kill (Actor)
     end
 end
 
@@ -1458,7 +1458,7 @@ end
 -- постпроцесс и влияние удара в морду
 function aes_earthshake (npc)
   local snd_obj = xr_sound.get_safe_sound_object([[ambient\earthquake]])
-  snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 end
 
@@ -1469,23 +1469,23 @@ end
 -- Функции для Янтаря
 ----------------------------------------------------------------------------------
 function yan_actor_sleep (actor, npc)
-  db_actor:set_actor_position(patrol("yan_actor_sleep"):point(0))
+  Actor:set_actor_position(patrol("yan_actor_sleep"):point(0))
   local dir = patrol("yan_actor_sleep"):point(1):sub(patrol("yan_actor_sleep"):point(0))
-  db_actor:set_actor_direction(-dir:getH())
+  Actor:set_actor_direction(-dir:getH())
 end
 
 function yan_actor_sleep_1 (actor, npc)
-  db_actor:set_actor_position(patrol("yan_actor_sleep_1"):point(0))
+  Actor:set_actor_position(patrol("yan_actor_sleep_1"):point(0))
   local dir = patrol("yan_actor_sleep_1"):point(1):sub(patrol("yan_actor_sleep_1"):point(0))
-  db_actor:set_actor_direction(-dir:getH())
+  Actor:set_actor_direction(-dir:getH())
 end
 
 function yan_dream_voices (actor, npc)
         local sound_obj_l   = xr_sound.get_safe_sound_object( [[characters_voice\scenario\yantar\dream_talk_l]] )
         local sound_obj_r   = xr_sound.get_safe_sound_object( [[characters_voice\scenario\yantar\dream_talk_r]] )
 
-    sound_obj_l:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
-    sound_obj_r:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
+    sound_obj_l:play_no_feedback(Actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
+    sound_obj_r:play_no_feedback(Actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
 end
 
 function yan_gluk (actor, npc)
@@ -1493,8 +1493,8 @@ function yan_gluk (actor, npc)
     local sound_obj_l   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_l]] )
         local sound_obj_r   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_r]] )
 
-    sound_obj_l:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
-    sound_obj_r:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
+    sound_obj_l:play_no_feedback(Actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
+    sound_obj_r:play_no_feedback(Actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 
 end
@@ -1503,15 +1503,15 @@ function x18_gluk (actor, npc)
     local sound_obj_l   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_l]] )
         local sound_obj_r   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_r]] )
         local snd_obj     = xr_sound.get_safe_sound_object( [[affects\tinnitus3a]] )
-    snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
-    sound_obj_l:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
-    sound_obj_r:play_no_feedback(db_actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
+    snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+    sound_obj_l:play_no_feedback(Actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
+    sound_obj_r:play_no_feedback(Actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 
 end
 
 function yan_sleep_not_relocate (actor, npc)
-    db_actor:actor_sleep(0, 180)
+    Actor:actor_sleep(0, 180)
 end
 function yantar_kruglov_talk(actor,npc)
   xr_sound.set_sound_play(npc, "rostok_kruglov_help_6")
@@ -1530,7 +1530,7 @@ function yantar_vasilyev_spam (actor, npc)
 end
 function yan_saharov_message (actor, npc)
     news_manager.send_tip("yan_saharov_message", nil, "saharov", nil, 902)
-    db_actor:give_info_portion("labx16_find")
+    Actor:give_info_portion("labx16_find")
 end
 
 function yan_saharov_message_2 (actor, npc)
@@ -1551,7 +1551,7 @@ function start_yantar_dream(actor, npc)
 end
 
 function end_yantar_dream(actor, npc)
-  db_actor:give_info_portion("yantar_find_ghost_task_start")
+  Actor:give_info_portion("yantar_find_ghost_task_start")
 end
 -----------------------------radar
 function rad_sos_spam(actor, npc)
@@ -1565,7 +1565,7 @@ function start_x18_dream(actor, npc)
   game.start_tutorial("x18_dream")
 end
 function end_x18_dream(actor, npc)
-  db_actor:give_info_portion("dar_x18_dream")
+  Actor:give_info_portion("dar_x18_dream")
 end
 
 function activate_agr_u_controller_boss()
@@ -1615,7 +1615,7 @@ function start_radar_dream(actor, npc)
 end
 
 function end_radar_dream(actor, npc)
-  db_actor:give_info_portion("bun_patrol_start")
+  Actor:give_info_portion("bun_patrol_start")
 end
 ------------------------------------------------------------------------------------
 -- Функции для саркофага
@@ -1658,19 +1658,19 @@ function sar_monolith_miracle(actor, npc)
   end
 
   --' Много денег
-  if db_actor:money() >= 100000 then
+  if Actor:money() >= 100000 then
     game.start_tutorial("mov_desire_2")
     return
   end
 
   --' Хорошая репутация
-  if db_actor:character_reputation() >= 1000 then
+  if Actor:character_reputation() >= 1000 then
     game.start_tutorial("mov_desire_1")
     return
   end
 
   --' плохая репутация
-  if db_actor:character_reputation() <= -1000 then
+  if Actor:character_reputation() <= -1000 then
     game.start_tutorial("mov_desire_4")
     return
   end
@@ -1703,7 +1703,7 @@ end
 
 function esc_init_dialod ()
   local trader = level_object_by_sid(003)
-  db_actor:run_talk_dialog(trader)
+  Actor:run_talk_dialog(trader)
 end
 
 function oso_init_dialod ()
@@ -1711,7 +1711,7 @@ end
 
 function change_leader(actor, npc)
   if xr_gulag.getGulagPopulation(823) == 0 then
-    db_actor:give_info_portion("pri_followers_all_dead")
+    Actor:give_info_portion("pri_followers_all_dead")
   end
 end
 
@@ -1727,7 +1727,7 @@ end
 ------------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 
 function aem_draw()
-	db_actor:set_character_community("trader",0,0)
+	Actor:set_character_community("trader",0,0)
 	aem_lights.draw()
 end
 
@@ -1748,7 +1748,7 @@ function aem_finish()
 end
 
 function switch(actor, npc)
-	if db_actor:has_info("aem_go_bar") then
+	if Actor:has_info("aem_go_bar") then
 		npc:add_restrictions("bar_restrictor", "")
 	else
 		npc:remove_all_restrictions()
@@ -1787,7 +1787,7 @@ end
 -- звук в схроне Стрелка
 function play_zvuk()
   	local snd_obj = xr_sound.get_safe_sound_object([[intro\intro_kill_l]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 -- инфопоршин после телепортации от входа
@@ -1799,7 +1799,7 @@ end
 -- звук при спавне сакера
 function play_zvuk2()
 	local snd_obj = xr_sound.get_safe_sound_object([[monsters\bloodsucker\bloodsucker_script_attack_0]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 function spawn_krovosos()
@@ -1871,17 +1871,17 @@ end
 
 function play_zvuk3()
 	local snd_obj = xr_sound.get_safe_sound_object([[ambient\random\rnd_moan1]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 function play_zvuk4()
 	local snd_obj = xr_sound.get_safe_sound_object([[ambient\random\rnd_fallscream]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 function play_zvuk5()
 	local snd_obj = xr_sound.get_safe_sound_object([[monsters\bloodsucker\bloodsucker_script_attack_0]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 function spawn_krovosos3()
@@ -1941,7 +1941,7 @@ end
 -- Х-10
 function play_zvuk6()
 	local snd_obj = xr_sound.get_safe_sound_object([[ambient\random\rnd_ratchant]])
-	snd_obj:play_no_feedback(db_actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 end
 
 function new_inventory11()

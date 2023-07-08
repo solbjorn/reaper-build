@@ -43,7 +43,7 @@ function bloodsucker_vampire(obj)
 		local last_camera_type = get_actor_data("camera_type")
 		actor_flags.bloodsucker_vampire_state = true
 		-- run vampire
-		db_actor:set_fastcall(
+		Actor:set_fastcall(
 			function()
 				if state == bloodsucker_vampire_states.prepare then
 					-- actor effects
@@ -53,7 +53,7 @@ function bloodsucker_vampire(obj)
 					camera_rotate_on_position(obj:position(), 15)
 					-- bloodsucker effects
 					xr_logic.mob_capture(obj, true)
-					action(obj, look(look.point, db_actor:position()), cond(cond.time_end, 300))
+					action(obj, look(look.point, Actor:position()), cond(cond.time_end, 300))
 					-- switch state
 					state = bloodsucker_vampire_states.continue
 				elseif state == bloodsucker_vampire_states.continue then
@@ -75,7 +75,7 @@ function bloodsucker_vampire(obj)
 						xr_effects.enable_ui()
 						level.add_complex_effector("effector_head_shot", effector_ids.head_shot)
 						set_actor_data("camera_type", last_camera_type)
-						make_hit(db_actor, config:r_float(obj:section(), "Vampire_Wound"), 5000, hit.wound, obj:direction(), obj)
+						make_hit(Actor, config:r_float(obj:section(), "Vampire_Wound"), 5000, hit.wound, obj:direction(), obj)
 						-- bloodsucker effects
 						obj.health = config:r_float(obj:section(), "Vampire_Gain_Health")
 						-- switch state
@@ -91,7 +91,7 @@ function bloodsucker_vampire(obj)
 						state = bloodsucker_vampire_states.completed
 					end
 				elseif state == bloodsucker_vampire_states.completed then
-					if not obj:action() and distance_between(obj, db_actor) > 5 then
+					if not obj:action() and distance_between(obj, Actor) > 5 then
 						-- bloodsucker effects
 						xr_logic.mob_release(obj)
 						bloodsucker_vampire_timer = time_real_ms + config:r_u32(obj:section(), "Vampire_Delay")
@@ -115,11 +115,11 @@ function bloodsucker_vampire_check_conditions(obj)
 		return false
 	end
 	-- check distance
-	if distance_between(obj, db_actor) > BLOODSUCKER_VAMPIRE_DIST then
+	if distance_between(obj, Actor) > BLOODSUCKER_VAMPIRE_DIST then
 		return false
 	end
 	-- check height difference
-	if math.abs(db_actor:position().y - obj:position().y) > 0.5 then
+	if math.abs(Actor:position().y - obj:position().y) > 0.5 then
 		return false
 	end
 	-- check bloodsucker health
@@ -131,7 +131,7 @@ function bloodsucker_vampire_check_conditions(obj)
 		return false
 	end
 	-- check actor state
-	if not (db_actor:is_actor_normal() or db_actor:is_actor_walking() or db_actor:is_actor_running()) then
+	if not (Actor:is_actor_normal() or Actor:is_actor_walking() or Actor:is_actor_running()) then
 		return false
 	end
 	-- check unique bloodsuckers
@@ -142,7 +142,7 @@ function bloodsucker_vampire_check_conditions(obj)
 	local mob_id = obj:id()
 	for k, obj in pairs(db.creatures) do
 		if k ~= mob_id then
-			if obj:alive() and obj:clsid() == clsid_bloodsucker_s and distance_between(obj, db_actor) <= 30 then
+			if obj:alive() and obj:clsid() == clsid_bloodsucker_s and distance_between(obj, Actor) <= 30 then
 				local enemy = obj:get_enemy()
 				if enemy and enemy:id() == 0 then
 					return false
@@ -158,7 +158,7 @@ end
 local pseudodog_psy_effect_timer = 0
 ---------------------------------------------------------------------------------------------------
 function pseudodog_psy_effect(obj)
-	if obj:clsid() == clsid_pseudodog_s and distance_between(obj, db_actor) <= PDOG_PSY_EFFECT_DIST then
+	if obj:clsid() == clsid_pseudodog_s and distance_between(obj, Actor) <= PDOG_PSY_EFFECT_DIST then
 		local target_obj = level.get_target_obj()
 		if target_obj and target_obj:id() == obj:id() and pseudodog_psy_effect_timer < time_real_ms then
 			-- sound effect
@@ -169,13 +169,13 @@ function pseudodog_psy_effect(obj)
 				local p = -screen.cam_dir:getP()
 				h = math.random() > 0.5 and h + PDOG_PSY_EFFECT_TURN_ANGLE or h - PDOG_PSY_EFFECT_TURN_ANGLE
 				p = math.random() > 0.5 and p + PDOG_PSY_EFFECT_TURN_ANGLE or p - PDOG_PSY_EFFECT_TURN_ANGLE
-				db_actor:set_camera_direction(xyz(h, math.clamp(p, -1.5, 1.5), 0))
+				Actor:set_camera_direction(xyz(h, math.clamp(p, -1.5, 1.5), 0))
 			end
 			-- camera effector
 			level.add_cam_effector3(1.0, -30.0, 4.0, 2.0)
 			level.add_pp_effector("attack_effects\\monsters\\special\\pseudodog_psy.ppe", effector_ids.psy_effect, false)
 			-- make hit
-			db_actor.psy_health = -0.08
+			Actor.psy_health = -0.08
 			-- set next attack
 			pseudodog_psy_effect_timer = time_real_ms + math.random(8, 12) * 1000
 		end
@@ -187,15 +187,15 @@ end
 local burer_tele_attack_timer = 0
 ---------------------------------------------------------------------------------------------------
 function burer_tele_attack(obj)
-	if obj:clsid() == clsid_burer_s and distance_between(obj, db_actor) <= BURER_TELE_ATTACK_DIST then
+	if obj:clsid() == clsid_burer_s and distance_between(obj, Actor) <= BURER_TELE_ATTACK_DIST then
 		local target_obj = level.get_target_obj()
 		if target_obj and target_obj:id() == obj:id() and burer_tele_attack_timer < time_real_ms then
-			local active_item = db_actor:active_item()
+			local active_item = Actor:active_item()
 			if active_item and active_item:is_weapon() and math.random() < 0.4 then
-				db_actor:drop_item(active_item)
+				Actor:drop_item(active_item)
 			end
 			say("monsters\\poltergeist\\tele_get_0")
-			db_actor.power = -1
+			Actor.power = -1
 			burer_tele_attack_timer = time_real_ms + math.random(10, 18) * 1000
 		end
 	end
@@ -204,8 +204,8 @@ end
  * Controller death zone
 --]]-----------------------------------------------------------------------------------------------
 function controller_death_zone(obj)
-	if obj:clsid() == clsid_controller_s and distance_between(obj, db_actor) <= CONTROLLER_DEATH_ZONE_DIST then
-		db_actor.psy_health = -0.05
+	if obj:clsid() == clsid_controller_s and distance_between(obj, Actor) <= CONTROLLER_DEATH_ZONE_DIST then
+		Actor.psy_health = -0.05
 	end
 end
 --[[-----------------------------------------------------------------------------------------------

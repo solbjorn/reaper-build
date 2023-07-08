@@ -514,7 +514,7 @@ function pick_section_from_condlist(npc, condlist)
           break
         end
 			elseif infop.func then
-				if infop.func(db_actor, npc, infop.params) then
+				if infop.func(Actor, npc, infop.params) then
 					if not infop.expected then
 						infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
 						break
@@ -542,14 +542,14 @@ function pick_section_from_condlist(npc, condlist)
       -- infoportions:
 			local num_infop_set = #cond.infop_set
 			if num_infop_set > 0 then
-				if db_actor == nil then
+				if Actor == nil then
 					abort("TRYING TO SET INFOS WHEN ACTOR IS NIL")
 					return nil
 				end
 				for inum = 1, num_infop_set do
 					infop = cond.infop_set[inum]
 					if infop.func then
-						infop.func(db_actor, npc, infop.params)
+						infop.func(Actor, npc, infop.params)
 					elseif infop.required then
 						if not has_info(infop.name) then
 							give_info(infop.name)
@@ -596,7 +596,7 @@ function switch_to_section(npc, st, section)
 end
 
 function try_switch_to_another_section(npc, st)
-	local actor = db_actor
+	local actor = Actor
 	if not actor then
 		abort("xr_logic.try_switch_to_another_section(): error executing scheme '%s': actor is nil - check bind_actor.script, db.script", st.scheme)
 		return

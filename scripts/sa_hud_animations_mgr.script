@@ -40,7 +40,7 @@ function CHudAnimationsMgr:__init()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudAnimationsMgr:update()
-	self.item = db_actor:active_item()
+	self.item = Actor:active_item()
 	if self.item then
 		self.item_id = self.item:id()
 		self.current_state = self.item:get_hud_item_state()
@@ -80,14 +80,14 @@ end
 ---------------------------------------------------------------------------------------------------
 function CHudAnimationsMgr:idle_animation()
 	if self.animation ~= "kick" then
-		if db_actor:is_actor_running() or db_actor:is_actor_walking() or db_actor:is_actor_crouching() then
+		if Actor:is_actor_running() or Actor:is_actor_walking() or Actor:is_actor_crouching() then
 			if self.animation ~= "moving" then
 				if not self:play_hud_animation(self:get_type_animation("moving")) then
 					self:play_hud_animation(self:get_type_animation("idle"))
 				end
 				self.animation = "moving"
 			end
-		elseif db_actor:is_actor_sprinting() then
+		elseif Actor:is_actor_sprinting() then
 			if self.animation ~= "sprint" then
 				if not self:play_hud_animation(self:get_type_animation("sprint")) and
 				   not self:play_hud_animation(self:get_type_animation("moving")) then

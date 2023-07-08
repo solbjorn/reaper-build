@@ -133,7 +133,7 @@ function evaluator_can_move_deadman:evaluate()
 	local obj = level.object_by_id(self.a.choosed_deadman)
 	--если труп застрял (расстояние увеличилось), то возвращаемся к нему
 	--или если ГГ подошел, то уделяем ему чуточку внимания
-  return self.a.reached==1 and obj and obj:bone_position("bip01_spine1"):distance_to(npc:position())<2 and obj:bone_position("bip01_spine1"):distance_to(db.actor:position())>3.0
+  return self.a.reached==1 and obj and obj:bone_position("bip01_spine1"):distance_to(npc:position())<2 and obj:bone_position("bip01_spine1"):distance_to(Actor:position())>3.0
 end
 --end--
 ----------------------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ end
 function action_go_position:execute ()
 	action_base.execute (self)
 
-	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
+	if Actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
 		return
 	end
 
@@ -228,7 +228,7 @@ function action_wait:activate_scheme()
 end
 function action_wait:execute()
 	action_base.execute (self)
-	if db_actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
+	if Actor and xr_logic.try_switch_to_another_section(self.object, self.a) then
 		return
 	end
 	local state, sound, substate = kamps[self.a.center_point]:updateNpc(self.object)

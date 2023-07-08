@@ -169,8 +169,8 @@ end
 -- Community
 -----------------------------------------------------------------------------------
 function actor_in_dolg(actor, npc)
-	if db.actor then
-		return db.actor:character_community() == "actor_dolg"
+	if Actor then
+		return Actor:character_community() == "actor_dolg"
 	end
 	return false
 end
@@ -178,14 +178,14 @@ function actor_not_in_dolg(actor, npc)
 	return not actor_in_dolg(actor, npc)
 end
 function actor_set_dolg(actor, npc)
-	if db.actor then
-		db.actor:set_character_community("actor_dolg", 0, 0)
+	if Actor then
+		Actor:set_character_community("actor_dolg", 0, 0)
 	end
 	return true
 end
 function actor_clear_community(actor, npc)
-	if db.actor then
-		db.actor:set_character_community("actor", 0, 0)
+	if Actor then
+		Actor:set_character_community("actor", 0, 0)
 	end
 	return true
 end
