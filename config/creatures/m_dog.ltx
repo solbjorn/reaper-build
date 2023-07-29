@@ -9,7 +9,7 @@ Human		     	 = off						; option for ALife Simulator
 Health			     = 100						; option for ALife Simulator
 MinSpeed		     = 1.0						; option for ALife Simulator
 MaxSpeed		     = 1.5						; option for ALife Simulator
-going_speed          = 2.0                      ; option for ALife Simulator
+going_speed          = 5.0                      ; option for ALife Simulator
 current_level_going_speed		= 1;2					; option for ALife Simulator
 search_speed         = .5                       ; option for ALife Simulator
 visual				 = monsters\dog\dog
@@ -25,7 +25,7 @@ class                = SM_DOG_S					; AI class
 ef_creature_type	 = 6				; option for evaluation functions
 ef_weapon_type		 = 2
 ef_detector_type			 = 1
-panic_threshold		= 0.1
+panic_threshold		= 0.07
 
 script_binding  	= bind_monster.bind
 
@@ -44,7 +44,7 @@ ph_box1_size 		 = 0.35, 0.4,  0.35
 ph_crash_speed_min			= 10
 ph_crash_speed_max			= 30
 ph_collision_damage_factor	= 0.1
-ph_mass 		     = 40	;70
+ph_mass 		     = 50
 actor_restrictor	 = medium_monster ;medium_monster,stalker,none
 destroyed_vis_name	 = physics\dead_body\skelet_crash_monster
 
@@ -106,7 +106,7 @@ satiety_health_v 	= 0.005	;0.03			;увеличение здоровья при уменьшении сытости
 satiety_critical 	= -1.0		;0.25			;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
 radiation_health_v 	= 0.01	;0.006			;уменьшение здоровья при воздействии радиации
 morale_v		= 0.01					;скорость восстановления морали
-health_hit_part 	= 1.0		;0.8			;процент хита, уходящий на отнимание здоровья
+health_hit_part 	= 0.8
 power_hit_part 		= 1.0		;0.9			;процент хита, уходящий на отнимание силы
 psy_health_v		= 0.1						;скорость восстановления psy-здоровья
 
@@ -128,6 +128,10 @@ eat_slice			=	0.01	; єтхышўхэшх ёvЄюёЄш яЁш 1 єъєёх
 eat_slice_weight	=	10.0	; єьхэ№°хэшх хфv є ЄЁєяр
 
 satiety_threshold		= 0.5							; below this value monster fill hunger
+
+EatMemberCorpses	 = 1			; range {0,1}
+Cannibalism		 = 1			; range {0,1}
+EatCorpseInterval	 = 30000		; milliseconds
 
 ;-------------------------------------------------------------------------
 ; Morale
@@ -216,7 +220,6 @@ distance_to_corpse	= 1.3		; фшёЄ. фю ЄЁєяр, яЁш ъюЄюЁющ юэ яхЁхїюфшЄ т ёюёЄю эшх
 terrain				 = dogs_terrain
 
 material				= creatures\medium
-DynamicObjectsCount		= 32
 
 squad_attack_algorithm	= 1
 
@@ -229,6 +232,9 @@ LegsCount			= 4
 
 ;species of monster
 species					= dog
+rank					= 0
+spec_rank				= weak
+community				= dog
 
 ;===========================================================================
 ; Attack Animation Parameters

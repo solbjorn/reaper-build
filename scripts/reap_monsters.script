@@ -1,0 +1,205 @@
+--[[---------------------------------------------------------------------------
+ * Controller dead zone (idea: S.A.)
+--]]---------------------------------------------------------------------------
+
+function controller_deadzone(self)
+	local slot = Actor:active_slot()
+	if slot ~= inventory_slots.PISTOL and slot ~= inventory_slots.RIFLE and
+	   slot ~= inventory_slots.GRENADE then
+		return false
+	end
+
+	local dist = distance_between(self.object, Actor)
+	if dist > self.deadzone_dist then
+		return false
+	end
+
+	return true
+end
+
+function controller_update(self)
+	if self.zombify_timer <= time_real_ms then
+		amk_monsters.controller_zombify(self)
+	end
+
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		return
+	end
+
+	ogsm_mutants.controller_fists(self)
+	self.deadzone:update(nil, controller_deadzone(self))
+end
+
+function controller_death(self)
+	amk_monsters.controller_death(self)
+
+	local dead = self.deadzone
+	level.add_call(function()
+		dead:update(nil, false)
+
+		return dead.base_color.r >= 0.5
+	end, function()
+		dead:update(nil, false)
+	end)
+
+	arc_diary.monster_killed(self.object)
+end
+
+--[[---------------------------------------------------------------------------
+ * Update callbacks
+--]]---------------------------------------------------------------------------
+
+function update_psy_burer(self)
+	if self.turn == 0 then
+		ogsm_mutants.psy_burer(self)
+		self.turn = 1
+	else
+		sa_monsters.burer_tele_attack(self)
+		self.turn = 0
+	end
+end
+
+function update_zombie_blow(self)
+	if self.turn == 0 then
+		ogsm_mutants.blow_zombie(self)
+		self.turn = 1
+	else
+		amk_monsters.rad_zombie(self)
+		self.turn = 0
+	end
+end
+
+local update_callbacks = {
+	[clsid.cat_s]		= amk_monsters.cat_dream,
+	[clsid.dog_s]		= amk_monsters.dog_attack,
+	[clsid.pseudodog_s]	= sa_monsters.pseudodog_psy_effect
+}
+
+--[[---------------------------------------------------------------------------
+ * Initialization callbacks
+--]]---------------------------------------------------------------------------
+
+local rad_zombie = table.tohash({
+	"zombie_strong", "zombie_trup", "zombie_trup2", "zombie_old"
+})
+
+function init_bloodsucker(self)
+	sa_monsters.bloodsucker_vampire_init(self)
+	if self.max_health then
+		self.update = sa_monsters.bloodsucker_vampire
+	end
+end
+
+function init_burer(self)
+	if self.object:section() ~= "burer_strong" then
+		self.update = sa_monsters.burer_tele_attack
+		return
+	end
+
+	ogsm_mutants.init_psy_burer(self)
+	self.turn = 0
+
+	self.update = update_psy_burer
+	self.death = ogsm_mutants.remove_pp_eff
+end
+
+function init_chimera(self)
+	if self.object:section() ~= "electro_chimera" then return end
+
+	self.update = ogsm_mutants.charge_chimera
+	self.hit = amk_monsters.el_chimera_hit
+end
+
+function init_controller(self)
+	self.deadzone = ogsm_effector.action_postprocess(self.object)
+	self.deadzone:reset_scheme()
+
+	self.deadzone_dist = 10 + math.random(-2, 2)
+	self.zombify_timer = 0
+
+	self.update = controller_update
+	self.death = controller_death
+end
+
+function init_poltergeist(self)
+	sa_monsters.poltergeist_particles_init(self)
+	if self.particles_obj_by_bone then
+		self.update = sa_monsters.poltergeist_particles
+	end
+end
+
+function init_zombie_blow(self)
+	if not self.object:binded_object().loaded then
+		amk_monsters.random_visual_zombie(self)
+	end
+
+	if math.random(100) <= 25 then
+		local t = config:key_value("zombie_rusty_particles_spine")
+		t.obj = self.object
+
+		bind_monster.play_particle(t.obj, t)
+	end
+
+	if math.random(100) <= 12 then
+		self.update = update_zombie_blow
+		self.turn = 0
+	else
+		self.update = amk_monsters.zombie_rad
+	end
+
+	self.death = amk_monsters.zombie_blow
+end
+
+function init_zombie(self)
+	local sect = self.object:section()
+
+	if rad_zombie[sect] then
+		self.update = amk_monsters.zombie_rad
+	elseif sect == "zombie_blow" or sect == "zombie_beee" then
+		init_zombie_blow(self)
+	end
+
+	if sect ~= "zombie_plague" then return end
+
+	ogsm_mutants.init_zombie_plague(self)
+
+	self.update = ogsm_mutants.zombie_insect
+	self.death = ogsm_mutants.stop_insects
+end
+
+local init_callbacks = {
+	[clsid.bloodsucker_s]	= init_bloodsucker,
+	[clsid.burer_s]		= init_burer,
+	[clsid.chimera_s]	= init_chimera,
+	[clsid.controller_s]	= init_controller,
+	[clsid.poltergeist_s]	= init_poltergeist,
+	[clsid.zombie_s]	= init_zombie
+}
+
+--[[---------------------------------------------------------------------------
+ * Monster unique abilities binder
+--]]---------------------------------------------------------------------------
+
+class "monster_effector"
+
+function monster_effector:__init(obj)
+	self.object = obj
+	local clsid = obj:clsid()
+
+	local init = init_callbacks[clsid]
+	if init then
+		init(self)
+	else
+		self.update = update_callbacks[clsid]
+	end
+	if self.update then
+		self.timer = 0
+	end
+end
+
+function init_monster_effector(obj)
+	local res = monster_effector(obj)
+
+	return (res.update or res.hit or res.death) and res
+end

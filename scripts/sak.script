@@ -57,7 +57,7 @@ function add_new_military_false()
 local obj = AI:story_object(5212)
 	level_map_spot(obj.id, "lchanger_up_location", "l12_stancia")
   Actor:give_info_portion("info_way_false")
-  info_received()
+  amk.send_tip("","Новый путь!",0,10,"encyclopedia")
 end
 function add_new_item_in(item,sidlh)
 local nps = sidlh.id
@@ -211,9 +211,6 @@ end
 function add_new_109item()
 amk_spawn_item("quest_case_05",vector():set(150.57,7.02,-254.55),966,348350)
 end
-function info_received()
-  amk.send_tip("","Новый путь!",0,10,"gen_info")
-end
 function add_resiver()
 amk_spawn_item("sak_resiver",vector():set(-185.57,-3.58,94.89),338,39411)
 end
@@ -224,13 +221,13 @@ function add_strelok_pda()
 amk_spawn_item("strelok_pda",vector():set(42.95,61.56,-26.25),2417,6406)
 end
 function info_strelok_pda()
-  amk.send_tip("","Сталкер! Остановись!",0,10,"gen_info")
+  amk.send_tip("","Сталкер! Остановись!",0,10)
 end
 function info_doktor()
-  amk.send_tip("","Болотный доктор жив!",0,10,"gen_info")
+  amk.send_tip("","Болотный доктор жив!",0,10)
 end
 function info_teleport()
-  amk.send_tip("","Телепорт готов...",0,10,"gen_info")
+  amk.send_tip("","Телепорт готов...",0,10)
 end
 
 function artmodscheck(nearest_anomaly,af,anom_sect)
@@ -1071,25 +1068,25 @@ function add_3repair_item_outfit()
 	local repiout =amk.load_variable("repair_item_outfit", 0)
 	repiout = repiout + 3
 	amk.save_variable("repair_item_outfit", repiout)
-	amk.send_tip("","Получено три ремкомплекта RIA-10",0,10,"gen_info")
+	amk.send_tip("","Получено три ремкомплекта RIA-10",0,10)
 end
 function add_3repair_item_weapon()
 	local repiweap =amk.load_variable("repair_item_weapon", 0)
 	repiweap = repiweap + 3
 	amk.save_variable("repair_item_weapon", repiweap)
-	amk.send_tip("","Получено три ремкомплекта RIW-10",0,10,"gen_info")
+	amk.send_tip("","Получено три ремкомплекта RIW-10",0,10)
 end
 function add_repair_item_outfit()
 	local repiout =amk.load_variable("repair_item_outfit", 0)
 	repiout = repiout + 1
 	amk.save_variable("repair_item_outfit", repiout)
-	amk.send_tip("","Получен ремкомплект RIA-10",0,10,"gen_info")
+	amk.send_tip("","Получен ремкомплект RIA-10",0,10)
 end
 function add_repair_item_weapon()
 	local repiweap =amk.load_variable("repair_item_weapon", 0)
 	repiweap = repiweap + 1
 	amk.save_variable("repair_item_weapon", repiweap)
-	amk.send_tip("","Получен ремкомплект RIW-10",0,10,"gen_info")
+	amk.send_tip("","Получен ремкомплект RIW-10",0,10)
 end
 function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "medkit", "in")
@@ -1165,23 +1162,26 @@ function add_spot_of_docent(a)
 	end
 end
 function add_tail()
-	local lname = level.name()
-	if lname=="l04_darkvalley" then
+	local reset = true
+
+	if curr_level == "l04_darkvalley" then
 		local obj=AI:story_object(425)
 		if obj and obj:is_stalker() and obj:alive() then
 			if Actor:has_info("val_bandit_talk") then
-				Actor:set_character_community("stranger", 0, 0)
+				set_value("bandit_goodwill", relation_registry.community_goodwill("bandit", 0))
+				relation_registry.set_community_goodwill("bandit", 0, 500)
+				reset = false
 			end
-		else
-			Actor:set_character_community("actor", 0, 0)
 		end
-	else
-		Actor:set_character_community("actor", 0, 0)
+	end
+
+	if reset and relation_registry.community_goodwill("bandit", 0) >= 0 then
+		relation_registry.set_community_goodwill("bandit", 0, get_value("bandit_goodwill", -500, true))
 	end
 
 	amk_anoms.generate_arts()
 
-	if lname == "l05_bar" then
+	if curr_level == "l05_bar" then
 		give_info("bar_retro")
 	end
 end

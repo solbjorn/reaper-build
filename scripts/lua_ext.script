@@ -1,6 +1,6 @@
 -- Расширения базовых библиотек Lua и движка
 
-local string_gfind = string.gfind
+local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 local string_match = string.match
 
@@ -100,7 +100,7 @@ string.explode = function(str, div, clear)
 	if clear==nil then
 		clear=true
 	end
-	for s in string_gfind(str, "([^"..div.."]+)") do
+	for s in string_gmatch(str, "([^"..div.."]+)") do
 		if clear then
 			t[#t + 1] = string_trim(s)
 		else
@@ -118,7 +118,7 @@ end
 string.parse_names = function(s, tohash)
 	local t = {}
 
-	for name in string_gfind(s, "([%w_%-.\\]+)%p*") do
+	for name in string_gmatch(s, "([%w_%-.\\]+)%p*") do
 		if tohash == true then
 			t[name] = true
 		else
@@ -132,7 +132,7 @@ end
 -- разбирает строку вида "n1, n2, n3..." в таблицу {n1, n2, n3, ...} где n1, n2, n3... - числа
 string.parse_nums = function (s)
 	local t = {}
-	for value in string_gfind(s, "([^,]+)") do
+	for value in string_gmatch(s, "([^,]+)") do
 		local num=tonumber(value)
 		if not num then
 			abort("! lua_ext.parse_nums: error input value "..value..". ignoring!")
@@ -150,7 +150,7 @@ string.key_value_num = function (str, def)
 
 	local t = {}
 	local key, value
-	for name in string_gfind(str, "[%w%_%.%-%+]+") do
+	for name in string_gmatch(str, "[%w%_%.%-%+]+") do
 		value = tonumber(name)
 		if key == nil then	-- name это key
 			key = name
@@ -172,6 +172,18 @@ string.key_value_num = function (str, def)
 end
 
 -- math
+
+-- Выравнивание числа n в пределах от _min до_max
+math.clamp = function(n, _min, _max)
+	if _min>_max then
+		_max,_min=_min,_max
+	end
+	return (n<_min and _min)
+		or (n>_max and _max)
+		or n
+end
+
+math.nan = (0/0) -- не число
 
 math.isnan = function(value)
 	return value ~= value

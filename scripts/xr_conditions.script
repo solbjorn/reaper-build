@@ -1017,13 +1017,10 @@ function bar_dolg_alarm(actor,npc)
 	return false
 end
 
+local bar_neutral_comm = table.tohash({ "stalker", "dolg", "ecolog", "green", "trader" })
+
 function bar_hostile_npc(actor,npc)
-	-- на бармена забьём, всё равно его не убить.
-	local c = npc:character_community()
-	if c == "stalker" or c == "dolg" or c == "ecolog" then
-		return false
-	end
-	return true
+	return bar_neutral_comm[npc:character_community()] ~= true
 end
 
 function is_courier_time (actor, npc)
@@ -1114,7 +1111,6 @@ function rostok_gulag_inactive(actor, npc)
 		if (v == true or
 		   (v:alive() and
 		    not xr_wounded.is_heavy_wounded_by_id(k) and
-		    not xr_wounded.is_psy_wounded_by_id(k) and
 			job_prior == 5)) and gulag.Object_begin_job[k] == true
 		then
 			val = val + 1
@@ -1136,9 +1132,9 @@ function agr_factory_hold_inactive (actor, npc)
 	local val = 0
 
 	for k,v in pairs(gulag.Object) do
-		if (v == true or ( v:alive() and
-		   not(xr_wounded.is_heavy_wounded_by_id(k) or
-		       xr_wounded.is_psy_wounded_by_id(k)))) and
+		if (v == true or (v:alive() and
+			not xr_wounded.is_heavy_wounded_by_id(k) and
+			v:character_community()~="stalker")) and
 			gulag.Object_begin_job[k] == true
 		then
 			val = val + 1

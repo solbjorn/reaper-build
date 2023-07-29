@@ -24,9 +24,9 @@ local wp_prop_contact_false = world_property(prop_contact, false)
 local wp_prop_wounded_false = world_property(prop_wounded, false)
 local wp_prop_abuse_false = world_property(prop_abuse, false)
 
-local string_gfind = string.gfind
-local string_find  = string.find
-local string_sub   = string.sub
+local string_gmatch = string.gmatch
+local string_find = string.find
+local string_sub = string.sub
 
 --' Возвращает есть ли у нас контакт с другим сталкером
 class "evaluator_contact" (property_evaluator)
@@ -49,10 +49,12 @@ function evaluator_contact:evaluate()
       return false
     end
 
+		local meet_manager = self.a.meet_manager
+
 		self.updcnt = self.updcnt-1
 		if self.updcnt < 0 then
 			self.updcnt = 5
-			self.a.meet_manager:update()
+			meet_manager:update()
 		end
 
     if self.mgr == nil then
@@ -65,20 +67,24 @@ function evaluator_contact:evaluate()
     end
 
     -- Чтобы не стояли и не пялились часами
-    local tken=(tostring(self.a.meet_manager.state)~="nil")
+    local tken=(tostring(meet_manager.state)~="nil")
     local istk=self.object:is_talking()
     if self.begtime==nil and tken then
       self.begtime=time_global()
     elseif not tken then
       self.begtime=nil
-    elseif tken and self.begtime+10000<time_global() and (not istk) and (not self.a.meet_manager.wpn_meet) then
+    elseif tken and self.begtime+10000<time_global() and (not istk) and (not meet_manager.wpn_meet) then
     -- 10 секунд посмотрели на меченного и хватит
       return false
-    elseif istk or self.a.meet_manager.wpn_meet then
+    elseif istk or meet_manager.wpn_meet then
       self.begtime=time_global()
     end
 
-    return tostring(self.a.meet_manager.state)~="nil"
+		if not meet_manager:actor_targets_npc(self.object) then
+			return false
+		end
+
+    return tostring(meet_manager.state)~="nil"
   else
     return false
   end
@@ -155,11 +161,8 @@ function action_meet_wait:execute ()
       if self.sound == "nil" then
         xr_sound.set_sound(self.object, nil)
       else
-        local idle_timeout = 0
-        if meet_manager.sound == "wait" then
-          idle_timeout = 10000
-        end
-        xr_sound.set_sound(self.object, meet_manager.sound, nil, idle_timeout)
+				local idle_timeout = meet_manager.sound == "wait" and 10000 or 0
+				xr_sound.set_sound(self.object, meet_manager.sound, nil, idle_timeout)
       end
     end
   else
@@ -618,7 +621,7 @@ function parse_data(s)
 	local t = {}
 
     if s then
-		for name in string_gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
+		for name in string_gmatch( s, "(%|*%d+%|[^%|]+)%p*" ) do
 			local dat = {	dist = nil,
 							state = nil,
 							sound = nil}
@@ -655,7 +658,7 @@ function parse_zone_data(s)
 	local t = {}
 
     if s then
-		for name in string_gfind( s, "(%|*[^%|]+%|[^%|]+)%p*" ) do
+		for name in string_gmatch( s, "(%|*[^%|]+%|[^%|]+)%p*" ) do
 			local dat = {	zone = nil,
 							state = nil,
 							sound = nil}
@@ -692,7 +695,7 @@ end
 function parse_syn_data(s)
 	local t = {}
     if s then
-		for name in string_gfind( s, "(%|*[^%|]+%|*)%p*" ) do
+		for name in string_gmatch( s, "(%|*[^%|]+%|*)%p*" ) do
 			local dat = {	zone = nil,
 							state = nil,
 							sound = nil}

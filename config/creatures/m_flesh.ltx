@@ -18,7 +18,7 @@ search_speed         = .5                       ; option for ALife Simulator
 visual         = monsters\flesh\flesh
 corpse_visual    = monsters\flesh\flesh_dead
 icon         = ui_npc_monster_flesh
-MaxHealthValue         = 1.0      ; range [0..200]
+MaxHealthValue         = 200      ; range [0..200]
 DynamicObjectsCount  = 32
 smart_terrain_choose_interval = 00:15:00
 
@@ -168,9 +168,6 @@ distant_idle_sound_range  = 100.0
 eye_fov         = 100
 eye_range       = 30  ;60 ;30
 
-; number of visible objects monster can handle
-DynamicObjectsCount   = 32
-
 min_view_distance       = 0.4       ; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance     = 1.0       ; коэффициент, который множится на eye_range, в зависимости от угла
 visibility_threshold    = 100.0       ; значение, при достижении суммой которого объект считается видимым
@@ -229,6 +226,9 @@ damage        = m_flesh_damage
 
 ;species of monster
 species       = flesh
+rank				= 0
+spec_rank			= weak
+community			= flesh
 
 terrain       = flesh_terrain
 
@@ -365,7 +365,7 @@ stand_attack_3 =      0.40,   0.40,       150,        0.0, 0.5, 1.0,     -1.0, 1
 
 [flesh_normal]:m_flesh_e
 $spawn        = "monsters\fleshes\flesh_02_normal"
-visual        = monsters\flesh\flesh
+visual			= monsters\flesh\flesh_normal
 corpse_visual   = monsters\flesh\flesh_dead
 icon        = ui_npc_monster_flesh
 panic_threshold   = 0.2
@@ -411,6 +411,14 @@ immunities_sect   = flesh_immunities_strong
 attack_params   = flesh_attack_params_strong
 spec_rank     = strong
 community     = flesh
+
+sound_idle				= monsters\pseudoflesh\flesh_idle_
+sound_aggressive			= monsters\pseudoflesh\flesh_aggressive_
+sound_attack_hit			= monsters\pseudoflesh\flesh_attack_
+sound_take_damage			= monsters\pseudoflesh\flesh_pain_
+sound_die				= monsters\pseudoflesh\flesh_death_
+sound_threaten				= monsters\pseudoflesh\flesh_attack_
+sound_panic				= monsters\pseudoflesh\flesh_panic_
 
 [flesh_immunities_strong]
 burn_immunity     = 1.0

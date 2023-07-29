@@ -25,12 +25,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 local overrides = {
   userdata = function(value)
-    if not value.setHMSms then
+    if value.setHMSms then
+      local t = value:get_table()
+      return "game.CTime():init(" .. t.year .. "," .. t.month .. "," .. t.day .. "," ..
+               t.hour .. "," .. t.min .. "," .. t.sec .. "," .. t.msec .. ")"
+    elseif value.x and value.y then
+      return "vector():set(" .. value.x .. "," .. value.y .. "," .. value.z .. ")"
+    else
       error("Cannot dump userdata")
     end
-    local t = value:get_table()
-    return "game.CTime():init(" .. t.year .. "," .. t.month .. "," .. t.day .. "," ..
-             t.hour .. "," .. t.min .. "," .. t.sec .. "," .. t.msec .. ")"
   end
 }
 

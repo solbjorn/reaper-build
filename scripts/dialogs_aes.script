@@ -1,15 +1,21 @@
 --' Мы отказываемся вступить в осознание, нас переносит на вторую станцию
 function osoznanie_decline(npc, actor)
 	disable_info("oso_init_dialog")
-	give_info("sar2_monolith_miracle")
 	npc:stop_talk()
 	actor:stop_talk()
-	xr_effects.enable_ui()
+	timer("dialogs_aes.osoznanie_call", 0, true)
+end
+
+function osoznanie_call()
+	level.add_pp_effector("deadcity_wake.ppe", effector_ids.freeplay, false)
 	local point = patrol("con_way_if_reject_to_st2")
 	Actor:set_actor_position(point:point(0))
 	local dir = point:point(1):sub(point:point(0))
 	Actor:set_actor_direction(-dir:getH())
-	timer("xr_effects.enable_ui", 10, true)
+
+	give_info("sar2_monolith_miracle")
+	xr_effects.enable_ui()
+	sms("o_soznanie_text", 0, "o_soznanie")
 end
 
 --' Мы соглашаемся вступить в осознание, конец игры.

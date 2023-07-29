@@ -170,8 +170,6 @@ function check_spawn()
 		amk_objects.init()
 	end
 
-	--спавним аномалии
-	--initial_spawn()
 	local obj = AI:story_object(6000)
 	if not obj then
 		AI:create(6374)
@@ -182,6 +180,7 @@ function check_spawn()
 		amk_save_variable("freeplay",2)
 	elseif amk_load_variable("freeplay",0)==2 and (not has_alife_info("cit_fail_first_task")) then
 		Actor:give_info_portion("cit_fail_first_task")
+		give_info("freeplay")
 	end
 
 	--level_changers section
@@ -243,8 +242,6 @@ function check_spawn()
 end
 
 function restore_sun()
-  --update_anoms()
-	--amk_anoms.init()
   if amk_load_variable("blowout",0)==0 then level.set_weather(w,true) end
 
 	local lname = level.name()
@@ -893,6 +890,7 @@ end
 local shoot_helper = 0
 
 function calc_adrenaline(act,obj,typ)
+	if not actor_flags.alive then return end
 	local dist = obj:position():distance_to(Actor:position())
 
 	if act == "actor_see_enemy" then
@@ -1088,9 +1086,15 @@ function Blowout_pp(phase)
 		amk_anoms.pre_blow_off()
 		if bt<1 then
 			level.set_weather("pre_blow",true)
-			level.set_weather_fx("amk_surge_day")
+
+			local hr = level.get_time_hours()
+			if level.get_time_minutes() >= 30 then
+				hr = hr < 23 and hr + 1 or 0
+			end
+
+			level.set_weather_fx("amk_surge_day_" .. hr)
 		end
-		amk_g_start_timer("blowout", 0, 0, math_random(1, 4), 1)
+		amk_g_start_timer("blowout", 0, 0, math_random(2, 4), 1)
 	elseif phase==1 then
 		local snd_obj = xr_sound.get_safe_sound_object([[ambient\earthquake]])
 		snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
@@ -1102,10 +1106,10 @@ function Blowout_pp(phase)
 			level.add_pp_effector("vibros.ppe", 2001, true)
 		end
 		in_hide=false
-		amk_g_start_timer("blowout", 0, 0, math_random(1, 4), 2)
+		amk_g_start_timer("blowout", 0, 0, math_random(2, 4), 2)
 		amk_save_variable("blowout",2)
 	elseif phase==2 then
-		amk_g_start_timer("blowout", 0, 0, math_random(1, 4), 3)
+		amk_g_start_timer("blowout", 0, 0, math_random(2, 4), 3)
 	elseif phase==3 then
 		amk_anoms.after_blow_on()
 		amk_anoms.off_testobj()
@@ -1123,7 +1127,7 @@ function Blowout_pp(phase)
 				cr:hit(h)
 			end
 		end
-		amk_g_start_timer("blowout", 0, 0, math_random(1, 4), 4)
+		amk_g_start_timer("blowout", 0, 0, math_random(2, 4), 4)
 	elseif phase==4 then
 		amk_save_variable("blowout",4)
 		level.remove_cam_effector(2002)
@@ -1159,46 +1163,49 @@ function on_blowout_hit_actor(force)
 	end
 end
 
+function check_safe_place(npc, khit)
+	local sleep = 1 - dmx_sleep_binder.safe_place_coef(npc)
+	if sleep == 1 then
+		return khit == 1, khit
+	else
+		return false, sleep < khit and sleep or khit
+	end
+end
+
 function blowout_khit(npc, hide)
 	if not npc then npc = Actor end
-	local need_hit=true
-	local khit=1
-	if hide and hide.zone then
-		need_hit = not check_npc_in_hideout(npc,hide)
-		if not need_hit then
-			if hide.defence then
-				khit=hide.defence
-			else
-				khit=0
-			end
+
+	if hide then
+		if not hide.zone then return check_safe_place(npc, 1) end
+
+		local need_hit = not check_npc_in_hideout(npc,hide)
+		if not (need_hit or hide.defence) then
+			return false, 0
+		else
+			return check_safe_place(npc, need_hit and 1 or hide.defence)
 		end
-	else
-		local hides=amk_hideouts.hide[level.name()]
-		local tmp
-		if hides then
-			for i,o in ipairs(hides) do
-				if o.zone then
-					for j,v in ipairs(o.zone) do
-						if v.p3 then
-							tmp=amk.check_npc_in_box(npc,vector():set(unpack(v.p1)),vector():set(unpack(v.p2)),vector():set(unpack(v.p3)))
-						else
-							tmp=amk.check_npc_in_box(npc,vector():set(unpack(v.p1)),vector():set(unpack(v.p2)))
-						end
-						need_hit = need_hit and not tmp
-						if tmp then
-							if o.defence then
-								khit=o.defence
-							else
-								khit=0
-							end
-						end
+	end
+
+	local hides=amk_hideouts.hide[level.name()]
+	local tmp
+	if hides then
+		for i,o in ipairs(hides) do
+			if o.zone then
+				for j,v in ipairs(o.zone) do
+					if v.p3 then
+						tmp=amk.check_npc_in_box(npc,vector():set(unpack(v.p1)),vector():set(unpack(v.p2)),vector():set(unpack(v.p3)))
+					else
+						tmp=amk.check_npc_in_box(npc,vector():set(unpack(v.p1)),vector():set(unpack(v.p2)))
+					end
+					if tmp then
+						return false, o.defence and check_safe_place(npc, o.defence) or 0
 					end
 				end
 			end
 		end
 	end
 
-	return need_hit, khit
+	return check_safe_place(npc, 1)
 end
 
 function on_blowout_hit(npc,hide)
@@ -1242,85 +1249,9 @@ function check_npc_in_hideout(npc,hide)
 	return not not_in_zone
 end
 
-function initial_spawn(action)
-	local fr=0
-	for i=0,amk_hideouts.anom_count-1,1 do
-		local sobj = AI:story_object(amk_hideouts.anom_sid0+i)
-		if not sobj then
-			AI:create(i+amk_hideouts.anom_num0)
-			fr=1
-		end
-	end
-	if fr==1 then create_anoms() end
-end
-
 --'*******************************************************************************
 --'   **   **   **   **   **    **   **   **       ANOMS SPAWN        **   **   **   **   **    **   **   **
 --'*******************************************************************************
-anomalies_state={}
-
-function remove_anoms()
-	amk_save_variable("blowout_anoms",string.rep(string.char(128),math.ceil(amk_hideouts.anom_count/7)))
-	update_anoms()
-end
-
-function create_anoms()
-	anomalies_state={}
-	for i=amk_hideouts.anom_sid0,amk_hideouts.anom_sid0+amk_hideouts.anom_count-1,1 do
-		anomalies_state[i]=math_random(0,1)==1
-	end
-	local str=pack_anoms(anomalies_state)
-	amk_save_variable("blowout_anoms",str)
-	update_anoms()
-end
-
-function update_anoms()
-	local anoms=amk_load_variable("blowout_anoms",string.rep(string.char(128),math.ceil(amk_hideouts.anom_count/7)))
-	anomalies_state=unpack_anoms(anoms)
-	for i=amk_hideouts.anom_sid0,amk_hideouts.anom_sid0+amk_hideouts.anom_count-1,1 do
-		local sobj=AI:story_object(i)
-		if sobj then
-			local obj=level_object_by_id(sobj.id)
-			if obj then
-				if anomalies_state[i] then
-					obj:enable_anomaly()
-				else
-					obj:disable_anomaly()
-				end
-			end
-		end
-    end
-end
-
--- anom_state[sid]==true для активных аномалий
-function pack_anoms(anom_state)
-	local str=""
-	for i=0,amk_hideouts.anom_count-1,7 do
-		local cval=128
-		local mul=1
-		for j=0,6,1 do
-			if anom_state[i+j+amk_hideouts.anom_sid0] then
-				cval=cval+mul
-			end
-		mul=mul*2
-		end
-    str=str..string.char(cval)
-	end
-	return str
-end
-
-function unpack_anoms(str)
-	local anom={}
-	for i=1,string.len(str),1 do
-		local cval=string.byte(string_sub(str,i,i))
-		local mul=1
-		for j=0,6,1 do
-			anom[(i-1)*7+j+amk_hideouts.anom_sid0]=bit_and(mul,cval)~=0
-			mul=mul*2
-		end
-	end
-	return anom
-end
 
 function blowout_type()
 	local lname=level.name()
@@ -2295,7 +2226,7 @@ function check_hud()
 		set_hud_tex(tex,false)
 	end
 
-	if Actor.health>0 and amk_load_variable("option_rad",1) ~= 0 then
+	if Actor.health > 0 then
 		if act_it and act_it:section()=="wpn_binoc" then
 			if last_rect.zoom > 1.3 then
 				ui_rad.update(false)
@@ -2858,31 +2789,6 @@ function zomby_blow(obj)
 			h.type = hit.chemical_burn
 			Actor:hit(h)
 		end
-		AI:release(AI:object(obj:id()))
-		return
-	end
-
-	if obj:section()=="zombie_blow" then
-		amk_particle.amk_particle({
-				particle="amk\\zomb_explode",
-				pos=obj:position(),
-				sound=[[anomaly\anomaly_body_tear_1]]
-			})
-		local dist = Actor:position():distance_to(obj:position())
-		if dist < 30 and Actor:see(obj) then
-			local h = hit()
-    	h.impulse = 0
-		h.draftsman = Actor
-		h.direction = vector():set(0,0,0)
-		h:bone("bip01_spine") -- чтобы учитывалась броня
-    	h.power = 1/dist
-    	h.type = hit.strike --chemical_burn
-		Actor:hit(h)
-    	h.power = 15/dist
-    	h.type = hit.chemical_burn
-		Actor:hit(h)
-		end
-		spawn_skel(obj)
 		AI:release(AI:object(obj:id()))
 	end
 end

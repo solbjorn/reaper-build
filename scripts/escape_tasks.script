@@ -122,18 +122,19 @@ function is_actor_enemy_lager ()
 end
 
 function process_info_portion(info_id)
-
 	--' пометки на карте
 
 	if info_id == "esc_tutorial_secret_place" then
 		level_tasks.add_location(025, "crlc_small", "tutorial_secret_place1", 1)
-
 	elseif info_id == "esc_tutorial_secret_place_found" then
 		level_tasks.remove_location(025, "crlc_small")
 	elseif info_id == "esc_kolyan_lost" then
 		level_tasks.add_location(028, "crlc_big", "esc_mill", 1)
 	elseif info_id == "esc_kolyan_found" then
 		level_tasks.remove_location(028, "crlc_big")
+	elseif info_id == "esc_bridge_soldiers" then
+		level_tasks.add_location(032, "crlc_big", "soldiers_bridge")
+		level_tasks.add_location(018, "crlc_big", "soldiers_base")
 	elseif info_id == "esc_tutorial_secret" then
 		if not has_alife_info("esc_tutorial_secret_find") then
 			level_tasks.add_location(026, "crlc_small", "tutorial_secret", 1)
@@ -148,7 +149,5 @@ function process_info_portion(info_id)
 		end
 	elseif info_id == "esc_shustryi_secret_find" then
 		level_tasks.remove_location(027, "crlc_small")
-	else
-		return false
 	end
 end

@@ -4,7 +4,8 @@ class "CInventory"
 
 function CInventory:__init()
 	self.sack = {}				-- Инвентарь ГГ
-	self.belt = { }
+	self.belt_by_sect = { }
+	self.belt_by_id = { }
 end
 
 -- Имеем ли предметы?
@@ -62,15 +63,17 @@ end
 
 -- Калбек на надевание на пояс
 function CInventory:on_item_belt(item)
-	table.add(self.belt, item:section())
+	table.add(self.belt_by_sect, item:section())
+	self.belt_by_id[item:id()] = item
 end
 
 -- Калбек на снятие с пояса
 function CInventory:on_item_move_from_belt(item)
-	table.sub(self.belt, item:section())
+	table.sub(self.belt_by_sect, item:section())
+	self.belt_by_id[item:id()] = nil
 end
 
 -- предмет на поясе
 function CInventory:on_belt(sect)
-	return self.belt[sect]
+	return self.belt_by_sect[sect]
 end

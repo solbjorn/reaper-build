@@ -159,7 +159,7 @@ local anoms_off_per_hour=1
 function init()
 	local lname=level.name()
 
-	local sini = ini_file("scripts\\amk\\anoms\\anoms.ltx")
+	local sini = ini_file("scripts\\amk\\anoms.ltx")
 	if sini:section_exist(lname) then
 		local result, id, value = nil, nil, nil
 		for a=0,sini:line_count(lname)-1 do
@@ -181,6 +181,7 @@ end
 function collect_info()
 	local lname=level.name()
 	on_anoms_per_level={}
+	local psy_list = { }
 	local on_anoms,off_anoms=0,0
 	local sobj
 	for i=0,65534 do
@@ -207,6 +208,8 @@ function collect_info()
 						end -- status
 					end -- level
 				end -- exclusiion
+			elseif sobj:section_name() == "zone_psy" then
+				psy_list[sobj.id] = sobj
 			end
 		end
 	end
@@ -221,10 +224,10 @@ function collect_info()
 		generate_anoms("off")
 	elseif on_anoms>0 and off_anoms==0 then
 		generate_anoms("off")
-	elseif on_anoms==0 and off_anoms>0 then
-		-- выброс
-	else
-		-- all is ok
+	end
+
+	if not (on_anoms == 0 and off_anoms > 0) then
+		ogsm_psyzones.spawn_on_load(psy_list)
 	end
 end
 
@@ -240,8 +243,27 @@ function generate_anoms(status)
 	end
 end
 
-function check_coordinates(pos)
-	local lname=level.name()
+-- аномалии, которые не исчезнут при НИ, да и вообще
+function check_exclusion(obj, map)
+	local obj_section = obj:section_name()
+	if string_find(obj_section, "amk_") then return false end
+
+	if not level_anoms[map] then
+		return true
+	end
+
+	local obj_name = obj:name()
+	return string_find(obj_section, "radioactive")							-- радиоактивные зоны из all.spawn
+		or string_find(obj_name, "esc_zone_witches")					-- перемещающаяся электра (Кордон)
+		or string_find(obj_name, "pri_zone_witches")						-- электра на колесе обозрения (ЦП)
+		or string_find(obj_section, "burning_fuzz")						-- тополиный пух
+		or string_find(obj_name, "rostok_zone_witches")					-- электры везде (Росток)
+		or string_find(obj_name, "rostok_zone_zharka_static")			-- жарки в тоннеле (Росток)
+		or string_find(obj_name, "tutorial")								-- эпичная смерть псевдоплоти (Кордон)
+		or string_find(obj_name, "_mincer")
+end
+
+function check_coordinates(pos, lname)
 	for k,v in pairs(anti_spawn_zones) do
 		if pos:distance_to(v[1])<=v[2] then
 			return false
@@ -268,28 +290,38 @@ function check_coordinates(pos)
 	return true
 end
 
-function generate_anomaly(status)
-	local lname=level.name()
-	if level_vertexes[lname] == 0 then return nil end
-	local gvn,gvx,lvx = game_vertexes[lname][1], game_vertexes[lname][2], level_vertexes[lname]
+function gen_random_pos(lname)
+	if not lname then lname = curr_level end
 
-	local new_lv=math_random(1,lvx)
+	local gvn, gvx, lvx = game_vertexes[lname][1], game_vertexes[lname][2], level_vertexes[lname]
+	if lvx == 0 then return nil end
 
-	local pos = level.vertex_position(new_lv)
-	if not check_coordinates(pos) then
-		return false
-	end
+	local pos, new_lv, new_gv, g1, min_dist, dist
+	while true do
+		new_lv = math_random(1, lvx)
+		pos = level.vertex_position(new_lv)
+		if check_coordinates(pos, lname) then
+			new_gv = 0
+			min_dist = math.huge
+			--подбираем геймвертекс
+			for a = gvn, gvx do
+				g1 = graph:vertex(a):game_point()
+				dist = g1:distance_to(pos)
+				if graph:valid_vertex_id(a) and dist < min_dist then
+					min_dist = dist
+					new_gv = a
+				end
+			end
 
-	local new_gv = 0
-	local min_dist = 100000
-	--подбираем геймвертекс
-	for a = gvn, gvx do
-		g1 = game_graph():vertex(a):game_point()
-		if g1:distance_to(pos)<min_dist then
-			min_dist = g1:distance_to(pos)
-			new_gv = a
+			if graph:valid_vertex_id(new_gv) then
+				return pos, new_lv, new_gv
+			end
 		end
 	end
+end
+
+function generate_anomaly(status)
+	local pos, new_lv, new_gv = gen_random_pos()
 
 	return spawn_rand_anom(pos,new_gv,new_lv,status)
 end
@@ -353,6 +385,7 @@ function generate_art(lname)
 	end
  local new_gv = 0
  local min_dist = 100000
+	local g1
  for a = gvn, gvx, 1 do
 	g1 = game_graph():vertex(a):game_point()
 	if g1:distance_to(pos)<min_dist then
@@ -396,10 +429,10 @@ function spawn_rand_anom(pos,gv,lv,status)
 	local shapes,shape1={},{}
 	local section
 	section = "zone_ice"
-	if exclusive_chance>math_random()*100 then
+	if exclusive_chance > math_random(100) then
 		shape1={shtype=0,radius=4,center={0,0,0}}
 	else
-		local rnd=math_random()*100
+		local rnd = math_random(100)
 		local suffix=''
 		for k,v in pairs(anom_suffixes) do
 			if rnd<=v then
@@ -437,6 +470,11 @@ function spawn_rand_anom(pos,gv,lv,status)
 end
 
 function set_anomaly_status(sobj, status)
+	if (status == "del" or status == "off") and sobj:section_name() == "zone_psy" then
+		ogsm_psyzones.remove(sobj, true)
+		return
+	end
+
 	local anom_id=sobj.id
 	local tbl = amk.get_anomaly_data(sobj)
 	tbl.custom=modify_anomaly_custom_data(tbl.custom,status)
@@ -444,7 +482,7 @@ function set_anomaly_status(sobj, status)
 	set_online_anomaly_status(anom_id, status)
 end
 
--- Возвражает изменённую cd, c установленным статусом status
+-- Возвращает изменённую cd, c установленным статусом status
 function modify_anomaly_custom_data(cd,status)
 	cd = amk.parse_custom_data(cd)
 	if not cd then cd={} end
@@ -494,6 +532,8 @@ function turn_off_all()
 			end
 		end
 	end
+
+	ogsm_psyzones.remove_all()
 end
 
 function pre_blow_off()
@@ -518,21 +558,10 @@ function after_blow_on()
 			end
 		end
 	end
+
+	ogsm_psyzones.spawn_psy()
 	-- Проверим патрульные пути заново
 	move_mgr.invalidate_pp_accessibility()
-end
-
-function check_exclusion(obj,map)
-	if string_find(obj:name(),"amk_") then return false end
-	if level_vertexes[map]==nil or level_vertexes[map]==0 then
-		return true
-	end
-	return 	string_find(obj:name(),"rostok_zone_zharka_static") or
-					string_find(obj:name(),"tutorial") or
-					string_find(obj:name(),"esc_zone_mincer_strong") or
-					string_find(obj:name(),"esc_zone_witches") or
-					string_find(obj:name(),"rostok_zone_witches") or
-					(string_find(obj:name(),"_mincer") and map~="l11_pripyat")
 end
 
 --[[
@@ -583,7 +612,7 @@ function add_restriction(npc,id,name)
 		name=(level.object_by_id(id) and level.object_by_id(id):name())
 	end
 	if not name then
-		get_console():execute("load ~~~ add_restriction(): Warning! Nonexistent restrictor id "..id)
+		abort("add_restriction(): Warning! Nonexistent restrictor id "..id)
 		return
 	end
 	init_if_needed(nid)
@@ -781,10 +810,11 @@ end
 
 local anom_list = { }
 
-function add_anomaly(id, pos, radius)
+function add_anomaly(id, pos, radius, psy)
 	anom_list[id] = {
 		pos	= pos,
-		radius	= radius or 6
+		radius	= radius or 6,
+		psy	= psy == true or nil
 	}
 end
 
@@ -798,10 +828,10 @@ end
 
 function get_nearest_anomaly_for_pos(posn)
 	local anomid, pos, radius, dist
-  local mindist=10000000
-  for id,o in pairs(anom_list) do
+	local mindist = math.huge
+	for id, o in pairs(anom_list) do
 		dist = posn:distance_to(o.pos) - o.radius
-		if dist<mindist then
+		if not o.psy and dist < mindist then
 			mindist=dist
 			anomid=id
 			pos=o.pos
@@ -811,18 +841,18 @@ function get_nearest_anomaly_for_pos(posn)
 	return anomid,pos,radius,mindist
 end
 
-function get_anomaly_list(npc,radius)
-	return get_anomaly_list_for_pos(npc:position(),radius)
+function get_anomaly_list(npc, radius, psy)
+	return get_anomaly_list_for_pos(npc:position(), radius, psy)
 end
 
-function get_anomaly_list_for_pos(posn,radius)
+function get_anomaly_list_for_pos(posn, radius, psy)
 	local ret, sobj, dist = { }
 
 	for id, o in pairs(anom_list) do
 		sobj = server_object(id)
 		if sobj then
 			dist = posn:distance_to(o.pos) - o.radius
-			if dist < radius then
+			if dist < radius and (psy or not o.psy) then
 				ret[#ret + 1] = {
 					id	= id,
 					name	= sobj:name(),

@@ -104,6 +104,26 @@ function main_check(obj, amount, local_direction, who, bone_index)
          massive[id] = massive[id] + 1
       end
    end
+      if string.find(section,"fracture") then
+      if bone_index==18
+      or bone_index==19
+      or bone_index==20
+      or bone_index==22
+      or bone_index==24
+      or bone_index==26
+      or bone_index==31
+      or bone_index==32
+      or bone_index==33
+      or bone_index==35
+      or bone_index==37
+      or bone_index==39 then
+         if massive[id]==nil then
+            massive[id] = 1
+            return
+         end
+         massive[id] = massive[id] + 1
+      end
+   end
    if string.find(section,"snork") then
       if bone_index==1
       or bone_index==2
@@ -265,10 +285,11 @@ local table_mobs = {
                     "pseudodog",
                     "psy_dog",
                     "tushkano",
-		    "rat",
+		"rat",
                     "cat",
                     "flesh",         --2
                     "burer",         --2
+					"fracture",      --2
                     "snork",         --2
                     "controller",    --2
                     "gigant",        --2
@@ -281,10 +302,11 @@ local table_mobs = {
                     "mutant_psevdodog_tail",
                     "mutant_psevdodog_tail",
                     "mutant_face_tushkano",
-	"mutant_rat_tail",
+		"mutant_rat_tail",
                     "mutant_tail_cat",
                     "mutant_flesh_eye",
                     "mutant_burer_hand",
+					"mutant_fracture_hand",
                     "mutant_snork_leg",
                     "mutant_hand_kontroler",
                     "mutant_psevdogigant_hand",
@@ -303,7 +325,7 @@ function spawn_parts(obj,number)
       end
       return
    end
-   for a = 1,15 do
+   for a = 1,16 do
       if string.find(section,table_mobs[1][a]) then
          if obj then
             if number==nil then
@@ -314,7 +336,7 @@ function spawn_parts(obj,number)
                   arc.spawn_item_in_inv(table_mobs[2][a],obj)
                end
             end
-            if a>13 then
+            if a>14 then
                if number==nil or (number and number<4) then
                   arc.spawn_item_in_inv(table_mobs[2][a],obj)
                end

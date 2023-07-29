@@ -5,13 +5,23 @@
 --'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 local excluded_npcs={
-	esc_fox=true,
-	esc_vagon_wounded=true,
-	gar_bandit_stroyka3=true,
-	gar_wounded_bandit=true,
-	val_sos_wounded=true,
-	val_escort_bandit_halfdead=true,
-	ecolog_wound_bunker=true
+	["esc_fox"]			= true,
+	["esc_vagon_wounded"]		= true,
+	["gar_bandit_stroyka3"]		= true,
+	["gar_wounded_bandit"]		= true,
+	["val_sos_wounded"]		= true,
+	["val_escort_bandit_halfdead"]	= true,
+	["mil_patrol_stalker0013"]	= true,
+	["mil_patrol_stalker0014"]	= true,
+	["mil_patrol_stalker_0000"]	= true,
+	["mil_stalker0012"]		= true,
+	["yantar_ecolog_general"]	= true,
+	["bar_ecolog_professor"]	= true,
+	["zombied"]			= true,
+	["trader"]			= true,
+	["arena_enemy"]			= true,
+	["agr_krot"]			= true,
+	["ecolog_wound_bunker"]		= true
 }
 
 local mk_types={
@@ -25,7 +35,7 @@ wounded = {}
 has_medic = {}
 friends_r = 50
 neutral_r = 30
----------------
+
 evid_medic=18680
 evid_self_medic=evid_medic+1
 
@@ -42,30 +52,38 @@ function evaluator_medic:__init(name, storage) super (nil, name)
 	self.a.next_medic_change_pos = 0
 end
 function evaluator_medic:evaluate()
-	local npc = self.object
-	if wounded[npc:id()] then return false end
-	if not self.a.target_wounded then
+	if xr_wounded.is_wounded(self.object) or self.object:best_enemy() then
+		return false
+	end
 
+	local npc = self.object
+
+	if wounded[npc:id()] or excluded_npcs[npc:name()] or excluded_npcs[npc:profile_name()] then return false end
+	if not self.a.target_wounded then
 		if (self.next_check_time or 0) > time_global() then return false end
 		self.next_check_time = time_global() + 5000
-
-		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then return false end
 
 		local wounded_guy
 		for k,v in pairs(wounded) do
 			if not has_medic[k] then
 				local obj = get_npc(k)
-				if obj and not excluded_npcs[obj:name()] and obj:alive() and npc:see(obj) and npc:accessible(obj:level_vertex_id()) and
+				if obj and not excluded_npcs[obj:name()] and obj:alive() and npc:accessible(obj:level_vertex_id()) and
 					(npc:relation(obj) == game_object.friend and npc:position():distance_to(obj:position())<friends_r) or
-					(npc:relation(obj) == game_object.neutral and npc:position():distance_to(obj:position())<neutral_r)
-					then
+					(npc:relation(obj) == game_object.neutral and npc:position():distance_to(obj:position())<neutral_r) then
 					wounded_guy = k
 					break
 				end
 			end
 		end
 
-		if not wounded_guy then return false end
+		if not wounded_guy then
+			return false
+		else
+			if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then
+				-- если лекарств нет, а рядом раненый лежит стонет
+				create("medkit",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
+			end
+		end
 		self.a.target_wounded = wounded_guy
 		if self.a.next_medic_change_pos and self.a.next_medic_change_pos<time_global() then
 			self.a.from_point = npc:position()
@@ -73,7 +91,11 @@ function evaluator_medic:evaluate()
 		has_medic[wounded_guy]=npc:id()
 		return true
 	else
-		if not wounded[self.a.target_wounded] or (get_npc(self.a.target_wounded) and (not get_npc(self.a.target_wounded):alive() or not (get_npc(self.a.target_wounded):wounded() or get_npc(self.a.target_wounded):critically_wounded()))) or (has_medic[self.a.target_wounded] and has_medic[self.a.target_wounded]~=npc:id()) then
+		if not wounded[self.a.target_wounded] or
+		(get_npc(self.a.target_wounded) and
+		(not get_npc(self.a.target_wounded):alive() or not (get_npc(self.a.target_wounded):wounded() or get_npc(self.a.target_wounded):critically_wounded()))) or
+		(has_medic[self.a.target_wounded] and has_medic[self.a.target_wounded]~=npc:id()) or
+		excluded_npcs[get_npc(self.a.target_wounded):name()] then
 			self.a.target_wounded = nil
 			self.a.from_point = nil
 			return false
@@ -127,6 +149,15 @@ function action_medic:execute()
 	action_base.execute (self)
 	local npc=self.object
 	local wounded_npc = get_npc(self.a.target_wounded)
+
+	if not wounded_npc:alive() or not (wounded_npc:wounded() or wounded_npc:critically_wounded()) then
+		if self.a.target_wounded and has_medic[self.a.target_wounded] then has_medic[self.a.target_wounded] = nil end
+		self.a.target_wounded = nil
+		self.a.from_point = nil
+		npc:clear_animations()
+		return false
+	end
+
 	if npc:position():distance_to(get_npc(self.a.target_wounded):position())>1.2 then
 		utils.send_to_nearest_accessible_vertex(npc, get_npc(self.a.target_wounded):level_vertex_id())
 		npc:set_desired_position(get_npc(self.a.target_wounded):position())
@@ -138,7 +169,7 @@ function action_medic:execute()
 			npc:clear_animations()
 			npc:set_movement_type(move.stand)
 			state_mgr.set_state(npc, "dynamite",nil,nil,{ look_object = wounded_npc }, {animation = true})
-			self.step1 = time_global()+4000
+			self.step1 = time_global()+3000
 			if npc:object("medkit") ~= nil then
 				npc:transfer_item(npc:object("medkit"), wounded_npc)
 				self.medsec="medkit"
@@ -149,24 +180,25 @@ function action_medic:execute()
 				npc:transfer_item(npc:object("medkit_scientic"), wounded_npc)
 				self.medsec="medkit_scientic"
 			end
+			local snd = "characters_voice\\human_01\\"..npc:character_community().."\\help\\wounded\\medkit_"..math.random(1,3)
+			snd = xr_sound.get_safe_sound_object(snd)
+			if snd then
+				snd:play_no_feedback(npc, sound_object.s3d, 0, npc:position(), 1.0)
+			end
 		end
 		if self.step1 and not self.step2 and self.step1<time_global() then
-
+			state_mgr.set_state(npc, "walk")
 			npc:clear_animations()
-			--wounded_npc:eat(wounded_npc:object(self.medsec))
 			xr_wounded.unlock_medkit(wounded_npc)
 
 			if wounded_npc:relation(npc) ~= game_object.enemy then
 				wounded_npc:set_relation(game_object.friend, npc)
 			end
-			npc:change_character_reputation(10);
+			npc:change_character_reputation(10)
 			self.step2=time_global()+2000
 		end
 		if self.step1 and self.step2 and self.step2<time_global() then
-
 			xr_logic.initialize_obj(wounded_npc, db.storage[wounded_npc:id()], true, modules.stype_stalker)
-			--db.storage[wounded_npc:id()].wounded.wound_manager.medkit_eaten=true
-			--db.storage[wounded_npc:id()].wounded.wound_manager:update()
 
 			has_medic[self.a.target_wounded]=nil
 			self.a.target_wounded = nil
@@ -224,7 +256,6 @@ function action_self_medic:execute()
 			end
 
 			npc:clear_animations()
-			--npc:add_animation("stoya_ruje_ 0")
 			npc:add_animation("idle_0_to_sit_2")
 			npc:add_animation("vodka_3")
 			npc:add_animation("sit_2_to_idle_0")
@@ -257,7 +288,6 @@ function action_self_medic:execute()
 			yad:enable_attachable_item(false)
 		end
 
---		npc:clear_animations()
 		self.eat_obj = npc:object(self.medsec)
 		npc:eat(self.eat_obj)
 		self.allow_empty=true
@@ -294,8 +324,12 @@ function add_to_binder(object, storage)
 	properties["medic"]			= evid_medic
 	properties["self_medic"]	= evid_self_medic
 
+	local state_mgr_to_idle_combat 	= xr_actions_id.state_mgr + 1
+	local state_mgr_to_idle_alife = xr_actions_id.state_mgr + 2
+
 	local zombi=object:character_community()=="zombied" or object:character_community()=="trader" or
-		  object:character_community()=="arena_enemy" or object:name()=="mil_stalker0012" or object:name()=="yantar_ecolog_general"
+		  object:character_community()=="arena_enemy" or object:name()=="mil_stalker0012" or
+		  object:name()=="yantar_ecolog_general" or object:name()=="bar_ecolog_professor"
 
 	if zombi then
 		manager:add_evaluator (properties["medic"], property_evaluator_const(false))
@@ -326,6 +360,11 @@ function add_to_binder(object, storage)
 	action:add_precondition	(world_property(properties["medic"], false))
 	action:add_precondition	(world_property(properties["self_medic"], false))
 
+	action = manager:action(state_mgr_to_idle_alife)
+	action:add_precondition	(world_property(properties["medic"], false))
+
+	action = manager:action(state_mgr_to_idle_combat)
+	action:add_precondition	(world_property(properties["medic"], false))
 end
 
 function set_scheme(npc, ini, scheme, section)
@@ -399,9 +438,7 @@ function npc_update(binder)
 	end
 
 	if not binder.medkit_update_time then binder.medkit_update_time=time_global()+5000 end
-	if npc:character_community()=="zombied" or npc:character_community()=="trader" or
-		  npc:character_community()=="arena_enemy" or npc:name()=="mil_stalker0012" or
-		  npc:name()=="yantar_ecolog_general" then return end
+	if excluded_npcs[npc:name()] or excluded_npcs[npc:character_community()] then return end
 	if time_global()>binder.medkit_update_time then
 		if not npc:object("medkit") and not npc:object("medkit_army") and not npc:object("medkit_scientic") then
 			local sobj = AI:object(npc:id())
@@ -419,3 +456,11 @@ end
 function pickup(obj)
 	if obj:section()=="yad" then AI:release(AI:object(obj:id())) end
 end
+
+--[[
+
+Если вы собираетесь использовать данный скрипт целиком или частично в своих 
+разработках по игре S.T.A.L.K.E.R., пожалуйста не удаляйте копирайты, указывайте настоящего 
+автора(ов) и не выдавайте чужие идеи и их реализацию за свои. Спасибо за понимание.
+
+]]--

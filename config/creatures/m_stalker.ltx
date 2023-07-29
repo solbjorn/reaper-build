@@ -27,7 +27,6 @@ dmg_norm_turn_right_0   = 1,    0.2,      0.2,   0.65,     0.2
 
 norm_escape_0       = 1,    0.2,      1.3,   0.65,     1.3
 norm_escape_00        = 1,    0.2,      1.3,   0.65,     1.3
-norm_escape_00        = 1,    0.2,      1.3,   0.65,     1.3
 
 norm_walk_fwd_1       = 1,    0.2,      0.2,   0.65,     0.2
 norm_jump_end       = 1,    0.2,      1.3,   0.21,     1.3
@@ -62,7 +61,7 @@ cr_turn_right_0       = 1,    0.2,      0.1,   0.65,     0.1
 min_view_distance       = 0.4       ; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance       = 0.8       ; коэффициент, который множится на eye_range, в зависимости от угла
 visibility_threshold    = 150.0       ; значение, при достижении суммой которого объект считается видимым
-always_visible_distance   = 0.1
+always_visible_distance 	= 0.0
 time_quant          = 0.005
 decrease_value        = 0.1       ; значение, на которое уменьшается вес, если объект попал в фрустум, но отсёкся по каким-то причинам
 velocity_factor         = 0.5
@@ -73,7 +72,7 @@ transparency_threshold    = 0.4       ; 0.75
 min_view_distance       = 0.7       ; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance     = 1.0       ; коэффициент, который множится на eye_range, в зависимости от угла
 visibility_threshold    = 120.0       ; значение, при достижении суммой которого объект считается видимым
-always_visible_distance   = 0.2
+always_visible_distance 	= 0.0
 time_quant          = 0.001
 decrease_value        = 0.01        ; значение, на которое уменьшается вес, если объект попал в фрустум, но отсёкся по каким-то причинам
 velocity_factor         = 0.5
@@ -236,12 +235,12 @@ sleep_psy_health      = 1.0
 
 ;---LIMPING STATE-----------------------------------------------------
 use_limping_state     = on
-limping_threshold     = 0.5
+limping_threshold			= 0.0
 
 ;открытые раны
-bleeding_v          = 0.0           ;потеря крови при номинальной ране в секунду
-wound_incarnation_v     = 0.001         ;крутизна кривой заживления (какой процент раны останется после заживления в игровую секунду)
-min_wound_size        = 0.01
+bleeding_v					= 0.001						;потеря крови при номинальной ране в секунду
+wound_incarnation_v			= 0.003					;крутизна кривой заживления (какой процент раны останется после заживления в игровую секунду)
+min_wound_size				= 0.0256
 
 [stalker_terrain]
   255,000,255,255
@@ -366,7 +365,7 @@ script_binding          = bind_stalker.init
 ;---GROUP SECTIONS----------------------------------------------------
 GroupControlSection       = spawn_group
 SpaceRestrictionSection     = space_restrictor,zone_mine_field
-attachable_items				= yad,device_torch,attachable_item,hand_radio,bread, sigaret, vodka, energy_drink, kolbasa, guitar_a, harmonica_a, wpn_binoc, kruglov_flash
+attachable_items				= yad, device_torch, hand_radio, bread, sigaret, vodka, energy_drink, kolbasa, guitar_a, harmonica_a, wpn_binoc, kruglov_flash
 
 ;---SECTIONS----------------------------------------------------------
 damage              = stalker_damage
@@ -417,8 +416,8 @@ DynamicHitCount         = 32
 
 ;---ENEMY------------------------------------------------------------
 ignore_monster_threshold    = 0.0 ;0.6  ;0.8
-max_ignore_distance       = 15.0
 panic_threshold         = 0.02
+max_ignore_distance				= 15.0
 
 ;---SOUND PLAYER------------------------------------------------------
 sound_death           = fight\death\death_

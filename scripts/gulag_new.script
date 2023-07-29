@@ -1,253 +1,143 @@
-function load_job(sj, gname, type)
-	local t
-
-	-- √”À¿√ «≈À≈Õ€’ Õ¿ ‘¿¡–» ≈
-	if type == "esc_fabrika_sniper" then
-		t = { section = "logic@sniper_esc_respawn_1",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_2",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_4",
-			idle = 0,
-			prior = 15, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@sniper_esc_respawn_7",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-	end
-	-- √”À¿√ «≈À≈Õ€’ ¬ ¡¿–≈
-	if type == "dal_green" then
-		t = { section = "logic@dal_green1",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@dal_green2",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@esc_dan",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		--predicate = function(obj_info)
-        		--	return obj_info.profile_name == "esc_dan"
-				--	end
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@dal_green4",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@dal_green5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@dal_green6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@dal_green7",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-
+function check_green(npc_community)
+	return npc_community == "green"
 end
 
-     -- √”À¿√ «≈À≈Õ€’ Õ¿ –Œ—“Œ ≈
-	if type == "rost_green" then
-		t = { section = "logic@rost_green1",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green2",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green3",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		--predicate = function(obj_info)
-        		--	return obj_info.profile_name == "esc_dan"
-				--	end
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green4",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green5",
-			idle = 10,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@rost_green7",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-	end
-	 -- √”À¿√ Õ¿≈ÃÕ» Œ¬ Õ¿ —¬¿À ≈
-	if type == "killer_garbage_larger" then
-		t = { section = "logic@chimerachaes1",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes7",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes8",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes9",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
-		t = { section = "logic@chimerachaes10",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj + 1] = t
+local gulags = {
+	-- –ì–£–õ–ê–ì –ó–ï–õ–ï–ù–´–• –ù–ê –§–ê–ë–†–ò–ö–ï
+	["esc_fabrika_sniper"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_1",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_2",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_4",
+				prior = 15
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_5"
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_6"
+			}
+			sj[#sj + 1] = {
+				section = "logic@sniper_esc_respawn_7"
+			}
+		end,
+		check = check_green
+	},
+	-- –ì–£–õ–ê–ì –ó–ï–õ–ï–ù–´–• –í –ë–ê–†–ï
+	["dal_green"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@dal_green1",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green2",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dan",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green4",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green5"
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green6"
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green7"
+			}
+		end,
+		check = check_green
+	},
+	-- –ì–£–õ–ê–ì –ó–ï–õ–ï–ù–´–• –ù–ê –†–û–°–¢–û–ö–ï
+	["rost_green"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@rost_green1",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green2",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green3",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green4",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green5",
+				idle = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green6"
+			}
+			sj[#sj + 1] = {
+				section = "logic@rost_green7"
+			}
+		end,
+		check = check_green
+	},
+	 -- –ì–£–õ–ê–ì –ù–ê–ï–ú–ù–ò–ö–û–í –ù–ê –°–í–ê–õ–ö–ï
+	["killer_garbage_larger"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes1"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes5"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes6"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes7"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes8"
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes9",
+				prior = 10
+			}
+			sj[#sj + 1] = {
+				section = "logic@chimerachaes10",
+				prior = 10
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "killer"
 		end
-end
+	}
+}
 
-function load_states(type)
-	if type == "esc_fabrika_sniper" then
-		return function(gulag)
-			return 0
-		end
-	end
-    if type == "dal_green" then
-		return function(gulag)
-			return 0
-		end
-	end
-	if type == "rost_green" then
-		return function(gulag)
-			return 0
-		end
-	end
-	if type == "killer_garbage_larger" then
-		return function(gulag)
-			return 0
-		end
-	end
-end
-
-function checkStalker(npc_community, gulag_type)
-	if gulag_type == "esc_fabrika_sniper" then
-		return npc_community == "green"
-	end
-	if gulag_type == "dal_green" then
-		return npc_community == "green"
-	end
-	if gulag_type == "rost_green" then
-		return npc_community == "green"
-	end
-	if gulag_type == "killer_garbage_larger" then
-		return npc_community == "killer"
-	end
-	return false
-end
-
-function checkMonster()
-	return false
+function get_gulag(gulag_type)
+	return gulags[gulag_type]
 end

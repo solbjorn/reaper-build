@@ -1,0 +1,257 @@
+--[[---------------------------------------------------------------------------
+ * AMK monster effectors / abilities
+--]]---------------------------------------------------------------------------
+
+function controller_zombify(self)
+	local npc=self.object:get_enemy()
+	if npc then
+		if npc:id()~=0 and npc:clsid()==clsid.script_stalker and self.object:see(npc) and
+		   npc:character_community()~="zombied" and self.object:position():distance_to(npc:position())<30 then
+
+			local sobj=AI:object( npc:id() )
+			if sobj and sobj.online then
+				local zomb = container:get("zombies", { })
+				zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(Actor)}
+				npc:set_character_community("zombied",0,0)
+				local orgtbl=amk.read_stalker_params(sobj)
+				if (not string.find(orgtbl.profile,"_zombi")) then
+					orgtbl.profile=orgtbl.profile.."_zombi"
+				end
+				amk.write_stalker_params(orgtbl,sobj)
+			end
+		end
+	end
+
+	self.zombify_timer = time_real_ms + 2000
+end
+
+function controller_death(self)
+	local zomb = container:get("zombies", { })
+	local id = self.object:id()
+	for k, v in pairs(zomb) do
+		if v.master == id and amk_mod.dezombify(k, v) then
+			zomb[k] = nil
+		end
+	end
+end
+
+function dog_attack(self)
+	if self.timer < time_real_ms then
+		if not actor_flags.alive or actor_flags.sleep_state or
+		   actor_flags.bloodsucker_vampire_state then
+			return
+		end
+
+		if self.object.health>0.05 then
+			local npc=self.object:get_enemy()
+			if npc then
+				self.timer = time_real_ms + 20 * math.random(80, 120)
+
+				if npc:id()==0 and Actor:see(self.object) and self.object:see(Actor) and math.random()<0.2 then
+					level.add_pp_effector("radiation.ppe", 2012, false)
+
+					local h = hit()
+					h.type = hit.telepatic
+					h.power = 0.05
+					h.impulse = 0.0
+					h:bone("bip01_spine") -- чтобы учитывалась броня
+					h.draftsman = self.object
+					h.direction = self.object:direction()
+					Actor:hit(h)
+
+					if math.random()<0.05 then
+						reap.drop_weapon()
+					end
+				end
+			end
+		end
+	end
+end
+
+function el_chimera_hit(self)
+	local obj = self.object
+-- TAG коррекция э-химеры
+	if time_real_ms > self.timer then
+	amk_particle.amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
+
+	local dist = Actor:position():distance_to(obj:bone_position("bip01_spine"))
+
+ 	-- эл.химера поражает ГГ ударом и э.шоком ближе 20м
+	if dist > 0.2 and dist < 20 then
+            local tag_ch_pos = obj:bone_position("bip01_spine")  -- spine1 or head ??
+            local tag_ac_pos = Actor:position()
+	    local tag_m       --TAG,Mon correct shock power (AMK=15)
+
+            local h = hit()
+
+ 	    h.impulse = 0
+            h.direction = vector():set(0,0,0)
+	    h.draftsman = Actor
+ 	    h:bone("bip01_spine") -- чтобы учитывалась броня
+	    h.power = 1/dist
+	    h.type = hit.strike
+	    Actor:hit(h)
+
+            if level.rain_factor() > 0.02 then
+  	       h.direction = vector():set(0,-1,0)
+               h.impulse = 500*h.power
+				tag_m = math.random(15, 25)
+            else
+				tag_m = math.random(7, 20)
+              if tag_ac_pos.y > ( tag_ch_pos.y + 2 ) then
+ 	         dist = dist * dist             -- если ГГ выше химеры - квадратичная зависимость
+              else
+  	         if dist > 3 then               -- иначе - обратнопропорц.
+  		    tag_m = tag_m - 4
+		 elseif dist > 1.4 then
+  		    tag_m = tag_m - 2
+		 end
+              end -- по воздуху\земле
+            end -- нет дождя
+	    h.power = tag_m/dist
+   	    h.type = hit.shock
+	    Actor:hit(h)
+	end -- dist<20m
+
+-- TAG Химера "поражает" НПС на виду у ГГ
+ if dist<140 then
+    local n = 0
+    local t1,t2
+    local hit_sound, hit_txt, h_t1, h_t2, h_t3
+    for i, hitobj in pairs(db.creatures) do -- ищем НПС в онлайновых обьектах (tnx Kolmogor)
+        if hitobj:is_stalker() and hitobj:id() ~= 0 then
+           dist = hitobj:position():distance_to(self.object:bone_position("bip01_spine"))
+           if dist<20 then
+                local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
+                if  rnd>3 then rnd=rnd+2 end
+                local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd))
+                snd_obj:play_at_pos(Actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d )
+           else --dist
+                if math.random()<0.3 then
+                   if math.random()>0.5 then
+                      hit_sound="Внимание! Электрохимера! Близко не приближаться! На помощь! Поддержи огнем! zz" --75 знаков
+                   else
+                      hit_sound="Внимание!Напоролись на электрохимеру,несем потери,требуется помощь!Координаты "
+                   end
+                   t1 = math.random(1,20)
+                   h_t1 = string.sub(hit_sound,t1, t1+math.random(4,25-t1)).."."
+                   t1 = math.random(1,70)
+                   t2 = math.random(26,42)
+                   h_t2 = "."..string.sub(hit_sound,t1,t1+3)..".."..string.sub(hit_sound,t2, t2+math.random(7,50-t2)).."."
+                   t1 = math.random(1,70)
+                   t2 = math.random(51,66)
+                   h_t3 = "."..string.sub(hit_sound,t2, t2+math.random(7,75-t2))..".."..string.sub(hit_sound,t1,t1+4).."."
+                   if math.random()<0.5 then
+                      hit_txt = h_t1..h_t3..h_t2
+                   else
+                      hit_txt = h_t1..h_t2..h_t3
+                   end
+                   amk.send_tip (hit_txt.."...(обрыв связи)",news_main.get_npc_name(hitobj),nil,7)
+                end --random для сообщений send_tip
+           end --dist
+           n = n+1
+           if n>4 then break end  --break ищем НПС
+        end --HitObj
+    end --for
+ end --поражаем НПС
+----
+	if string.find(amk.load_variable("dynweather","?"),"groza") then
+	       self.timer=time_real_ms + 2000
+        else
+ 	       self.timer=time_real_ms + (100 * math.random(30,40))
+        end -- next blast
+    end -- "electro_chimera"
+--TAG : end
+end
+
+function zombie_blow(self)
+	local obj = self.object
+	amk_particle.amk_particle({
+		particle="amk\\zomb_explode",
+		pos=obj:position(),
+		sound=[[anomaly\anomaly_body_tear_1]]
+	})
+	local dist = Actor:position():distance_to(obj:position())
+	if dist < 30 and Actor:see(obj) then
+		local h = hit()
+		h.impulse = 0
+		h.draftsman = Actor
+		h.direction = vector():set(0,0,0)
+		h:bone("bip01_spine") -- чтобы учитывалась броня
+		h.power = 1/dist
+		h.type = hit.strike --chemical_burn
+		Actor:hit(h)
+		h.power = 15/dist
+		h.type = hit.chemical_burn
+		Actor:hit(h)
+	end
+	amk_mod.spawn_skel(obj)
+	AI:release(AI:object(obj:id()))
+end
+
+--[[---------------------------------------------------------------------------
+ * OP-2+
+--]]---------------------------------------------------------------------------
+
+function cat_dream(self)
+	if self.timer > time_real_ms then return end
+
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		return
+	end
+
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if not (enemy and obj:see(enemy) and enemy:id() == 0 and enemy:see(obj)) then return end
+
+	local dist = obj:position():distance_to(enemy:position())
+	if dist > 10 then return end
+
+	level.add_pp_effector("yantar_underground_psi.ppe", effector_ids.yantar_underground_psi, false)
+	level.set_pp_effector_factor(effector_ids.yantar_underground_psi, 0.5 + 0.3 * (10 - dist) / 10)
+
+	self.timer = time_real_ms + 50 * math.random(80, 120)
+end
+
+function zombie_rad(self)
+	if self.timer > time_real_ms then return end
+
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		return
+	end
+
+	local obj = self.object
+	local dist = obj:position():distance_to(Actor:position())
+	if dist > 3 then return end
+
+	local h = hit()
+	h.type = hit.radiation
+	h.power = 0.07
+	h.impulse = 0
+	h:bone("bip01_spine")
+	h.draftsman = obj 
+	h.direction = obj:direction()
+	Actor:hit(h) 
+
+	level.add_pp_effector("total_recall.ppe", obj:id(), false)
+
+	if hud:GetCustomStatic("hud_rad_back") then
+		say("detectors\\geiger_" .. math.random(3, 6))
+	end
+
+	self.timer = time_real_ms + (5 + 20 * dist / 3) * math.random(80, 120)
+end
+
+local visuals = {
+	[[monsters\zombi\zombi_1_ghost]],
+	[[monsters\zombi\zombi_trup]],
+	[[monsters\zombi\zombi_trup_2]],
+	[[monsters\zombi\zombi_3]],
+	[[monsters\zombi\zombi_x4]]
+}
+
+function random_visual_zombie(self)
+	self.object:modify_netpk("visual_name", table.random(visuals))
+end

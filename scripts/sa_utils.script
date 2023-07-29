@@ -306,14 +306,14 @@ end
 ---------------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 	if news_text then
-		local sinfo = sender and news_manager.tips_icons[sender]
-		if not sinfo then
-			sinfo = news_manager.tips_icons["default"]
+		if timeout ~= nil and timeout > 0 then
+			timer("send_tip", timeout * 1000, true, news_text, header, 0, showtime, sender, sound)
+			return
 		end
-		if not header then header = sinfo[3] or translate("st_tip") end
-		if not timeout then timeout = 0 end
+		local sinfo = news_manager.sender_info_byname(sender, header)
+		header = sinfo[3] or header or translate("st_tip")
 		if not showtime then showtime = 5 end
-		if sound then sound_object("device\\pda\\"..sound):play(Actor, timeout, sound_object.s2d) end
-		Actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), timeout * 1000, showtime * 1000)
+		if sound then sound_object("device\\pda\\"..sound):play(Actor, 0, sound_object.s2d) end
+		Actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), 0, showtime * 1000)
 	end
 end

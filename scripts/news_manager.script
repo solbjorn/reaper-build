@@ -89,7 +89,7 @@ local pda_news = voice([[device\pda\pda_news]])
 local pda_tips = voice([[device\pda\pda_tip]])
 local pda_task = voice([[device\pda\pda_objective]])
 
-tips_icons = {
+local tips_icons = {
 	default		= { 0, 658 },
 	trader		= { 332, 893, "escape_trader_name" },
 	bes		= { 415, 0, "gar_hellcar_name" },
@@ -99,16 +99,16 @@ tips_icons = {
 	freedom		= { 498, 94 },
 	ecolog		= { 498, 0 },
 	arena		= { 332, 141 },
-	stalker		= { 0, 658 },
+	stalker		= { 0, 799 },
 	krot		= { 332, 47, "agr_krot_name" },
 	barman		= { 332, 235, "bar_barmen_name" },
 	wolf		= { 332, 940, "esc_wolf_name" },
 	o_soznanie	= { 415, 893, "Osoznanie" },
-	monolith	= { 0, 658 },
+	monolith	= { 0, 893 },
 	saharov		= { 332, 470, "yan_saharov_name" },
 	prizrak		= { 415, 705, "yan_ghost_name" },
 	doctor		= { 415, 846, "cit_doctor_name" },
-	killer		= { 0, 658 },
+	killer		= { 0, 846 },
 	volkodav	= { 332, 517, "ros_volkodav_name" },
 	lukash		= { 415, 235, "mil_Svoboda_leader_name" },
 	maks		= { 415, 282, "mil_Svoboda_master_Max_name" },
@@ -119,37 +119,41 @@ tips_icons = {
 	plichko		= { 332, 282, "bar_plichko_name" },
 	prapor		= { 415, 47, "gar_dolg_blokpost_leader_name" },
 	encyclopedia	= { 82, 282 },
-	military	= { 249, 517 },
+	military	= { 498, 188 },
 	vasilyev	= { 249, 705, "yan_vasilyev_name" },
 	kalugin		= { 249, 705, "dar_kalugin_name" },
 	kruglov		= { 498, 0, "ros_kruglov_name" },
 	borov		= { 332, 564, "val_borov_name" },
 	death		= { 0, 752 },
-	gen_info	= { 0, 658 },
+	gen_info	= { 0, 799 },
 	trade 		= { 0, 0 },
-	uniq		= { 498, 47 }
+	uniq		= { 498, 47 },
+	unknown		= { 0, 940, "unknown_sender" }
 }
+local name_to_sender = { }
 
 function prepare_data()
 	for k, data in pairs(tips_icons) do
 		if data[3] then
 			data[3] = translate(data[3])
+			name_to_sender[data[3]] = k
 		end
 	end
 end
 
-function sender_data(sobj)
-	sobj = server_object(sobj)
-	if not sobj then return nil end
-
-	local name = sobj:get_netpk("character_name")
-	for sender, data in pairs(tips_icons) do
-		if data[3] == name then
-			return sender
-		end
+function sender_info_byname(sender, header)
+	local sinfo = sender and tips_icons[sender]
+	if sinfo then
+		return sinfo
 	end
 
-	return nil
+	sender = header and name_to_sender[header]
+	sinfo = sender and tips_icons[sender]
+	if sinfo then
+		return sinfo
+	end
+
+	return tips_icons["default"]
 end
 
 function send_tip(news_id, timeout, sender, showtime, sender_id)
@@ -176,8 +180,11 @@ function send_tip(news_id, timeout, sender, showtime, sender_id)
 	end
 
 	if sender_id then
-		local new = server_sender(story_object(sender_id))
-		if new then sender = new end
+		local sobj = story_object(tonumber(sender_id))
+		local new = sobj and name_to_sender[sobj:get_netpk("character_name")]
+		if new then
+			sender = new
+		end
 	end
 	if not sender then sender = "default" end
 

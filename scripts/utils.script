@@ -23,7 +23,7 @@ function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 ----------------------------------------------------------------------------------------------------
 local string_find = string.find
 local string_sub  = string.sub
-local string_gfind = string.gfind
+local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 
 -- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
@@ -150,7 +150,7 @@ function parse_waypoint_data(pathname, wpflags, wpname)
 	local val
 
 	par_num = 1
-	for param in string_gfind(wpname, "([%w_\\%=%-%,%*]+)|*") do
+	for param in string_gmatch(wpname, "([%w_\\%=%-%,%*]+)|*") do
 		if par_num == 1 then
 			-- continue
 		else
@@ -161,7 +161,7 @@ function parse_waypoint_data(pathname, wpflags, wpname)
 			fld_num = 1
 			fld = nil
 			val = nil
-			for v in string_gfind(param, "([%w_\\%-%,%*]+)=*") do
+			for v in string_gmatch(param, "([%w_\\%-%,%*]+)=*") do
 				if fld_num == 1 then
 					fld = v
 				elseif fld_num == 2 then
@@ -247,16 +247,11 @@ end
 function parse_params(params)
 	local rslt = {}
 	local n = 1
-	for fld in string_gfind(params, "%s*([^|]+)%s*") do
+	for fld in string_gmatch(params, "%s*([^|]+)%s*") do
 		rslt[n] = fld
 		n = n + 1
 	end
 	return rslt
-end
-
-function is_day()
-	local hours = level.get_time_hours()
-	return hours >= 5 and hours < 22
 end
 
 function no_need_to_rotate(npc, target_pos)
@@ -357,7 +352,7 @@ function parse_data_1v(npc,s)
 	local t = {}
 
 	if s then
-		for name in string_gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
+		for name in string_gmatch( s, "(%|*%d+%|[^%|]+)%p*" ) do
 			local dat = {	dist = nil,
 							state = nil}
 

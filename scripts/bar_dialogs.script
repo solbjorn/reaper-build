@@ -194,34 +194,38 @@ end
 --			ÁÀĞÌÅÍ Â ÊÎÌÍÀÒÅ
 -- ********************************************************
 -- Äîêóìåíòû ñ äàğêëàáà
-function barman_need_darklab_documents(actor,npc)
-	if not has_alife_info("bar_darklab_document_start")
-	then
-		return true
+function barman_need_darklab_documents()
+	return not has_info("bar_darklab_document_start")
+end
+
+function barman_darklab_documents_given()
+	return not has_info("bar_darklab_document_done") and has_info("bar_darklab_document_start")
+end
+
+-- DotPack
+
+function have_darklab_documents()
+	for i = 1, 5 do
+		if not has("dar_document" .. i) then
+			return false
+		end
 	end
-	return false
+
+	return true
 end
 
-function barman_darklab_documents_given(actor,npc)
-	if has_alife_info("bar_darklab_document_start") and
-	   not has_alife_info("bar_darklab_document_done")
-	then
-		return true
-	end
-	return false
-end
-
-function have_darklab_documents(first_speaker, second_speaker)
-  	return first_speaker:object("dar_document4") ~= nil
-end
-
-function hasnt_darklab_documents(first_speaker, second_speaker)
-    return first_speaker:object("dar_document4") == nil
+function hasnt_darklab_documents()
+	return not have_darklab_documents()
 end
 
 function give_darklab_documents(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "dar_document4", "out")
+	for i = 1, 5 do
+		transfer(second_speaker, "dar_document" .. i, "out")
+	end
 end
+
+-- DotPack
+
 function give_darklab_reward(first_speaker, second_speaker)
 	got_money(10000)
 end
@@ -427,7 +431,7 @@ function locate_bar_bar(actor,npc)
 	end
 end
 function locate_bar_arena(actor,npc)
-	local obj = AI:story_object(571)
+	local obj = AI:story_object(573)
 	if obj then
 		level.map_add_object_spot(obj.id, "crlc_small", "bar_arena_locator")
 	end
@@ -445,4 +449,8 @@ function locate_bar_dolg(actor,npc)
 			level.map_add_object_spot(obj.id, "crlc_small", "bar_dolg_locator")
 		end
 	end
+end
+
+function loc_info()
+	give_info("l05_bar_level_info")
 end

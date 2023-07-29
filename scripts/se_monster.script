@@ -22,10 +22,14 @@ local levels_types = {
 
 need_be_online = { }
 
+local clsid_controller_s
+local clsid_gigant_s
 local clsid_psy_dog_phantom_s
 local spot
 
 function init_spot()
+	clsid_controller_s = clsid.controller_s
+	clsid_gigant_s = clsid.gigant_s
 	clsid_psy_dog_phantom_s = clsid.psy_dog_phantom_s
 
 	spot = has_info("have_kontroler_spot") or
@@ -248,13 +252,13 @@ function se_monster:on_register()
 		init_spot()
 	end
 	if spot == true and self:alive() then
-		local community = xr_statistic.monster_classes[self:clsid()]
-		if community=="controller" and has_alife_info("have_kontroler_spot")  then
-			level.map_add_object_spot(self.id, "kontroler_spot", "контроллер")
-		elseif community=="bloodsucker" and has_alife_info("have_bloodsucker_spot")  then
-			level.map_add_object_spot(self.id, "bloodsucker_spot", "кровосос")
-		elseif community=="pseudo_gigant" and has_alife_info("have_pseudo_gigant_spot")  then
-			level.map_add_object_spot(self.id, "pseudo_gigant_spot", "псевдогигант")
+		local self_clsid = self:clsid()
+		if self_clsid == clsid_controller_s and has_info("have_kontroler_spot")  then
+			level_map_spot(self.id, "kontroler_spot", "контролёр")
+		elseif self_clsid == clsid_bloodsucker_s and has_info("have_bloodsucker_spot")  then
+			level_map_spot(self.id, "bloodsucker_spot", "кровосос")
+		elseif self_clsid == clsid_gigant_s and has_info("have_pseudo_gigant_spot")  then
+			level_map_spot(self.id, "pseudo_gigant_spot", "псевдогигант")
 		end
 	end
 end
@@ -263,17 +267,14 @@ function se_monster:on_unregister()
 	cse_alife_monster_base.on_unregister( self )
 
 	--' Убрать мапспот с собой
-	if spot == nil then
-		init_spot()
-	end
 	if spot == true then
-		local community = xr_statistic.monster_classes[self:clsid()]
-		if community=="controller" then
-			level.map_remove_object_spot(self.id, "kontroler_spot")
-		elseif community=="bloodsucker" then
-			level.map_remove_object_spot(self.id, "bloodsucker_spot")
-		elseif community=="pseudo_gigant" then
-			level.map_remove_object_spot(self.id, "pseudo_gigant_spot")
+		local self_clsid = self:clsid()
+		if self_clsid == clsid_controller_s then
+			del_map_spot(self.id, "kontroler_spot")
+		elseif self_clsid == clsid_bloodsucker_s then
+			del_map_spot(self.id, "bloodsucker_spot")
+		elseif self_clsid == clsid_gigant_s then
+			del_map_spot(self.id, "pseudo_gigant_spot")
 		end
 	end
 
@@ -284,17 +285,14 @@ function se_monster:on_death(killer)
 	cse_alife_monster_base.on_death(self, killer)
 
 	--' Убрать мапспот с собой
-	if spot == nil then
-		init_spot()
-	end
 	if spot == true then
-		local community = xr_statistic.monster_classes[self:clsid()]
-		if community=="controller" then
-			level.map_remove_object_spot(self.id, "kontroler_spot")
-		elseif community=="bloodsucker" then
-			level.map_remove_object_spot(self.id, "bloodsucker_spot")
-		elseif community=="pseudo_gigant" then
-			level.map_remove_object_spot(self.id, "pseudo_gigant_spot")
+		local self_clsid = self:clsid()
+		if self_clsid == clsid_controller_s then
+			del_map_spot(self.id, "kontroler_spot")
+		elseif self_clsid == clsid_bloodsucker_s then
+			del_map_spot(self.id, "bloodsucker_spot")
+		elseif self_clsid == clsid_gigant_s then
+			del_map_spot(self.id, "pseudo_gigant_spot")
 		end
 	end
 end

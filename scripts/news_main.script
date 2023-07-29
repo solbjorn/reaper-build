@@ -51,14 +51,29 @@ local dist_heli_seen = 400
 local dist_hear_min = 50
 local dist_hear_max = 400
 
-news_stack = {}
-table_spawned = {}
-table_killed_by_actor = {}
-spammers = {}
+local news_stack
+local table_spawned = { }
+local table_killed_by_actor = { }
+local spammers
+
+function init_tables()
+	local news = container:get("news", { })
+
+	news_stack = news.stack
+	if news_stack then
+		spammers = news.spammers
+		return
+	end
+
+	news_stack = { }
+	news.stack = news_stack
+	spammers = { }
+	news.spammers = spammers
+end
 
 function init()
 	if (bInit == false) then
-		math.randomseed (device ():time_global ())
+		init_tables()
 
 		-- Реально в игре проходит timer_check_freq * 1000 * 60 * level.get_time_factor() секунд
 		-- Реально проходит х секунд
@@ -1673,14 +1688,16 @@ function on_daytime()
 				local base_wait = math_random(timer_weather, timer_weather * 5)
 				if (texts) then
 					local name = "[источник неизвестен]"
+					local icon = "unknown"
 					local i = 0
 					for k, v in pairs(texts) do
 					if (comments == nil) then
 						local name_, sname_ = amk_names_lists.get_strings()
 						name = name_.." "..sname_
+						icon = "gen_info"
 					end
 						s_text = v
-						show_news(s_text, name, base_wait + k * 2, 10, "uniq")
+						show_news(s_text, name, base_wait + k * 2, 10, icon)
 						i = i + 1
 					end
 					if (probl and comments and news_data.comments_templates[comments] and math_random() < probl) then
@@ -2550,7 +2567,8 @@ function send_resupply(sobj)
 		rspl_tmeout = time_real_ms + rnd_timer
 	end
 
-	timer("send_tip", timeout * 1000, true, text, nil, 0, 12, news_manager.sender_data(sobj), "pda_news")
+	timer("send_tip", timeout * 1000, true, text, sobj:get_netpk("character_name"),
+	      0, 12, nil, "pda_news")
 end
 
 function create_treasurebox()

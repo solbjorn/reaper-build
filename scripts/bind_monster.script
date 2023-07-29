@@ -5,7 +5,6 @@
 -----------------------------------------------------------------------------------
 local particles={}
 
-local amk_particle_amk_particle = amk_particle.amk_particle
 local callback_hit = callback.hit
 local callback_death = callback.death
 local callback_use_object = callback.use_object
@@ -21,10 +20,17 @@ class "generic_object_binder" (object_binder)
 
 function generic_object_binder:__init(obj) super(obj)
 	self.loaded = false
-	self.chtime = 0
-	self.next_update = 0
 	self.particles = {}
+	self.next_update_200 = 0
+	self.next_update_1000 = 0
 	self.death_recorded = false
+
+	if obj:story_id() == 29 then -- учебная плоть блин
+		self.anomaly_evade = function()
+		end
+	else
+		self.prev_pos = vector():set(0, -100, 0)
+	end
 end
 
 function generic_object_binder:reload(section)
@@ -51,7 +57,7 @@ function generic_object_binder:update(delta)
 	local obj_id = self.object:id()
 	if particles[obj_id] and #particles[obj_id] > 0 then
 		for kk,vv in pairs(particles[obj_id]) do
-			table_insert(self.particles,amk_particle_amk_particle(vv))
+			table_insert(self.particles,amk_particle.amk_particle(vv))
 			table.remove(particles[obj_id],kk)
 		end
 	end
@@ -85,76 +91,23 @@ function generic_object_binder:update(delta)
 	if self.death_recorded then return end
 
 	if self.object:alive() then
-		if self.object:is_talk_enabled() then
-			self.object:set_tip_text("character_use")
-		else
-			self.object:set_tip_text("")
-		end
+		self.object:set_tip_text("")
 	else
 		self.object:set_tip_text_default()
 		self.death_recorded = true
 	end
 
-    self:anomaly_evade()
-
-	if self.chtime < time_real_ms then
-		self.chtime = time_real_ms + 2000
-		if self.object:clsid()==clsid.controller_s and self.object:alive() then
-			local npc=self.object:get_enemy()
-			if npc then
-				if npc:id()~=0 and npc:clsid()==clsid.script_stalker and self.object:see(npc) and
-				   npc:character_community()~="zombied" and self.object:position():distance_to(npc:position())<30 then
-
-					local sobj=AI:object( npc:id() )
-					if sobj and sobj.online then
-						local zomb = container:get("zombies", { })
-						zomb[sobj.id]={master=self.object:id(),comm=npc:character_community(),gw=npc:goodwill(Actor)}
-						npc:set_character_community("zombied",0,0)
-						local orgtbl=amk.read_stalker_params(sobj)
-						if (not string.find(orgtbl.profile,"_zombi")) then
-							orgtbl.profile=orgtbl.profile.."_zombi"
-						end
-						amk.write_stalker_params(orgtbl,sobj)
-					end
-				end
-			end
-		end
-
--- TAG Кровосос при атаке при приближении менее чем на 7м с 20% вероятностью выбивает оружие (кроме ножа) из рук ГГ.
-            if (self.object:clsid()==clsid.dog_s or self.object:clsid()==clsid_bloodsucker_s) and self.object:alive() and self.object.health>0.05 then
-		    local npc=self.object:get_enemy()
-		    if npc then
-			if npc:id()==0 and Actor:see(self.object) and self.object:see(Actor) and math.random()<0.2 then
-			    local tag_w_down = true
-		  	    local tag_dist = 1
-                if self.object:clsid()==clsid.dog_s then -- DOG attack
-			       level.add_pp_effector("radiation.ppe", 2012, false)
-			       local h = hit()
-			       h.type = hit.telepatic
- 			       h.power = 0.02
-			       h.impulse = 0.0
-			       h:bone("bip01_spine") -- чтобы учитывалась броня
-			       h.draftsman = self.object
-			       h.direction = self.object:direction()
-			       Actor:hit(h)
-			       tag_w_down = math.random()<0.02
-			    else -- Bloodsucker attack
-			       tag_dist = Actor:position():distance_to(self.object:bone_position("bip01_head"))
-			    end
-
-			    if tag_w_down and tag_dist<7 then
-			       local active_item = Actor:active_item()
-			         if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-			         Actor:drop_item(active_item)
-			       end
-			    end
-		        end
-		  end
-	     end
+	if time_real_ms >= self.next_update_200 then
+		self:anomaly_evade()
+		self.next_update_200 = time_real_ms + 200
 	end
--- TAG : end
 
-	if time_real_ms > self.next_update then
+	local eff = self.effector
+	if eff and eff.update then
+		eff:update()
+	end
+
+	if time_real_ms >= self.next_update_1000 then
 		if self.object.health>0.03 then
 			if self.object:see(Actor) and Actor:position():distance_to(self.object:position())<40 then
 				amk.enemy_see_actor(self.object,"monster")
@@ -163,10 +116,10 @@ function generic_object_binder:update(delta)
 				amk.actor_see_enemy(self.object,"monster")
 			end
 		end
-		self.next_update = time_real_ms + 1000
+		self.next_update_1000 = time_real_ms + 1000
 	end
 
-	local blowout=amk.load_variable("blowout",0)
+	local blowout = get_value("blowout", 0)
 	if blowout==3 and (not self.control_override) and not string.find(self.object:out_restrictions(), "bar_arena_restrictor") then
 		if not self.object:action() then
 			-- Захватываем зверушку
@@ -186,18 +139,14 @@ function generic_object_binder:update(delta)
 	elseif self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
 	end
-
-	sa_callbacks.monster_update(self.object)
 end
 
 function generic_object_binder:anomaly_evade()
 	local npc=self.object
-	if npc:story_id()==29 then return end -- учебная плоть блин
-	if not self.prev_pos then
-		self.prev_pos=vector():set(0,-100,0)
-	end
-	if self.prev_pos:distance_to(npc:position())>20 then
-		self.prev_pos=npc:position()
+	local pos = npc:position()
+
+	if self.prev_pos:distance_to(pos)>20 then
+		self.prev_pos=pos
 		local list=amk_anoms.get_anomaly_list(npc,30)
 		for i,o in ipairs(list) do
 			amk_anoms.add_restriction(npc,o.id,o.name)
@@ -229,9 +178,6 @@ function generic_object_binder:death_callback(victim, who)
 		xr_statistic.addKillCount(self.object)
 		freeplay_stats:check_monster_killed_count(self.object)
 
-		-------------------------------------------------------------
-		arc_main.on_monster_kill(victim,who)
-		-----------------------------------------------------------
 		news_main.check_microquest(self.object)
 	end
 
@@ -255,17 +201,9 @@ function generic_object_binder:death_callback(victim, who)
 	h.impulse = 10
 	self.object:hit(h)
 
-	local mob=self.object
-	if mob:clsid()==clsid.controller_s then
-		local zomb = container:get("zombies", { })
-		local id = mob:id()
-		for k,v in pairs(zomb) do
-			if v.master == id then
-				if amk_mod.dezombify(k,v) then
-				zomb[k]=nil
-				end
-			end
-		end
+	if self.effector and self.effector.death then
+		self.effector:death()
+		self.effector = nil
 	end
 
 	if #self.particles > 0 then
@@ -293,112 +231,15 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 	if self.st.hit then
 		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
-	if bone_index==14 and string.find(obj:section(),"bloodsucker") then
-    local h=hit()
-		h.type = hit.fire_wound
-		h.power = 100*local_direction.x*local_direction.x*local_direction.x*local_direction.x
-		h.impulse = h.power
-		h.draftsman = who
-		h.direction = vector():set(0,-1,0)
-		obj:hit(h)
-	end
 
   -- added by xStream for AMK miniSDK
 	amk.on_monster_hit(obj, amount, local_direction, who, bone_index)
   -- end of addition
 
--- TAG коррекция э-химеры
-	if obj:section()=="electro_chimera" and time_real_ms>(self.charge_time or 0) then
-	amk_particle_amk_particle({particle="anomaly2\\electra2_blast",pos=obj:bone_position("bip01_spine"),sound="anomaly\\electra_blast1"})
-
-	local dist = Actor:position():distance_to(obj:bone_position("bip01_spine"))
-
- 	-- эл.химера поражает ГГ ударом и э.шоком ближе 20м
-	if dist > 0.2 and dist < 20 then
-            local tag_ch_pos = obj:bone_position("bip01_spine")  -- spine1 or head ??
-            local tag_ac_pos = Actor:position()
-	    local tag_m       --TAG,Mon correct shock power (AMK=15)
-
-            local h = hit()
-
- 	    h.impulse = 0
-            h.direction = vector():set(0,0,0)
-	    h.draftsman = Actor
- 	    h:bone("bip01_spine") -- чтобы учитывалась броня
-	    h.power = 1/dist
-	    h.type = hit.strike
-	    Actor:hit(h)
-
-            if level.rain_factor() > 0.02 then
-  	       h.direction = vector():set(0,-1,0)
-               h.impulse = 500*h.power
-				tag_m = math.random(15, 25)
-            else
-				tag_m = math.random(7, 20)
-              if tag_ac_pos.y > ( tag_ch_pos.y + 2 ) then
- 	         dist = dist * dist             -- если ГГ выше химеры - квадратичная зависимость
-              else
-  	         if dist > 3 then               -- иначе - обратнопропорц.
-  		    tag_m = tag_m - 4
-		 elseif dist > 1.4 then
-  		    tag_m = tag_m - 2
-		 end
-              end -- по воздуху\земле
-            end -- нет дождя
-	    h.power = tag_m/dist
-   	    h.type = hit.shock
-	    Actor:hit(h)
-	end -- dist<20m
-
--- TAG Химера "поражает" НПС на виду у ГГ
- if dist<140 then
-    local n = 0
-    local t1,t2
-    local hit_sound, hit_txt, h_t1, h_t2, h_t3
-    for i, hitobj in pairs(db.creatures) do -- ищем НПС в онлайновых обьектах (tnx Kolmogor)
-        if hitobj:is_stalker() and hitobj:id() ~= 0 then
-           dist = hitobj:position():distance_to(self.object:bone_position("bip01_spine"))
-           if dist<20 then
-                local rnd=math.random(1,6) -- hit-вопли  hit_1,2,3,6,7,8
-                if  rnd>3 then rnd=rnd+2 end
-                local snd_obj =xr_sound.get_safe_sound_object("characters_voice\\human_01\\stalker\\fight\\hit\\hit_"..tostring(rnd))
-                snd_obj:play_at_pos(Actor,hitobj:bone_position("bip01_spine"), 0, sound_object.s3d )
-           else --dist
-                if math.random()<0.3 then
-                   if math.random()>0.5 then
-                      hit_sound="Внимание! Электрохимера! Близко не приближаться! На помощь! Поддержи огнем! zz" --75 знаков
-                   else
-                      hit_sound="Внимание!Напоролись на электрохимеру,несем потери,требуется помощь!Координаты "
-                   end
-                   t1 = math.random(1,20)
-                   h_t1 = string.sub(hit_sound,t1, t1+math.random(4,25-t1)).."."
-                   t1 = math.random(1,70)
-                   t2 = math.random(26,42)
-                   h_t2 = "."..string.sub(hit_sound,t1,t1+3)..".."..string.sub(hit_sound,t2, t2+math.random(7,50-t2)).."."
-                   t1 = math.random(1,70)
-                   t2 = math.random(51,66)
-                   h_t3 = "."..string.sub(hit_sound,t2, t2+math.random(7,75-t2))..".."..string.sub(hit_sound,t1,t1+4).."."
-                   if math.random()<0.5 then
-                      hit_txt = h_t1..h_t3..h_t2
-                   else
-                      hit_txt = h_t1..h_t2..h_t3
-                   end
-                   amk.send_tip (hit_txt.."...(обрыв связи)",news_main.get_npc_name(hitobj),nil,7)
-                end --random для сообщений send_tip
-           end --dist
-           n = n+1
-           if n>4 then break end  --break ищем НПС
-        end --HitObj
-    end --for
- end --поражаем НПС
-----
-	if string.find(amk.load_variable("dynweather","?"),"groza") then
-	       self.charge_time=time_real_ms + 2000
-        else
- 	       self.charge_time=time_real_ms + (100 * math.random(30,40))
-        end -- next blast
-    end -- "electro_chimera"
---TAG : end
+	local eff = self.effector
+	if eff and eff.hit then
+		eff:hit()
+	end
 
 	smart_monster_parts.main_check(obj, amount, local_direction, who, bone_index)
 end
@@ -408,32 +249,37 @@ function generic_object_binder:net_spawn(sobject)
 		return false
 	end
 
-	db.add_obj(self.object)
+	local obj = self.object
+	db.add_obj(obj)
 	-- регистрация в схеме биорадара
-	biodetector.add_obj(self.object)
+	biodetector.add_obj(obj)
 
-	xr_gulag.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded )
+	xr_gulag.setup_gulag_and_logic_on_spawn( obj, self.st, sobject, modules.stype_mobile, self.loaded )
 
-	amk.on_net_spawn(self.object)
+	amk.on_net_spawn(obj)
 
-	local particle_param = config:r_string_cache(self.object:section(), "bones_particles")
+	local particle_param = config:r_string_cache(obj:section(), "bones_particles")
 	if particle_param and config:section_exist(particle_param) then
 		local tmp=amk.parse_ini_section_to_array(config, particle_param)
 		for k,v in pairs(tmp) do
 			local t = amk.parse_ini_section_to_array(config, v)
-			t.obj = self.object
-			if not t.stop_on_death or self.object:alive() then
-				play_particle(self.object, t)
+			t.obj = obj
+			if not t.stop_on_death or obj:alive() then
+				play_particle(obj, t)
 			end
 		end
 	end
 
-	sa_callbacks.monster_net_spawn(self.object)
+	if obj:alive() then
+		self.effector = reap_monsters.init_monster_effector(obj)
+	end
 
 	return true
 end
 
 function generic_object_binder:net_destroy()
+	self.effector = nil
+
 	if #self.particles > 0 then
 		for kk,vv in pairs(self.particles) do
 			if not vv:is_finished() then
@@ -443,20 +289,21 @@ function generic_object_binder:net_destroy()
 		end
 	end
 
-	self.object:set_callback(callback_death,				nil)
-	self.object:set_callback(callback_patrol_path_in_point, nil)
-	self.object:set_callback(callback_hit,					nil)
-	self.object:set_callback(callback_use_object, nil)
+	local obj = self.object
+	obj:set_callback(callback_death, nil)
+	obj:set_callback(callback_patrol_path_in_point, nil)
+	obj:set_callback(callback_hit, nil)
+	obj:set_callback(callback_use_object, nil)
 
-	local obj_id = self.object:id()
+	local obj_id = obj:id()
 	local st = db.storage[obj_id]
 	if st and st.active_scheme then
-		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
+		xr_logic.issue_event(obj, st[st.active_scheme], "net_destroy")
 	end
 
-	db.del_obj(self.object)
+	db.del_obj(obj)
 	-- отрегистрация в схеме биорадара
-	biodetector.remove_obj(self.object)
+	biodetector.remove_obj(obj)
 
 	object_binder.net_destroy(self)
 

@@ -44,14 +44,14 @@ function process_info_portion(info_id)
 
 	elseif info_id == "gar_wounded_help" then
 		news_manager.send_tip("val_sos_pda", nil, "stalker", nil)
-		level_tasks.add_location(109, "green_location", "gar_wounded_help", 1)
+		level_tasks.add_location(109, "crlc_small", "gar_wounded_help", 1)
 		return true
 	elseif info_id == "gar_wounded_fight" then
-		level_tasks.remove_location(109, "green_location")
+		level_tasks.remove_location(109, "crlc_small")
 		return true
 
 	elseif info_id == "gar_distance_shooting" then
-		if not has_alife_info("gar_seryi_actor_enter") then --level.name() == "l02_garbage" then --checked above
+		if not has_alife_info("gar_seryi_actor_enter") then
 			news_manager.send_tip("tips_gar_seryi_help_1", 5, "stalker", nil)
 			news_manager.send_tip("tips_gar_seryi_help_2", 12, "stalker", nil)
 		end
@@ -78,7 +78,7 @@ function process_info_portion(info_id)
 		level_tasks.remove_location(119, "gar_spot_dogs_forest_location")
 		return true
 
-	elseif not has_alife_info("bar_x16_documents_start") then -- remainder not added after X16 start
+	elseif not has_alife_info("bar_x16_documents_start") then
 		if info_id == "gar_add_fake_spot1" then
 			level_tasks.add_location(112, "gar_spot_swamp_location")
 			return true

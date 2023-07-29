@@ -1,0 +1,187 @@
+------------------ Спавнер динамических пси-зон для OGSM 2.4 ------------------
+
+-------------------------- Copyright 2007-2018 DEXXX --------------------------
+
+local allowed_levels = table.tohash({
+	"l01_escape", "l02_garbage", "l03_agroprom", "l04_darkvalley",
+	"l06_rostok", "l07_military", "l10_radar", "l11_pripyat"
+})
+
+local cd = "[logic]\nactive = ogsm_effector\n[ogsm_effector]\nenabled = true"
+
+local level_psy_list
+local psy_list
+
+function register(obj)
+	local id = obj:id()
+
+	level_psy_list[id] = server_object(id)
+	amk_anoms.add_anomaly(id, obj:position(), obj:get_shape_radius(), true)
+end
+
+function unregister(obj)
+	local id = obj:id()
+
+	amk_anoms.remove_anomaly(id)
+	level_psy_list[id] = nil
+end
+
+function remove(sobj, replace)
+	local id = sobj.id
+
+	if level_object(id) then
+		amk_anoms.restrictor_deleted(id, sobj:name())
+		level_psy_list[id] = nil
+	end
+
+	release(sobj)
+	psy_list[id] = nil
+
+	if replace then
+		rand_psy()
+	end
+end
+
+function spawn_restrictor(pos, lv, gv, radius)
+	local sobj = create("zone_psy", pos, lv, gv)
+	if not sobj then return nil end
+
+	local pk = sobj:get_netpk()
+	pk.shapes:addSphere(radius)
+	pk.custom_data:setString(cd)
+	sobj:set_netpk(pk, true)
+
+	return sobj
+end
+
+-- Выбор случайных параметров пси-зоны
+function rand_psy()
+	local pos, lv, gv, radius, obj
+	while true do
+		pos, lv, gv = amk_anoms.gen_random_pos()
+		if pos and (curr_level ~= "l07_military" or (lv >= 100000 and lv <= 300000)) then
+			radius = math.random(15, 20)
+			obj = spawn_restrictor(pos, lv, gv, radius)
+			if obj then
+				level_psy_list[obj.id] = obj
+				psy_list[obj.id] = obj
+				break
+			end
+		end
+	end
+end
+
+-- Спавн пси-зоны
+function spawn_psy()
+	if not psy_list then return end
+	if not allowed_levels[curr_level] then return end
+
+	local j
+	if curr_level == "l06_rostok" then
+		if not has_info("bar_rescue_research_done") and
+		   not has_info("bar_rescue_research_fail") then
+			return
+		end
+		j = 2
+	else
+		j = math.random(4, 5)
+	end
+
+	for id, sobj in pairs(level_psy_list) do
+		remove(sobj)
+	end
+	for i = 1, j do
+		rand_psy()
+	end
+end
+
+-- Проверка при загрузке уровня нужно ли спавнить пси-зоны
+function spawn_on_load(psy_list_arg)
+	psy_list = psy_list_arg
+	level_psy_list = { }
+
+	for id, sobj in pairs(psy_list) do
+		if object_level_name(sobj) == curr_level then
+			level_psy_list[id] = sobj
+		end
+	end
+
+	if table.size(level_psy_list) == 0 then
+		spawn_psy()
+	end
+end
+
+function remove_all()
+	if not psy_list then return end
+
+	for id, sobj in pairs(psy_list) do
+		remove(sobj)
+	end
+end
+
+local special_zones = {
+	l01_escape = {
+		{ -256,-246,-137,-132,-25,-20 },	-- Бункер Сидора
+		{ -211,-198,-132,-125,-23,-20 },	-- Подвал 1 в лагере новичков
+		{ -216,-209,-133,-120,-24,-20 }		-- Подвал 2 в лагере новичков
+	},
+	l02_garbage = {
+		{ -112,-57,-6,25,-9,90 }		-- Ангар на Свалке
+	},
+	l03_agroprom = {
+		{ -198.31,-195.66,85.4,96.54,2,5.3 }	-- Вагон дезертира
+	},
+	l04_darkvalley = {
+		{ 30,50,-60,-25,-4,0 }			-- Тюрьма в Темной долине
+	},
+	l05_bar = {
+		{ 123,140,18,30,-6,0 },			-- Бар
+		{ 118,121,34,41,-4,1 },			-- Охранник Бара
+		{ 149,158,67,74,0,4 },			-- Приемная Арни
+		{ 136,168,73,134,-22,-10 },		-- Арена
+		{ 206,213,50,68,0,4 },			-- Магазин Петренко
+		{ 208,234,120,139,-6,2 }		-- База Долга
+	},
+	l06_rostok = {
+		{ -90,-87,125,151,0,6 },		-- Блокпост наемников
+		{ -285,-235,78,112,-7,0 }		-- Тоннель Фримена
+	},
+	l07_military = {
+		{ -27,-16,-33,-14,-9,0 }		-- База Свободы
+	},
+	l08_yantar = {
+		{ 23,40,-282,-269,-16,0 },		-- Бункер ученых
+		{ -265,-22,-218,-6,-20,-11 }		-- Кишка
+	},
+	l10_radar = {
+		{ 639,664,167,189,-45,-37 },		-- Секретная база Монолита
+		{ 86.73,153,-27,-21.70,-10,-4.6 }	-- Вход в бункер
+	},
+	l11_pripyat = {
+		{ -18,-12,58,83,-6,-3 },		-- Подземный переход
+		{ 167,173,58,83,-6,-3 },		-- Подземный переход
+		{ -24,55,116,122,-4,0 },		-- Канализация
+		{ -16,-2,188,204,-5,0 }			-- Подвал ДК
+	}
+}
+
+function npc_is_safe(obj)
+	local specials = special_zones[curr_level]
+	if specials then
+		local pos = obj:position()
+		for i, place in ipairs(specials) do
+			if (pos.x >= place[1] and pos.x <= place[2]) and
+			   (pos.z >= place[3] and pos.z <= place[4]) and
+			   (pos.y >= place[5]) and (pos.y <= place[6]) then
+				return true
+			end
+		end
+	end
+
+	local need_hit, khit = amk_mod.blowout_khit()
+	return khit <= 0.5
+end
+
+------------------ Спавнер динамических пси-зон для OGSM 2.4 ------------------
+
+-------------------------- Copyright 2007-2018 DEXXX --------------------------

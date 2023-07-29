@@ -1,16 +1,17 @@
 --' Диденко Руслан (Stohe), Чугай Александр (Chugai)
 
---' в работах поле object хранит id объекта
-
 local iam_any_clsid_monster = iam_any.clsid_monster
 local game_milliseconds = game.milliseconds
-local sf = string.format
+local string_format = string.format
+local table_concat = table.concat
 local table_sort = table.sort
 local utils_parse_params = utils.parse_params
 
 local CTime_0 = game.CTime()
 
-level_gulags = {
+--' в работах поле object хранит id объекта
+
+local level_gulags = {
 	gen = gulag_general,
 	esc = gulag_escape,
 	gar = gulag_garbage,
@@ -40,11 +41,68 @@ level_gulags = {
 	rost_green		= gulag_new
 }
 
-local level_groups = {l01_escape = 1, l02_garbage = 2, l03_agroprom = 3, l03u_agr_underground = 4,
-                l04_darkvalley = 5, l04u_labx18 = 6, l05_bar = 7, l06_rostok = 8,
-                l07_military = 9, l08_yantar = 10, l08u_brainlab = 11, l10_radar = 12,
-                l10u_bunker = 13, l11_pripyat = 14, l12_stancia = 15, l12u_sarcofag = 16,
-                l12u_control_monolith = 17, l12_stancia_2 = 18}
+local level_groups = {
+	l01_escape		= 1,
+	l02_garbage		= 2,
+	l03_agroprom		= 3,
+	l03u_agr_underground	= 4,
+	l04_darkvalley		= 5,
+	l04u_labx18		= 6,
+	l05_bar			= 7,
+	l06_rostok		= 8,
+	l07_military		= 9,
+	l08_yantar		= 10,
+	l08u_brainlab		= 11,
+	l10_radar		= 12,
+	l10u_bunker		= 13,
+	l11_pripyat		= 14,
+	l12_stancia		= 15,
+	l12u_sarcofag		= 16,
+	l12u_control_monolith	= 17,
+	l12_stancia_2		= 18
+}
+
+local gulag_types = { }
+local dynamic_ltx = { }
+
+function get_gulag_ops(gulag_type, type_prefix)
+	local res = gulag_types[gulag_type]
+	if res then return res end
+
+	local file = level_gulags[gulag_type] or level_gulags[type_prefix]
+	if not file or not file.get_gulag then
+		abort(gulag_type .. " (pref. " .. type_prefix .. ") has no file!")
+		return nil
+	end
+
+	res = file.get_gulag(gulag_type)
+	if not res or not (res.job and res.check) then
+		abort("No valid ops for " .. gulag_type .. " (pref. " .. type_prefix .. ")")
+		return nil
+	end
+
+	gulag_types[gulag_type] = res
+	return res
+end
+
+function get_ltx(name, gulag_type, type_prefix)
+	local ltx_name = table_concat({"*",name,"*",gulag_type})
+	local dltx = dynamic_ltx[ltx_name]
+	if dltx then
+		return dltx, ltx_name
+	end
+
+	local gulag = gulag_types[gulag_type] or get_gulag_ops(gulag_type, type_prefix)
+	local l = gulag.ltx(name)
+	if not l then
+		abort("Failed to get ini for " .. name .. ", type " .. gulag_type .. " (pref. " .. type_prefix .. ")")
+		return nil, nil
+	end
+	dltx = create_ini_file(l)
+
+	dynamic_ltx[ltx_name] = dltx
+	return dltx, ltx_name
+end
 
 local gulag_tasks_file_name  = "misc\\gulag_tasks.ltx"
 local gulag_tasks_ltx        = ini_file( gulag_tasks_file_name )
@@ -91,29 +149,36 @@ function gulag:__init(smrttrn)
 end
 
 -- загрузка работ
+local job_def_values = {
+	out_rest = "", in_rest = "",
+	idle = 0, prior = 5,
+	state = {0}
+}
 function gulag:load_jobs()
 	self.Job                  = {} -- работы
 	self.Job_avail_in_state_0 = {}
 
-	local gulag_script_obj = level_gulags[self.type] or level_gulags[self.type_prefix]
-	if gulag_script_obj then
-		gulag_script_obj.load_job(self.Job, self.name, self.type, self.squad, self.groups)
+	local gulag = gulag_types[self.type] or get_gulag_ops(self.type, self.type_prefix)
+	gulag.job(self.Job, self.name, self.squad, self.groups)
+
+	if gulag.ltx then
+		self.ltx, self.ltx_name = get_ltx(self.name, self.type, self.type_prefix)
 	end
-
-	self.ltx, self.ltx_name = gulag_tasks.loadLtx(self.name, self.type, self.type_prefix)
-
 	if self.ltx == nil then
 		self.ltx      = gulag_tasks_ltx
 		self.ltx_name = gulag_tasks_file_name
 	end
 
-	table_sort( self.Job, function(a,b) return a.prior > b.prior end )
-
-	self:prepare_jobs_for_new_state()
-
 	local capacity = 0
 
 	for i, job in ipairs( self.Job ) do
+		-- Выставляем дефолты
+		for k, v in pairs(job_def_values) do
+			if job[k] == nil then
+				job[k] = v
+			end
+		end
+
 		if self:job_exists_in_state_0( job ) then
 			self.Job_avail_in_state_0[#self.Job_avail_in_state_0 + 1] = job
 			capacity = capacity + 1
@@ -125,6 +190,10 @@ function gulag:load_jobs()
 			job.online = reap_misc.cached_condlist(job.online, 1000)
 		end
 	end
+
+	table_sort( self.Job, function(a,b) return a.prior > b.prior end )
+
+	self:prepare_jobs_for_new_state()
 
 	if capacity < self.capacity then
 		self.capacity = capacity
@@ -138,13 +207,8 @@ function gulag:initialize()
 
 	self:prepare_jobs()
 
-	local gulag_script_obj = level_gulags[self.type] or level_gulags[self.type_prefix]
-	if gulag_script_obj then
-		self.calculateStates = gulag_script_obj.load_states(self.type)
-	else
-		abort("ERROR: unrecognized type '%s' for gulag %s", self.type, self.name)
-		return
-	end
+	local gulag = gulag_types[self.type] or get_gulag_ops(self.type, self.type_prefix)
+	self.calculateStates = gulag.state
 
 	local ini = self.smrttrn:spawn_ini()
 	local sect = "smart_terrain"
@@ -202,7 +266,7 @@ function gulag:prepare_jobs()
 	local job
 
 	for obj_id, jobN in pairs( self.ObjectJob ) do
-		job        = self.Job[jobN]
+		job = self.Job[jobN]
 		if job ~= nil then
 			job.object = obj_id
 		end
@@ -299,9 +363,9 @@ function gulag:get_job_path_name( job )
 		return
 	end
 
-	local path_name = sf("%s_%s", self.name, self.ltx:r_string(active_section, path_field))
+	local path_name = string_format("%s_%s", self.name, self.ltx:r_string(active_section, path_field))
 	if path_field == "center_point" then --' TODO убрать затык
-		local path_name_task = sf("%s_task", path_name)
+		local path_name_task = string_format("%s_task", path_name)
 		if level.patrol_path_exists( path_name_task ) then
 			return path_name_task
 		else
@@ -469,8 +533,8 @@ function gulag:update()
 
 	self:update_objs()
 
-	if self.calculateStates ~= nil and Actor then
-		self:changeState(self.calculateStates(self))
+	if Actor then
+		self:changeState(self.calculateStates and self.calculateStates(self) or 0)
 	end
 
 	self:updateJob()
@@ -588,6 +652,7 @@ function gulag:obj1_job_suits_obj2( obj_id, npc_info )
 	local job = self.Job[self.ObjectJob[obj_id]]
 
 	if not job then
+		abort("Job for %s/%d is nil!", self.npc_info[obj_id].name, obj_id)
 		return false
 	end
 
@@ -1323,11 +1388,7 @@ end
 -----------------------------------------------------------------------------------------------------------------
 
 function checkNpc(npc_community, is_stalker, gulag_params, se_obj)
-	local gulag_script_obj = level_gulags[gulag_params.type] or level_gulags[gulag_params.type_prefix]
-	if not gulag_script_obj then return false end
-	if is_stalker then
-		return gulag_script_obj.checkStalker(npc_community, gulag_params.type, se_obj)
-	else
-		return gulag_script_obj.checkMonster(npc_community, gulag_params.type)
-	end
+	local gulag = gulag_types[gulag_params.type] or get_gulag_ops(gulag_params.type, gulag_params.type_prefix)
+
+	return gulag.check(npc_community, is_stalker and se_obj or nil)
 end

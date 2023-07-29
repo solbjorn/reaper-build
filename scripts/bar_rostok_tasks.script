@@ -1,22 +1,21 @@
 function proceed()
-    local actor = Actor
 	-- Bar Rostok
 	-- выдача информации с флешки профессора
-	if not has_alife_info("bar_ecolog_research_normal") and
-		not has_alife_info("bar_ecolog_research_corrupted")
+	if not has_info("bar_ecolog_research_normal") and
+	   not has_info("bar_ecolog_research_corrupted")
 	then
-		if has_alife_info("bar_rescue_research_corruped") and actor:object("bar_ecolog_flash") then
-			actor:give_info_portion("bar_ecolog_research_corrupted")
+		if has_info("bar_rescue_research_corruped") and has("bar_ecolog_flash") then
+			give_info("bar_ecolog_research_corrupted")
 		end
 	end
 end
 
 function process_info_portion(info_id)
 	if  info_id == "bar_dolg_petrenko" then
-		level_tasks.add_location(506, "green_location", "bar_petrenko")
+		level_tasks.add_location(506, "crlc_big", "bar_petrenko", 1)
 		return true
 	elseif info_id == "bar_dolg_community_start" then
-		level_tasks.remove_location(506, "green_location", "bar_petrenko")
+		level_tasks.remove_location(506, "crlc_big", "bar_petrenko")
 		return true
 	end
 	if info_id == "bar_x16_documents_start" then
@@ -32,6 +31,7 @@ function process_info_portion(info_id)
 		level_tasks.remove_location_safe(122, "gar_spot_trash3_location")
 		return true
 	end
+
 	return false
 end
 

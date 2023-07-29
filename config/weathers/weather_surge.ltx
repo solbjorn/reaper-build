@@ -1,26 +1,6 @@
-[amk_sect_surge_day]
-00:02:00			=	v_01
-00:10:00			=	v_02
-00:15:00			=	v_03
-00:24:00			=	v_02
-00:24:30			=	v_01
+; Базовые параметры погодного эффекта
 
-[amk_sect_p_surge_day]
-00:00:00			=	vp_02
-05:00:00			=	vp_01
-
-[amk_sect_for_sun]
-00:00:00            =   v_02
-12:00:00            =   v_02
-
-[sect_surge_day]
-00:01:00			=	v_01
-00:02:00			=	v_02
-00:03:00			=	v_03
-00:04:00			=	v_02
-00:05:00			=	v_01
-
-[v_01]
+[base_v_01]
 flares			=
 sky_texture		=	sky\sky_13_cube
 sky_rotation	=	0
@@ -45,7 +25,7 @@ sun_color		=	0.000, 0.000, 0.000
 sun_dir			=	-26.0, 292.0
 env_ambient		=	ambient_env_stancia1
 
-[v_02]
+[base_v_02]
 flares			=
 sky_texture		=	sky\sky_13_vibros_cube
 sky_rotation	=	0
@@ -70,7 +50,7 @@ sun_color		=	0.000, 0.000, 0.000
 sun_dir			=	-26.0, 292.0
 env_ambient		=	ambient_env_stancia1
 
-[v_03]
+[base_v_03]
 flares			=
 sky_texture		=	sky\sky_12_vibros_cube
 sky_rotation	=	0
@@ -95,114 +75,692 @@ sun_color		=	0.000, 0.000, 0.000
 sun_dir			=	-16.0, 292.0
 env_ambient		=	ambient_env_stancia1
 
--------------------------------------------------------
+; Изменяемые параметры 1 погодного эффекта в зависимости от времени суток
 
-[sect_p_surge_day]
-00:01:00			=	vp_01
-00:02:00			=	vp_02
-00:03:00			=	vp_01
+[sect_surge_day_01]
+00:01:00		= 01_v_01
+00:02:00		= 01_v_02
+00:03:00		= 01_v_03
+00:04:00		= 01_v_02
+00:05:00		= 01_v_01
 
-[vp_01]
-flares			=
-sky_texture		=	sky\sky_13_cube
-sky_rotation	=	0
-sky_color		=	0.50,	0.50,	0.50
-clouds_texture	=	sky\sky_oblaka
-clouds_color	=	0.5,	0.5,	0.5,	0.0
-far_plane		=	800
-fog_distance	=	750
-fog_color		=	0.204, 0.200, 0.204
-fog_density		=	0.99
-rain_density	=	0.0
-rain_color		=	0.70,	0.70,	0.70
-thunderbolt		= 	thunderbolt_collection_stancia
-bolt_period		=	3.f
-bolt_duration	=	0.25f
-wind_velocity	=	0.0
-wind_direction	=	0.0
-ambient			=	0.01,   0.01,  	0.01
-lmap_color		=	1.0,    1.0,  	1.0
-hemi_color		=	0.204, 0.200, 0.204
-sun_color		=	0.000, 0.000, 0.000
-sun_dir			=	-26.0, 292.0
-env_ambient		=	ambient_env_stancia1
+[01_v_01]:base_v_01
+sky_rotation		= 306
+sun_dir			= -40.0, 355
 
-[vp_02]
-flares			=
-sky_texture		=	sky\sky_13_vibros_cube
-sky_rotation	=	0
-sky_color		=	1.0,    1.0,  	1.0
-clouds_texture	=	sky\sky_oblaka
-clouds_color	=	0.5,	0.5,	0.5,	0.0
-far_plane		=	750
-fog_distance	=	700
-fog_color		=	0.365, 0.455, 0.443
-fog_density		=	0.
-rain_density	=	0.00
-rain_color		=	0.70,	0.70,	0.70
-thunderbolt		= 	thunderbolt_collection_stancia
-bolt_period		=	2.0f
-bolt_duration	=	0.25f
-wind_velocity	=	0.0
-wind_direction	=	0.0
-ambient			=	0.036, 0.045, 0.044
-lmap_color		=	1.0,    1.0,  	1.0
-hemi_color		=	0.365, 0.455, 0.443
-sun_color		=	0.000, 0.000, 0.000
-sun_dir			=	-26.0, 292.0
-env_ambient		=	ambient_env_stancia1
+[01_v_02]:base_v_02
+sky_rotation		= 306
+sun_dir			= -40.0, 355
 
--------------------------------------------------------
+[01_v_03]:base_v_03
+sky_rotation		= 306
+sun_dir			= -40.0, 355
 
-[sect_m_black]
-00:00:00			=	black_01
-12:00:00			=	black_02
+[sect_surge_day_02]
+00:01:00		= 02_v_01
+00:02:00		= 02_v_02
+00:03:00		= 02_v_03
+00:04:00		= 02_v_02
+00:05:00		= 02_v_01
 
-[black_01]
-flares			=
-sky_texture		=	sky\sky_black
-sky_rotation	=	0
-sky_color		=	1,	1,	1
-clouds_texture	=	sky\sky_oblaka
-clouds_color	=	0.5,	0.5,	0.5,	0.0
-far_plane		=	160
-fog_distance	=	160
-fog_color		=	0.0, 0.0, 0.0
-fog_density		=	0.9
-rain_density	=	0.0
-rain_color		=	0.70,	0.70,	0.70
-thunderbolt		=
-bolt_period		=	0
-bolt_duration	=	0.25f
-wind_velocity	=	0.0
-wind_direction	=	0.0
-ambient			=	0.02,   0.02,  	0.03
-lmap_color		=	1.0,    1.0,  	1.0
-hemi_color		=	0.0, 0.0, 0.0
-sun_color		=	0.000, 0.000, 0.000
-sun_dir			=	-26.0, 292.0
+[02_v_01]:base_v_01
+sky_rotation		= 274
+sun_dir			= -37.0, 23
 
-[black_02]
-flares			=
-sky_texture		=	sky\sky_black
-sky_rotation	=	0
-sky_color		=	1,	1,	1
-clouds_texture	=	sky\sky_oblaka
-clouds_color	=	0.5,	0.5,	0.5,	0.0
-far_plane		=	150
-fog_distance	=	150
-fog_color		=	0.0, 0.0, 0.0
-fog_density		=	0.9
-rain_density	=	0.0
-rain_color		=	0.70,	0.70,	0.70
-thunderbolt		=
-bolt_period		=	0
-bolt_duration	=	0.25f
-wind_velocity	=	0.0
-wind_direction	=	0.0
-ambient			=	0.01,   0.01,  	0.01
-lmap_color		=	1.0,    1.0,  	1.0
-hemi_color		=	0.0, 0.0, 0.0
-sun_color		=	0.000, 0.000, 0.000
-sun_dir			=	-26.0, 292.0
+[02_v_02]:base_v_02
+sky_rotation		= 274
+sun_dir			= -37.0, 23
 
+[02_v_03]:base_v_03
+sky_rotation		= 274
+sun_dir			= -37.0, 23
+
+[sect_surge_day_03]
+00:01:00		= 03_v_01
+00:02:00		= 03_v_02
+00:03:00		= 03_v_03
+00:04:00		= 03_v_02
+00:05:00		= 03_v_01
+
+[03_v_01]:base_v_01
+sky_rotation		= 235
+sun_dir			= -27.0, 52
+
+[03_v_02]:base_v_02
+sky_rotation		= 235
+sun_dir			= -27.0, 52
+
+[03_v_03]:base_v_03
+sky_rotation		= 235
+sun_dir			= -27.0, 52
+
+[sect_surge_day_04]
+00:01:00		= 04_v_01
+00:02:00		= 04_v_02
+00:03:00		= 04_v_03
+00:04:00		= 04_v_02
+00:05:00		= 04_v_01
+
+[04_v_01]:base_v_01
+sky_rotation		= 210
+sun_dir			= -1.0, 80
+
+[04_v_02]:base_v_02
+sky_rotation		= 210
+sun_dir			= -1.0, 80
+
+[04_v_03]:base_v_03
+sky_rotation		= 210
+sun_dir			= -1.0, 80
+
+[sect_surge_day_05]
+00:01:00		= 05_v_01
+00:02:00		= 05_v_02
+00:03:00		= 05_v_03
+00:04:00		= 05_v_02
+00:05:00		= 05_v_01
+
+[05_v_01]:base_v_01
+sky_rotation		= 210
+sun_dir			= -1, 80
+
+[05_v_02]:base_v_02
+sky_rotation		= 210
+sun_dir			= -1, 80
+
+[05_v_03]:base_v_03
+sky_rotation		= 210
+sun_dir			= -1, 80
+
+[sect_surge_day_06]
+00:01:00		= 06_v_01
+00:02:00		= 06_v_02
+00:03:00		= 06_v_03
+00:04:00		= 06_v_02
+00:05:00		= 06_v_01
+
+[06_v_01]:base_v_01
+sky_rotation		= 225
+sun_dir			= -15.0, 69
+
+[06_v_02]:base_v_02
+sky_rotation		= 225
+sun_dir			= -15.0, 69
+
+[06_v_03]:base_v_03
+sky_rotation		= 225
+sun_dir			= -15.0, 69
+
+[sect_surge_day_07]
+00:01:00		= 07_v_01
+00:02:00		= 07_v_02
+00:03:00		= 07_v_03
+00:04:00		= 07_v_02
+00:05:00		= 07_v_01
+
+[07_v_01]:base_v_01
+sky_rotation		= 230
+sun_dir			= -26.0, 58
+
+[07_v_02]:base_v_02
+sky_rotation		= 230
+sun_dir			= -26.0, 58
+
+[07_v_03]:base_v_03
+sky_rotation		= 230
+sun_dir			= -26.0, 58
+
+[sect_surge_day_08]
+00:01:00		= 08_v_01
+00:02:00		= 08_v_02
+00:03:00		= 08_v_03
+00:04:00		= 08_v_02
+00:05:00		= 08_v_01
+
+[08_v_01]:base_v_01
+sky_rotation		= 242
+sun_dir			= -33.0, 48
+
+[08_v_02]:base_v_02
+sky_rotation		= 242
+sun_dir			= -33.0, 48
+
+[08_v_03]:base_v_03
+sky_rotation		= 242
+sun_dir			= -33.0, 48
+
+[sect_surge_day_09]
+00:01:00		= 09_v_01
+00:02:00		= 09_v_02
+00:03:00		= 09_v_03
+00:04:00		= 09_v_02
+00:05:00		= 09_v_01
+
+[09_v_01]:base_v_01
+sky_rotation		= 255
+sun_dir			= -38.0, 37
+
+[09_v_02]:base_v_02
+sky_rotation		= 255
+sun_dir			= -38.0, 37
+
+[09_v_03]:base_v_03
+sky_rotation		= 255
+sun_dir			= -38.0, 37
+
+[sect_surge_day_10]
+00:01:00		= 10_v_01
+00:02:00		= 10_v_02
+00:03:00		= 10_v_03
+00:04:00		= 10_v_02
+00:05:00		= 10_v_01
+
+[10_v_01]:base_v_01
+sky_rotation		= 265
+sun_dir			= -42.0, 26
+
+[10_v_02]:base_v_02
+sky_rotation		= 265
+sun_dir			= -42.0, 26
+
+[10_v_03]:base_v_03
+sky_rotation		= 265
+sun_dir			= -42.0, 26
+
+[sect_surge_day_11]
+00:01:00		= 11_v_01
+00:02:00		= 11_v_02
+00:03:00		= 11_v_03
+00:04:00		= 11_v_02
+00:05:00		= 11_v_01
+
+[11_v_01]:base_v_01
+sky_rotation		= 275
+sun_dir			= -45.0, 16
+
+[11_v_02]:base_v_02
+sky_rotation		= 275
+sun_dir			= -45.0, 16
+
+[11_v_03]:base_v_03
+sky_rotation		= 275
+sun_dir			= -45.0, 16
+
+[sect_surge_day_12]
+00:01:00		= 12_v_01
+00:02:00		= 12_v_02
+00:03:00		= 12_v_03
+00:04:00		= 12_v_02
+00:05:00		= 12_v_01
+
+[12_v_01]:base_v_01
+sky_rotation		= 285
+sun_dir			= -46.0, 5
+
+[12_v_02]:base_v_02
+sky_rotation		= 285
+sun_dir			= -46.0, 5
+
+[12_v_03]:base_v_03
+sky_rotation		= 285
+sun_dir			= -46.0, 5
+
+[sect_surge_day_13]
+00:01:00		= 13_v_01
+00:02:00		= 13_v_02
+00:03:00		= 13_v_03
+00:04:00		= 13_v_02
+00:05:00		= 13_v_01
+
+[13_v_01]:base_v_01
+sky_rotation		= 295
+sun_dir			= -47.0, 354
+
+[13_v_02]:base_v_02
+sky_rotation		= 295
+sun_dir			= -47.0, 354
+
+[13_v_03]:base_v_03
+sky_rotation		= 295
+sun_dir			= -47.0, 354
+
+[sect_surge_day_14]
+00:01:00		= 14_v_01
+00:02:00		= 14_v_02
+00:03:00		= 14_v_03
+00:04:00		= 14_v_02
+00:05:00		= 14_v_01
+
+[14_v_01]:base_v_01
+sky_rotation		= 305
+sun_dir			= -46.0, 344
+
+[14_v_02]:base_v_02
+sky_rotation		= 305
+sun_dir			= -46.0, 344
+
+[14_v_03]:base_v_03
+sky_rotation		= 305
+sun_dir			= -46.0, 344
+
+[sect_surge_day_15]
+00:01:00		= 15_v_01
+00:02:00		= 15_v_02
+00:03:00		= 15_v_03
+00:04:00		= 15_v_02
+00:05:00		= 15_v_01
+
+[15_v_01]:base_v_01
+sky_rotation		= 315
+sun_dir			= -45.0, 333
+
+[15_v_02]:base_v_02
+sky_rotation		= 315
+sun_dir			= -45.0, 333
+
+[15_v_03]:base_v_03
+sky_rotation		= 315
+sun_dir			= -45.0, 333
+
+[sect_surge_day_16]
+00:01:00		= 16_v_01
+00:02:00		= 16_v_02
+00:03:00		= 16_v_03
+00:04:00		= 16_v_02
+00:05:00		= 16_v_01
+
+[16_v_01]:base_v_01
+sky_rotation		= 330
+sun_dir			= -42.0, 323
+
+[16_v_02]:base_v_02
+sky_rotation		= 330
+sun_dir			= -42.0, 323
+
+[16_v_03]:base_v_03
+sky_rotation		= 330
+sun_dir			= -42.0, 323
+
+[sect_surge_day_17]
+00:01:00		= 17_v_01
+00:02:00		= 17_v_02
+00:03:00		= 17_v_03
+00:04:00		= 17_v_02
+00:05:00		= 17_v_01
+
+[17_v_01]:base_v_01
+sky_rotation		= 345
+sun_dir			= -38.0, 312
+
+[17_v_02]:base_v_02
+sky_rotation		= 345
+sun_dir			= -38.0, 312
+
+[17_v_03]:base_v_03
+sky_rotation		= 345
+sun_dir			= -38.0, 312
+
+[sect_surge_day_18]
+00:01:00		= 18_v_01
+00:02:00		= 18_v_02
+00:03:00		= 18_v_03
+00:04:00		= 18_v_02
+00:05:00		= 18_v_01
+
+[18_v_01]:base_v_01
+sky_rotation		= 355
+sun_dir			= -33.0, 301
+
+[18_v_02]:base_v_02
+sky_rotation		= 355
+sun_dir			= -33.0, 301
+
+[18_v_03]:base_v_03
+sky_rotation		= 355
+sun_dir			= -33.0, 301
+
+[sect_surge_day_19]
+00:01:00		= 19_v_01
+00:02:00		= 19_v_02
+00:03:00		= 19_v_03
+00:04:00		= 19_v_02
+00:05:00		= 19_v_01
+
+[19_v_01]:base_v_01
+sky_rotation		= 365
+sun_dir			= -26.0, 291
+
+[19_v_02]:base_v_02
+sky_rotation		= 365
+sun_dir			= -26.0, 291
+
+[19_v_03]:base_v_03
+sky_rotation		= 365
+sun_dir			= -26.0, 291
+
+[sect_surge_day_20]
+00:01:00		= 20_v_01
+00:02:00		= 20_v_02
+00:03:00		= 20_v_03
+00:04:00		= 20_v_02
+00:05:00		= 20_v_01
+
+[20_v_01]:base_v_01
+sky_rotation		= 375
+sun_dir			= -15.0, 280
+
+[20_v_02]:base_v_02
+sky_rotation		= 375
+sun_dir			= -15.0, 280
+
+[20_v_03]:base_v_03
+sky_rotation		= 375
+sun_dir			= -15.0, 280
+
+[sect_surge_day_21]
+00:01:00		= 21_v_01
+00:02:00		= 21_v_02
+00:03:00		= 21_v_03
+00:04:00		= 21_v_02
+00:05:00		= 21_v_01
+
+[21_v_01]:base_v_01
+sky_rotation		= 385
+sun_dir			= -1, 270
+
+[21_v_02]:base_v_02
+sky_rotation		= 385
+sun_dir			= -1, 270
+
+[21_v_03]:base_v_03
+sky_rotation		= 385
+sun_dir			= -1, 270
+
+[sect_surge_day_22]
+00:01:00		= 22_v_01
+00:02:00		= 22_v_02
+00:03:00		= 22_v_03
+00:04:00		= 22_v_02
+00:05:00		= 22_v_01
+
+[22_v_01]:base_v_01
+sky_rotation		= 400
+sun_dir			= -1.0, 270
+
+[22_v_02]:base_v_02
+sky_rotation		= 400
+sun_dir			= -1.0, 270
+
+[22_v_03]:base_v_03
+sky_rotation		= 400
+sun_dir			= -1.0, 270
+
+[sect_surge_day_23]
+00:01:00		= 23_v_01
+00:02:00		= 23_v_02
+00:03:00		= 23_v_03
+00:04:00		= 23_v_02
+00:05:00		= 23_v_01
+
+[23_v_01]:base_v_01
+sky_rotation		= 370
+sun_dir			= -27.0, 298
+
+[23_v_02]:base_v_02
+sky_rotation		= 370
+sun_dir			= -27.0, 298
+
+[23_v_03]:base_v_03
+sky_rotation		= 370
+sun_dir			= -27.0, 298
+
+[sect_surge_day_00]
+00:01:00		= 00_v_01
+00:02:00		= 00_v_02
+00:03:00		= 00_v_03
+00:04:00		= 00_v_02
+00:05:00		= 00_v_01
+
+[00_v_01]:base_v_01
+sky_rotation		= 338
+sun_dir			= -37.0, 327
+
+[00_v_02]:base_v_02
+sky_rotation		= 338
+sun_dir			= -37.0, 327
+
+[00_v_03]:base_v_03
+sky_rotation		= 338
+sun_dir			= -37.0, 327
+
+[weathers_surge]
+surge_day_1		= sect_surge_day_01
+surge_day_2		= sect_surge_day_02
+surge_day_3		= sect_surge_day_03
+surge_day_4		= sect_surge_day_04
+surge_day_5		= sect_surge_day_05
+surge_day_6		= sect_surge_day_06
+surge_day_7		= sect_surge_day_07
+surge_day_8		= sect_surge_day_08
+surge_day_9		= sect_surge_day_09
+surge_day_10		= sect_surge_day_10
+surge_day_11		= sect_surge_day_11
+surge_day_12		= sect_surge_day_12
+surge_day_13		= sect_surge_day_13
+surge_day_14		= sect_surge_day_14
+surge_day_15		= sect_surge_day_15
+surge_day_16		= sect_surge_day_16
+surge_day_17		= sect_surge_day_17
+surge_day_18		= sect_surge_day_18
+surge_day_19		= sect_surge_day_19
+surge_day_20		= sect_surge_day_20
+surge_day_21		= sect_surge_day_21
+surge_day_22		= sect_surge_day_22
+surge_day_23		= sect_surge_day_23
+surge_day_0		= sect_surge_day_00
+
+;--[[--------------------------------------------------------------------------
+; * AMK blowout
+;--]]--------------------------------------------------------------------------
+
+[amk_sect_surge_day_01]
+00:02:00		= 01_v_01
+00:10:00		= 01_v_02
+00:15:00		= 01_v_03
+00:24:00		= 01_v_02
+00:24:30		= 01_v_01
+
+[amk_sect_surge_day_02]
+00:02:00		= 02_v_01
+00:10:00		= 02_v_02
+00:15:00		= 02_v_03
+00:24:00		= 02_v_02
+00:24:30		= 02_v_01
+
+[amk_sect_surge_day_03]
+00:02:00		= 03_v_01
+00:10:00		= 03_v_02
+00:15:00		= 03_v_03
+00:24:00		= 03_v_02
+00:24:30		= 03_v_01
+
+[amk_sect_surge_day_04]
+00:02:00		= 04_v_01
+00:10:00		= 04_v_02
+00:15:00		= 04_v_03
+00:24:00		= 04_v_02
+00:24:30		= 04_v_01
+
+[amk_sect_surge_day_05]
+00:02:00		= 05_v_01
+00:10:00		= 05_v_02
+00:15:00		= 05_v_03
+00:24:00		= 05_v_02
+00:24:30		= 05_v_01
+
+[amk_sect_surge_day_06]
+00:02:00		= 06_v_01
+00:10:00		= 06_v_02
+00:15:00		= 06_v_03
+00:24:00		= 06_v_02
+00:24:30		= 06_v_01
+
+[amk_sect_surge_day_07]
+00:02:00		= 07_v_01
+00:10:00		= 07_v_02
+00:15:00		= 07_v_03
+00:24:00		= 07_v_02
+00:24:30		= 07_v_01
+
+[amk_sect_surge_day_08]
+00:02:00		= 08_v_01
+00:10:00		= 08_v_02
+00:15:00		= 08_v_03
+00:24:00		= 08_v_02
+00:24:30		= 08_v_01
+
+[amk_sect_surge_day_09]
+00:02:00		= 09_v_01
+00:10:00		= 09_v_02
+00:15:00		= 09_v_03
+00:24:00		= 09_v_02
+00:24:30		= 09_v_01
+
+[amk_sect_surge_day_10]
+00:02:00		= 10_v_01
+00:10:00		= 10_v_02
+00:15:00		= 10_v_03
+00:24:00		= 10_v_02
+00:24:30		= 10_v_01
+
+[amk_sect_surge_day_11]
+00:02:00		= 11_v_01
+00:10:00		= 11_v_02
+00:15:00		= 11_v_03
+00:24:00		= 11_v_02
+00:24:30		= 11_v_01
+
+[amk_sect_surge_day_12]
+00:02:00		= 12_v_01
+00:10:00		= 12_v_02
+00:15:00		= 12_v_03
+00:24:00		= 12_v_02
+00:24:30		= 12_v_01
+
+[amk_sect_surge_day_13]
+00:02:00		= 13_v_01
+00:10:00		= 13_v_02
+00:15:00		= 13_v_03
+00:24:00		= 13_v_02
+00:24:30		= 13_v_01
+
+[amk_sect_surge_day_14]
+00:02:00		= 14_v_01
+00:10:00		= 14_v_02
+00:15:00		= 14_v_03
+00:24:00		= 14_v_02
+00:24:30		= 14_v_01
+
+[amk_sect_surge_day_15]
+00:02:00		= 15_v_01
+00:10:00		= 15_v_02
+00:15:00		= 15_v_03
+00:24:00		= 15_v_02
+00:24:30		= 15_v_01
+
+[amk_sect_surge_day_16]
+00:02:00		= 16_v_01
+00:10:00		= 16_v_02
+00:15:00		= 16_v_03
+00:24:00		= 16_v_02
+00:24:30		= 16_v_01
+
+[amk_sect_surge_day_17]
+00:02:00		= 17_v_01
+00:10:00		= 17_v_02
+00:15:00		= 17_v_03
+00:24:00		= 17_v_02
+00:24:30		= 17_v_01
+
+[amk_sect_surge_day_18]
+00:02:00		= 18_v_01
+00:10:00		= 18_v_02
+00:15:00		= 18_v_03
+00:24:00		= 18_v_02
+00:24:30		= 18_v_01
+
+[amk_sect_surge_day_19]
+00:02:00		= 19_v_01
+00:10:00		= 19_v_02
+00:15:00		= 19_v_03
+00:24:00		= 19_v_02
+00:24:30		= 19_v_01
+
+[amk_sect_surge_day_20]
+00:02:00		= 20_v_01
+00:10:00		= 20_v_02
+00:15:00		= 20_v_03
+00:24:00		= 20_v_02
+00:24:30		= 20_v_01
+
+[amk_sect_surge_day_21]
+00:02:00		= 21_v_01
+00:10:00		= 21_v_02
+00:15:00		= 21_v_03
+00:24:00		= 21_v_02
+00:24:30		= 21_v_01
+
+[amk_sect_surge_day_22]
+00:02:00		= 22_v_01
+00:10:00		= 22_v_02
+00:15:00		= 22_v_03
+00:24:00		= 22_v_02
+00:24:30		= 22_v_01
+
+[amk_sect_surge_day_23]
+00:02:00		= 23_v_01
+00:10:00		= 23_v_02
+00:15:00		= 23_v_03
+00:24:00		= 23_v_02
+00:24:30		= 23_v_01
+
+[amk_sect_surge_day_00]
+00:02:00		= 00_v_01
+00:10:00		= 00_v_02
+00:15:00		= 00_v_03
+00:24:00		= 00_v_02
+00:24:30		= 00_v_01
+
+[weathers_surge_amk]
+amk_surge_day_1		= amk_sect_surge_day_01
+amk_surge_day_2		= amk_sect_surge_day_02
+amk_surge_day_3		= amk_sect_surge_day_03
+amk_surge_day_4		= amk_sect_surge_day_04
+amk_surge_day_5		= amk_sect_surge_day_05
+amk_surge_day_6		= amk_sect_surge_day_06
+amk_surge_day_7		= amk_sect_surge_day_07
+amk_surge_day_8		= amk_sect_surge_day_08
+amk_surge_day_9		= amk_sect_surge_day_09
+amk_surge_day_10	= amk_sect_surge_day_10
+amk_surge_day_11	= amk_sect_surge_day_11
+amk_surge_day_12	= amk_sect_surge_day_12
+amk_surge_day_13	= amk_sect_surge_day_13
+amk_surge_day_14	= amk_sect_surge_day_14
+amk_surge_day_15	= amk_sect_surge_day_15
+amk_surge_day_16	= amk_sect_surge_day_16
+amk_surge_day_17	= amk_sect_surge_day_17
+amk_surge_day_18	= amk_sect_surge_day_18
+amk_surge_day_19	= amk_sect_surge_day_19
+amk_surge_day_20	= amk_sect_surge_day_20
+amk_surge_day_21	= amk_sect_surge_day_21
+amk_surge_day_22	= amk_sect_surge_day_22
+amk_surge_day_23	= amk_sect_surge_day_23
+amk_surge_day_0		= amk_sect_surge_day_00
+
+;--[[--------------------------------------------------------------------------
+; * AMK sun restore
+;--]]--------------------------------------------------------------------------
+
+[amk_sect_for_sun]
+00:00:00		= 00_v_02
+12:00:00		= 12_v_02

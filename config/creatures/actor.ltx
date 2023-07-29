@@ -9,8 +9,8 @@ $player 				= on
 $prefetch 				= 16
 cform                   = skeleton
 class                   = O_ACTOR
-money					= 40;
-rank					= 3;
+money					= 0
+rank					= 0
 script_binding			= bind_actor.init
 visual					= actors\hero\stalker_novice.ogf
 destroyed_vis_name		= physics\Dead_Body\skelet_crash
@@ -18,7 +18,7 @@ destroyed_vis_name		= physics\Dead_Body\skelet_crash
 terrain					= actor_terrain
 
 max_item_mass			= 50.0
-jump_speed              = 6.
+jump_speed              = 6.0
 crouch_coef 			= 0.45
 climb_coef				= 0.7
 run_coef                = 2.1
@@ -26,15 +26,15 @@ sprint_koef				= 2.6
 run_back_coef			= 1.8
 walk_back_coef			= 0.8
 air_control_param		= 0.1
-walk_accel              = 17
+walk_accel              = 17.0
 
 ;радиус в котром над предметами выводятся их названия
-pickup_info_radius		= 5	;3
+pickup_info_radius		= 5
 
-ef_creature_type		= 17						; option for evaluation functions
+ef_creature_type		= 17					; option for evaluation functions
 
 ; attach params
-attachable_items		= device_torch,attachable_item,hand_radio
+attachable_items		= device_torch,hand_radio
 
 ; Физические размеры героя. Позволяет залезать в тесные пространства, например, в трубы.
 ph_box0_center 				= 0.0,  0.9,   0.0
@@ -173,7 +173,7 @@ satiety_v					= 0.000025				;скорость уменьшения сытости со временем
 radiation_v					= 0.0001				;скорость уменьшения радиации
 satiety_power_v				= 0.000055				;увеличение силы при уменьшении сытости
 satiety_health_v			= 0.0001				;увеличение здоровья при уменьшении сытости
-satiety_critical			= 0.0					;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
+satiety_critical			= 0.3					;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
 radiation_health_v			= 0.004					;уменьшение здоровья при воздействии радиации
 morale_v					= 0.0001				;скорость восстановления морали
 psy_health_v				= 0.001					;скорость восстановления psy-здоровья
@@ -181,9 +181,9 @@ alcohol_v					= -0.0005
 health_hit_part				= 1.0					;процент хита, уходящий на отнимание здоровья
 power_hit_part				= 0.1					;процент хита, уходящий на отнимание силы
 max_power_leak_speed		= 0.0					;накопление усталости (макс граница, до которой восстанавливается сила) в секунду игрового времени
-max_walk_weight				= 60
+max_walk_weight				= 60					;максимальный вес, который можно нести
 
-bleeding_v					= 0.0005				;потеря крови при номинальной ране в секунду
+bleeding_v					= 0.001			 		;потеря крови при номинальной ране в секунду
 wound_incarnation_v			= 0.003		 			;скорость заживления раны
 min_wound_size				= 0.0256				;минимальный размер раны, после которого она считается зажившей
 
@@ -200,10 +200,9 @@ alcohol_v_sleep				= -0.0005
 
 bleeding_v_sleep			= 0.0
 wound_incarnation_v_sleep	= 0.0
-max_power_leak_speed_sleep	= -0.00001;
+max_power_leak_speed_sleep	= -0.00001
 ;health_restore_v			= 0.0001
 
-;;;;;;;;
 ;actor_condition only
 
 jump_power				=	0.01			;0.005					;умешьшение силы с прыжком без учета веса ноши
@@ -295,14 +294,13 @@ l_strafe_yaw		= 0
 r_strafe_yaw		= 0
 
 [actor_hit_snds]
-burn			=actor\pain1,actor\pain2,actor\pain3;  ,actor\hurt4
+burn			=actor\pain1,actor\pain2,actor\pain3; ,actor\hurt4
 shock			=actor\pain1,actor\pain2,actor\pain3; ,actor\hurt4
 strike			=actor\pain1,actor\pain2,actor\pain3; ,actor\hurt4
 wound			=actor\pain1,actor\pain2,actor\pain3; ,actor\hurt4
 radiation		=monsters\biting\def_0; actor\hurt1,actor\hurt2,actor\hurt3,actor\hurt4
 telepatic		=actor\pain1,actor\pain2,actor\pain3;  ,actor\hurt4
 fire_wound		=actor\bullet_hit_1,actor\bullet_hit_2,actor\bullet_hit_3,actor\bullet_hit_4
-; actor\pain_1,actor\pain_3,actor\pain_4,actor\pain_5,actor\pain_6,actor\pain_7,actor\pain_8
 chemical_burn	=actor\pain1,actor\pain2,actor\pain3;  ,actor\hurt4
 explosion		=affects\tinnitus3a
 wound_2			=actor\hurt1,actor\hurt2,actor\hurt3,actor\hurt4

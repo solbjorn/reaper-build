@@ -11,8 +11,8 @@ Health			     = 100			; option for ALife Simulator
 MinSpeed		     = 1.0			; option for ALife Simulator
 MaxSpeed		     = 5.0			; option for ALife Simulator
 script_binding		 = stalker.init
-money				 = 5000;
-rank				 = 1;
+money				 = 5000
+rank				 = 1
 going_speed          = 1.5                      ; option for ALife Simulator
 search_speed		 = 0.5
 going_item_detect_probability = 0.1
@@ -20,8 +20,10 @@ search_item_detect_probability = 0.9
 max_item_mass		 = 40.0
 MaxHealthValue		 = 100			; range [0..200]
 
+panic_threshold		 = 0.03
+
 ; attach params
-attachable_items		= yad,device_torch,attachable_item,hand_radio
+attachable_items		= yad,device_torch,hand_radio
 
 ; State                = 7
 ; 0 - бежать прямо на врага
@@ -61,11 +63,12 @@ DynamicObjectsCount	     = 32
 DynamicSoundsCount	     = 32
 
 ;---------------------------------------------------------------------
-ph_skeleton_airr_lin_factor   = 550.0
-ph_skeleton_airr_ang_factor   = 0.0
+ph_skeleton_airr_lin_factor   = -0.40
+ph_skeleton_airr_ang_factor   = -0.21
 ph_skeleton_hinger_factor1    = 1.0
-ph_skeleton_ddelay	     	  = 1500
-ph_skel_fatal_impulse_factor  = 8.0
+ph_skeleton_hinge_vel         = 0.7
+ph_skeleton_ddelay            = 0
+ph_skel_fatal_impulse_factor  = 1
 ph_after_death_velocity_factor= 0.75
 ph_skel_shot_up_factor        = 0.25
 ;---------------------------------------------------------------------
@@ -83,15 +86,15 @@ selector_cover           =      20.0,            -1000.0,                30.0,  
 selector_retreat         =      20.0,             -100.0,            1000.0,                 1000.0,                0.0,                   0.0,        100000.0,                 0.0,                   000.0
 
 ;-------VISIBILITY----------------------------------------------------
-eye_fov						= 170
+eye_fov						= 120
 eye_range					= 70
 min_view_distance_danger 	= 0.2				; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance_danger 	= 1.0				; коэффициент, который множится на eye_range, в зависимости от угла
 min_view_distance_free   	= 0.1				; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance_free	 	= 0.8				; коэффициент, который множится на eye_range, в зависимости от угла
 visibility_threshold	 	= 20.0				; значение, при достижении суммой которого объект считается видимым
-always_visible_distance_danger 	= 0.3
-always_visible_distance_free 	= 0.2
+always_visible_distance_danger 	= 0.0
+always_visible_distance_free 	= 0.0
 time_quant					= 0.1
 decrease_value				= 0.1				; значение, на которое уменьшается вес, если объект попал в фрустум, но отсёкся по каким-то причинам
 velocity_factor		     	= 0.5
@@ -161,9 +164,9 @@ satiety_power_v = 0.000		;0.01			;увеличение силы при уменьшении сытости
 satiety_health_v = 0.000	;0.03			;увеличение здоровья при уменьшении сытости
 satiety_critical = 0		;0.25						;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
 radiation_health_v = 0.01	;0.006			;уменьшение здоровья при воздействии радиации
-bleeding_v = 0.0005			;0.02			;потеря крови при максимальной ране
+bleeding_v = 0.001			;0.02			;потеря крови при максимальной ране
 morale_v			= 0.01					;скорость восстановления морали
-wound_incarnation_v = 0.00001	;0.001		    ;скорость заживания раны
+wound_incarnation_v = 0.003	;0.001		    ;скорость заживания раны 
 health_hit_part = 1.0		;0.8			;процент хита, уходящий на отнимание здоровья
 power_hit_part = 1.0		;0.9			;процент хита, уходящий на отнимание силы
 
@@ -215,8 +218,10 @@ search_item_detect_probability = 0.9
 max_item_mass		 = 40.0
 MaxHealthValue		 = 100			; range [0..200]
 
+panic_threshold		 = 0.03
+
 ; attach params
-attachable_items		= device_torch,attachable_item,hand_radio
+attachable_items		= yad,device_torch,hand_radio
 
 ; State                = 7
 ; 0 - бежать прямо на врага
@@ -255,13 +260,14 @@ bone_model				 = bip01
 DynamicObjectsCount	     = 32
 DynamicSoundsCount	     = 32
 ;---------------------------------------------------------------------
-ph_skeleton_airr_lin_factor   = 350.0
-ph_skeleton_airr_ang_factor   = 0.3
+ph_skeleton_airr_lin_factor   = -0.40
+ph_skeleton_airr_ang_factor   = -0.21
 ph_skeleton_hinger_factor1    = 1.0
-ph_skeleton_ddelay	     	  = 1500
-ph_skel_fatal_impulse_factor  = 5.0
+ph_skeleton_hinge_vel         = 0.7
+ph_skeleton_ddelay            = 0
+ph_skel_fatal_impulse_factor  = 1
 ph_after_death_velocity_factor= 0.75
-ph_skel_shot_up_factor        = 0.15
+ph_skel_shot_up_factor        = 0.25
 ;---------------------------------------------------------------------
 ; selectors
 ;                           fSearchRange,fEnemySurround,fTotalCover,fTravelWeight,fLightWeight,fLaziness,fTotalViewVectorWeight,fCoverFromMemberWeight,fOptMemberDistance,fOptMemberDistanceWeight,fMinMemberDistance,fMinMemberDistanceWeight,fMaxMemberDistance,fMaxMemberDistanceWeight,fMemberViewDeviationWeight,fCoverFromEnemyWeight,fOptEnemyDistance,fOptEnemyDistanceWeight,fMinEnemyDistance,fMinEnemyDistanceWeight,fMaxEnemyDistance,fMaxEnemyDistanceWeight,fEnemyViewDeviationWeight
@@ -276,15 +282,15 @@ selector_cover           =      20.0,            -1000.0,                30.0,  
 selector_retreat         =      20.0,             -100.0,            1000.0,                 1000.0,                0.0,                   0.0,        100000.0,                 0.0,                   000.0
 
 ;-------VISIBILITY----------------------------------------------------
-eye_fov						= 170
+eye_fov						= 120
 eye_range					= 90
 min_view_distance_danger 	= 0.2				; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance_danger 	= 1.0				; коэффициент, который множится на eye_range, в зависимости от угла
 min_view_distance_free   	= 0.1				; коэффициент, который множится на eye_range, в зависимости от угла
 max_view_distance_free	 	= 0.8				; коэффициент, который множится на eye_range, в зависимости от угла
 visibility_threshold	 	= 15.0				; значение, при достижении суммой которого объект считается видимым
-always_visible_distance_danger 	= 0.3
-always_visible_distance_free 	= 0.2
+always_visible_distance_danger 	= 0.0
+always_visible_distance_free 	= 0.0
 time_quant					= 0.1
 decrease_value				= 0.1				; значение, на которое уменьшается вес, если объект попал в фрустум, но отсёкся по каким-то причинам
 velocity_factor		     	= 0.5
@@ -354,9 +360,9 @@ satiety_power_v = 0.000		;0.01			;увеличение силы при уменьшении сытости
 satiety_health_v = 0.000	;0.03			;увеличение здоровья при уменьшении сытости
 satiety_critical = 0		;0.25						;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
 radiation_health_v = 0.01	;0.006			;уменьшение здоровья при воздействии радиации
-bleeding_v = 0.0005			;0.02			;потеря крови при максимальной ране
+bleeding_v = 0.001			;0.02			;потеря крови при максимальной ране
 morale_v			= 0.01					;скорость восстановления морали
-wound_incarnation_v = 0.00001	;0.001		    ;скорость заживания раны
+wound_incarnation_v = 0.003	;0.001		    ;скорость заживания раны
 health_hit_part = 1.0		;0.8			;процент хита, уходящий на отнимание здоровья
 power_hit_part = 1.0		;0.9			;процент хита, уходящий на отнимание силы
 

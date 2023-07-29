@@ -3,9 +3,6 @@
 
 #include "common.h"
 
-uniform sampler2D jitter0;
-#define JITTER_SAMPLES int(16)
-
 /*
 Modded by cj ayho (ecb team). 29.08.2010
 цель модификации - реализация мягких теней.
@@ -167,37 +164,46 @@ half 	shadow_hw_f4	(float4 tc)		{
 //////////////////////////////////////////////////////////////////////////////////////////
 // testbed
 
-float shadowtest(float4 tc,float4 tcJ)
+uniform sampler2D	jitter0;
+uniform sampler2D	jitter1;
+uniform sampler2D	jitter2;
+uniform sampler2D	jitter3;
+uniform half4 		jitterS;
+half4 	test 		(float4 tc, half2 offset)
 {
-	const float4 jitter = tex2Dproj(jitter0, tcJ) * tc.w *(ECB_SHADOW_KERNEL/float(SMAP_size));
-
-	return (tex2Dproj(s_smap, float4(tc.xy + jitter.xy, tc.zw)).x  +
-		    tex2Dproj(s_smap, float4(tc.xy + jitter.zw, tc.zw)).x  +
-		    tex2Dproj(s_smap, float4(tc.xy - jitter.xy, tc.zw)).x  +
-		    tex2Dproj(s_smap, float4(tc.xy - jitter.zw, tc.zw)).x) * (1/4.h);
+	float4	tcx	= float4 (tc.xy + tc.w*offset, tc.zw);
+	return 	tex2Dproj (s_smap,tcx);
 }
-
-float shadowtest_sun(float4 tc, float4 tcJ)
+half 	shadowtest 	(float4 tc, float4 tcJ)				// jittered sampling
 {
-	const float offset = 1.h + (8 / float(JITTER_SAMPLES));
-	float shadow = 0;
+	half4	r;
 
-	for (int i = JITTER_SAMPLES / 8; i > 0; --i)
-	{
-		float4 jitter = tex2D(jitter0, tcJ.xy) * tc.w * (ECB_SHADOW_KERNEL/float(SMAP_size)) ;
+	const 	float 	scale 	= (2.7f/float(SMAP_size));
+	half4	J0 	= tex2Dproj	(jitter0,tcJ)*scale;
+	half4	J1 	= tex2Dproj	(jitter1,tcJ)*scale;
 
-		shadow += tex2Dproj(s_smap, float4(tc.xy + jitter.xy, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy + jitter.zw, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy - jitter.xy, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy - jitter.zw, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy + jitter.yx, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy + jitter.wz, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy - jitter.yx, tc.zw)).x +
-				  tex2Dproj(s_smap, float4(tc.xy - jitter.wz, tc.zw)).x;
+		r.x 	= test 	(tc,J0.xy).x;
+		r.y 	= test 	(tc,J0.wz).y;
+		r.z		= test	(tc,J1.xy).z;
+		r.w		= test	(tc,J1.wz).x;
 
-		tcJ.xy *= offset;
-	}
-	return shadow * (1 / float(JITTER_SAMPLES));
+	return	dot(r,1.h/4.h);
+}
+half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
+{
+	half4	r;
+
+//	const 	float 	scale 	= (2.0f/float(SMAP_size));
+	const 	float 	scale 	= (0.7f/float(SMAP_size));
+	half4	J0 	= tex2D	(jitter0,tcJ)*scale;
+	half4	J1 	= tex2D	(jitter1,tcJ)*scale;
+
+		r.x 	= test 	(tc,J0.xy).x;
+		r.y 	= test 	(tc,J0.wz).y;
+		r.z		= test	(tc,J1.xy).z;
+		r.w		= test	(tc,J1.wz).x;
+
+	return	dot(r,1.h/4.h);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -205,11 +211,11 @@ float shadowtest_sun(float4 tc, float4 tcJ)
 uniform float3x4	m_sunmask	;				// ortho-projection
 half 	sunmask		(float4 P)	{				//
 	float2 		tc	= mul	(m_sunmask, P);		//
-	return 		tex2D 		(s_lmap,tc).w;		// A8
+	return 		tex2D 		(s_lmap,tc).w*0.75;		// A8
 
 }
 #else
-half 	sunmask		(float4 P)	{ return 1.h; }	//
+half 	sunmask		(float4 P)	{ return 0.75; }	//
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////

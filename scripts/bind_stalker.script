@@ -16,6 +16,8 @@ local xr_sound_update = xr_sound.update
 local db_storage = db.storage
 local particles={}
 
+local no_ranks_comm = table.tohash({ "arena_enemy", "military", "monolith", "zombied" })
+
 ----------------------------------------------------------------------------------------------------------------------
 class "motivator_binder" (object_binder)
 
@@ -244,7 +246,21 @@ function motivator_binder:death_callback(victim, who)
 	xrs_ai.npc_death_callback(self_object)
 	sa_callbacks.npc_death(victim, who)
 
+	local community = self_object:character_community()
+
   if who:id() == 0 then
+		if community == "freedom" then
+			if Actor:character_community() == "actor_freedom" then
+				Actor:set_character_community("actor", 0, 0)
+				relation_registry.set_community_goodwill("freedom", 0, 0)
+			end
+		elseif community == "dolg" then
+			if Actor:character_community() == "actor_dolg" then
+				Actor:set_character_community("actor", 0, 0)
+				relation_registry.set_community_goodwill("dolg", 0, 0)
+			end
+		end
+
     xr_statistic.addKillCount(self_object)
 		freeplay_stats:check_stalker_killed_count()
   end
@@ -268,7 +284,7 @@ function motivator_binder:death_callback(victim, who)
   amk.on_death(victim, who)
   -- end of addition
 
-  death_manager.drop_manager(self_object):create_release_item()
+	death_manager.create_release_item(self_object)
 	freeplay_stats:give_item_on_death(victim, who)
   self:clear_callbacks()
 
@@ -289,15 +305,8 @@ function motivator_binder:death_callback(victim, who)
 		end
 	end
 
-	if self_object:story_id() <= 65535 then
-    local community = self_object:character_community()
-    if community == "zombied" or
-       community == "monolith" or
-       community == "arena_enemy"
-    then
-      return
-    end
-    actor_stats.remove_from_ranking(self_object:id())
+	if self_object:story_id() <= 65535 and not no_ranks_comm[community] then
+		actor_stats.remove_from_ranking(self_object:id())
 	end
 end
 
@@ -361,7 +370,7 @@ function motivator_binder:update(delta)
 	local npc_alive = self_object:alive()
     if self.first_update == false then
 		if not npc_alive and AI:object(self_object:id()).death_droped ~= true then
-			death_manager.drop_manager(self_object):create_release_item()
+			death_manager.create_release_item(self_object)
 		elseif npc_alive then
 			trade_manager.first_update(self_object)
 		end

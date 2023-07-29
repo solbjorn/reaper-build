@@ -13,8 +13,6 @@ off_npcs={}
 items={}
 relation_matrix={}
 local sell_table = {}
-local item_dependence = {}
-local always_keep_item = {}
 
 local wpn_fp = {}
 local item_cost = {}
@@ -54,7 +52,7 @@ local maps={
 }
 
 local smart_filters = {
-	"esc_bridge", "esc_blokpost"
+	"esc_bridge", "esc_blokpost", "amk_embankment"
 }
 
 local rel_enemy,rel_friend
@@ -85,6 +83,15 @@ local look_radius_hide1 = 30
 local look_radius_hide2 = 60
 local body_blow_id = nil
 
+local monster_parts = table.tohash({
+	"mutant_dog_tail", "mutant_krovosos_jaw", "mutant_psevdodog_tail",
+	"mutant_face_tushkano", "mutant_rat_tail", "mutant_tail_cat",
+	"mutant_flesh_eye", "mutant_burer_hand", "mutant_fracture_hand",
+	"mutant_snork_leg", "mutant_hand_kontroler", "mutant_psevdogigant_hand",
+	"mutant_zombie_hand", "mutant_poltergeist_glas", "mutant_chimera_kogot",
+	"mutant_boar_leg"
+})
+
 function init()
 	if (initialized == false) then
 		load_scheme("xr_punch_tm",      "punch_tm",      stype_stalker)
@@ -92,8 +99,10 @@ function init()
 			maps[#maps + 1] = "l10_radar"
 			maps[#maps + 1] = "l11_pripyat"
 		end
-		if get_value("freeplay", 0) == 2 then -- Фриплей - везде гуляем.
+		if has_info("sar_finish_decoding") then
 			maps[#maps + 1] = "l12_stancia"
+		end
+		if has_info("aes2_monolit_teleport_ready_final") then -- Фриплей - везде гуляем.
 			maps[#maps + 1] = "l12_stancia_2"
 		end
 		build_tables()
@@ -200,15 +209,9 @@ function add_fresh_meat(obj)
 			if (obj.parent_id ~= nil and not obj:is_story_object() and obj:is_monster() == false and obj:is_stalker() == false) then
 				local zz = AI:object(obj.parent_id)
 				if zz then
-					if zz:is_stalker() and not zz:is_story_object() then
-						if not items[obj.parent_id] then items[obj.parent_id] = {} end
-						table_insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
-gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
-					else
-						if not items[obj.parent_id] then items[obj.parent_id] = {} end
-						table_insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
-gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
-					end
+					if not items[obj.parent_id] then items[obj.parent_id] = {} end
+					table_insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
+					gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
 				end
 			end
 		end
@@ -249,20 +252,6 @@ function build_tables()
 	local sini = ini_file("misc\\trade_generic.ltx")
 	local cfg_sell = utils.cfg_get_string(sini, "trader", "sell_condition", nil, false, "", "")
 	sell_table = sini:key_true(cfg_sell)
-
-	sini = ini_file("misc\\death_generic.ltx")
-    --' Заполняем таблицу зависимостей
-	item_dependence = {}
-	local vvv
-	sini:iterate_lines("item_dependence", function(result, id, value)
-		item_dependence[id] = {}
-		vvv = value:parse_names()
-		for k,v in pairs(vvv) do
-			item_dependence[id][v] = true
-		end
-	end)
- 	--' Предметы, которые нельзя продавать (квестовые например)
-	always_keep_item = sini:key_true("keep_items")
 end
 
 function update_npc_tables()
@@ -658,7 +647,7 @@ function on_enemies_found(victim, vdata)
 								-- Если сталкер - дадим опыт.
 								if (attacker.player:is_stalker() and attacker.player.community) then
 									local m_comm  = attacker.player:community()
-									if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+									if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 										-- Будет теперь опытным.
 										local coeff = 1
 										if (defender.rank < attacker.rank) then coeff = 0.5 end
@@ -719,7 +708,7 @@ function on_enemies_found(victim, vdata)
 									-- Если сталкер - дадим опыт.
 									if (attacker.player:is_stalker() and attacker.player.community) then
 										local m_comm  = attacker.player:community()
-										if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+										if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 											-- Будет теперь опытным.
 											local coeff = 1
 											if (defender.rank < attacker.rank) then coeff = 0.5 end
@@ -909,7 +898,7 @@ function on_monsters_found(victim, vdata)
 								-- Если сталкер - дадим опыт.
 								if attacker.player:is_stalker() and attacker.player.community then
 									local m_comm  = attacker.player:community()
-									if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+									if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 										-- Будет теперь опытным.
 										local coeff = 1
 										if (defender.rank < attacker.rank) then coeff = 0.5 end
@@ -1109,7 +1098,7 @@ function on_artifacts_found(victim, vdata)
 	-- Если сталкер - дадим опыт.
 	if victim:is_stalker() and victim.community then
 		local m_comm  = victim:community()
-		if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+		if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 			b_stalker = true
 		end
 	end
@@ -1131,6 +1120,35 @@ function on_artifacts_found(victim, vdata)
 end
 
 -- О, нычка - это гуд.
+-- Idler ++
+-- проверим, а сможет ли непись долезть до  тайника.
+-- если есть аномалии в радиусе 20м, меньше шансов или если тайник высоко, тоже не факт что долезет.
+function inv_box_is_avail(victim, box)
+	if (victim == nil or box == nil or box.id == 0) then return false end
+
+	-- отсекаем сюжетные тайники
+	local sect = box:section_name()
+	if sect ~= "inventory_box" and sect ~= "m_inventory_box" then return false end
+
+	local n_rnd
+	if victim.position and box.position then
+		n_rnd = math_random(3, 10)
+		if math.abs(box.position.y - victim.position.y) > n_rnd then
+			return false
+		end
+	end
+
+	local anom_list = amk_anoms.get_anomaly_list_for_pos(box.position, 20, true)
+	local n_anoms = #anom_list
+	n_rnd = math_random(1, 100)
+	if n_rnd < n_anoms * 20 then -- смотрим вероятность. Чем больше аномалий, тем меньше шансов. При 5 - точно до ящика не доберется
+		return false
+	end
+
+	return true
+end
+-- Idler --
+
 function on_inv_boxes_found(victim, vdata)
 	if (victim == nil or vdata == nil) then return end
 	local obj, v_obj
@@ -1140,7 +1158,7 @@ function on_inv_boxes_found(victim, vdata)
 	-- Если сталкер - дадим опыт.
 	if victim:is_stalker() and victim.community then
 		local m_comm  = victim:community()
-		if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+		if (m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 			b_stalker = true
 		end
 	end
@@ -1150,38 +1168,40 @@ function on_inv_boxes_found(victim, vdata)
 		if (v_obj) then
 			object = AI:object(v_obj.id)
 			if (object and object:name() == v_obj.name) then
-				if items[v_obj.id] and #items[v_obj.id]>0 then
-					local a = 1
-					local checktrap = true
-					while a <= #items[v_obj.id] do
-						local v_itA = items[v_obj.id][a]
-						if (v_itA) then
-							local itA = AI:object(v_itA.id)
-							if (itA and itA:name()==v_itA.name and itA.parent_id == v_obj.id) then
-								-- Решим, подбираем или нет?
-								local bTake = is_valuable(itA)
-								if bTake then
-									if checktrap then
-										if check_box_trapped(victim, v_obj) then
-											npc_hide_habar_boxs(victim, vdata.hide_boxes)
-											return
+				if inv_box_is_avail(victim, object) then  -- Idler ++-- если нычка доступна - можно шмонать
+					if items[v_obj.id] and #items[v_obj.id]>0 then
+						local a = 1
+						local checktrap = true
+						while a <= #items[v_obj.id] do
+							local v_itA = items[v_obj.id][a]
+							if (v_itA) then
+								local itA = AI:object(v_itA.id)
+								if (itA and itA:name()==v_itA.name and itA.parent_id == v_obj.id) then
+									-- Решим, подбираем или нет?
+									local bTake = is_valuable(itA)
+									if bTake then
+										if checktrap then
+											if check_box_trapped(victim, v_obj) then
+												npc_hide_habar_boxs(victim, vdata.hide_boxes)
+												return
+											end
+											checktrap = false
 										end
-										checktrap = false
-									end
-									local oldsize = #items[v_obj.id]
-									if pick_item(victim, itA) then
-										anyfound = true
-										if oldsize > #items[v_obj.id] then
-											a=a-1
+										local oldsize = #items[v_obj.id]
+										if pick_item(victim, itA) then
+											anyfound = true
+											if oldsize > #items[v_obj.id] then
+												a=a-1
+											end
 										end
 									end
 								end
 							end
+							a=a+1
 						end
-						a=a+1
-					end
-					if anyfound then
-						set_box_trapped(v_obj.id, 0)
+						if anyfound then
+							set_box_trapped(v_obj.id, 0)
+						end
 					end
 				end
 			end
@@ -1542,10 +1562,10 @@ function check_box_trapped(victim, box)
   local spot_type = "red_location"
   amk.remove_spot_from_map(victim.id, spot_type)
   if result then
-	amk.send_tip(mtext, "При попытке проникнуть в схрон пострадал сталкер:",0,10,"gen_info")
+	amk.send_tip(mtext, "При попытке проникнуть в схрон пострадал сталкер:",0,10)
 	amk.add_spot_on_map(victim.id, spot_type, "Мародер-неудачник "..vname)
   else
-	amk.send_tip(mtext,"Cхрон обчистил сталкер:",0,10,"gen_info")
+	amk.send_tip(mtext,"Cхрон обчистил сталкер:",0,10)
 	amk.add_spot_on_map(victim.id, spot_type, "Мародер "..vname)
   end
   set_metka_victim(metka.id, victim.id)
@@ -1673,11 +1693,11 @@ end
 
 function do_drop_item(obj)
 	if (obj and Actor and obj.id ~= 0) then
-		if (obj.parent_id and items[obj.parent_id] and table.getn(items[obj.parent_id])>0) then
-			for z=1, table.getn(items[obj.parent_id]) do
+		if (obj.parent_id and items[obj.parent_id] and #items[obj.parent_id]>0) then
+			for z=1, #items[obj.parent_id] do
 				if (items[obj.parent_id][z] and items[obj.parent_id][z].id == obj.id) then
-					table_remove(items[obj.parent_id], z)
 gps_habar.remove_item(obj.parent_id, items[obj.parent_id][z]) -- Idler++-- корректируем хабар в помеченных тайниках
+					table_remove(items[obj.parent_id], z)
 					break
 				end
 			end
@@ -1876,7 +1896,6 @@ end
 --[[
 	Уникальные предметы НЕ ПРОДАЕМ. Максимум - в новости.
 	Отсортировали оружие по firepower (можем еще ef_weapon_type добавить.)
-	Оставили себе то, для которого есть патроны. (а) - wpn..ammo_class + item_dependence
 	Оставили одно, которое лучше (а), но патронов нет (б) (%)
 	Одно, которое лучше (а), но хуже (б) - в новости на продажу
 	Остальное на продажу
@@ -1919,7 +1938,7 @@ function do_process_trade(npc)
 	if npc and npc:is_stalker() and npc:alive() and not npc:is_story_object() and items[npc.id] and #items[npc.id]>0 then
 		local m_comm = npc:community()
 		local b_stalker = false
-		if (m_comm == "actor" or m_comm == "actor_dolg" or m_comm == "actor_freedom" or m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom") then
+		if (m_comm == "actor" or m_comm == "actor_dolg" or m_comm == "actor_freedom" or m_comm == "stalker" or m_comm == "dolg" or m_comm == "freedom" or m_comm == "green") then
 			if (npc.name and npc:name() ~= "agr_ratcatcher") then
 				b_stalker = true
 			end
@@ -1927,12 +1946,12 @@ function do_process_trade(npc)
 			return
 		end
 
-		--Фильтруем квестовые items - always_keep_item, sell_table
+		--Фильтруем квестовые items - quest_section, sell_table
 		local obj, v_obj
 		for ok,ov in pairs(items[npc.id]) do
 			obj = AI:object(ov.id)
 			if obj and obj:name()==ov.name then
-				if always_keep_item[obj:section_name()] or sell_table[obj:section_name()] == nil then
+				if quest_section[obj:section_name()] or sell_table[obj:section_name()] == nil then
 					-- Это нам не надо.
 				else
 					table_insert(item_list, obj)
@@ -2078,7 +2097,7 @@ function do_process_trade(npc)
 					if cnt_addons > 2 then
 						table_insert(sell_list, v)
 					end
-				elseif sect =="mutant_flesh_eye" or sect == "mutant_boar_leg" or sect =="mutant_dog_tail" or sect == "mutant_psevdodog_tail" or sect =="mutant_krovosos_jaw" or sect == "mutant_burer_hand" or sect =="mutant_zombie_hand" or sect == "mutant_snork_leg" or sect == "mutant_face_tushkano" or sect == "mutant_tail_cat" or sect == "mutant_rat_tail" or sect == "mutant_hand_kontroler" or sect == "mutant_psevdogigant_hand" or sect == "mutant_poltergeist_glas" or sect == "mutant_chimera_kogot" then
+				elseif monster_parts[sect] then
 					cnt_mparts = cnt_mparts + 1
 					if cnt_mparts > 2 then
 						table_insert(sell_list, v)
@@ -2302,7 +2321,7 @@ function is_valuable(item)
 	if item and not (item:is_monster() or item:is_stalker()) then
 		-- Уники не подбираем (пока?)
 
-		if item:section_name() == "amk_metka" or always_keep_item[item:section_name()] then
+		if item:section_name() == "amk_metka" or quest_section[item:section_name()] then
 			return false
 		end
 		local cost = get_item_cost(item)
@@ -3030,7 +3049,7 @@ function set_be_enemy(npc_id, lvl)
 		end
 		if be_enemies[npc_id] > enemy_level_hit then
 			local sname = get_npc_name(obj)
-			amk.send_tip("Теперь лучше чтобы ваши дорожки не пересекались...", "Эту ценную вещицу спрятал "..sname..".",0,10,"gen_info")
+			amk.send_tip("Теперь лучше чтобы ваши дорожки не пересекались...", "Эту ценную вещицу спрятал "..sname..".",0,10)
 		end
 	end
 end

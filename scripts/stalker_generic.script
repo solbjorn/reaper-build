@@ -17,10 +17,10 @@ function set_npc_info(npc, ini, scheme, section)
 	end
 end
 function get_infos_from_data(npc, s)
-	local string_gfind = string.gfind
+	local string_gmatch = string.gmatch
 	local t = {}
 	if s then
-		for name in string_gfind( s, "(%|*[^%|]+%|*)%p*" ) do
+		for name in string_gmatch( s, "(%|*[^%|]+%|*)%p*" ) do
 			local condlist = xr_logic.parse_condlist(name)
 			if condlist then
 				t[#t+1] = xr_logic.pick_section_from_condlist(npc, condlist)

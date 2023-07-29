@@ -71,7 +71,7 @@ function dream_mgr:init_dreams()
 		if ini:line_exist("dreams", "dream_types") then
 			local rt_str = ini:r_string("dreams", "dream_types")
 			if rt_str then
-				for rt in string.gfind(rt_str, "([%w_]+)") do
+				for rt in string.gmatch(rt_str, "([%w_]+)") do
 					self.dream_types[rt] = 1
 				end
 			end
@@ -81,7 +81,7 @@ function dream_mgr:init_dreams()
 			local rd_str = ini:r_string("dreams", "regular")
 
 			if rd_str then
-				for rd_sect in string.gfind(rd_str, "([%w_]+)") do
+				for rd_sect in string.gmatch(rd_str, "([%w_]+)") do
 					if ini:section_exist(rd_sect) then
 						if ini:line_exist(rd_sect, "dream") then
 							local dream_path = ini:r_string(rd_sect, "dream")
@@ -114,7 +114,7 @@ function dream_mgr:init_dreams()
 			local sd_str = ini:r_string("dreams", "scenario")
 
 			if sd_str then
-				for sd_sect in string.gfind(sd_str, "([%w_]+)") do
+				for sd_sect in string.gmatch(sd_str, "([%w_]+)") do
 					if ini:section_exist(sd_sect) then
 						if ini:line_exist(sd_sect, "dream") then
 							local dream_path = ini:r_string(sd_sect, "dream")

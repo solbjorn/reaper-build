@@ -76,6 +76,10 @@ function restrictor_binder:net_spawn(data)
 		updatable_binders[self.object:id()] = self
 	end
 
+	if self.object:section() == "zone_psy" then
+		ogsm_psyzones.register(self.object)
+	end
+
   return true
 end
 
@@ -84,6 +88,10 @@ function restrictor_binder:net_destroy()
   if st.active_scheme then
     xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
   end
+
+	if self.object:section() == "zone_psy" then
+		ogsm_psyzones.unregister(self.object)
+	end
 
   db.del_zone( self.object )
 

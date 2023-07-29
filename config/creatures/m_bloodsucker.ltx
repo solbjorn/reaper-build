@@ -10,7 +10,7 @@ $npc               = on             ; option for Level Editor
 visual             = monsters\krovosos\krovosos
 corpse_visual        = monsters\krovosos\krovosos_dead
 icon             = ui_npc_monster_krovosos
-MaxHealthValue         = 2.0              ; range [0..200]
+MaxHealthValue         = 200              ; range [0..200]
 
 ef_creature_type       = 13             ; option for evaluation functions
 ef_weapon_type         = 3
@@ -50,7 +50,7 @@ ph_foot_size            = 0.20, 0.23, 0.20
 ph_crash_speed_min        = 100
 ph_crash_speed_max        = 200
 ph_collision_damage_factor    = 0.1
-ph_mass             = 150;120
+ph_mass             = 100
 
 destroyed_vis_name        = physics\Dead_Body\trupik_crash
 
@@ -247,6 +247,9 @@ LegsCount           = 2
 
 ;species of monster
 species             = bloodsucker
+rank							= 0
+spec_rank						= weak
+community						= bloodsucker
 
 ;-------------------------------------------------------------------------
 ; Invisible Ability
@@ -526,8 +529,8 @@ value2      = 0.60,   0.2,        200,        0.0, 0.5, 1.50,     -1.2, 1.2, -1.
 
 [bloodsucker_normal]:m_bloodsucker_e
 $spawn        = "monsters\bloodsuckers\bloodsucker_02_normal"
-visual        = monsters\krovosos\krovosos
-icon        = ui_npc_monster_krovosos
+visual			= monsters\krovosos\krovosos_normal
+Predator_Visual		= monsters\krovosos\krovosos_normal_xray
 panic_threshold   = 0.1
 rank        = 401
 immunities_sect   = bloodsucker_immunities_normal
@@ -592,6 +595,8 @@ explosion_immunity    = 0.3
 fire_wound_immunity		= 0.05
 
 [bloodsucker_bunker]:bloodsucker_strong
+visual			= monsters\krovosos\krovosos_bunker
+icon			= ui_npc_monster_krovosos_bunker
 immunities_sect		= bloodsucker_immunities_bunker
 
 [bloodsucker_immunities_bunker]:bloodsucker_immunities_strong

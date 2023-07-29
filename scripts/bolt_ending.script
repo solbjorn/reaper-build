@@ -4,9 +4,7 @@
 -----------------------------------------------------------------------------------
 
 local game_start = true
-local redraw = true
 local boxes = { }
-local st
 
 function on_item_take(obj)
 	local sect = obj:section()
@@ -56,7 +54,6 @@ function on_item_belt(obj)
 	elseif sect == "bolt_box" then
 		local size = get_ammo_data(obj, "box_size")
 		boxes[obj:id()] = obj
-		redraw = true
 
 		if not Actor:object("bolt") and get_value("b_dr") then
 			amk.spawn_item_in_inv("bolt")
@@ -72,7 +69,6 @@ end
 function on_item_drop_from_belt(obj, drop)
 	if obj:section() ~= "bolt_box" then return end
 	boxes[obj:id()] = nil
-	redraw = true
 
 	local sobj = server_object(obj)
 	if not sobj then return end
@@ -88,54 +84,9 @@ function on_item_drop_from_belt(obj, drop)
 	end
 end
 
-function update()
-	if Actor:active_slot() == 5 and not level.main_input_receiver() then
-		if st and redraw then
-			local bolt_cnt = 0
-			for id, obj in pairs(boxes) do
-				bolt_cnt = bolt_cnt + get_ammo_data(obj, "box_size")
-			end
-
-			st:SetText("1/" .. bolt_cnt)
-		elseif not st then
-			show_static()
-			redraw = true
-		end
-	elseif st then
-		remove_static()
-	end
-end
-
-function remove_static()
-	hud:RemoveDialogToRender(st)
-	st = nil
-end
-
-function show_static()
-	st=CUIStatic()
-	st:Init("ui\\ui_icon_equipment", 23,708, 42, 42)	-- координаты где рисовать
-
-	local sect = "bolt_box"
-	local x = config:r_u32_cache(sect, "inv_grid_x") * 50
-	local y = config:r_u32_cache(sect, "inv_grid_y") * 50
-	local width = config:r_u32_cache(sect, "inv_grid_width") * 50
-	local height = config:r_u32_cache(sect, "inv_grid_height") * 50
-	st:SetOriginalRect(x,y,width,height)
-	st:SetStretchTexture(true)
-
-	st:SetFont(GetFontGraffiti22Russian())
-	st:SetTextAlign(CGameFont.alCenter)
-	st:SetTextColor(130,238,255,255)
-	st:SetTextY(4)
-	st:SetTextX(69)
-
-	hud:AddDialogToRender(st)
-end
-
 function use_one(box, left)
 	if left > 1 then
 		set_ammo_data(box, "box_size", left - 1)
-		redraw = true
 	else
 		release(box)
 	end
@@ -168,8 +119,4 @@ end
 
 function net_spawn()
 	amk.spawn_item_in_inv("bolt_fix")
-end
-
-function net_destroy()
-	if st then remove_static() end
 end

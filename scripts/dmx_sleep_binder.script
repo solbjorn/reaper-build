@@ -56,12 +56,12 @@ end
 local sleep_places = {
 	-- Кордон:
 
+	-- Матрас Шустрого
+	{ -185.35, -19.42, -134.94, 65608, 56 },
+
 	-- Матрасы в подвале Деревни Новичков
 	{ -210.765, -22.881, -122.198, 42632, 59 },
 	{ -210.34, -22.9, -125.75, 42632, 59 },
-
-	-- Матрас Шустрого
-	{ -185.35, -19.42, -134.94, 65608, 56 },
 
 	-- Матрас на АТП у бандитов
 	{ 111.73, -2.29, 2.73, 413897, 117 },
@@ -140,9 +140,39 @@ local sleep_places = {
 
 -- Спавн мест для сна
 function place_of_sleep_spawn()
-	local place, obj
+	local place
 	for i = 1, #sleep_places do
 		place = sleep_places[i]
-		obj = create("place_of_sleep", xyz(place[1], place[2], place[3]), place[4], place[5])
+		create("place_of_sleep", xyz(place[1], place[2], place[3]), place[4], place[5])
+	end
+end
+
+function safe_place_coef(obj)
+	local gv = obj:game_vertex_id()
+	local mingv, maxgv = gv - 2, gv + 2
+	local pos = obj:position()
+
+	local place, dist
+	local mind = 10
+	for i = 1, #sleep_places do
+		place = sleep_places[i]
+		gv = place[5]
+
+		if gv >= mingv and gv <= maxgv then
+			dist = pos:distance_to(xyz(place[1], place[2], place[3]))
+			if dist < mind then
+				mind = dist
+			end
+		elseif gv > maxgv then
+			break
+		end
+	end
+
+	if mind > 2 then
+		return 0
+	elseif mind < 1 then
+		return 1
+	else
+		return 2 - mind
 	end
 end

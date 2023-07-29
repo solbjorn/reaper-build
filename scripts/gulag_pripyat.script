@@ -1,3 +1,8 @@
+local level_patrol_path_exists = level.patrol_path_exists
+local math_random = math.random
+local table_concat = table.concat
+local utils_parse_waypoint_data = utils.parse_waypoint_data
+
 --------------------------------------------------------------------------
 -- States
 --------------------------------------------------------------------------
@@ -35,74 +40,9 @@ end
 --------------------------------------------------------------------------
 -- General
 --------------------------------------------------------------------------
-local gulags = {pri_followers       = {comm = {"stalker"}},
-                pri_wave            = {comm = true},
-                pri_ambush7         = {comm = {"monolith"}},
-                pri_corner          = {comm = {"monolith"}},
-				pri_depot           = {comm = {"pseudodog", "controller"}},
-                pri_monolith        = {comm = {"monolith"}},
-                pri_stadium         = {comm = {"monolith"}}}
 
--- Job -------------------------------------------------------------------
-function load_job(sj, gname, type, squad, groups)
-    local g = gulags[type]
-    if g then
-        g.job(sj, gname, type, squad, groups)
-		return true
-    end
-end
-
--- State -----------------------------------------------------------------
-function check_state_stub()
-    return 0
-end
-
-function load_states(type)
-    local g = gulags[type]
-
-    if g then
-        return g.state or check_state_stub
-    end
-
-    return nil
-end
-
--- Dynamic ltx -----------------------------------------------------------
-function load_ltx(type)
-    local g = gulags[type]
-    if g then
-        return g.ltx
-    end
-
-    return nil
-end
-
--- Check communities -----------------------------------------------------
-function checkStalker(npc_community, gulag_type)
-	local g = gulags[gulag_type]
-	if g then
-		if g.comm then
-			if type(g.comm) == "boolean" then
-				return g.comm
-			end
-
-			for k,v in pairs(g.comm) do
-				if npc_community == v then
-					return true
-				end
-			end
-			return false
-		end
-		return false
-	end
-	return false
-end
-
-function checkMonster(npc_community, gulag_type)
-	if gulag_type == "pri_depot" then
-		return npc_community == "controller" or npc_community == "pseudodog"
-	end
-	return false
+function check_monolith(npc_community)
+	return npc_community == "monolith"
 end
 
 --------------------------------------------------------------------------
@@ -115,148 +55,6 @@ end
 -- Predicates ------------------------------------------------------------
 function f_predicate(npc_info)
     return npc_info.profile_name == "pri_followers"
-end
-
--- Jobs ------------------------------------------------------------------
-gulags.pri_followers.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t
-	local ltx = "#include \"misc\\gulag_pripyat.ltx\"\n"
-
-	-- gulag members
-	local followers = {"leader", "bomber", "nap1", "nap2", "nap3"}
-
-	-- states name
-	local states_str = {"wait", "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8"}
-
-	-- states num
-	local states = {state_wait, state_wave1, state_wave2, state_wave3, state_wave4, state_wave5, state_wave6, state_wave7, state_wave8}
-
-	-- out restrictors for the each state
-	local restr = {"",                              "pri_followers_wave1_out_restr", "pri_followers_wave2_out_restr",
-				   "pri_followers_wave3_out_restr", "pri_followers_wave4_out_restr", "pri_followers_wave5_out_restr",
-				   "pri_followers_wave6_out_restr", "pri_followers_wave7_out_restr", "pri_followers_wave7_out_restr"}
-
-	-- priorities
-	local prior = {{2, 2, 2, 2, 2, 2, 2, 2, 3}, -- leader
-					{3, 3, 3, 3, 3, 3, 3, 3, 2}, -- bomber
-					{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap1
-					{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap2
-					{1, 1, 1, 1, 1, 1, 1, 1, 1}  -- nap3
-				}
-
-	local pr, pd
-	for i, v in pairs(followers) do
-		pr = prior[i]
-		for j = 1, 9 do
-			t = { section = table_concat({"logic@pri_followers_", v, "_", states_str[j]}),
-				idle = 0,
-				prior = pr[j], state = { states[j] },
-				squad = squad, group = groups[1],
-				in_rest = "", out_rest = restr[j],
-				position_threshold = 100,
-				online = true,
-				idle_after_death = 50,
-				predicate = f_predicate
-			}
-			sj[#sj+1] = t
-		end
-	end
-
-	local res_t
-	for i = 1, 3 do
-		-- задаем стандартные этапы
-		for j, v in pairs({1, 2, 4, 5, 6}) do
-			--- NAP: WAVE<j> --------------------------------------------------------------------------------
-			res_t = {
-				"[logic@pri_followers_nap",i,"_wave",
-				v,"]\nactive = walker@pri_followers_nap",i,"_wave",
-				v,"_wait\non_hit = followers_hit\non_death = followers_death\n",
-
-				"[walker@pri_followers_nap",i,"_wave",
-				v,"_wait]\npath_walk = wave",v,"_stalker",
-				i,"_syn_walk\npath_look = wave",v,"_stalker",
-				i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",i,"_wave",
-				v,"\non_info = {+pri_wave",v,"_start} walker@pri_followers_nap",i,"_wave",
-				v,"\ndanger = danger@ignore\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n",
-
-				"[walker@pri_followers_nap",i,"_wave",
-				v,"]\npath_walk = wave",v,"_stalker",
-				i,"_walk\npath_look = wave",v,"_stalker",
-				i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave",v,"_start} %+pri_wave",
-				v,"_start%\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n" }
-			ltx = ltx .. table_concat(res_t)
-		end
-
-		-- нестандартные этапы
-		--- NAP: KAMP ----------------------------------------------------------------------------------
-		res_t = {
-			"[logic@pri_followers_nap",
-			i,"_wait]\nactive = remark@pri_followers_nap",
-			i,"_wait\non_hit = followers_hit\non_death = followers_death\n",
-
-			"[remark@pri_followers_nap",
-			i,"_wait]\npath_walk = wait_stalker",
-			i,"_walk\nanim = guard\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\non_info = {+pri_followers_leader_phrase1_end} remark@pri_followers_nap",
-			i,"_wait_na\n",
-
-			"[remark@pri_followers_nap",
-			i,"_wait_na]\npath_walk = wait_stalker",
-			i,"_walk\nanim = guard_na\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\n",
-
-			--- NAP: WAVE3 (БТР) --------------------------------------------------------------------------
-			"[logic@pri_followers_nap",
-			i,"_wave3]\nactive = walker@pri_followers_nap",
-			i,"_wave3_wait\ncombat_ignore = combat_ignore\non_hit = followers_hit\non_death = followers_death\n",
-
-			"[walker@pri_followers_nap",
-			i,"_wave3_wait]\npath_walk = wave3_stalker",
-			i,"_syn_walk\npath_look = wave3_stalker",
-			i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",
-			i,"_wave3 %+pri_wave3_start%\non_info = {+pri_wave3_start} walker@pri_followers_nap",
-			i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
-
-			"[walker@pri_followers_nap",
-			i,"_wave3]\npath_walk = wave3_stalker",
-			i,"_walk\npath_look = wave3_stalker",
-			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_timer = ",
-			math.random(30, 40), "00 | remark@pri_followers_nap",
-			i,"_wave3_fight\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
-
-			"[remark@pri_followers_nap",
-			i,"_wave3_fight]\nanim = threat_fire\ntarget = 807\non_timer = ",
-			math.random(47, 55), "00 | walker@pri_followers_nap",
-			i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
-
-			--- NAP: WAVE7 (перед подземкой) ---------------------------------------------------------------
-			"[logic@pri_followers_nap",
-			i,"_wave7]\nactive = walker@pri_followers_nap",
-			i,"_wave7_wait\non_hit = followers_hit\non_death = followers_death\n",
-
-			"[walker@pri_followers_nap",
-			i,"_wave7_wait]\npath_walk = wave7_stalker",
-			i,"_syn_walk\npath_look = wave7_stalker",
-			i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_info = {+pri_wave7_leader_phrase_end} walker@pri_followers_nap",
-			i,"_wave7\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
-
-			"[walker@pri_followers_nap",
-			i,"_wave7]\npath_walk = wave7_stalker",
-			i,"_walk\npath_look = wave7_stalker",
-			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave7_start} %+pri_wave7_start%\non_info = {-pri_wave7_sound_start =pri_follower_see_ambush} %+pri_wave7_sound_start%\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
-
-			--- NAP: WAVE8 ------------------------------------------------------------------------------
-			"[logic@pri_followers_nap",
-			i,"_wave8]\nactive = walker@pri_followers_nap",
-			i,"_wave8_wait\non_hit = followers_hit\non_death = followers_death\n",
-
-			"[walker@pri_followers_nap",
-			i,"_wave8_wait]\npath_walk = wave8_stalker",
-			i,"_walk\npath_look = wave8_stalker",
-			i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	gulags.pri_followers.ltx = ltx
 end
 
 -- States ----------------------------------------------------------------
@@ -336,100 +134,15 @@ pri_followers_switcher[state_wave7] = function(actor, delta_time)
     then
         actor:give_info_portion("pri_undeground_respawn_start")
         actor:give_info_portion("pri_wave7_end")
-		actor:give_info_portion("pri_aes_mapspot")
+		if not has_info("pri_aes_mapspot") then
+			actor:give_info_portion("pri_aes_mapspot")
+		end
         return state_wave8
     end
     return state_wave7
 end
 pri_followers_switcher[state_wave8] = function(actor, delta_time)
     return state_wave8
-end
-
-gulags.pri_followers.state = function(gulag)
-    local state = gulag.state
-    local actor = Actor
-
-    -- проверка не убежал ли актер далеко
-    if has_alife_info("pri_followers_mission_accept") and not has_alife_info("pri_followers_actor_leave") then
-        -- check min distance to actor
-        local actor_leave = true
-        local npc_id, npc = 0, 0
-        -- проверка дистанции до каждого члена гулага
-	    for npc_id, npc in pairs(gulag.Object) do
-		    if npc ~= true and level.object_by_id(npc_id) ~= nil then
-			    if npc:position():distance_to_sqr(actor:position()) <= 3600 then -- 60*60
-			        actor_leave = false
-			        break
-			    end
-		    end
-	    end
-		if actor_leave and actor:alive() then
-			actor:give_info_portion("pri_followers_actor_leave")
-		end
-	end
-
-    -- переключение состояния гулага через массив функций состояний
-    return pri_followers_switcher[state](actor, game.get_game_time():diffSec(gulag.stateBegin))
-end
-
---------------------------------------------------------------------------
--- Ambush7 (не используется)
---------------------------------------------------------------------------
--- Predicates ------------------------------------------------------------
-
--- Jobs ------------------------------------------------------------------
-gulags.pri_ambush7.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t
-	local ltx = ""
-	local res_t
-	for i = 1, 7 do
-		--- state 0
-		t = { section = table_concat({"logic@pri_ambush7_monolith",i,"_hide"}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "pri_ambush7_out_restr"
-		}
-		sj[#sj+1] = t
-		--- state 1
-		t = { section = table_concat({"logic@pri_ambush7_monolith",i}),
-			idle = 0,
-			prior = 1, state = {1}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "pri_ambush7_out_restr"
-		}
-		sj[#sj+1] = t
-
-		res_t = {
-			"[logic@pri_ambush7_monolith",
-			i,"_hide]\nactive = walker@pri_ambush7_monolith",
-			i,"_hide\ncombat_ignore = combat_ignore\n",
-
-			"[walker@pri_ambush7_monolith",
-			i,"_hide]\npath_walk = monolith",
-			i,"_hide_walk\npath_look = monolith",
-			i,"_hide_look\ncombat_ignore_cond  = always\nshow_spot = false\n",
-
-			"[logic@pri_ambush7_monolith",
-			i,"]\nactive = walker@pri_ambush7_monolith",
-			i,"\n",
-
-			"[walker@pri_ambush7_monolith",
-			i,"]\npath_walk = monolith",
-			i,"_walk\npath_look = monolith",
-			i,"_look\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	gulags.pri_ambush7.ltx = ltx
-end
-
--- States ----------------------------------------------------------------
-gulags.pri_ambush7.state = function(gulag)
-    if has_alife_info("pri_wave7_start") then
-        return 1
-    else
-        return 0
-    end
 end
 
 --------------------------------------------------------------------------
@@ -445,7 +158,7 @@ local function process_range(str, def_val_min, def_val_max)
     if min > max then
         max = min --* 1.5
     end
-    return math.random(min, max) --random_number(min, max)
+    return math_random(min, max) --random_number(min, max)
 end
 
 local function process_num(str, def_val)
@@ -453,291 +166,6 @@ local function process_num(str, def_val)
         return tonumber(str) or def_val
     end
     return def_val
-end
-
--- Jobs ------------------------------------------------------------------
-gulags.pri_wave.job = function(sj, gname, type, squad, groups)
-	local t
-	local table_concat = table.concat
-	local res_t = {
-		"[wounded]\nhp_state = 0|help_me@help\nhp_state_see = 0|wounded@help_see\nhp_victim = 0|nil\nhp_fight = 0|false\nhp_cover = 0|false\n",
-
-		"[danger@ignore]\nignore_types = corpse,sound\nignore_distance = 0\n",
-
-		"[danger@normal]\nignore_types = corpse, sound\nignore_distance = 0\n",
-
-		"[danger@kamp]\nignore_types = corpse\nignore_distance = 0\n" }
-	local ltx = table_concat(res_t)
-	-- Снайперы в окнах.
-	local i = 1
-	local way_name = table_concat({gname,"_wsniper_",i,"_walk"})
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-
-		local stime = process_range(wp_prop.stime, 10000, 15000) -- sniper time
-		local gtime = process_range(wp_prop.gtime, 15000, 20000) -- guard time
-		local htime = process_range(wp_prop.htime,  6000,  8000) -- hide time
-
-		local sdist = process_num(wp_prop.sdist, 50) -- sniper distance
-		local gdist = process_num(wp_prop.gdist, 40) -- guard distance
-		if gdist >= sdist then
-			gdist = sdist + 5
-		end
-
-		local outr = wp_prop.outr or "" -- out restrictors
-		local inr = wp_prop.inr or "" -- in restrictors
-
-		local starti = wp_prop.starti -- start infoportion
-		local deathi = wp_prop.deathi -- death infoportion
-
-		-- добавляем должность
-		t = { section = table_concat({"logic@",gname,"_wsniper_", i}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			in_rest = inr, out_rest = outr
-		}
-		sj[#sj+1] = t
-
-		-- добавляем описание должности в лтх.
-		res_t = {"[logic@",gname,"_wsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
-		ltx = ltx .. table_concat(res_t)
-
-		if starti then
-			ltx = ltx .. table_concat({"active = camper@",gname,"_wsniper_", i, "_wait\n"})
-
-			if deathi then
-				res_t = {"on_death = death@",gname,"_wsniper_", i, "\n",
-					"[death@",gname,"_wsniper_", i, "]\non_info = %+", deathi, "%\n" }
-				ltx = ltx .. table_concat(res_t)
-			end
-			res_t = {
-				"[camper@",gname,"_wsniper_",
-				i, "_wait]\npath_walk = wsniper_",
-				i, "_wait_walk\npath_look = wsniper_",
-				i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
-				starti, "} camper@",gname,"_wsniper_",
-				i, "\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
-			ltx = ltx .. table_concat(res_t)
-		else
-			ltx = ltx .. table_concat({"active = camper@",gname,"_wsniper_", i, "\n"})
-		end
-
-		res_t = {
-			"[camper@",gname,"_wsniper_",
-			i, "]\npath_walk = wsniper_",
-			i, "_walk\npath_look = wsniper_",
-			i, "_look\ndef_state_moving = sneak_run ;assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\nradius = 0\non_timer = ",
-			stime, " | {!has_enemy} camper@",gname,"_wsniper_",
-			i, "_guard, camper@",gname,"_wsniper_",
-			i, "_hide\nwounded = wounded\ndanger = danger@ignore\n",
-
-			"[camper@",gname,"_wsniper_",
-			i, "_guard]\npath_walk = wsniper_",
-			i, "_walk\npath_look = wsniper_",
-			i, "_look\ndef_state_moving = sneak_run ;assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\nno_retreat = true\nradius = 0\non_timer = ",
-			gtime, " | {!has_enemy} camper@",gname,"_wsniper_",
-			i, ", {!see_enemy} camper@",gname,"_wsniper_",
-			i, "\non_info = {=has_enemy !see_enemy} camper@",
-			gname,"_wsniper_",
-			i, "\nwounded = wounded\ndanger = danger@ignore\n",
-
-			"[camper@",gname,"_wsniper_",
-			i, "_hide]\npath_walk = wsniper_",
-			i, "_walk\npath_look = wsniper_",
-			i, "_look\ndef_state_moving = sneak_run\ndef_state_campering = hide_na\nno_retreat = true\nradius = 0\nshow_spot = false\non_timer = ",
-			htime, " | camper@",gname,"_wsniper_",
-			i, "_guard\nwounded = wounded\ndanger = danger@ignore\n" }
-		ltx = ltx .. table_concat(res_t)
-		i = i + 1
-		way_name = table_concat({gname,"_wsniper_",i,"_walk"})
-	end
-
-	-- Снайперы на крышах.
-	i = 1
-	way_name = table_concat({gname,"_rsniper_",i,"_walk"})
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-
-		local sdist = process_num(wp_prop.sdist, 50) -- sniper distance
-		local gdist = process_num(wp_prop.gdist, 40) -- guard distance
-		if gdist >= sdist then
-			gdist = sdist + 5
-		end
-
-		local outr = wp_prop.outr or "" -- out restrictors
-		local inr = wp_prop.inr or "" -- in restrictors
-
-		local starti = wp_prop.starti -- start infoportion
-		local deathi = wp_prop.deathi -- death infoportion
-
-		-- добавляем должность
-		t = { section = table_concat({"logic@",gname,"_rsniper_", i}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[2],
-			in_rest = inr, out_rest = outr
-		}
-		sj[#sj+1] = t
-
-		-- добавляем описание должности в лтх.
-		res_t = {"[logic@",gname,"_rsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
-		ltx = ltx .. table_concat(res_t)
-
-		if starti then
-			ltx = ltx .. table_concat({"active = camper@",gname,"_rsniper_", i, "_wait\n"})
-
-			if deathi then
-				res_t = {"on_death = death@",gname,"_rsniper_", i, "\n",
-					"[death@",gname,"_rsniper_", i, "]\n",
-					"on_info = %+", deathi, "%\n" }
-				ltx = ltx .. table_concat(res_t)
-			end
-
-			res_t = {
-				"[camper@",gname,"_rsniper_",
-				i,"_wait]\npath_walk = rsniper_",
-				i, "_wait_walk\npath_look = rsniper_",
-				i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
-				starti, "} camper@",gname,"_rsniper_",
-				i, "\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
-			ltx = ltx .. table_concat(res_t)
-		else
-			ltx = ltx .. table_concat({"active = camper@",gname,"_rsniper_", i,"\n"})
-		end
-
-		res_t = {
-			"[camper@",gname,"_rsniper_",
-			i,"]\npath_walk = rsniper_",
-			i, "_walk\npath_look = rsniper_",
-			i, "_look\ndef_state_moving = assault\ndef_state_campering = hide_na\ndef_state_campering_fire = hide_sniper_fire\nsniper = true\nradius = 0\non_actor_dist_le_nvis = ",
-			gdist, " | camper@",gname,"_rsniper_",
-			i,"_guard\nwounded = wounded\ndanger = danger@normal\n",
-
-			"[camper@",gname,"_rsniper_",
-			i,"_guard]\npath_walk = rsniper_",
-			i, "_walk\npath_look = rsniper_",
-			i, "_look\ndef_state_moving = assault\ndef_state_campering = hide_na\ndef_state_campering_fire = hide_fire\nno_retreat = true\nradius = 0\non_actor_dist_ge_nvis = ",
-			sdist, " | {!has_enemy} camper@",gname,"_rsniper_",
-			i,", {!see_enemy} camper@",gname,"_rsniper_",
-			i,"\non_info = {=has_enemy !see_enemy} camper@",gname,"_rsniper_",
-			i,"\nwounded = wounded\ndanger = danger@normal\n" }
-		ltx = ltx .. table_concat(res_t)
-		i = i + 1
-		way_name = table_concat({gname,"_rsniper_",i,"_walk"})
-	end
-
-	-- Свободные волкеры в кемпах.
-	i = 1
-	way_name = table_concat({gname,"_free_",i,"_walk"})
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-
-		local wtime = process_range(wp_prop.wtime, 40000,  80000) -- walker state time
-		local ktime = process_range(wp_prop.ktime, 90000, 180000) -- kamp state time
-
-		local kampi = process_num(wp_prop.kampi, 1) -- kamp index
-
-		local outr = wp_prop.outr or "" -- out restrictors
-		local inr = wp_prop.inr or "" -- in restrictors
-
-		local starti = wp_prop.starti -- start infoportion
-		local deathi = wp_prop.deathi -- death infoportion
-
-		-- добавляем должность
-		t = { section = table_concat({"logic@",gname,"_free_", i}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[2 + kampi],
-			in_rest = inr, out_rest = outr
-		}
-		sj[#sj+1] = t
-
-		-- добавляем описание должности в лтх.
-		res_t = {"[logic@",gname,"_free_", i, "]\ncombat_ignore = combat_ignore\n" }
-		ltx = ltx .. table_concat(res_t)
-
-		if starti then
-			ltx = ltx .. table_concat({"active = camper@",gname,"_free_",i,"_wait\n"})
-
-			if deathi then
-				res_t = {"on_death = death@",gname,"_free_",
-				i, "\n[death@",gname,"_free_",
-				i, "]\non_info = %+", deathi, "%\n" }
-				ltx = ltx .. table_concat(res_t)
-			end
-
-			res_t = {
-				"[camper@",gname,"_free_",
-				i,"_wait]\npath_walk = free_",
-				i, "_wait_walk\npath_look = free_",
-				i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
-				starti, "} walker@",gname,"_free_",
-				i,"\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
-			ltx = ltx .. table_concat(res_t)
-		else
-			ltx = ltx .. table_concat({"active = walker@",gname,"_free_",i,"\n"})
-		end
-
-		res_t = {
-			"[walker@",gname,"_free_",
-			i,"]\npath_walk= free_",
-			i, "_walk\npath_look= free_",
-			i, "_look\ndef_state_moving1= patrol\ndef_state_moving2= assault\ndef_state_moving3= assault\non_timer= ",
-			wtime, " | kamp@",gname,"_free_",
-			i,"\nwounded= wounded\n",
-
-			"[kamp@",gname,"_free_",
-			i,"]\ncenter_point = kamp_",
-			kampi, "\ndef_state_moving = patrol\non_timer = ", ktime, " | walker@",gname,"_free_",
-			i,"\nwounded = wounded\ndanger = danger@kamp\n" }
-		if gname == "pri_wave7" then
-			res_t[#res_t+1] = "avoid_pos=88\n"
-		end
-		ltx = ltx .. table_concat(res_t)
-		i = i + 1
-		way_name = table_concat({gname,"_free_",i,"_walk"})
-	end
-
-	gulags.pri_wave.ltx = ltx
-end
-
---------------------------------------------------------------------------
--- Corners (сталкеры атакующие когда мы заходим в подземный переход)
---------------------------------------------------------------------------
--- Predicates ------------------------------------------------------------
-
--- Jobs ------------------------------------------------------------------
-gulags.pri_corner.job = function(sj, gname, type, squad, groups)
-	local t
-	local ltx = ""
-	local res_t
-	local table_concat = table.concat
-
-	for i = 1, 3 do
-		t = { section = table_concat({"logic@pri_corner_monolith", i }),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		res_t = {
-			"[logic@pri_corner_monolith",
-			i, "]\nactive = camper@pri_corner_monolith",
-			i, "_guard\ncombat_ignore = combat_ignore\n",
-
-			"[camper@pri_corner_monolith",
-			i, "_guard]\npath_walk = guard_",
-			i, "_walk\npath_look = guard_",
-			i, "_look\nradius = 20\non_info = {+pri_corner_start} patrol@pri_corner_monolith_raid\ncombat_ignore_cond = always\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	gulags.pri_corner.ltx = ltx ..
-		"[patrol@pri_corner_monolith_raid]\npath_walk = raid_walk\npath_look = raid_look\non_signal = arrived | %+pri_corner_end%\n"
 end
 
 --------------------------------------------------------------------------
@@ -749,56 +177,7 @@ function z_predicate_c(npc_info)
 end
 
 function z_predicate_pd(npc_info)
-    local c = npc_info.community
-    return c == "pseudodog"
-end
-
--- Jobs ------------------------------------------------------------------
-gulags.pri_depot.job = function(sj, gname, type, squad, groups)
-	local t
-
-	local way_name = "pri_depot_controllers_home"
-	local ptr = patrol(way_name)
-	local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-	local count = process_num(wp_prop.count, 3) -- controllers number
-
-	for i = 1, count do
-		t = { section = "logic@pri_depot_controller",
-			idle = 0,
-			prior = 1, state = {0},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = "pri_depot_base_restr",
-			predicate = z_predicate_c
-		}
-		sj[#sj+1] = t
-	end
-
-	way_name = "pri_depot_psydogs_home"
-	ptr = patrol(way_name)
-	wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-	count = process_num(wp_prop.count, 9) -- psydogs number
-
-	for i = 1, count do
-		t = { section = "logic@pri_depot_psydog",
-			idle = 0,
-			prior = 1, state = {0},
-			squad = squad, group = groups[2],
-			in_rest = "pri_depot_base_restr", out_rest = "",
-			predicate = z_predicate_pd
-		}
-		sj[#sj+1] = t
-	end
-
-	local res_t = {
-		"[logic@pri_depot_controller]\nactive = mob_home@pri_depot_controller\n",
-
-		"[mob_home@pri_depot_controller]\npath_home = controllers_home\naggressive_home\n",
-
-		"[logic@pri_depot_psydog]\nactive = mob_home@pri_depot_psydog\n",
-
-		"[mob_home@pri_depot_psydog]\npath_home = psydogs_home\naggressive_home\n" }
-
-	gulags.pri_depot.ltx = table.concat(res_t)
+	return npc_info.community == "pseudodog"
 end
 
 --------------------------------------------------------------------------
@@ -835,348 +214,935 @@ function m_predicate_e_rpg(npc_info)
     return npc_info.profile_name == "pri_monolith_exo" and obj_has_item(npc_info, "wpn_rpg7")
 end
 
--- Jobs ------------------------------------------------------------------
-gulags.pri_monolith.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local prior, pred
-	local state1_kamp, state1_restr
-	local in_r = ""
-	local res_t = {
-		"[danger@monolith]\nignore_distance_sound = 150\n",
+local gulags = {
+	["pri_followers"] = {
+		job = function(sj, gname, squad, groups)
+			-- gulag members
+			local followers = {"leader", "bomber", "nap1", "nap2", "nap3"}
 
-		-- кемп в гостиннице при атаке
-		"[logic@pri_monolith_fight_in_hotel]\nactive = kamp@pri_monolith_fight_in_hotel\ncombat_ignore = combat_ignore\n",
+			-- states name
+			local states_str = {"wait", "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8"}
 
-		"[kamp@pri_monolith_fight_in_hotel]\ncenter_point = kamp6\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+			-- states num
+			local states = {state_wait, state_wave1, state_wave2, state_wave3, state_wave4, state_wave5, state_wave6, state_wave7, state_wave8}
 
-		-- кемп в "Колосе" при атаке
-		"[logic@pri_monolith_fight_in_kolos]\nactive = kamp@pri_monolith_fight_in_kolos\ncombat_ignore = combat_ignore\n",
+			-- out restrictors for the each state
+			local restr = {"",                              "pri_followers_wave1_out_restr", "pri_followers_wave2_out_restr",
+						   "pri_followers_wave3_out_restr", "pri_followers_wave4_out_restr", "pri_followers_wave5_out_restr",
+						   "pri_followers_wave6_out_restr", "pri_followers_wave7_out_restr", "pri_followers_wave7_out_restr"}
 
-		"[kamp@pri_monolith_fight_in_kolos]\ncenter_point = kamp4\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+			-- priorities
+			local prior = {{2, 2, 2, 2, 2, 2, 2, 2, 3}, -- leader
+							{3, 3, 3, 3, 3, 3, 3, 3, 2}, -- bomber
+							{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap1
+							{1, 1, 1, 1, 1, 1, 1, 1, 1}, -- nap2
+							{1, 1, 1, 1, 1, 1, 1, 1, 1}  -- nap3
+						}
 
-		"[logic@pri_monolith_leader]\nactive = walker@pri_monolith_leader\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
+			local pr
+			for i, v in ipairs(followers) do
+				pr = prior[i]
+				for j = 1, 9 do
+					sj[#sj + 1] = {
+						section = table_concat({"logic@pri_followers_", v, "_", states_str[j]}),
+						prior = pr[j], state = { states[j] },
+						squad = squad, group = groups[1],
+						out_rest = restr[j],
+						position_threshold = 100,
+						online = true,
+						idle_after_death = 50,
+						predicate = f_predicate
+					}
+				end
+			end
+		end,
+		ltx = function()
+			local ltx = "#include \"misc\\gulag_pripyat.ltx\"\n"
 
-		"[death@pri_monolith_leader]\non_info = %+sar2_death_55%\n",
+			local res_t
+			for i = 1, 3 do
+				-- задаем стандартные этапы
+				for j, v in ipairs({1, 2, 4, 5, 6}) do
+					--- NAP: WAVE<j> --------------------------------------------------------------------------------
+					res_t = {
+						"[logic@pri_followers_nap",i,"_wave",
+						v,"]\nactive = walker@pri_followers_nap",i,"_wave",
+						v,"_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-		"[walker@pri_monolith_leader]\npath_walk = leader_walk\npath_look = leader_look\ndanger = danger@monolith\ncombat_ignore_cond  = {=pri_monolith_combat_ignore}\n",
+						"[walker@pri_followers_nap",i,"_wave",
+						v,"_wait]\npath_walk = wave",v,"_stalker",
+						i,"_syn_walk\npath_look = wave",v,"_stalker",
+						i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",i,"_wave",
+						v,"\non_info = {+pri_wave",v,"_start} walker@pri_followers_nap",i,"_wave",
+						v,"\ndanger = danger@ignore\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n",
 
-		"[logic@pri_monolith_leader_attack]\nactive = camper@pri_monolith_leader_attack\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
+						"[walker@pri_followers_nap",i,"_wave",
+						v,"]\npath_walk = wave",v,"_stalker",
+						i,"_walk\npath_look = wave",v,"_stalker",
+						i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave",v,"_start} %+pri_wave",
+						v,"_start%\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n" }
+					ltx = ltx .. table_concat(res_t)
+				end
 
-		"[camper@pri_monolith_leader_attack]\npath_walk = leader_attack_walk\npath_look = leader_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+				-- нестандартные этапы
+				--- NAP: KAMP ----------------------------------------------------------------------------------
+				res_t = {
+					"[logic@pri_followers_nap",
+					i,"_wait]\nactive = remark@pri_followers_nap",
+					i,"_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-		"[hit@altar_monolith]\non_info = %+pri_monolith_base_attack_altar_zone%\n" }
+					"[remark@pri_followers_nap",
+					i,"_wait]\npath_walk = wait_stalker",
+					i,"_walk\nanim = guard\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\non_info = {+pri_followers_leader_phrase1_end} remark@pri_followers_nap",
+					i,"_wait_na\n",
 
-	local ltx = table_concat(res_t)
+					"[remark@pri_followers_nap",
+					i,"_wait_na]\npath_walk = wait_stalker",
+					i,"_walk\nanim = guard_na\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\n",
 
-	-- leader
-	local t = { section = "logic@pri_monolith_leader",
-		idle = 0,
-		prior = 15, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = in_r, out_rest = "pri_monolith_leader_restr",
-		online = "{+pri_monolith_spawn2}",
-		predicate = m_predicate_l
-	}
-	sj[#sj+1] = t
+					--- NAP: WAVE3 (БТР) --------------------------------------------------------------------------
+					"[logic@pri_followers_nap",
+					i,"_wave3]\nactive = walker@pri_followers_nap",
+					i,"_wave3_wait\ncombat_ignore = combat_ignore\non_hit = followers_hit\non_death = followers_death\n",
 
-	t = { section = "logic@pri_monolith_leader_attack",
-		idle = 0,
-		prior = 15, state = {1},
-		squad = squad, group = groups[1],
-		in_rest = in_r, out_rest = "pri_monolith_leader_restr",
-		online = "{+pri_monolith_spawn2}",
-		predicate = m_predicate_l
-	}
-	sj[#sj+1] = t
+					"[walker@pri_followers_nap",
+					i,"_wave3_wait]\npath_walk = wave3_stalker",
+					i,"_syn_walk\npath_look = wave3_stalker",
+					i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_signal = syn | walker@pri_followers_nap",
+					i,"_wave3 %+pri_wave3_start%\non_info = {+pri_wave3_start} walker@pri_followers_nap",
+					i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-	-- walkers (одиночные патрули вокруг базы)
-	prior = {8, 7, 8, 12, 12, 7}
-	state1_restr = {"", "_kolos_restr", "_base_restr", "", "", ""}
-	local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
-	for i, v in pairs({1, 3, 4, 5, 6, 8}) do
-		--- state: main
-		t = { section = table_concat({"logic@pri_monolith_patrol", v}),
-			idle = 0,
-			prior = prior[i], state = {0},
-			squad = squad, group = groups[6],
-			in_rest = in_r, out_rest = "",
-			online = "{+pri_monolith_spawn1}",
-			predicate = pred_pl[i]
-		}
-		sj[#sj+1] = t
+					"[walker@pri_followers_nap",
+					i,"_wave3]\npath_walk = wave3_stalker",
+					i,"_walk\npath_look = wave3_stalker",
+					i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_timer = ",
+					math_random(30, 40), "00 | remark@pri_followers_nap",
+					i,"_wave3_fight\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-		t = { section = table_concat({"logic@pri_monolith_patrol", v, "_attack"}),
-			idle = 0,
-			prior = prior[i], state = {1},
-			squad = squad, group = groups[6],
-			in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
-			online = "{+pri_monolith_spawn1}",
-			predicate = m_predicate_s
-		}
-		sj[#sj+1] = t
+					"[remark@pri_followers_nap",
+					i,"_wave3_fight]\nanim = threat_fire\ntarget = 807\non_timer = ",
+					math_random(47, 55), "00 | walker@pri_followers_nap",
+					i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-		res_t = {
-			"[logic@pri_monolith_patrol",
-			v, "]\nactive = walker@pri_monolith_patrol",
-			v, "\ncombat_ignore = combat_ignore\n",
+					--- NAP: WAVE7 (перед подземкой) ---------------------------------------------------------------
+					"[logic@pri_followers_nap",
+					i,"_wave7]\nactive = walker@pri_followers_nap",
+					i,"_wave7_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-			"[walker@pri_monolith_patrol",
-			v, "]\npath_walk = patrol",
-			v, "_walk\npath_look = patrol",
-			v, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+					"[walker@pri_followers_nap",
+					i,"_wave7_wait]\npath_walk = wave7_stalker",
+					i,"_syn_walk\npath_look = wave7_stalker",
+					i,"_syn_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nteam = followers\non_info = {+pri_wave7_leader_phrase_end} walker@pri_followers_nap",
+					i,"_wave7\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
 
-			"[logic@pri_monolith_patrol",
-			v, "_attack]\nactive = camper@pri_monolith_patrol",
-			v, "_attack\ncombat_ignore = combat_ignore\n",
+					"[walker@pri_followers_nap",
+					i,"_wave7]\npath_walk = wave7_stalker",
+					i,"_walk\npath_look = wave7_stalker",
+					i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\non_signal = arrived | {-pri_wave7_start} %+pri_wave7_start%\non_info = {-pri_wave7_sound_start =pri_follower_see_ambush} %+pri_wave7_sound_start%\nwounded = wounded@ignore\nmeet = no_meet\nsoundgroup = pri_followers_soundgroup\ndanger = danger@ignore\n",
 
-			"[camper@pri_monolith_patrol",
-			v, "_attack]\npath_walk = patrol",
-			v, "_attack_walk\npath_look = patrol",
-			v, "_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
+					--- NAP: WAVE8 ------------------------------------------------------------------------------
+					"[logic@pri_followers_nap",
+					i,"_wave8]\nactive = walker@pri_followers_nap",
+					i,"_wave8_wait\non_hit = followers_hit\non_death = followers_death\n",
 
-	-- followers (парные патрули перед базой)
-	prior = {8, 8, 8, 8}
-	state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
-	state1_restr = {"_kolos_restr",    ""}
-	for i, v in pairs({7, 10}) do
-		for j = 1, 2 do
-			--- state: main
-			t = { section = table_concat({"logic@pri_monolith_group_patrol", i}),
-				idle = 0,
-				prior = prior[i + 2 * (j - 1)], state = {0},
-				squad = squad, group = groups[7],
-				in_rest = in_r, out_rest = "",
-				online = "{+pri_monolith_spawn1}",
-				predicate = m_predicate_s
-			}
-			sj[#sj+1] = t
+					"[walker@pri_followers_nap",
+					i,"_wave8_wait]\npath_walk = wave8_stalker",
+					i,"_walk\npath_look = wave8_stalker",
+					i,"_look\ndef_state_moving1 = assault\ndef_state_moving2 = assault\nwounded = wounded@ignore\nsoundgroup = pri_followers_soundgroup\nmeet = no_meet\n"
+				}
+				ltx = ltx .. table_concat(res_t)
+			end
 
-			t = { section = "logic@pri_monolith"..state1_kamp[i],
-				idle = 0,
-				prior = prior[i + 2 * (j - 1)], state = {1},
-				squad = squad, group = groups[7],
-				in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
-				online = "{+pri_monolith_spawn1}",
-				predicate = m_predicate_s
-			}
-			sj[#sj+1] = t
+			return ltx
+		end,
+		state = function(gulag)
+			local state = gulag.state
+			local actor = Actor
+
+			-- проверка не убежал ли актер далеко
+			if has_alife_info("pri_followers_mission_accept") and not has_alife_info("pri_followers_actor_leave") then
+			-- check min distance to actor
+			local actor_leave = true
+			local npc_id, npc = 0, 0
+			-- проверка дистанции до каждого члена гулага
+			    for npc_id, npc in pairs(gulag.Object) do
+				    if npc ~= true and level.object_by_id(npc_id) ~= nil then
+					    if npc:position():distance_to_sqr(actor:position()) <= 3600 then -- 60*60
+						actor_leave = false
+						break
+					    end
+				    end
+			    end
+				if actor_leave and actor:alive() then
+					give_info("pri_followers_actor_leave")
+					give_info("pri_aes_mapspot")
+				end
+			end
+
+			-- переключение состояния гулага через массив функций состояний
+			return pri_followers_switcher[state](actor, game.get_game_time():diffSec(gulag.stateBegin))
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
 		end
-		res_t = {
-			"[logic@pri_monolith_group_patrol",
-			i, "]\nactive = patrol@pri_monolith_group_patrol",
-			i, "\ncombat_ignore = combat_ignore\n",
+	},
+	["pri_ambush7"] = {
+		job = function(sj, gname, squad, groups)
+			for i = 1, 7 do
+				--- state 0
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_ambush7_monolith",i,"_hide"}),
+					prior = 1, squad = squad, group = groups[1],
+					out_rest = "pri_ambush7_out_restr"
+				}
+				--- state 1
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_ambush7_monolith",i}),
+					prior = 1, squad = squad, group = groups[1],
+					out_rest = "pri_ambush7_out_restr"
+				}
+			end
+		end,
+		ltx = function()
+			local ltx = ""
+			local res_t
+			for i = 1, 7 do
+				res_t = {
+					"[logic@pri_ambush7_monolith",
+					i,"_hide]\nactive = walker@pri_ambush7_monolith",
+					i,"_hide\ncombat_ignore = combat_ignore\n",
 
-			"[patrol@pri_monolith_group_patrol",
-			i, "]\npath_walk = patrol",
-			v, "_walk\npath_look = patrol",
-			v, "_look\nformation = line\ndanger = danger@monolith\nsoundgroup = pri_monolith_group_patrol",
-			i, "_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
+					"[walker@pri_ambush7_monolith",
+					i,"_hide]\npath_walk = monolith",
+					i,"_hide_walk\npath_look = monolith",
+					i,"_hide_look\ncombat_ignore_cond  = always\nshow_spot = false\n",
 
-	-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
-	local id = {11, 12, 14}
-	pred = {m_predicate_s, m_predicate_s_sniper, m_predicate_s}
-	local prior_arr = {14, 16, 14}
-	for i, v in pairs({"rpg", "svd", "machine_gun"}) do
-		--- state: main
-		t = { section = table_concat({"logic@pri_monolith_stalker_", v}),
-			idle = 0,
-			prior = prior_arr[i], state = {0,1},
-			squad = squad, group = groups[8],
-			in_rest = in_r, out_rest = "",
-			online = "{+pri_monolith_spawn1}",
-			predicate = pred[i]
-		}
-		sj[#sj+1] = t
+					"[logic@pri_ambush7_monolith",
+					i,"]\nactive = walker@pri_ambush7_monolith",
+					i,"\n",
 
-		res_t = {
-			"[logic@pri_monolith_stalker_",
-			v, "]\nactive = camper@pri_monolith_stalker_",
-			v, "\ncombat_ignore = combat_ignore\n",
+					"[walker@pri_ambush7_monolith",
+					i,"]\npath_walk = monolith",
+					i,"_walk\npath_look = monolith",
+					i,"_look\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
 
-			"[camper@pri_monolith_stalker_",
-			v, "]\npath_walk = patrol",
-			id[i], "_walk\npath_look = patrol",
-			id[i], "_look\nsniper = true\nradius = 20\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\ndanger = danger@monolith\nsoundgroup = pri_monolith_rpg_svd_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
+			return ltx
+		end,
+		state = function()
+			return has_info("pri_wave7_start") and 1 or 0
+		end,
+		check = check_monolith
+	},
+	["pri_wave"] = {
+		job = function(sj, gname, squad, groups)
+			-- Снайперы в окнах.
+			local i = 1
+			local way_name = table_concat({gname,"_wsniper_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				local ptr = patrol(way_name)
+				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
-	-- prayers (молящиеся вокруг алтаря)
-	for i, v in pairs({14, 14, 14, 13, 8, 8}) do
-		t = { section = table_concat({"logic@pri_monolith_prayer", i}),
-			idle = 0,
-			prior = v, state = {0,1},
-			squad = squad, group = groups[1],
-			in_rest = in_r, out_rest = "pri_monolith_base_altar_restr",
-			online = "{+pri_monolith_spawn2}",
-			predicate = m_predicate_r
-		}
-		sj[#sj+1] = t
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@",gname,"_wsniper_", i}),
+					prior = 1, squad = squad, group = groups[1],
+					in_rest = wp_prop.inr, out_rest = wp_prop.outr
+				}
 
-		res_t = {
-			"[logic@pri_monolith_prayer",
-			i, "]\nactive = walker@pri_monolith_prayer",
-			i, "\ncombat_ignore = combat_ignore\non_hit = hit@altar_monolith\non_death = hit@altar_monolith\n",
+				i = i + 1
+				way_name = table_concat({gname,"_wsniper_",i,"_walk"})
+			end
 
-			"[walker@pri_monolith_prayer",
-			i, "]\npath_walk = prayer",
-			i, "_walk\npath_look = prayer_look",
-			math.random(1, 2),
-			"\ndanger = danger@monolith\ncombat_ignore_cond = {-pri_monolith_base_attack_altar_zone}\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
+			-- Снайперы на крышах.
+			i = 1
+			way_name = table_concat({gname,"_rsniper_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				local ptr = patrol(way_name)
+				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
-	-- kamps
-	prior = {{11, 11, 11, 7}, {10, 10, 10, 7}, {11, 11, 11}, {9, 9, 9}, {13, 13, 7}}
-	pred = {{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
-			{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
-			{m_predicate_e, m_predicate_e, m_predicate_e},
-			{m_predicate_s, m_predicate_s, m_predicate_s},
-			{m_predicate_e, m_predicate_all, m_predicate_all}}
-	online_cond  = {"{+pri_monolith_spawn2}", "{+pri_monolith_spawn2}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn2}"}
-	state1_restr = {"_base_restr", "_base_restr", "", "_kolos_restr", "_base_restr"}
-	local pr, pd
-	for i, v in pairs({4, 4, 3, 3, 3}) do
-		pr = prior[i]
-		pd = pred[i]
-		for j = 1, v do
-			--- state: main
-			t = { section = table_concat({"logic@pri_monolith_kamp", i, "_soldier"}),
-				idle = 0,
-				prior = pr[j], state = {0},
-				squad = squad, group = groups[i],
-				in_rest = in_r, out_rest = "",
-				online = online_cond[i],
-				predicate = pd[j]
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@",gname,"_rsniper_", i}),
+					prior = 1, squad = squad, group = groups[2],
+					in_rest = wp_prop.inr, out_rest = wp_prop.outr
+				}
+
+				i = i + 1
+				way_name = table_concat({gname,"_rsniper_",i,"_walk"})
+			end
+
+			-- Свободные волкеры в кемпах.
+			i = 1
+			way_name = table_concat({gname,"_free_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				local ptr = patrol(way_name)
+				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+
+				local kampi = process_num(wp_prop.kampi, 1) -- kamp index
+
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@",gname,"_free_", i}),
+					prior = 1, squad = squad, group = groups[2 + kampi],
+					in_rest = wp_prop.inr, out_rest = wp_prop.outr
+				}
+
+				i = i + 1
+				way_name = table_concat({gname,"_free_",i,"_walk"})
+			end
+		end,
+		ltx = function(gname)
+			local ptr, wp_prop, sdist, gdist, stime, wtime, ktime, gtime, htime, kampi, starti, deathi
+			local res_t = {
+				"[wounded]\nhp_state = 0|help_me@help\nhp_state_see = 0|wounded@help_see\nhp_victim = 0|nil\nhp_fight = 0|false\nhp_cover = 0|false\n",
+
+				"[danger@ignore]\nignore_types = corpse,sound\nignore_distance = 0\n",
+
+				"[danger@normal]\nignore_types = corpse, sound\nignore_distance = 0\n",
+
+				"[danger@kamp]\nignore_types = corpse\nignore_distance = 0\n" }
+			local ltx = table_concat(res_t)
+
+			-- Снайперы в окнах.
+			local i = 1
+			local way_name = table_concat({gname,"_wsniper_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+
+				stime = process_range(wp_prop.stime, 10000, 15000) -- sniper time
+				gtime = process_range(wp_prop.gtime, 15000, 20000) -- guard time
+				htime = process_range(wp_prop.htime,  6000,  8000) -- hide time
+
+				starti = wp_prop.starti -- start infoportion
+				deathi = wp_prop.deathi -- death infoportion
+
+				-- добавляем описание должности в лтх.
+				res_t = {"[logic@",gname,"_wsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				if starti then
+					ltx = ltx .. table_concat({"active = camper@",gname,"_wsniper_", i, "_wait\n"})
+
+					if deathi then
+						res_t = {"on_death = death@",gname,"_wsniper_", i, "\n",
+							"[death@",gname,"_wsniper_", i, "]\non_info = %+", deathi, "%\n" }
+						ltx = ltx .. table_concat(res_t)
+					end
+					res_t = {
+						"[camper@",gname,"_wsniper_",
+						i, "_wait]\npath_walk = wsniper_",
+						i, "_wait_walk\npath_look = wsniper_",
+						i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
+						starti, "} camper@",gname,"_wsniper_",
+						i, "\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
+					ltx = ltx .. table_concat(res_t)
+				else
+					ltx = ltx .. table_concat({"active = camper@",gname,"_wsniper_", i, "\n"})
+				end
+
+				res_t = {
+					"[camper@",gname,"_wsniper_",
+					i, "]\npath_walk = wsniper_",
+					i, "_walk\npath_look = wsniper_",
+					i, "_look\ndef_state_moving = sneak_run ;assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\nradius = 0\non_timer = ",
+					stime, " | {!has_enemy} camper@",gname,"_wsniper_",
+					i, "_guard, camper@",gname,"_wsniper_",
+					i, "_hide\nwounded = wounded\ndanger = danger@ignore\n",
+
+					"[camper@",gname,"_wsniper_",
+					i, "_guard]\npath_walk = wsniper_",
+					i, "_walk\npath_look = wsniper_",
+					i, "_look\ndef_state_moving = sneak_run ;assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\nno_retreat = true\nradius = 0\non_timer = ",
+					gtime, " | {!has_enemy} camper@",gname,"_wsniper_",
+					i, ", {!see_enemy} camper@",gname,"_wsniper_",
+					i, "\non_info = {=has_enemy !see_enemy} camper@",
+					gname,"_wsniper_",
+					i, "\nwounded = wounded\ndanger = danger@ignore\n",
+
+					"[camper@",gname,"_wsniper_",
+					i, "_hide]\npath_walk = wsniper_",
+					i, "_walk\npath_look = wsniper_",
+					i, "_look\ndef_state_moving = sneak_run\ndef_state_campering = hide_na\nno_retreat = true\nradius = 0\nshow_spot = false\non_timer = ",
+					htime, " | camper@",gname,"_wsniper_",
+					i, "_guard\nwounded = wounded\ndanger = danger@ignore\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				i = i + 1
+				way_name = table_concat({gname,"_wsniper_",i,"_walk"})
+			end
+
+			-- Снайперы на крышах.
+			i = 1
+			way_name = table_concat({gname,"_rsniper_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+
+				sdist = process_num(wp_prop.sdist, 50) -- sniper distance
+				gdist = process_num(wp_prop.gdist, 40) -- guard distance
+				if gdist >= sdist then
+					gdist = sdist + 5
+				end
+
+				starti = wp_prop.starti -- start infoportion
+				deathi = wp_prop.deathi -- death infoportion
+
+				-- добавляем описание должности в лтх.
+				res_t = {"[logic@",gname,"_rsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				if starti then
+					ltx = ltx .. table_concat({"active = camper@",gname,"_rsniper_", i, "_wait\n"})
+
+					if deathi then
+						res_t = {"on_death = death@",gname,"_rsniper_", i, "\n",
+							"[death@",gname,"_rsniper_", i, "]\n",
+							"on_info = %+", deathi, "%\n" }
+						ltx = ltx .. table_concat(res_t)
+					end
+
+					res_t = {
+						"[camper@",gname,"_rsniper_",
+						i,"_wait]\npath_walk = rsniper_",
+						i, "_wait_walk\npath_look = rsniper_",
+						i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
+						starti, "} camper@",gname,"_rsniper_",
+						i, "\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
+					ltx = ltx .. table_concat(res_t)
+				else
+					ltx = ltx .. table_concat({"active = camper@",gname,"_rsniper_", i,"\n"})
+				end
+
+				res_t = {
+					"[camper@",gname,"_rsniper_",
+					i,"]\npath_walk = rsniper_",
+					i, "_walk\npath_look = rsniper_",
+					i, "_look\ndef_state_moving = assault\ndef_state_campering = hide_na\ndef_state_campering_fire = hide_sniper_fire\nsniper = true\nradius = 0\non_actor_dist_le_nvis = ",
+					gdist, " | camper@",gname,"_rsniper_",
+					i,"_guard\nwounded = wounded\ndanger = danger@normal\n",
+
+					"[camper@",gname,"_rsniper_",
+					i,"_guard]\npath_walk = rsniper_",
+					i, "_walk\npath_look = rsniper_",
+					i, "_look\ndef_state_moving = assault\ndef_state_campering = hide_na\ndef_state_campering_fire = hide_fire\nno_retreat = true\nradius = 0\non_actor_dist_ge_nvis = ",
+					sdist, " | {!has_enemy} camper@",gname,"_rsniper_",
+					i,", {!see_enemy} camper@",gname,"_rsniper_",
+					i,"\non_info = {=has_enemy !see_enemy} camper@",gname,"_rsniper_",
+					i,"\nwounded = wounded\ndanger = danger@normal\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				i = i + 1
+				way_name = table_concat({gname,"_rsniper_",i,"_walk"})
+			end
+
+			-- Свободные волкеры в кемпах.
+			i = 1
+			way_name = table_concat({gname,"_free_",i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+
+				wtime = process_range(wp_prop.wtime, 40000,  80000) -- walker state time
+				ktime = process_range(wp_prop.ktime, 90000, 180000) -- kamp state time
+
+				kampi = process_num(wp_prop.kampi, 1) -- kamp index
+
+				starti = wp_prop.starti -- start infoportion
+				deathi = wp_prop.deathi -- death infoportion
+
+				-- добавляем описание должности в лтх.
+				res_t = {"[logic@",gname,"_free_", i, "]\ncombat_ignore = combat_ignore\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				if starti then
+					ltx = ltx .. table_concat({"active = camper@",gname,"_free_",i,"_wait\n"})
+
+					if deathi then
+						res_t = {"on_death = death@",gname,"_free_",
+						i, "\n[death@",gname,"_free_",
+						i, "]\non_info = %+", deathi, "%\n" }
+						ltx = ltx .. table_concat(res_t)
+					end
+
+					res_t = {
+						"[camper@",gname,"_free_",
+						i,"_wait]\npath_walk = free_",
+						i, "_wait_walk\npath_look = free_",
+						i, "_wait_look\nradius = 4\nno_retreat = true\nattack_sound = false\nshow_spot = false\non_info = {+",
+						starti, "} walker@",gname,"_free_",
+						i,"\nwounded = wounded\ndanger = danger@ignore\ncombat_ignore_cond = always\n" }
+					ltx = ltx .. table_concat(res_t)
+				else
+					ltx = ltx .. table_concat({"active = walker@",gname,"_free_",i,"\n"})
+				end
+
+				res_t = {
+					"[walker@",gname,"_free_",
+					i,"]\npath_walk= free_",
+					i, "_walk\npath_look= free_",
+					i, "_look\ndef_state_moving1= patrol\ndef_state_moving2= assault\ndef_state_moving3= assault\non_timer= ",
+					wtime, " | kamp@",gname,"_free_",
+					i,"\nwounded= wounded\n",
+
+					"[kamp@",gname,"_free_",
+					i,"]\ncenter_point = kamp_",
+					kampi, "\ndef_state_moving = patrol\non_timer = ", ktime, " | walker@",gname,"_free_",
+					i,"\nwounded = wounded\ndanger = danger@kamp\n" }
+				if gname == "pri_wave7" then
+					res_t[#res_t+1] = "avoid_pos=88\n"
+				end
+				ltx = ltx .. table_concat(res_t)
+
+				i = i + 1
+				way_name = table_concat({gname,"_free_",i,"_walk"})
+			end
+
+			return ltx
+		end,
+		check = function(npc_community, se_obj)
+			return se_obj ~= nil
+		end
+	},
+	["pri_corner"] = {
+		job = function(sj, gname, squad, groups)
+			for i = 1, 3 do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_corner_monolith", i }),
+					prior = 1, squad = squad, group = groups[1]
+				}
+			end
+		end,
+		ltx = function()
+			local ltx = ""
+			local res_t
+
+			for i = 1, 3 do
+				res_t = {
+					"[logic@pri_corner_monolith",
+					i, "]\nactive = camper@pri_corner_monolith",
+					i, "_guard\ncombat_ignore = combat_ignore\n",
+
+					"[camper@pri_corner_monolith",
+					i, "_guard]\npath_walk = guard_",
+					i, "_walk\npath_look = guard_",
+					i, "_look\nradius = 20\non_info = {+pri_corner_start} patrol@pri_corner_monolith_raid\ncombat_ignore_cond = always\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			return ltx .. "[patrol@pri_corner_monolith_raid]\npath_walk = raid_walk\npath_look = raid_look\non_signal = arrived | %+pri_corner_end%\n"
+		end,
+		check = check_monolith
+	},
+	["pri_depot"] = {
+		job = function(sj, gname, squad, groups)
+			local way_name = "pri_depot_controllers_home"
+			local ptr = patrol(way_name)
+			local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			local count = process_num(wp_prop.count, 3) -- controllers number
+
+			for i = 1, count do
+				sj[#sj + 1] = {
+					section = "logic@pri_depot_controller",
+					prior = 1,
+					squad = squad, group = groups[1],
+					out_rest = "pri_depot_base_restr",
+					predicate = z_predicate_c
+				}
+			end
+
+			way_name = "pri_depot_psydogs_home"
+			ptr = patrol(way_name)
+			wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			count = process_num(wp_prop.count, 9) -- psydogs number
+
+			for i = 1, count do
+				sj[#sj + 1] = {
+					section = "logic@pri_depot_psydog",
+					prior = 1,
+					squad = squad, group = groups[2],
+					in_rest = "pri_depot_base_restr",
+					predicate = z_predicate_pd
+				}
+			end
+		end,
+		ltx = function()
+			local res_t = {
+				"[logic@pri_depot_controller]\nactive = mob_home@pri_depot_controller\n",
+
+				"[mob_home@pri_depot_controller]\npath_home = controllers_home\naggressive_home\n",
+
+				"[logic@pri_depot_psydog]\nactive = mob_home@pri_depot_psydog\n",
+
+				"[mob_home@pri_depot_psydog]\npath_home = psydogs_home\naggressive_home\n" }
+
+			return table_concat(res_t)
+		end,
+		check = function(npc_community)
+			return npc_community == "controller" or npc_community == "pseudodog"
+		end
+	},
+	["pri_monolith"] = {
+		job = function(sj, gname, squad, groups)
+			local prior, pred
+			local state1_kamp, state1_restr
+
+			-- leader
+			sj[#sj + 1] = {
+				section = "logic@pri_monolith_leader",
+				prior = 15,
+				squad = squad, group = groups[1],
+				out_rest = "pri_monolith_leader_restr",
+				online = "{+pri_monolith_spawn2}",
+				predicate = m_predicate_l
 			}
-			sj[#sj+1] = t
 
-			t = { section = table_concat({"logic@pri_monolith_kamp", i, "_attack", j}),
-				idle = 0,
-				prior = pr[j], state = {1},
-				squad = squad, group = groups[i],
-				in_rest = "", out_rest = "pri_monolith"..state1_restr[i],
-				online = online_cond[i],
-				predicate = pd[j]
+			sj[#sj + 1] = {
+				section = "logic@pri_monolith_leader_attack",
+				prior = 15, state = {1},
+				squad = squad, group = groups[1],
+				out_rest = "pri_monolith_leader_restr",
+				online = "{+pri_monolith_spawn2}",
+				predicate = m_predicate_l
 			}
-			sj[#sj+1] = t
 
-			res_t = {
-				"[logic@pri_monolith_kamp", i, "_attack",
-				j, "]\nactive = camper@pri_monolith_kamp", i, "_attack",
-				j, "\ncombat_ignore = combat_ignore\n",
+			-- walkers (одиночные патрули вокруг базы)
+			prior = {8, 7, 8, 12, 12, 7}
+			state1_restr = {"", "_kolos_restr", "_base_restr", "", "", ""}
+			local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
+			for i, v in ipairs({1, 3, 4, 5, 6, 8}) do
+				--- state: main
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_monolith_patrol", v}),
+					prior = prior[i],
+					squad = squad, group = groups[6],
+					online = "{+pri_monolith_spawn1}",
+					predicate = pred_pl[i]
+				}
 
-				"[camper@pri_monolith_kamp", i, "_attack",
-				j, "]\npath_walk = kamp", i, "_attack",
-				j, "_walk\npath_look = kamp", i, "_attack",
-				j, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-			ltx = ltx .. table_concat(res_t)
-        end
-		res_t = {
-			"[logic@pri_monolith_kamp",
-			i, "_soldier]\nactive = kamp@pri_monolith_kamp",
-			i, "_soldier\ncombat_ignore = combat_ignore\n",
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_monolith_patrol", v, "_attack"}),
+					prior = prior[i], state = {1},
+					squad = squad, group = groups[6],
+					out_rest = "pri_monolith"..state1_restr[i],
+					online = "{+pri_monolith_spawn1}",
+					predicate = m_predicate_s
+				}
+			end
 
-			"[kamp@pri_monolith_kamp",
-			i, "_soldier]\ncenter_point = kamp",
-			i, "\ndanger = danger@monolith\ndef_state_moving = run\nsoundgroup = pri_monolith_kamp",
-			i, "\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-		ltx = ltx .. table_concat(res_t)
-    end
+			-- followers (парные патрули перед базой)
+			prior = {8, 8, 8, 8}
+			state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
+			state1_restr = {"_kolos_restr",    ""}
+			for i, v in ipairs({7, 10}) do
+				for j = 1, 2 do
+					--- state: main
+					sj[#sj + 1] = {
+						section = table_concat({"logic@pri_monolith_group_patrol", i}),
+						prior = prior[i + 2 * (j - 1)],
+						squad = squad, group = groups[7],
+						online = "{+pri_monolith_spawn1}",
+						predicate = m_predicate_s
+					}
 
-	-- snipers (снайперы на большом балконе главной базы)
-	for i = 1, 2 do
-		t = { section =  table_concat({"logic@pri_monolith_sniper", i}),
-			idle = 0,
-			prior = 16, state = {0,1},
-			squad = squad, group = groups[9],
-			in_rest = in_r, out_rest = "",
-			online = "{+pri_monolith_spawn1}",
-			predicate = m_predicate_s_sniper
-		}
-		sj[#sj+1] = t
+					sj[#sj + 1] = {
+						section = "logic@pri_monolith"..state1_kamp[i],
+						prior = prior[i + 2 * (j - 1)], state = {1},
+						squad = squad, group = groups[7],
+						out_rest = "pri_monolith"..state1_restr[i],
+						online = "{+pri_monolith_spawn1}",
+						predicate = m_predicate_s
+					}
+				end
+			end
 
-		res_t = {
-			"[logic@pri_monolith_sniper",
-			i, "]\nactive= camper@pri_monolith_sniper",
-			i, "_wait\ncombat_ignore= combat_ignore\n",
+			-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
+			pred = {m_predicate_s, m_predicate_s_sniper, m_predicate_s}
+			local prior_arr = {14, 16, 14}
+			for i, v in ipairs({"rpg", "svd", "machine_gun"}) do
+				--- state: main
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_monolith_stalker_", v}),
+					prior = prior_arr[i], state = {0,1},
+					squad = squad, group = groups[8],
+					online = "{+pri_monolith_spawn1}",
+					predicate = pred[i]
+				}
+			end
 
-			"[camper@pri_monolith_sniper",
-			i, "_wait]\npath_walk = balcony_sniper",
-			i, "_walk\npath_look = balcony_sniper",
-			i, "_look\ndef_state_moving = assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\nsniper = true\nradius = 0\non_info = {+pri_monolith_snipers_free} walker@pri_monolith_sniper",
-			i, "_free\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\ndanger = danger@monolith\n",
+			-- prayers (молящиеся вокруг алтаря)
+			for i, v in ipairs({14, 14, 14, 13, 8, 8}) do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@pri_monolith_prayer", i}),
+					prior = v, state = {0,1},
+					squad = squad, group = groups[1],
+					out_rest = "pri_monolith_base_altar_restr",
+					online = "{+pri_monolith_spawn2}",
+					predicate = m_predicate_r
+				}
+			end
 
-			"[walker@pri_monolith_sniper",
-			i, "_free]\npath_walk = balcony_sniper",
-			i, "_free_walk\npath_look = balcony_sniper",
-			i, "_free_look\non_info = {-pri_monolith_snipers_free} camper@pri_monolith_sniper",
-			i, "_wait\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
-		ltx = ltx .. table_concat(res_t)
-	end
+			-- kamps
+			prior = {{11, 11, 11, 7}, {10, 10, 10, 7}, {11, 11, 11}, {9, 9, 9}, {13, 13, 7}}
+			pred = {{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
+					{m_predicate_s, m_predicate_s, m_predicate_all, m_predicate_all},
+					{m_predicate_e, m_predicate_e, m_predicate_e},
+					{m_predicate_s, m_predicate_s, m_predicate_s},
+					{m_predicate_e, m_predicate_all, m_predicate_all}}
+			online_cond  = {"{+pri_monolith_spawn2}", "{+pri_monolith_spawn2}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn1}", "{+pri_monolith_spawn2}"}
+			state1_restr = {"_base_restr", "_base_restr", "", "_kolos_restr", "_base_restr"}
+			local pr, pd
+			for i, v in ipairs({4, 4, 3, 3, 3}) do
+				pr = prior[i]
+				pd = pred[i]
+				for j = 1, v do
+					--- state: main
+					sj[#sj + 1] = {
+						section = table_concat({"logic@pri_monolith_kamp", i, "_soldier"}),
+						prior = pr[j],
+						squad = squad, group = groups[i],
+						online = online_cond[i],
+						predicate = pd[j]
+					}
 
-	gulags.pri_monolith.ltx = ltx
-end
+					sj[#sj + 1] = {
+						section = table_concat({"logic@pri_monolith_kamp", i, "_attack", j}),
+						prior = pr[j], state = {1},
+						squad = squad, group = groups[i],
+						out_rest = "pri_monolith"..state1_restr[i],
+						online = online_cond[i],
+						predicate = pd[j]
+					}
+				end
+			end
 
--- States ----------------------------------------------------------------
-gulags.pri_monolith.state = function(gulag)
-    if gulag.state == 1 and game.get_game_time():diffSec(gulag.stateBegin) < 1800 then -- 3 minutes
-        return 1 -- somebody attack base
-    else
-        local k, v = 0, 0
-        for k,v in pairs(gulag.Object) do
-            if v ~= true then
-                local enemy = v:best_enemy()
-                if enemy ~= nil then
-					if enemy:is_stalker() then
-                        Actor:give_info_portion("pri_monolith_base_attacked")
-                        return 1
-                    end
-                end
-            end
-        end
-        Actor:disable_info_portion("pri_monolith_base_attacked")
-    end
+			-- snipers (снайперы на большом балконе главной базы)
+			for i = 1, 2 do
+				sj[#sj + 1] = {
+					section =  table_concat({"logic@pri_monolith_sniper", i}),
+					prior = 16, state = {0,1},
+					squad = squad, group = groups[9],
+					online = "{+pri_monolith_spawn1}",
+					predicate = m_predicate_s_sniper
+				}
+			end
+		end,
+		ltx = function()
+			local res_t = {
+				"[danger@monolith]\nignore_distance_sound = 150\n",
 
-    return 0 -- normal state
-end
+				-- кемп в гостиннице при атаке
+				"[logic@pri_monolith_fight_in_hotel]\nactive = kamp@pri_monolith_fight_in_hotel\ncombat_ignore = combat_ignore\n",
 
---------------------------------------------------------------------------
--- Stadium (гранатометчики на стадионе)
---------------------------------------------------------------------------
--- Jobs ------------------------------------------------------------------
-gulags.pri_stadium.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local res_t, t
-	local i, ltx = 1, ""
-	local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
-	-- Проверяем наличие снайперов в лагере.
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
+				"[kamp@pri_monolith_fight_in_hotel]\ncenter_point = kamp6\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
 
-		-- добавляем должность
-		t = { section = table_concat({"logic@", way_name}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "pri_stadium_snipers_restr",
-			online = "{+pri_stadium_scene_start}",
-			predicate = m_predicate_e_rpg
-		}
-		sj[#sj+1] = t
+				-- кемп в "Колосе" при атаке
+				"[logic@pri_monolith_fight_in_kolos]\nactive = kamp@pri_monolith_fight_in_kolos\ncombat_ignore = combat_ignore\n",
 
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", way_name, "]\nactive = camper@", way_name, "\ncombat_ignore = combat_ignore\n",
+				"[kamp@pri_monolith_fight_in_kolos]\ncenter_point = kamp4\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
 
-			"[camper@", way_name, "]\npath_walk = sniper_",
-			i, "_walk\npath_look = sniper_look\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\ncombat_ignore_cond = {=enemy_gulag(pri_stadium_lair)}\n" }
-		ltx = ltx .. table_concat(res_t)
-		i = i + 1
-		way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
-	end
+				"[logic@pri_monolith_leader]\nactive = walker@pri_monolith_leader\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
 
-    gulags.pri_stadium.ltx = ltx
+				"[death@pri_monolith_leader]\non_info = %+sar2_death_55%\n",
+
+				"[walker@pri_monolith_leader]\npath_walk = leader_walk\npath_look = leader_look\ndanger = danger@monolith\ncombat_ignore_cond  = {=pri_monolith_combat_ignore}\n",
+
+				"[logic@pri_monolith_leader_attack]\nactive = camper@pri_monolith_leader_attack\ncombat_ignore = combat_ignore\non_death = death@pri_monolith_leader\n",
+
+				"[camper@pri_monolith_leader_attack]\npath_walk = leader_attack_walk\npath_look = leader_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+
+				"[hit@altar_monolith]\non_info = %+pri_monolith_base_attack_altar_zone%\n"
+			}
+			local ltx = table_concat(res_t)
+
+			-- walkers (одиночные патрули вокруг базы)
+			for i, v in ipairs({1, 3, 4, 5, 6, 8}) do
+				res_t = {
+					"[logic@pri_monolith_patrol",
+					v, "]\nactive = walker@pri_monolith_patrol",
+					v, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@pri_monolith_patrol",
+					v, "]\npath_walk = patrol",
+					v, "_walk\npath_look = patrol",
+					v, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
+
+					"[logic@pri_monolith_patrol",
+					v, "_attack]\nactive = camper@pri_monolith_patrol",
+					v, "_attack\ncombat_ignore = combat_ignore\n",
+
+					"[camper@pri_monolith_patrol",
+					v, "_attack]\npath_walk = patrol",
+					v, "_attack_walk\npath_look = patrol",
+					v, "_attack_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- followers (парные патрули перед базой)
+			for i, v in ipairs({7, 10}) do
+				res_t = {
+					"[logic@pri_monolith_group_patrol",
+					i, "]\nactive = patrol@pri_monolith_group_patrol",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[patrol@pri_monolith_group_patrol",
+					i, "]\npath_walk = patrol",
+					v, "_walk\npath_look = patrol",
+					v, "_look\nformation = line\ndanger = danger@monolith\nsoundgroup = pri_monolith_group_patrol",
+					i, "_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
+			local id = {11, 12, 14}
+			for i, v in ipairs({"rpg", "svd", "machine_gun"}) do
+				res_t = {
+					"[logic@pri_monolith_stalker_",
+					v, "]\nactive = camper@pri_monolith_stalker_",
+					v, "\ncombat_ignore = combat_ignore\n",
+
+					"[camper@pri_monolith_stalker_",
+					v, "]\npath_walk = patrol",
+					id[i], "_walk\npath_look = patrol",
+					id[i], "_look\nsniper = true\nradius = 20\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\ndanger = danger@monolith\nsoundgroup = pri_monolith_rpg_svd_sg\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- prayers (молящиеся вокруг алтаря)
+			for i, v in ipairs({14, 14, 14, 13, 8, 8}) do
+				res_t = {
+					"[logic@pri_monolith_prayer",
+					i, "]\nactive = walker@pri_monolith_prayer",
+					i, "\ncombat_ignore = combat_ignore\non_hit = hit@altar_monolith\non_death = hit@altar_monolith\n",
+
+					"[walker@pri_monolith_prayer",
+					i, "]\npath_walk = prayer",
+					i, "_walk\npath_look = prayer_look",
+					math_random(1, 2),
+					"\ndanger = danger@monolith\ncombat_ignore_cond = {-pri_monolith_base_attack_altar_zone}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- kamps
+			for i, v in ipairs({4, 4, 3, 3, 3}) do
+				for j = 1, v do
+					res_t = {
+						"[logic@pri_monolith_kamp", i, "_attack",
+						j, "]\nactive = camper@pri_monolith_kamp", i, "_attack",
+						j, "\ncombat_ignore = combat_ignore\n",
+
+						"[camper@pri_monolith_kamp", i, "_attack",
+						j, "]\npath_walk = kamp", i, "_attack",
+						j, "_walk\npath_look = kamp", i, "_attack",
+						j, "_look\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+					ltx = ltx .. table_concat(res_t)
+				end
+				res_t = {
+					"[logic@pri_monolith_kamp",
+					i, "_soldier]\nactive = kamp@pri_monolith_kamp",
+					i, "_soldier\ncombat_ignore = combat_ignore\n",
+
+					"[kamp@pri_monolith_kamp",
+					i, "_soldier]\ncenter_point = kamp",
+					i, "\ndanger = danger@monolith\ndef_state_moving = run\nsoundgroup = pri_monolith_kamp",
+					i, "\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- snipers (снайперы на большом балконе главной базы)
+			for i = 1, 2 do
+				res_t = {
+					"[logic@pri_monolith_sniper",
+					i, "]\nactive= camper@pri_monolith_sniper",
+					i, "_wait\ncombat_ignore= combat_ignore\n",
+
+					"[camper@pri_monolith_sniper",
+					i, "_wait]\npath_walk = balcony_sniper",
+					i, "_walk\npath_look = balcony_sniper",
+					i, "_look\ndef_state_moving = assault\ndef_state_campering = threat\ndef_state_campering_fire = threat_fire\nsniper = true\nradius = 0\non_info = {+pri_monolith_snipers_free} walker@pri_monolith_sniper",
+					i, "_free\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\ndanger = danger@monolith\n",
+
+					"[walker@pri_monolith_sniper",
+					i, "_free]\npath_walk = balcony_sniper",
+					i, "_free_walk\npath_look = balcony_sniper",
+					i, "_free_look\non_info = {-pri_monolith_snipers_free} camper@pri_monolith_sniper",
+					i, "_wait\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n" }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			return ltx
+		end,
+		state = function(gulag)
+			if gulag.state == 1 and game.get_game_time():diffSec(gulag.stateBegin) < 1800 then -- 3 minutes
+				return 1 -- somebody attack base
+			end
+
+			for k,v in pairs(gulag.Object) do
+				if v ~= true then
+					local enemy = v:best_enemy()
+					if enemy and enemy:is_stalker() then
+						give_info("pri_monolith_base_attacked")
+						return 1
+					end
+				end
+			end
+
+			disable_info("pri_monolith_base_attacked")
+			return 0 -- normal state
+		end,
+		check = check_monolith
+	},
+	["pri_stadium"] = {
+		job = function(sj, gname, squad, groups)
+			local i = 1
+			local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+			-- Проверяем наличие снайперов в лагере.
+			while level_patrol_path_exists(way_name) do
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@", way_name}),
+					prior = 1, squad = squad, group = groups[1],
+					out_rest = "pri_stadium_snipers_restr",
+					online = "{+pri_stadium_scene_start}",
+					predicate = m_predicate_e_rpg
+				}
+
+				i = i + 1
+				way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+			end
+		end,
+		ltx = function()
+			local res_t
+			local i, ltx = 1, ""
+			local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+			-- Проверяем наличие снайперов в лагере.
+			while level_patrol_path_exists(way_name) do
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", way_name, "]\nactive = camper@", way_name, "\ncombat_ignore = combat_ignore\n",
+
+					"[camper@", way_name, "]\npath_walk = sniper_",
+					i, "_walk\npath_look = sniper_look\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\ncombat_ignore_cond = {=enemy_gulag(pri_stadium_lair)}\n" }
+				ltx = ltx .. table_concat(res_t)
+
+				i = i + 1
+				way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
+			end
+
+			return ltx
+		end,
+		check = check_monolith
+	}
+}
+
+function get_gulag(gulag_type)
+	return gulags[gulag_type]
 end

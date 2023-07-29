@@ -12,18 +12,9 @@ local BLOODSUCKER_VAMPIRE_DIST = 1.5
 local PDOG_PSY_EFFECT_DIST = 12
 local PDOG_PSY_EFFECT_TURN_ANGLE = 1
 local BURER_TELE_ATTACK_DIST = 25
-local CONTROLLER_DEATH_ZONE_DIST = 10
----------------------------------------------------------------------------------------------------
-local clsid_bloodsucker_s = clsid.bloodsucker_s
-local clsid_burer_s = clsid.burer_s
-local clsid_controller_s = clsid.controller_s
-local clsid_poltergeist_s = clsid.poltergeist_s
-local clsid_pseudodog_s = clsid.pseudodog_s
 --[[-----------------------------------------------------------------------------------------------
  * Bloodsucker vampire sucking
 --]]-----------------------------------------------------------------------------------------------
-local bloodsucker_vampire_timer = 0
----------------------------------------------------------------------------------------------------
 local bloodsucker_vampire_states = {
 	prepare = 0,
 	continue = 1,
@@ -36,12 +27,23 @@ local bloodsucker_vampire_unique = {
 	["bun_bloodsucker_prim"] = true
 }
 ---------------------------------------------------------------------------------------------------
-function bloodsucker_vampire(obj)
-	if bloodsucker_vampire_check_conditions(obj) then
+function bloodsucker_vampire(self)
+	if not actor_flags.alive or actor_flags.sleep_state then
+		return
+	end
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if not (enemy and obj:see(enemy) and enemy:id() == 0) then
+		return
+	end
+	if actor_flags.bloodsucker_vampire_state then
+		return
+	end
+	actor_flags.bloodsucker_vampire_state = true
+	if bloodsucker_vampire_check_conditions(self) then
 		local state = bloodsucker_vampire_states.prepare
 		local fire_time = 0
 		local last_camera_type = get_actor_data("camera_type")
-		actor_flags.bloodsucker_vampire_state = true
 		-- run vampire
 		Actor:set_fastcall(
 			function()
@@ -75,9 +77,9 @@ function bloodsucker_vampire(obj)
 						xr_effects.enable_ui()
 						level.add_complex_effector("effector_head_shot", effector_ids.head_shot)
 						set_actor_data("camera_type", last_camera_type)
-						make_hit(Actor, config:r_float(obj:section(), "Vampire_Wound"), 5000, hit.wound, obj:direction(), obj)
+						make_hit(Actor, config:r_float_cache(obj:section(), "Vampire_Wound"), 5000, hit.wound, obj:direction(), obj)
 						-- bloodsucker effects
-						obj.health = config:r_float(obj:section(), "Vampire_Gain_Health")
+						obj.health = config:r_float_cache(obj:section(), "Vampire_Gain_Health")
 						-- switch state
 						state = bloodsucker_vampire_states.run_away
 					end
@@ -85,7 +87,7 @@ function bloodsucker_vampire(obj)
 					if not obj:action() then
 						-- bloodsucker effects
 						action(obj, move(move.run_fwd, random_position(obj:position(), 30)), sound("monsters\\bloodsucker\\invisible", "bip01_head"), cond(cond.time_end, 8000))
-						play_object_bones_particle(obj, config:r_string(obj:section(), "Particle_Invisible"))
+						play_object_bones_particle(obj, config:r_string_cache(obj:section(), "Particle_Invisible"))
 						obj:set_bone_visible("bip01_pelvis", 0)
 						-- switch state
 						state = bloodsucker_vampire_states.completed
@@ -94,7 +96,7 @@ function bloodsucker_vampire(obj)
 					if not obj:action() and distance_between(obj, Actor) > 5 then
 						-- bloodsucker effects
 						xr_logic.mob_release(obj)
-						bloodsucker_vampire_timer = time_real_ms + config:r_u32(obj:section(), "Vampire_Delay")
+						self.timer = time_real_ms + config:r_u32_cache(obj:section(), "Vampire_Delay")
 						actor_flags.bloodsucker_vampire_state = false
 						return true
 					end
@@ -102,19 +104,18 @@ function bloodsucker_vampire(obj)
 				return false
 			end
 		)
+	else
+		actor_flags.bloodsucker_vampire_state = false
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function bloodsucker_vampire_check_conditions(obj)
-	-- check monster class
-	if obj:clsid() ~= clsid_bloodsucker_s then
-		return false
-	end
+function bloodsucker_vampire_check_conditions(self)
 	-- check last attack timer
-	if bloodsucker_vampire_timer >= time_real_ms then
+	if self.timer >= time_real_ms then
 		return false
 	end
 	-- check distance
+	local obj = self.object
 	if distance_between(obj, Actor) > BLOODSUCKER_VAMPIRE_DIST then
 		return false
 	end
@@ -123,7 +124,7 @@ function bloodsucker_vampire_check_conditions(obj)
 		return false
 	end
 	-- check bloodsucker health
-	if obj.health > config:r_float(obj:section(), "Vampire_Max_Health") then
+	if obj.health > self.max_health then
 		return false
 	end
 	-- check bloodsucker movement
@@ -134,33 +135,31 @@ function bloodsucker_vampire_check_conditions(obj)
 	if not (Actor:is_actor_normal() or Actor:is_actor_walking() or Actor:is_actor_running()) then
 		return false
 	end
-	-- check unique bloodsuckers
-	if bloodsucker_vampire_unique[obj:name()] then
+	-- check actor in car
+	if Actor:get_current_holder() then
 		return false
 	end
-	-- check bloodsuckers near
-	local mob_id = obj:id()
-	for k, obj in pairs(db.creatures) do
-		if k ~= mob_id then
-			if obj:alive() and obj:clsid() == clsid_bloodsucker_s and distance_between(obj, Actor) <= 30 then
-				local enemy = obj:get_enemy()
-				if enemy and enemy:id() == 0 then
-					return false
-				end
-			end
-		end
-	end
 	return true
+end
+---------------------------------------------------------------------------------------------------
+function bloodsucker_vampire_init(self)
+	if bloodsucker_vampire_unique[self.object:name()] then
+		return
+	end
+	self.max_health = config:r_float_cache(self.object:section(), "Vampire_Max_Health")
 end
 --[[-----------------------------------------------------------------------------------------------
  * Pseudodog psy effect
 --]]-----------------------------------------------------------------------------------------------
-local pseudodog_psy_effect_timer = 0
----------------------------------------------------------------------------------------------------
-function pseudodog_psy_effect(obj)
-	if obj:clsid() == clsid_pseudodog_s and distance_between(obj, Actor) <= PDOG_PSY_EFFECT_DIST then
+function pseudodog_psy_effect(self)
+	if not actor_flags.alive or actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state then
+		return
+	end
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if enemy and obj:see(enemy) and enemy:id() == 0 and distance_between(obj, Actor) <= PDOG_PSY_EFFECT_DIST then
 		local target_obj = level.get_target_obj()
-		if target_obj and target_obj:id() == obj:id() and pseudodog_psy_effect_timer < time_real_ms then
+		if target_obj and target_obj:id() == obj:id() and self.timer < time_real_ms then
 			-- sound effect
 			say("monsters\\pseudodog\\psy_affect_0")
 			-- camera move
@@ -177,74 +176,64 @@ function pseudodog_psy_effect(obj)
 			-- make hit
 			Actor.psy_health = -0.08
 			-- set next attack
-			pseudodog_psy_effect_timer = time_real_ms + math.random(8, 12) * 1000
+			self.timer = time_real_ms + math.random(8, 12) * 1000
 		end
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * Burer telepation attack
 --]]-----------------------------------------------------------------------------------------------
-local burer_tele_attack_timer = 0
----------------------------------------------------------------------------------------------------
-function burer_tele_attack(obj)
-	if obj:clsid() == clsid_burer_s and distance_between(obj, Actor) <= BURER_TELE_ATTACK_DIST then
+function burer_tele_attack(self)
+	if not actor_flags.alive or actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state then
+		return
+	end
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if enemy and obj:see(enemy) and enemy:id() == 0 and distance_between(obj, Actor) <= BURER_TELE_ATTACK_DIST then
 		local target_obj = level.get_target_obj()
-		if target_obj and target_obj:id() == obj:id() and burer_tele_attack_timer < time_real_ms then
-			local active_item = Actor:active_item()
-			if active_item and active_item:is_weapon() and math.random() < 0.4 then
-				Actor:drop_item(active_item)
+		if target_obj and target_obj:id() == obj:id() and self.timer < time_real_ms then
+			if math.random() < 0.4 then
+				reap.drop_weapon()
 			end
 			say("monsters\\poltergeist\\tele_get_0")
 			Actor.power = -1
-			burer_tele_attack_timer = time_real_ms + math.random(10, 18) * 1000
+			self.timer = time_real_ms + math.random(10, 18) * 1000
 		end
-	end
-end
---[[-----------------------------------------------------------------------------------------------
- * Controller death zone
---]]-----------------------------------------------------------------------------------------------
-function controller_death_zone(obj)
-	if obj:clsid() == clsid_controller_s and distance_between(obj, Actor) <= CONTROLLER_DEATH_ZONE_DIST then
-		Actor.psy_health = -0.05
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
  * Poltergeist idle particles
 --]]-----------------------------------------------------------------------------------------------
-function poltergeist_particles(obj)
-	if obj:clsid() == clsid_poltergeist_s then
-		local binder = obj:binded_object()
-		for k, v in pairs(binder.particles_obj_by_bone) do
-			if v then
-				if obj:alive() and get_monster_data(obj, "invisible") then
-					if v:playing() then
-						v:move_to(obj:bone_position(k), xyz())
-					else
-						v:play_at_pos(obj:bone_position(k))
-					end
+function poltergeist_particles(self)
+	local obj = self.object
+	for k, v in pairs(self.particles_obj_by_bone) do
+		if v then
+			if obj:alive() and get_monster_data(obj, "invisible") then
+				if v:playing() then
+					v:move_to(obj:bone_position(k), xyz())
 				else
-					if v:playing() then
-						v:stop()
-					end
+					v:play_at_pos(obj:bone_position(k))
+				end
+			else
+				if v:playing() then
+					v:stop()
 				end
 			end
 		end
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function poltergeist_particles_init(obj)
-	if obj:clsid() == clsid_poltergeist_s then
-		local binder = obj:binded_object()
-		local ini = obj:get_visual_ini()
-		binder.particles_obj_by_bone = {}
-		if ini and ini:section_exist("particle_bones") and config:r_string(obj:section(), "type") == "telekinetic" then
-			local hidden_particles = config:r_string_ex(obj:section(), "Hidden_Particles")
-			if not hidden_particles then return end
-			local bones = ini:key_value("particle_bones")
-			for k, v in pairs(bones) do
-				binder.particles_obj_by_bone[k] = particles_object(hidden_particles)
-				binder.particles_obj_by_bone[k]:play_at_pos(obj:bone_position(k))
-			end
+function poltergeist_particles_init(self)
+	local obj = self.object
+	local ini = obj:get_visual_ini()
+	if ini and ini:section_exist("particle_bones") and config:r_string(obj:section(), "type") == "telekinetic" then
+		local hidden_particles = config:r_string_ex(obj:section(), "Hidden_Particles")
+		if not hidden_particles then return end
+		self.particles_obj_by_bone = {}
+		local bones = ini:key_value("particle_bones")
+		for k, v in pairs(bones) do
+			self.particles_obj_by_bone[k] = particles_object(hidden_particles)
+			self.particles_obj_by_bone[k]:play_at_pos(obj:bone_position(k))
 		end
 	end
 end

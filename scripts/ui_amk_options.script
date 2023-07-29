@@ -48,7 +48,7 @@ function amk_options:InitControls()
 	local radio_rad = xml:InitTab("form:radio_amk_rad", self.form)
 	self:Register(radio_rad, "radio_amk_rad")
 	self.radio_rad = radio_rad
-	radio_rad:SetNewActiveTab(amk.load_variable("option_rad",1))
+	radio_rad:SetNewActiveTab(amk.load_variable("option_reward",0))
 
 	self:Register(xml:Init3tButton("form:btn_okay", self.form),"btn_okay")
 end
@@ -64,10 +64,25 @@ function amk_options:on_okay()
 	local radio_treasure = self:GetTabControl("radio_amk_treasure")
 	local radio_rad = self:GetTabControl("radio_amk_rad")
 
-	amk.save_variable("option_mus", radio_mus:GetActiveIndex() )
-	amk.save_variable("option_hud", radio_hud:GetActiveIndex() )
-	amk.save_variable("option_treasure", radio_treasure:GetActiveIndex() )
-	amk.save_variable("option_rad", radio_rad:GetActiveIndex() )
+	local val = radio_mus:GetActiveIndex()
+	if val ~= 1 then
+		amk.save_variable("option_mus", val )
+	end
+
+	val = radio_hud:GetActiveIndex()
+	if val ~= 2 then
+		amk.save_variable("option_hud", val )
+	end
+
+	val = radio_treasure:GetActiveIndex()
+	if val ~= 0 then
+		amk.save_variable("option_treasure", val )
+	end
+
+	val = radio_rad:GetActiveIndex()
+	if val ~= 0 then
+		amk.save_variable("option_reward", val )
+	end
 
 	self:on_quit()
 end

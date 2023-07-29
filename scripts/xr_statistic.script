@@ -1,38 +1,3 @@
-monster_classes = {
-	[clsid.tushkano_s    ] = "tushkano",
-	[clsid.flesh_s       ] = "flesh",
-	[clsid.boar_s        ] = "boar",
-	[clsid.cat_s         ] = "cat",
-	[clsid.zombie_s      ] = "zombie",
-	[clsid.burer_s       ] = "burer",
-	[clsid.fracture_s    ] = "fracture",
-	[clsid.chimera_s     ] = "chimera",
-	[clsid.dog_s         ] = "dog",
-	[clsid.pseudodog_s   ] = "pseudodog",
-	[clsid.psy_dog_s     ] = "psy_dog",
-	[clsid.psy_dog_phantom_s] = "psy_dog_phantom",
-	[clsid.snork_s       ] = "snork",
-	[clsid.poltergeist_s ] = "poltergeist",
-	[clsid.gigant_s      ] = "pseudo_gigant",
-	[clsid.controller_s  ] = "controller",
-	[clsid.bloodsucker_s ] = "bloodsucker",
-	[clsid.rat_s         ] = "rat"
-}
-
-function addKillCount(npc)
-	local props, sect = getNpcType(npc)
-	if props and sect then
-		if translate(sect) == sect then
-			abort("Statistics entry " .. sect .. " for " .. npc:name() ..
-			      " is not translated")
-			return
-		end
-
-		actor_stats.add_points(props, sect, 1, 1)
-		Actor:set_character_rank(Actor:character_rank() + 1)
-	end
-end
-
 local comms = {
 	monolith	= true,
 	military	= true,
@@ -58,26 +23,33 @@ local tech = {
 function getNpcType(npc)
 	if not npc then return nil, nil end
 
-	if npc:is_stalker() then
+	if npc:is_stalker() or npc:is_trader() then
 		local community = comms[npc:character_community()] or "neutral"
 		local rank = ranks.get_obj_rank_name(npc)
 		return "stalkerkills", community.."_"..rank
 	elseif npc:is_monster() then
-		local community = monster_classes[npc:clsid()]
-		if community == nil then
-			abort("Statistics ERROR: cannot find monster class for [%s]", npc:name())
-			return nil,nil
-		end
-
-		local rank = ranks.get_obj_rank_name(npc)
-		return "monsterkills", community.."_"..rank
+		return "monsterkills", npc:section()
 	else
-		local community = tech[npc:clsid()]
-		if not community then 
+		local section = tech[npc:clsid()]
+		if not section then 
 			abort("Statistics ERROR: cannot find entry for [%s]", npc:name())
 			return nil, nil
 		end
 
-		return "techkills", community
+		return "techkills", section
+	end
+end
+
+function addKillCount(npc)
+	local props, sect = getNpcType(npc)
+	if props and sect then
+		if translate(sect) == sect then
+			abort("Statistics entry " .. sect .. " for " .. npc:name() ..
+			      " is not translated")
+			return
+		end
+
+		actor_stats.add_points(props, sect, 1, 1)
+		Actor:set_character_rank(Actor:character_rank() + 1)
 	end
 end

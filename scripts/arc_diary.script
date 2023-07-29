@@ -1,81 +1,60 @@
-total_diaries_number = 33
+local items = { "bread", "conserva", "kolbasa", "vodka" }
+local diaries
 
-function monster_killed(obj,who)
-  local obj_sect = obj:section()
-  if obj_sect=="controller_tubeman" then
-    amk.spawn_item_in_inv("vodka",obj)
-    if not has_alife_info("kontroler_diary_info_17") then
-       amk.spawn_item_in_inv("arc_diary_17", obj)
-		else
-			check_info(obj, who)
-    end
-  end
-  if obj_sect=="m_controller_normal" then
-    amk.spawn_item_in_inv("vodka",obj)
-    amk.spawn_item_in_inv("bread",obj)
-    check_info(obj,who)
-  end
-  if obj_sect=="m_controller_normal_fat" then
-    amk.spawn_item_in_inv("vodka",obj)
-    amk.spawn_item_in_inv("conserva",obj)
-    check_info(obj,who)
-  end
-  if obj_sect=="m_controller_old" then
-    amk.spawn_item_in_inv("vodka",obj)
-    amk.spawn_item_in_inv("kolbasa",obj)
-    check_info(obj,who)
-  end
-  if obj_sect=="m_controller_old_fat" then
-    amk.spawn_item_in_inv("vodka",obj)
-    amk.spawn_item_in_inv("vodka",obj)
-    check_info(obj,who)
-  end
-  arc.info("Убит: "..obj_sect,3)
+function init_diaries()
+	diaries = { }
+
+	for i = 1, 1000 do
+		if not config:section_exist("arc_diary_" .. i) then
+			break
+		end
+		if not has_info("kontroler_diary_info_" .. i) then
+			diaries[i] = true
+		end
+	end
 end
 
-function check_info(obj,who)
-    local s = get_random_diary_section(1, total_diaries_number)
-       if s then
-          amk.spawn_item_in_inv(s, obj)
-       else
-           -- все дневники уже прочитаны.
-       end
+function monster_killed(obj)
+	check_info(obj)
+
+	for i = 1, math.random(0, 2) do
+		amk.spawn_item_in_inv(table.random(items), obj)
+	end
+end
+
+function check_info(obj)
+	if not diaries then
+		init_diaries()
+	end
+
+	local n
+	if curr_level == "l03u_agr_underground" and diaries[17] then
+		diaries[17] = nil
+		n = 17
+	elseif math.random(100) < 20 then
+		n = get_random_diary_section()
+	end
+
+	if n then
+		amk.spawn_item_in_inv("arc_diary_" .. n, obj)
+	end
 end
 
 function on_get_diary(obj)
-  local obj_sect = obj:section()
-  for i=1, total_diaries_number do
-    if obj_sect == ("arc_diary_"..i) then
-      Actor:give_info_portion("kontroler_diary_info_"..i)
-      arc.remove_obj(obj:id())
-      return
-    end
-  end
+	local sect = obj:section()
+	if string.sub(sect, 1, 10) ~= "arc_diary_" then return end
+
+	give_info("kontroler_diary_info_" .. string.sub(sect, 11))
+	release(obj)
 end
 
-function get_random_diary_section(a, b)
-  local f = {}
-  local c = 0
+function get_random_diary_section()
+	if table.size(diaries) == 0 then
+		return nil
+	end
 
-  for i = a, b do
-    f[i] = has_alife_info("kontroler_diary_info_"..i)
-    if not f[i] then
-      c = c + 1
-    end
-  end
+	local n = table.random_key(diaries)
+	diaries[n] = nil
 
-  if c<1 then
-    return false
-  end
-
-  local r = math.random(c)
-
-  for i = a, b do
-    if not f[i] then
-      r = r - 1
-      if r==0 then
-        return "arc_diary_"..i
-      end
-    end
-  end
+	return n
 end

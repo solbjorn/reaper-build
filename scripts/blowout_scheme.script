@@ -33,7 +33,7 @@ function evaluator_anomaly:evaluate()
   if self.prev_pos:distance_to(npc:position())>15 then
     self.st.avg_dir=npc:position():sub(self.prev_pos):normalize()
     self.prev_pos=npc:position()
-    local list=amk_anoms.get_anomaly_list(npc,20)
+    local list = amk_anoms.get_anomaly_list(npc, 20, true)
     for i,o in ipairs(list) do
 			amk_anoms.add_restriction(npc,o.id,o.name)
     end

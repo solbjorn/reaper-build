@@ -1,3 +1,7 @@
+local level_patrol_path_exists = level.patrol_path_exists
+local table_concat = table.concat
+local utils_parse_waypoint_data = utils.parse_waypoint_data
+
 --------------------------------------------------------------------------
 -- States
 --------------------------------------------------------------------------
@@ -5,94 +9,6 @@ local state_normal = 0
 local state_alarm = 1
 local state_alarm_actor_inside = 2
 local state_fight = 1
-
---------------------------------------------------------------------------
--- General
---------------------------------------------------------------------------
-local gulags = {
-	val_escort = {},
-	val_sacrifice = {},
-	val_prisoner = {},
-	val_sos = {},
-	val_rob = {},
-	val_lager_bandits = {},
-	val_watchtower = {},
-	val_soldiers_raid = {},
-	offline_group = {}
-}
-
--- Job -------------------------------------------------------------------
-function load_job(sj, gname, type, squad, groups)
-    local g = gulags[type]
-    if g then
-        g.job(sj, gname, type, squad, groups)
-		return true
-    end
-end
-
--- State -----------------------------------------------------------------
-function check_state_stub()
-    return 0
-end
-
-function load_states(type)
-    local g = gulags[type]
-
-    if g then
-        return g.state or check_state_stub
-    end
-
-    return nil
-end
-
--- Dynamic ltx -----------------------------------------------------------
-function load_ltx(type)
-    local g = gulags[type]
-    if g then
-        return g.ltx
-    end
-
-    return nil
-end
-
--- Check communities -----------------------------------------------------
-function checkStalker(npc_community, gulag_type)
-	if gulag_type == "val_escort" then
-		return npc_community == "dolg" or npc_community == "bandit"
-	end
-	if gulag_type == "val_sacrifice" then
-		return npc_community == "dolg" or npc_community == "bandit"
-	end
-	if gulag_type == "val_prisoner" then
-		return npc_community == "dolg"
-	end
-	if gulag_type == "val_sos" then
-		return npc_community == "stalker"
-	end
-	if gulag_type == "val_rob" then
-		return npc_community == "stalker"
-	end
-	if gulag_type == "val_lager_bandits" then
-		return npc_community == "bandit"
-	end
-	if gulag_type == "val_watchtower" then
-		return true
-	end
-	if gulag_type == "val_soldiers_raid" then
-		return npc_community == "military"
-	end
-	if gulag_type == "offline_group" then
-		return true
-	end
-	return false
-end
-
-function checkMonster(npc_community, gulag_type)
-	if gulag_type == "val_sos" then
-		return npc_community == "bloodsucker"
-	end
-    return false
-end
 
 --------------------------------------------------------------------------
 -- Gulags
@@ -122,68 +38,6 @@ function e_predicate_g2(npc_info) -- guards
     return npc_info.story_id == 408 --npc_info.profile_name == "val_bandit_general"
 end
 
--- Jobs ------------------------------------------------------------------
-gulags.val_escort.job = function(sj, gname, type, squad, groups)
-	-- напарник с которым спасаем пленного
-	local t = { section = "logic@val_escort_nap1",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "val_lager_bandits_restrictor", out_rest = "",
-		online = true,
-		predicate = e_predicate_n
-	}
-	sj[#sj+1] = t
-
-	-- пленный
-	t = { section = "logic@val_escort_captive",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "val_lager_bandits_restrictor", out_rest = "",
-		position_threshold = 50,
-		online = true,
-		predicate = e_predicate_c
-	}
-	sj[#sj+1] = t
-
-	-- охранники ведущие пленного
-	t = { section = "logic@val_escort_guard",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "val_lager_bandits_restrictor", out_rest = "",
-		position_threshold = 50,
-		online = true,
-		predicate = e_predicate_g1
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_escort_guard",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "val_lager_bandits_restrictor", out_rest = "",
-		position_threshold = 50,
-		online = true,
-		predicate = e_predicate_g2
-	}
-	sj[#sj+1] = t
-
-	-- раненый бандит в начале сцены
-	t = { section = "logic@val_escort_halfdead",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "val_lager_bandits_restrictor", out_rest = "",
-		--online = true,
-		predicate = e_predicate_w
-	}
-	sj[#sj+1] = t
-
-	gulags.val_escort.ltx = "#include \"scripts\\val_escort_bandits.ltx\"\n#include \"scripts\\val_escort_nap1.ltx\"\n#include \"scripts\\val_escort_captive.ltx\"\n"
-end
-
 --------------------------------------------------------------------------
 -- Sacrifice (сцена возле ямы на главной базе бандитов)
 --------------------------------------------------------------------------
@@ -204,104 +58,12 @@ function scf_predicate_tb(npc_info) -- tunnel bandit
     return npc_info.story_id == 409
 end
 
--- Jobs ------------------------------------------------------------------
-gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
-	-- пленный, которого убивают
-	local t = { section = "logic@val_sacrifice_victim",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		online = true,
-		predicate = scf_predicate_v
-	}
-	sj[#sj+1] = t
-
-	-- охранники
-	t = { section = "logic@val_sacrifice_guard1",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		online = true,
-		predicate = scf_predicate_g1
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_sacrifice_guard2",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		online = true,
-		predicate = scf_predicate_g2
-	}
-	sj[#sj+1] = t
-
-	-- бандит над трубой
-	t = { section = "logic@val_sacrifice_tunnel_bandit",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		predicate = scf_predicate_tb
-	}
-	sj[#sj+1] = t
-
-	local res_t = {
-		"[combat@val_sacrifice]\non_info = {=see_actor} %+val_sacrifice_plr_detected +val_sacrifice_finish%\n",
-
-		"[danger@val_sacrifice_guard]\nignore_distance = 0\n",
-
-		-- встреча отключена
-		"[meet@val_sacrifice]\nmeet_state = 0|guard\nmeet_state_wpn = 0|guard\nvictim = 0|actor\nvictim_wpn = 0|actor\nuse = true\nuse_wpn = false\n",
-
-		"#include \"scripts\\val_sacrifice_victim.ltx\"\n#include \"scripts\\val_sacrifice_guard1.ltx\"\n#include \"scripts\\val_sacrifice_guard2.ltx\"\n#include \"scripts\\val_tunnel_bandit.ltx\"\n" }
-
-	gulags.val_sacrifice.ltx = table.concat(res_t)
-end
-
 --------------------------------------------------------------------------
 -- Prisoner (заключенный за решеткой в подвале на главной базе бандитов)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function p_predicate(npc_info) -- prisoner
     return npc_info.story_id == 402
-end
-
--- Jobs ------------------------------------------------------------------
-gulags.val_prisoner.job = function(sj, gname, type, squad, groups)
-	-- за решеткой
-	local t = { section = "logic@val_prisoner",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "val_prisoner_jail_restr",
-		online = true,
-		predicate = p_predicate
-	}
-	sj[#sj+1] = t
-
-	-- свободен
-	t = { section = "logic@val_prisoner_free",
-		idle = 0,
-		prior = 1, state = {1},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		--online = true,
-		predicate = p_predicate
-	}
-	sj[#sj+1] = t
-
-	gulags.val_prisoner.ltx = "#include \"scripts\\val_prisoner_captive.ltx\"\n"
-end
-
--- States ----------------------------------------------------------------
-gulags.val_prisoner.state = function()
-    if has_alife_info("val_prisoner_door_unlocked") then
-        return 1
-    end
-    return 0
 end
 
 --------------------------------------------------------------------------
@@ -315,78 +77,6 @@ end
 function sos_predicate_bs(npc_info) -- bloodsucker
     -- нужен не абы какой кровосос, а вполне конкретный val_sos_bs
     return npc_info.story_id == 436
-end
-
--- Jobs ------------------------------------------------------------------
-gulags.val_sos.job = function(sj, gname, type, squad, groups)
-	-- раненый сталкер
-	local t = { section = "logic@val_sos_wounded",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		predicate = sos_predicate_w
-	}
-	sj[#sj+1] = t
-
-	-- кровосос
-	t = { section = "logic@val_sos_bs",
-		idle = 0,
-		prior = 1, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = "",
-		predicate = sos_predicate_bs
-	}
-	sj[#sj+1] = t
-
-	gulags.val_sos.ltx = "#include \"scripts\\val_sos_bs.ltx\"\n"
-end
-
---------------------------------------------------------------------------
--- Robbers (грабители на ферме)
---------------------------------------------------------------------------
--- Predicates ------------------------------------------------------------
-
--- Jobs ------------------------------------------------------------------
-gulags.val_rob.job = function(sj, gname, type, squad, groups)
-	-- главный грабителей, с которым разговариваем
-	local t = { section = "logic@val_rob_leader",
-		idle = 0,
-		prior = 3, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = ""
-	}
-	sj[#sj+1] = t
-
-	-- охранники на входах в здание фермы
-	t = { section = "logic@val_rob_guard1",
-		idle = 0,
-		prior = 2, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = ""
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_rob_guard2",
-		idle = 0,
-		prior = 2, state = {0},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = ""
-	}
-	sj[#sj+1] = t
-
-	-- простые сталкеры внутри фермы вокруг костра
-	for i = 1, 5 do
-		t = { section = "logic@val_rob_kamp",
-			idle = 0,
-			prior = 1, state = {0},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-	end
-
-	gulags.val_rob.ltx = "#include \"scripts\\val_rob_leader.ltx\"\n"
 end
 
 --------------------------------------------------------------------------
@@ -409,574 +99,7 @@ function lb_predicate3(npc_info)
     return npc_info.profile_name == "val_bandit_general"
 end
 
--- Jobs ------------------------------------------------------------------
-gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t
-	local restr
-	local ltx = "[combat_ignore]\n\n"
-
-	local combat_ignore = "{-val_escort_captive_enemy =check_fighting(400)}, {-val_sacrifice_finish =check_fighting(401)}, {-val_prisoner_free =check_fighting(402)}\n"
-
-	-- БОРОВ
-	local t = { section = "logic@val_lager_bandits_leader_normal",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 9, state = {state_normal},
-		squad = squad, group = groups[1],
-		online = "{+val_lager_bandits_show_leader_company}",
-		in_rest    = "",
-		out_rest   = "val_lager_bandits_borov_restrictor",
-		predicate  = lb_predicate1
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_lager_bandits_leader_alarm",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 9, state = {state_alarm},
-		squad = squad, group = groups[1],
-		online = "{+val_lager_bandits_show_leader_company}",
-		in_rest    = "",
-		out_rest   = "val_lager_bandits_borov_restrictor",
-		predicate  = lb_predicate1
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_lager_bandits_leader_alarm",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 9, state = {state_alarm_actor_inside},
-		squad = squad, group = groups[1],
-		online = "{+val_lager_bandits_show_leader_company}",
-		in_rest    = "",
-		out_rest   = "val_lager_bandits_borov_restrictor",
-		predicate  = lb_predicate1
-	}
-	sj[#sj+1] = t
-
-	local res_t = {
-		"[logic@val_lager_bandits_leader_normal]\nactive = walker@val_lager_bandits_leader_normal\non_death = death@val_lager_bandits_borov\ncombat_ignore = combat_ignore\n",
-
-		"[death@val_lager_bandits_borov]\non_info = %+val_borov_dead%\n",
-
-		"[walker@val_lager_bandits_leader_normal]\npath_walk = leader_walk\npath_look = leader_look\ncombat_ignore_cond = ",
-		combat_ignore,
-
-		"[logic@val_lager_bandits_leader_alarm]\nactive = camper@val_lager_bandits_leader_alarm\non_death = death@val_lager_bandits_borov\ncombat_ignore = combat_ignore\n",
-
-		"[camper@val_lager_bandits_leader_alarm]\npath_walk = leader_alarm_walk\npath_look = leader_alarm_look\nradius = 15\ncombat_ignore_cond = ",
-		combat_ignore }
-	ltx = ltx .. table_concat(res_t)
-
-	-- ОХРАННИКИ БОРОВА
-	for i = 1, 3 do
-		t = { section = table_concat({"logic@val_lager_bandits_bodyguard_normal", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 8, state = {state_normal},
-			squad = squad, group = groups[1],
-			online = "{+val_lager_bandits_show_leader_company}",
-			in_rest    = "",
-			out_rest   = "val_lager_bandits_main_building_restrictor",
-			predicate  = lb_predicate_bg
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_bodyguard_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 8, state = {state_alarm},
-			squad = squad, group = groups[1],
-			online = "{+val_lager_bandits_show_leader_company}",
-			in_rest    = "",
-			out_rest   = "val_lager_bandits_main_building_restrictor",
-			predicate  = lb_predicate_bg
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_bodyguard_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 8, state = {state_alarm_actor_inside},
-			squad = squad, group = groups[1],
-			online = "{+val_lager_bandits_show_leader_company}",
-			in_rest    = "",
-			out_rest   = "val_lager_bandits_main_building_restrictor",
-			predicate  = lb_predicate_bg
-		}
-		sj[#sj+1] = t
-
-		res_t = {
-			"[logic@val_lager_bandits_bodyguard_normal",
-			i, "]\nactive = walker@val_lager_bandits_bodyguard_normal",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[walker@val_lager_bandits_bodyguard_normal",
-			i, "]\npath_walk = bodyguard_walk", i,
-			"\npath_look = bodyguard_look", i,
-			"\ncombat_ignore_cond = ",
-			combat_ignore,
-
-			"[logic@val_lager_bandits_bodyguard_alarm",
-			i, "]\nactive = camper@val_lager_bandits_bodyguard_alarm",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[camper@val_lager_bandits_bodyguard_alarm",
-			i, "]\npath_walk = bodyguard_alarm_walk",
-			i, "\npath_look = bodyguard_alarm_look",
-			i, "\nradius = 10\ncombat_ignore_cond = ",
-			combat_ignore }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	-- СИДЯЩИЕ В КЕМПЕ 1 ВОЗЛЕ БОРОВА И В КЕМПЕ 2 НА ВТОРОМ ЭТАЖЕ
-	restr = {"val_lager_bandits_main_building_restrictor", "val_lager_bandits_nedostroyka_restrictor", "val_lager_bandits_nedostroyka_restrictor", "val_lager_bandits_restrictor"}
-	local onlineid = {"{+val_lager_bandits_show_leader_company}", "{+val_lager_bandits_show_nedostroyka_company}", "{+val_lager_bandits_show_nedostroyka_company}"}
-	local pr = {7, 5, 5, 2}
-	for i, v in pairs({3, 4, 3, 3}) do
-		res_t = {
-			"[logic@val_lager_bandits_kamp",
-			i, "_normal]\nactive = kamp@val_lager_bandits_kamp",
-			i, "_normal\ncombat_ignore = combat_ignore\n",
-
-			"[kamp@val_lager_bandits_kamp",
-			i, "_normal]\ncenter_point = kamp",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore }
-		ltx = ltx .. table_concat(res_t)
-
-		local t_kamp = { section = table_concat({"logic@val_lager_bandits_kamp", i, "_normal"}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = pr[i], state = {state_normal},
-			squad = squad, group = groups[i],
-			online = onlineid[i],
-			in_rest = "", out_rest = restr[i]
-		}
-		for j = 1, v do
-			sj[#sj+1] = t_kamp
-
-			t = { section = table_concat({"logic@val_lager_bandits_kamp", i, "_alarm", j}),
-				idle = 0,
-				position_threshold = "graph",
-				prior = pr[i], state = {state_alarm},
-				squad = squad, group = groups[i],
-				online = onlineid[i],
-				in_rest = "", out_rest = restr[i]
-			}
-			sj[#sj+1] = t
-
-			t = { section = table_concat({"logic@val_lager_bandits_kamp", i, "_alarm", j}),
-				idle = 0,
-				position_threshold = "graph",
-				prior = 7, state = {state_alarm_actor_inside},
-				squad = squad, group = groups[i],
-				online = onlineid[i],
-				in_rest = "", out_rest = restr[i]
-			}
-			sj[#sj+1] = t
-
-			res_t = {
-				"[logic@val_lager_bandits_kamp", i, "_alarm",
-				j, "]\nactive = camper@val_lager_bandits_kamp", i, "_alarm",
-				j, "\ncombat_ignore = combat_ignore\n",
-
-				"[camper@val_lager_bandits_kamp", i, "_alarm",
-				j, "]\npath_walk = kamp", i, "_alarm_walk",
-				j, "\npath_look = kamp", i, "_alarm_look",
-				j, "\ndef_state_moving = assault\nradius = 8\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(35)}, ",
-				combat_ignore }
-			ltx = ltx .. table_concat(res_t)
-		end
-	end
-
-	-- БАНДИТЫ
-	local quantity = {2, 4, 1, 4}
-
-	-- guards
-	restr = {"val_lager_bandits_main_side_restrictor", "val_lager_bandits_restrictor"}
-	for i = 1, quantity[1] do
-		t = { section = table_concat({"logic@val_lager_bandits_guard_normal", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 6, state = {state_normal},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_guard_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_alarm},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_guard_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_alarm_actor_inside},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		res_t = {
-			"[logic@val_lager_bandits_guard_normal",
-			i, "]\nactive = walker@val_lager_bandits_guard_normal",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[walker@val_lager_bandits_guard_normal",
-			i, "]\npath_walk = guard_walk",
-			i, "\npath_look = guard_look",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore,
-
-			"[logic@val_lager_bandits_guard_alarm",
-			i, "]\nactive = walker@val_lager_bandits_guard_alarm",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[walker@val_lager_bandits_guard_alarm",
-			i, "]\npath_walk = guard_alarm_walk",
-			i, "\npath_look = guard_alarm_look",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	-- patrols
-	restr = {"val_lager_bandits_main_side_restrictor", "val_lager_bandits_restrictor", "val_lager_bandits_restrictor", "val_lager_bandits_restrictor"}
-	for i = 1, quantity[2] do
-		t = { section = table_concat({"logic@val_lager_bandits_patrol_normal", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 5, state = {state_normal},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_patrol_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_alarm},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_patrol_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_alarm_actor_inside},
-			squad = squad, group = groups[1],
-			in_rest = "", out_rest = restr[i]
-		}
-		sj[#sj+1] = t
-
-		res_t = {
-			"[logic@val_lager_bandits_patrol_normal",
-			i, "]\nactive = walker@val_lager_bandits_patrol_normal",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[walker@val_lager_bandits_patrol_normal",
-			i, "]\npath_walk = patrol_walk",
-			i, "\npath_look = patrol_look",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore,
-
-			"[logic@val_lager_bandits_patrol_alarm",
-			i, "]\nactive = walker@val_lager_bandits_patrol_alarm",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[walker@val_lager_bandits_patrol_alarm",
-			i, "]\npath_walk = patrol_alarm_walk",
-			i, "\npath_look = patrol_alarm_look",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	-- snipers
-	restr = {"val_lager_bandits_restrictor"}
-	t = { section = "logic@val_lager_bandits_sniper_normal1",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 4, state = {state_normal},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = restr[1]
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_lager_bandits_sniper_alarm1",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 4, state = {state_alarm},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = restr[1]
-	}
-	sj[#sj+1] = t
-
-	t = { section = "logic@val_lager_bandits_sniper_alarm1",
-		idle = 0,
-		position_threshold = "graph",
-		prior = 3, state = {state_alarm_actor_inside},
-		squad = squad, group = groups[1],
-		in_rest = "", out_rest = restr[1]
-	}
-	sj[#sj+1] = t
-
-	res_t = {
-		"[logic@val_lager_bandits_sniper_normal1]\nactive = camper@val_lager_bandits_sniper_normal1\ncombat_ignore = combat_ignore\n",
-
-		"[camper@val_lager_bandits_sniper_normal1]\npath_walk = sniper_walk1\npath_look = sniper_look1\ndef_state_moving = patrol\ndef_state_moving_fire = patrol_fire\ndef_state_campering = guard\ndef_state_campering_fire = guard_fire\ncombat_ignore_cond = ",
-		combat_ignore,
-
-		"[logic@val_lager_bandits_sniper_alarm1]\nactive = camper@val_lager_bandits_sniper_alarm1\ncombat_ignore = combat_ignore\n",
-
-		"[camper@val_lager_bandits_sniper_alarm1]\npath_walk = sniper_alarm_walk1\npath_look = sniper_alarm_look1\ndef_state_moving = sneak\ndef_state_moving_fire = sneak_fire\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(35)}, ",
-		combat_ignore }
-	ltx = ltx .. table_concat(res_t)
-
-	-- sleepers
-	for i = 1, quantity[4] do
-		t = { section = table_concat({"logic@val_lager_bandits_sleeper_normal", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_normal},
-			squad = squad, group = groups[2],
-			online = "{+val_lager_bandits_show_nedostroyka_company}",
-			in_rest = "", out_rest = "val_lager_bandits_nedostroyka_restrictor"
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_sleeper_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 3, state = {state_alarm},
-			squad = squad, group = groups[2],
-			online = "{+val_lager_bandits_show_nedostroyka_company}",
-			in_rest = "", out_rest = "val_lager_bandits_nedostroyka_restrictor"
-		}
-		sj[#sj+1] = t
-
-		t = { section = table_concat({"logic@val_lager_bandits_sleeper_alarm", i}),
-			idle = 0,
-			position_threshold = "graph",
-			prior = 6, state = {state_alarm_actor_inside},
-			squad = squad, group = groups[2],
-			online = "{+val_lager_bandits_show_nedostroyka_company}",
-			in_rest = "", out_rest = "val_lager_bandits_nedostroyka_restrictor"
-		}
-		sj[#sj+1] = t
-
-		res_t = {
-			"[logic@val_lager_bandits_sleeper_normal",
-			i, "]\nactive = sleeper@val_lager_bandits_sleeper_normal",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[sleeper@val_lager_bandits_sleeper_normal",
-			i, "]\npath_main = sleeper",
-			i, "\ncombat_ignore_cond = ",
-			combat_ignore,
-
-			"[logic@val_lager_bandits_sleeper_alarm",
-			i, "]\nactive = camper@val_lager_bandits_sleeper_alarm",
-			i, "\ncombat_ignore = combat_ignore\n",
-
-			"[camper@val_lager_bandits_sleeper_alarm",
-			i, "]\npath_walk = sleeper_alarm_walk",
-			i, "\npath_look = sleeper_alarm_look",
-			i, "\ndef_state_moving = assault\nradius = 8\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(30)}, ",
-			combat_ignore }
-		ltx = ltx .. table_concat(res_t)
-	end
-
-	gulags.val_lager_bandits.ltx = ltx
-end
-
--- States ----------------------------------------------------------------
 local vlbr_zone
-
-gulags.val_lager_bandits.state = function(gulag)
-	if (gulag.state == state_alarm or gulag.state == state_alarm_actor_inside) and
-		game.get_game_time():diffSec(gulag.stateBegin) < 12000 -- 20 real minutes
-	then
-		return gulag.state
-	else
-		if vlbr_zone == nil then
-			vlbr_zone = db.zone_by_name["val_lager_bandits_restrictor"]
-		end
-		for k,v in pairs(gulag.Object) do
-			if v ~= true then
-				local enemy = v:best_enemy()
-				if enemy ~= nil then
-					if enemy:is_actor() then
-						if vlbr_zone and vlbr_zone:inside(Actor:position()) then
-							return state_alarm_actor_inside
-						end
-						return state_alarm
-					elseif enemy:is_stalker() then
-						return state_alarm
-					end
-				end
-			end
-		end
-	end
-
-	return state_normal
-end
-
---------------------------------------------------------------------------
--- Offline group (гулаг для держания сталкеров в оффлайне до определенного момента)
---------------------------------------------------------------------------
--- Predicates ------------------------------------------------------------
-
--- Jobs ------------------------------------------------------------------
-gulags.offline_group.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t
-
-	local ltx = ""
-	local res_t
-	local phdr = "val_soldiers_raid_off_offgroup_"
-	local it = 1
-	local way_name = table_concat({ phdr, it })
-	while level.patrol_path_exists(way_name) do
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-		local job_count, prior = 5, 1
-
-		-- Необходимо вычитать количество работ из названия точки пути.
-		if wp_prop.count ~= nil then
-			job_count = wp_prop.count
-		end
-
-		if wp_prop.prior ~= nil then
-			prior = wp_prop.prior
-		end
-
-		for i = 1, job_count do
-			-- добавляем должность
-			t = { section = table_concat({"logic@", way_name}),
-				idle = 0,
-				prior = prior, state = {0}, squad = squad, group = groups[1],
-				position_threshold = 20, in_rest = "", out_rest = "",
-				online = false
-			}
-			sj[#sj+1] = t
-		end
-
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", way_name, "]\nactive = remark@", way_name, "\n",
-
-			"[remark@", way_name, "]\npath_walk = offgroup_", it, "\nanim = wait_na\n" }
-        ltx = ltx .. table_concat(res_t)
-		it = it + 1
-		way_name = table_concat({ phdr, it })
-	end
-
-	gulags.offline_group.ltx = ltx
-end
-
---------------------------------------------------------------------------
--- Soldiers raid group (аналог general_lager только с дополнительными рестрикторами)
---------------------------------------------------------------------------
--- Predicates ------------------------------------------------------------
-
--- Jobs ------------------------------------------------------------------
-gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t, res_t
-
-	local ltx = "[danger@ignore_corpse]\nignore_types = corpse\n"
-
-	local idstr = table_concat({ gname, "_guard" })
-	local i = 1
-	while level.patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-
-		-- добавляем должность
-		t = { section = table_concat({"logic@", idstr, i}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			--position_threshold = 10,
-			in_rest = "", out_rest = table_concat({ gname, "_restr" })
-		}
-		sj[#sj+1] = t
-
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", idstr, i, "]\nactive = camper@", idstr, i, "\n",
-
-			"[camper@", idstr, i, "]\npath_walk = guard_",
-			i, "_walk\ndef_state_moving = assault\nradius = 10\ndanger = danger@ignore_corpse\n" }
-		if level.patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
-			res_t[#res_t+1] = "path_look = guard_"
-			res_t[#res_t+1] = i
-			res_t[#res_t+1] = "_look\n"
-		end
-		ltx = ltx..table_concat(res_t)
-
-		i = i + 1
-	end
-
-	i = 1
-	idstr = table_concat({ gname, "_raid" })
-	local way_name = table_concat({ idstr .. "_" .. i .. "_walk" })
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-		local job_count = wp_prop.count or 1
-
-		for j = 1, job_count do
-			-- добавляем должность
-			t = { section = table_concat({"logic@", idstr, i}),
-				idle = 0,
-				prior = 1, state = {1}, squad = squad, group = groups[1],
-				in_rest = "", out_rest = table_concat({ gname, "_restr" })
-			}
-			sj[#sj+1] = t
-		end
-
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", idstr, i, "]\nactive = patrol@", idstr, i, "\n",
-
-			"[patrol@", idstr, i, "]\npath_walk = raid_",
-			i, "_walk\nformation = around\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndanger = danger@ignore_corpse\n" }
-
-		if level.patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
-			res_t[#res_t+1] = "path_look = raid_"
-			res_t[#res_t+1] = i
-			res_t[#res_t+1] = "_look\n"
-		end
-		ltx = ltx..table_concat(res_t)
-		i = i + 1
-		way_name = table_concat({ idstr, "_", i, "_walk" })
-	end
-
-	gulags.val_soldiers_raid.ltx = ltx
-end
-
-gulags.val_soldiers_raid.state = function(gulag)
-	if gulag.state == 0 then
-		if gulag.state_switch_1 and gulag.state_switch_1:pick_section_from_condlist(gulag.smrttrn) ~= nil then
-			return 1
-		end
-		return 0
-	elseif gulag.state == 1 then
-		if gulag.state_switch_0 and gulag.state_switch_0:pick_section_from_condlist(gulag.smrttrn) ~= nil then
-			return 0
-		end
-		return 1
-	end
-end
 
 --------------------------------------------------------------------------
 -- WatchTower (смотровые вышки)
@@ -990,103 +113,926 @@ function wt_predicate_s(npc_info, gulag) -- sniper
     return string.find(npc_info.name, gulag.name) ~= nil and npc_info.is_sniper == true
 end
 
--- Jobs ------------------------------------------------------------------
-gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
-	local table_concat = table.concat
-	local t, res_t
-	local i, ltx = 1, ""
-	local combat_ignore_cond_str =
-		"combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(401) -val_sacrifice_finish}\n"
-	-- Проверяем наличие часовых на вышке.
-	local idstr = table_concat({gname, "_guard"})
-	while level.patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
-		-- Необходимо вычитать количество работ из названия точки пути.
+local gulags = {
+	["val_escort"] = {
+		job = function(sj, gname, squad, groups)
+			-- напарник с которым спасаем пленного
+			sj[#sj + 1] = {
+				section = "logic@val_escort_nap1",
+				prior = 1,
+				squad = squad, group = groups[1],
+				in_rest = "val_lager_bandits_restrictor",
+				online = true,
+				predicate = e_predicate_n
+			}
 
-		-- добавляем должность
-		t = { section = table_concat({"logic@", idstr}),
-			idle = 0,
-			prior = 1, state = {0}, squad = squad, group = groups[1],
-			position_threshold = 10,
-			predicate = wt_predicate_g,
-			in_rest = "", out_rest = table_concat({gname, "_restr"})
-		}
-		sj[#sj+1] = t
+			-- пленный
+			sj[#sj + 1] = {
+				section = "logic@val_escort_captive",
+				prior = 1,
+				squad = squad, group = groups[1],
+				in_rest = "val_lager_bandits_restrictor",
+				position_threshold = 50,
+				online = true,
+				predicate = e_predicate_c
+			}
 
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", idstr, "]\nactive = walker@", idstr, "\ncombat_ignore = combat_ignore\n",
+			-- охранники ведущие пленного
+			sj[#sj + 1] = {
+				section = "logic@val_escort_guard",
+				prior = 1,
+				squad = squad, group = groups[1],
+				in_rest = "val_lager_bandits_restrictor",
+				position_threshold = 50,
+				online = true,
+				predicate = e_predicate_g1
+			}
 
-			"[walker@", idstr, "]\npath_walk = guard_",
-			i, "_walk\ndef_state_moving1 = patrol\ndef_state_moving2 = patrol\n",
-			combat_ignore_cond_str }
+			sj[#sj + 1] = {
+				section = "logic@val_escort_guard",
+				prior = 1,
+				squad = squad, group = groups[1],
+				in_rest = "val_lager_bandits_restrictor",
+				position_threshold = 50,
+				online = true,
+				predicate = e_predicate_g2
+			}
 
-		if level.patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
-			res_t[#res_t+1] = "path_look = guard_"
-			res_t[#res_t+1] = i
-			res_t[#res_t+1] = "_look\n"
+			-- раненый бандит в начале сцены
+			sj[#sj + 1] = {
+				section = "logic@val_escort_halfdead",
+				prior = 1,
+				squad = squad, group = groups[1],
+				in_rest = "val_lager_bandits_restrictor",
+				predicate = e_predicate_w
+			}
+		end,
+		ltx = function()
+			return "#include \"scripts\\val_escort_bandits.ltx\"\n#include \"scripts\\val_escort_nap1.ltx\"\n#include \"scripts\\val_escort_captive.ltx\"\n"
+		end,
+		check = function(npc_community)
+			return npc_community == "dolg" or npc_community == "bandit"
 		end
-		ltx = ltx..table_concat(res_t)
+	},
+	["val_sacrifice"] = {
+		job = function(sj, gname, squad, groups)
+			-- пленный, которого убивают
+			sj[#sj + 1] = {
+				section = "logic@val_sacrifice_victim",
+				prior = 1,
+				squad = squad, group = groups[1],
+				online = true,
+				predicate = scf_predicate_v
+			}
 
-		i = i + 1
-	end
+			-- охранники
+			sj[#sj + 1] = {
+				section = "logic@val_sacrifice_guard1",
+				prior = 1,
+				squad = squad, group = groups[1],
+				online = true,
+				predicate = scf_predicate_g1
+			}
 
-	-- Проверяем наличие снайперов на вышке.
-	i = 1
-	idstr = table_concat({ gname, "_sniper" })
-	local way_name = table_concat({idstr, "_", i,"_walk"})
-	while level.patrol_path_exists(way_name) do
-		-- Необходимо вычитать количество работ из названия точки пути.
-		local ptr = patrol(way_name)
-		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
-		local d_sniper, d_wait, d = 20, 90, 0
-		if wp_prop.ds ~= nil then
-			d = tonumber(wp_prop.ds)
-			if d ~= nil and d > 0 then
-				d_sniper = d
+			sj[#sj + 1] = {
+				section = "logic@val_sacrifice_guard2",
+				prior = 1,
+				squad = squad, group = groups[1],
+				online = true,
+				predicate = scf_predicate_g2
+			}
+
+			-- бандит над трубой
+			sj[#sj + 1] = {
+				section = "logic@val_sacrifice_tunnel_bandit",
+				prior = 1,
+				squad = squad, group = groups[1],
+				predicate = scf_predicate_tb
+			}
+		end,
+		ltx = function()
+			local res_t = {
+				"[combat@val_sacrifice]\non_info = {=see_actor} %+val_sacrifice_plr_detected +val_sacrifice_finish%\n",
+
+				"[danger@val_sacrifice_guard]\nignore_distance = 0\n",
+
+				-- встреча отключена
+				"[meet@val_sacrifice]\nmeet_state = 0|guard\nmeet_state_wpn = 0|guard\nvictim = 0|actor\nvictim_wpn = 0|actor\nuse = true\nuse_wpn = false\n",
+
+				"#include \"scripts\\val_sacrifice_victim.ltx\"\n#include \"scripts\\val_sacrifice_guard1.ltx\"\n#include \"scripts\\val_sacrifice_guard2.ltx\"\n#include \"scripts\\val_tunnel_bandit.ltx\"\n"
+			}
+
+			return table.concat(res_t)
+		end,
+		check = function(npc_community)
+			return npc_community == "dolg" or npc_community == "bandit"
+		end
+	},
+	["val_prisoner"] = {
+		job = function(sj, gname, squad, groups)
+			-- за решеткой
+			sj[#sj + 1] = {
+				section = "logic@val_prisoner",
+				prior = 1,
+				squad = squad, group = groups[1],
+				out_rest = "val_prisoner_jail_restr",
+				online = true,
+				predicate = p_predicate
+			}
+
+			-- свободен
+			sj[#sj + 1] = {
+				section = "logic@val_prisoner_free",
+				prior = 1, state = {1},
+				squad = squad, group = groups[1],
+				predicate = p_predicate
+			}
+		end,
+		ltx = function()
+			return "#include \"scripts\\val_prisoner_captive.ltx\"\n"
+		end,
+		state = function()
+			return has_alife_info("val_prisoner_door_unlocked") and 1 or 0
+		end,
+		check = function(npc_community)
+			return npc_community == "dolg"
+		end
+	},
+	["val_sos"] = {
+		job = function(sj, gname, squad, groups)
+			-- раненый сталкер
+			sj[#sj + 1] = {
+				section = "logic@val_sos_wounded",
+				prior = 1,
+				squad = squad, group = groups[1],
+				predicate = sos_predicate_w
+			}
+
+			-- кровосос
+			sj[#sj + 1] = {
+				section = "logic@val_sos_bs",
+				prior = 1,
+				squad = squad, group = groups[1],
+				predicate = sos_predicate_bs
+			}
+		end,
+		ltx = function()
+			return "#include \"scripts\\val_sos_bs.ltx\"\n"
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker" or npc_community == "bloodsucker"
+		end
+	},
+	["val_rob"] = {
+		job = function(sj, gname, squad, groups)
+			-- главный грабителей, с которым разговариваем
+			sj[#sj + 1] = {
+				section = "logic@val_rob_leader",
+				prior = 3,
+				squad = squad, group = groups[1]
+			}
+
+			-- охранники на входах в здание фермы
+			sj[#sj + 1] = {
+				section = "logic@val_rob_guard1",
+				prior = 2,
+				squad = squad, group = groups[1]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@val_rob_guard2",
+				prior = 2,
+				squad = squad, group = groups[1]
+			}
+
+			-- простые сталкеры внутри фермы вокруг костра
+			for i = 1, 5 do
+				sj[#sj + 1] = {
+					section = "logic@val_rob_kamp",
+					prior = 1,
+					squad = squad, group = groups[1]
+				}
 			end
+		end,
+		ltx = function()
+			return "#include \"scripts\\val_rob_leader.ltx\"\n"
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
 		end
-		if wp_prop.dw ~= nil then
-			d = tonumber(wp_prop.dw)
-			if d ~= nil and d > 0 then
-				d_wait = d
+	},
+	["val_lager_bandits"] = {
+		job = function(sj, gname, squad, groups)
+			local restr
+
+			-- БОРОВ
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_leader_normal",
+				position_threshold = "graph",
+				prior = 9,
+				squad = squad, group = groups[1],
+				online = "{+val_lager_bandits_show_leader_company}",
+				out_rest   = "val_lager_bandits_borov_restrictor",
+				predicate  = lb_predicate1
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_leader_alarm",
+				position_threshold = "graph",
+				prior = 9, state = {state_alarm},
+				squad = squad, group = groups[1],
+				online = "{+val_lager_bandits_show_leader_company}",
+				out_rest   = "val_lager_bandits_borov_restrictor",
+				predicate  = lb_predicate1
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_leader_alarm",
+				position_threshold = "graph",
+				prior = 9, state = {state_alarm_actor_inside},
+				squad = squad, group = groups[1],
+				online = "{+val_lager_bandits_show_leader_company}",
+				out_rest   = "val_lager_bandits_borov_restrictor",
+				predicate  = lb_predicate1
+			}
+
+			-- ОХРАННИКИ БОРОВА
+			for i = 1, 3 do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_bodyguard_normal", i}),
+					position_threshold = "graph",
+					prior = 8,
+					squad = squad, group = groups[1],
+					online = "{+val_lager_bandits_show_leader_company}",
+					out_rest   = "val_lager_bandits_main_building_restrictor",
+					predicate  = lb_predicate_bg
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_bodyguard_alarm", i}),
+					position_threshold = "graph",
+					prior = 8, state = {state_alarm},
+					squad = squad, group = groups[1],
+					online = "{+val_lager_bandits_show_leader_company}",
+					out_rest   = "val_lager_bandits_main_building_restrictor",
+					predicate  = lb_predicate_bg
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_bodyguard_alarm", i}),
+					position_threshold = "graph",
+					prior = 8, state = {state_alarm_actor_inside},
+					squad = squad, group = groups[1],
+					online = "{+val_lager_bandits_show_leader_company}",
+					out_rest   = "val_lager_bandits_main_building_restrictor",
+					predicate  = lb_predicate_bg
+				}
 			end
+
+			-- СИДЯЩИЕ В КЕМПЕ 1 ВОЗЛЕ БОРОВА И В КЕМПЕ 2 НА ВТОРОМ ЭТАЖЕ
+			restr = {"val_lager_bandits_main_building_restrictor", "val_lager_bandits_nedostroyka_restrictor", "val_lager_bandits_nedostroyka_restrictor", "val_lager_bandits_restrictor"}
+			local onlineid = {"{+val_lager_bandits_show_leader_company}", "{+val_lager_bandits_show_nedostroyka_company}", "{+val_lager_bandits_show_nedostroyka_company}"}
+			local pr = {7, 5, 5, 2}
+			local t_kamp
+			for i, v in pairs({3, 4, 3, 3}) do
+				t_kamp = { section = table_concat({"logic@val_lager_bandits_kamp", i, "_normal"}),
+					position_threshold = "graph",
+					prior = pr[i],
+					squad = squad, group = groups[i],
+					online = onlineid[i],
+					out_rest = restr[i]
+				}
+				for j = 1, v do
+					sj[#sj + 1] = t_kamp
+
+					sj[#sj + 1] = {
+						section = table_concat({"logic@val_lager_bandits_kamp", i, "_alarm", j}),
+						position_threshold = "graph",
+						prior = pr[i], state = {state_alarm},
+						squad = squad, group = groups[i],
+						online = onlineid[i],
+						out_rest = restr[i]
+					}
+
+					sj[#sj + 1] = {
+						section = table_concat({"logic@val_lager_bandits_kamp", i, "_alarm", j}),
+						position_threshold = "graph",
+						prior = 7, state = {state_alarm_actor_inside},
+						squad = squad, group = groups[i],
+						online = onlineid[i],
+						out_rest = restr[i]
+					}
+				end
+			end
+
+			-- БАНДИТЫ
+			local quantity = {2, 4, 1, 4}
+
+			-- guards
+			restr = {"val_lager_bandits_main_side_restrictor", "val_lager_bandits_restrictor"}
+			for i = 1, quantity[1] do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_guard_normal", i}),
+					position_threshold = "graph",
+					prior = 6,
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_guard_alarm", i}),
+					position_threshold = "graph",
+					prior = 3, state = {state_alarm},
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_guard_alarm", i}),
+					position_threshold = "graph",
+					prior = 3, state = {state_alarm_actor_inside},
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+			end
+
+			-- patrols
+			restr = {"val_lager_bandits_main_side_restrictor", "val_lager_bandits_restrictor", "val_lager_bandits_restrictor", "val_lager_bandits_restrictor"}
+			for i = 1, quantity[2] do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_patrol_normal", i}),
+					position_threshold = "graph",
+					state = {state_normal},
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_patrol_alarm", i}),
+					position_threshold = "graph",
+					prior = 3, state = {state_alarm},
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_patrol_alarm", i}),
+					position_threshold = "graph",
+					prior = 3, state = {state_alarm_actor_inside},
+					squad = squad, group = groups[1],
+					out_rest = restr[i]
+				}
+			end
+
+			-- snipers
+			restr = {"val_lager_bandits_restrictor"}
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_sniper_normal1",
+				position_threshold = "graph",
+				prior = 4,
+				squad = squad, group = groups[1],
+				out_rest = restr[1]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_sniper_alarm1",
+				position_threshold = "graph",
+				prior = 4, state = {state_alarm},
+				squad = squad, group = groups[1],
+				out_rest = restr[1]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@val_lager_bandits_sniper_alarm1",
+				position_threshold = "graph",
+				prior = 3, state = {state_alarm_actor_inside},
+				squad = squad, group = groups[1],
+				out_rest = restr[1]
+			}
+
+			-- sleepers
+			for i = 1, quantity[4] do
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_sleeper_normal", i}),
+					position_threshold = "graph",
+					prior = 3,
+					squad = squad, group = groups[2],
+					online = "{+val_lager_bandits_show_nedostroyka_company}",
+					out_rest = "val_lager_bandits_nedostroyka_restrictor"
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_sleeper_alarm", i}),
+					position_threshold = "graph",
+					prior = 3, state = {state_alarm},
+					squad = squad, group = groups[2],
+					online = "{+val_lager_bandits_show_nedostroyka_company}",
+					out_rest = "val_lager_bandits_nedostroyka_restrictor"
+				}
+
+				sj[#sj + 1] = {
+					section = table_concat({"logic@val_lager_bandits_sleeper_alarm", i}),
+					position_threshold = "graph",
+					prior = 6, state = {state_alarm_actor_inside},
+					squad = squad, group = groups[2],
+					online = "{+val_lager_bandits_show_nedostroyka_company}",
+					out_rest = "val_lager_bandits_nedostroyka_restrictor"
+				}
+			end
+
+		end,
+		ltx = function()
+			local ltx = "[combat_ignore]\n\n"
+
+			local combat_ignore = "{-val_escort_captive_enemy =check_fighting(400)}, {-val_sacrifice_finish =check_fighting(401)}, {-val_prisoner_free =check_fighting(402)}\n"
+
+			local res_t = {
+				"[logic@val_lager_bandits_leader_normal]\nactive = walker@val_lager_bandits_leader_normal\non_death = death@val_lager_bandits_borov\ncombat_ignore = combat_ignore\n",
+
+				"[death@val_lager_bandits_borov]\non_info = %+val_borov_dead%\n",
+
+				"[walker@val_lager_bandits_leader_normal]\npath_walk = leader_walk\npath_look = leader_look\ncombat_ignore_cond = ",
+				combat_ignore,
+
+				"[logic@val_lager_bandits_leader_alarm]\nactive = camper@val_lager_bandits_leader_alarm\non_death = death@val_lager_bandits_borov\ncombat_ignore = combat_ignore\n",
+
+				"[camper@val_lager_bandits_leader_alarm]\npath_walk = leader_alarm_walk\npath_look = leader_alarm_look\nradius = 15\ncombat_ignore_cond = ",
+				combat_ignore }
+			ltx = ltx .. table_concat(res_t)
+
+			-- ОХРАННИКИ БОРОВА
+			for i = 1, 3 do
+				res_t = {
+					"[logic@val_lager_bandits_bodyguard_normal",
+					i, "]\nactive = walker@val_lager_bandits_bodyguard_normal",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@val_lager_bandits_bodyguard_normal",
+					i, "]\npath_walk = bodyguard_walk", i,
+					"\npath_look = bodyguard_look", i,
+					"\ncombat_ignore_cond = ",
+					combat_ignore,
+
+					"[logic@val_lager_bandits_bodyguard_alarm",
+					i, "]\nactive = camper@val_lager_bandits_bodyguard_alarm",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[camper@val_lager_bandits_bodyguard_alarm",
+					i, "]\npath_walk = bodyguard_alarm_walk",
+					i, "\npath_look = bodyguard_alarm_look",
+					i, "\nradius = 10\ncombat_ignore_cond = ",
+					combat_ignore }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- СИДЯЩИЕ В КЕМПЕ 1 ВОЗЛЕ БОРОВА И В КЕМПЕ 2 НА ВТОРОМ ЭТАЖЕ
+			for i, v in pairs({3, 4, 3, 3}) do
+				res_t = {
+					"[logic@val_lager_bandits_kamp",
+					i, "_normal]\nactive = kamp@val_lager_bandits_kamp",
+					i, "_normal\ncombat_ignore = combat_ignore\n",
+
+					"[kamp@val_lager_bandits_kamp",
+					i, "_normal]\ncenter_point = kamp",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore }
+				ltx = ltx .. table_concat(res_t)
+
+				for j = 1, v do
+					res_t = {
+						"[logic@val_lager_bandits_kamp", i, "_alarm",
+						j, "]\nactive = camper@val_lager_bandits_kamp", i, "_alarm",
+						j, "\ncombat_ignore = combat_ignore\n",
+
+						"[camper@val_lager_bandits_kamp", i, "_alarm",
+						j, "]\npath_walk = kamp", i, "_alarm_walk",
+						j, "\npath_look = kamp", i, "_alarm_look",
+						j, "\ndef_state_moving = assault\nradius = 8\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(35)}, ",
+						combat_ignore }
+					ltx = ltx .. table_concat(res_t)
+				end
+			end
+
+			-- БАНДИТЫ
+			local quantity = {2, 4, 1, 4}
+
+			-- guards
+			for i = 1, quantity[1] do
+				res_t = {
+					"[logic@val_lager_bandits_guard_normal",
+					i, "]\nactive = walker@val_lager_bandits_guard_normal",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@val_lager_bandits_guard_normal",
+					i, "]\npath_walk = guard_walk",
+					i, "\npath_look = guard_look",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore,
+
+					"[logic@val_lager_bandits_guard_alarm",
+					i, "]\nactive = walker@val_lager_bandits_guard_alarm",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@val_lager_bandits_guard_alarm",
+					i, "]\npath_walk = guard_alarm_walk",
+					i, "\npath_look = guard_alarm_look",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- patrols
+			for i = 1, quantity[2] do
+				res_t = {
+					"[logic@val_lager_bandits_patrol_normal",
+					i, "]\nactive = walker@val_lager_bandits_patrol_normal",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@val_lager_bandits_patrol_normal",
+					i, "]\npath_walk = patrol_walk",
+					i, "\npath_look = patrol_look",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore,
+
+					"[logic@val_lager_bandits_patrol_alarm",
+					i, "]\nactive = walker@val_lager_bandits_patrol_alarm",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@val_lager_bandits_patrol_alarm",
+					i, "]\npath_walk = patrol_alarm_walk",
+					i, "\npath_look = patrol_alarm_look",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			-- snipers
+			res_t = {
+				"[logic@val_lager_bandits_sniper_normal1]\nactive = camper@val_lager_bandits_sniper_normal1\ncombat_ignore = combat_ignore\n",
+
+				"[camper@val_lager_bandits_sniper_normal1]\npath_walk = sniper_walk1\npath_look = sniper_look1\ndef_state_moving = patrol\ndef_state_moving_fire = patrol_fire\ndef_state_campering = guard\ndef_state_campering_fire = guard_fire\ncombat_ignore_cond = ",
+				combat_ignore,
+
+				"[logic@val_lager_bandits_sniper_alarm1]\nactive = camper@val_lager_bandits_sniper_alarm1\ncombat_ignore = combat_ignore\n",
+
+				"[camper@val_lager_bandits_sniper_alarm1]\npath_walk = sniper_alarm_walk1\npath_look = sniper_alarm_look1\ndef_state_moving = sneak\ndef_state_moving_fire = sneak_fire\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(35)}, ",
+				combat_ignore }
+			ltx = ltx .. table_concat(res_t)
+
+			-- sleepers
+			for i = 1, quantity[4] do
+				res_t = {
+					"[logic@val_lager_bandits_sleeper_normal",
+					i, "]\nactive = sleeper@val_lager_bandits_sleeper_normal",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[sleeper@val_lager_bandits_sleeper_normal",
+					i, "]\npath_main = sleeper",
+					i, "\ncombat_ignore_cond = ",
+					combat_ignore,
+
+					"[logic@val_lager_bandits_sleeper_alarm",
+					i, "]\nactive = camper@val_lager_bandits_sleeper_alarm",
+					i, "\ncombat_ignore = combat_ignore\n",
+
+					"[camper@val_lager_bandits_sleeper_alarm",
+					i, "]\npath_walk = sleeper_alarm_walk",
+					i, "\npath_look = sleeper_alarm_look",
+					i, "\ndef_state_moving = assault\nradius = 8\ncombat_ignore_cond = {=fighting_actor =dist_to_actor_ge(30)}, ",
+					combat_ignore }
+				ltx = ltx .. table_concat(res_t)
+			end
+
+			return ltx
+		end,
+		state = function(gulag)
+			if (gulag.state == state_alarm or gulag.state == state_alarm_actor_inside) and
+				game.get_game_time():diffSec(gulag.stateBegin) < 12000 -- 20 real minutes
+			then
+				return gulag.state
+			else
+				if vlbr_zone == nil then
+					vlbr_zone = db.zone_by_name["val_lager_bandits_restrictor"]
+				end
+				for k,v in pairs(gulag.Object) do
+					if v ~= true then
+						local enemy = v:best_enemy()
+						if enemy ~= nil then
+							if enemy:is_actor() then
+								if vlbr_zone and vlbr_zone:inside(Actor:position()) then
+									return state_alarm_actor_inside
+								end
+								return state_alarm
+							elseif enemy:is_stalker() then
+								return state_alarm
+							end
+						end
+					end
+				end
+			end
+
+			return state_normal
+		end,
+		check = function(npc_community)
+			return npc_community == "bandit"
 		end
+	},
+	["offline_group"] = {
+		job = function(sj, gname, squad, groups)
+			local ptr, wp_prop, job_count, prior
 
-		-- добавляем должность
-		t = { section = table_concat({"logic@", idstr}),
-			idle = 0,
-			prior = 2, state = {0}, squad = squad, group = groups[1],
-			position_threshold = 10,
-			in_rest = "", out_rest = table_concat({gname, "_restr" }),
-			predicate = wt_predicate_s
-		}
-		sj[#sj+1] = t
+			local phdr = "val_soldiers_raid_off_offgroup_"
+			local it = 1
+			local way_name = table_concat({ phdr, it })
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+				job_count = wp_prop.count or 5
+				prior = wp_prop.prior or 1
 
-		-- добавляем описание должности в лтх.
-		res_t = {
-			"[logic@", idstr, "]\nactive = camper@", idstr, "\n",
+				for i = 1, job_count do
+					-- добавляем должность
+					sj[#sj + 1] = {
+						section = table_concat({"logic@", way_name}),
+						prior = prior, squad = squad, group = groups[1],
+						position_threshold = 20,
+						online = false
+					}
+				end
 
-			"[camper@", idstr, "]\npath_walk = sniper_",
-			i, "_walk\npath_look = sniper_",
-			i, "_look\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\n",
-			combat_ignore_cond_str,
-			"on_actor_dist_le_nvis = 50 | walker@", idstr, "_free\non_timer = ", d_sniper, "000 | remark@", idstr, "\n",
+				it = it + 1
+				way_name = table_concat({ phdr, it })
+			end
+		end,
+		ltx = function()
+			local ltx = ""
+			local res_t
+			local phdr = "val_soldiers_raid_off_offgroup_"
+			local it = 1
+			local way_name = table_concat({ phdr, it })
+			while level_patrol_path_exists(way_name) do
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", way_name, "]\nactive = remark@", way_name, "\n",
 
-			"[walker@", idstr, "_free]\npath_walk = sniper_",
-			i, "_walk\npath_look = sniper_",
-			i, "_look\n",
-			combat_ignore_cond_str,
-			"on_actor_dist_ge_nvis = 60 | camper@", idstr, "\n",
+					"[remark@", way_name, "]\npath_walk = offgroup_", it, "\nanim = wait_na\n" }
+				ltx = ltx .. table_concat(res_t)
 
-			"[remark@", idstr, "]\nanim = guard\n",
-			combat_ignore_cond_str,
-			"on_actor_dist_le_nvis   = 50 | walker@", idstr, "_free\non_timer = ",
-			d_wait, "000 | camper@", idstr, "\n" }
-		ltx = ltx..table_concat(res_t)
+				it = it + 1
+				way_name = table_concat({ phdr, it })
+			end
 
-		i = i + 1
-		way_name = table_concat({idstr, "_", i,"_walk"})
-	end
+			return ltx
+		end,
+		check = function(npc_community, se_obj)
+			return se_obj ~= nil
+		end
+	},
+	["val_soldiers_raid"] = {
+		job = function(sj, gname, squad, groups)
+			local ptr, wp_prop, job_count
 
-	gulags.val_watchtower.ltx = ltx
+			local idstr = table_concat({ gname, "_guard" })
+			local i = 1
+			while level_patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@", idstr, i}),
+					prior = 1, squad = squad, group = groups[1],
+					out_rest = table_concat({ gname, "_restr" })
+				}
+
+				i = i + 1
+			end
+
+			i = 1
+			idstr = table_concat({ gname, "_raid" })
+			local way_name = table_concat({ idstr .. "_" .. i .. "_walk" })
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+				job_count = wp_prop.count or 1
+
+				for j = 1, job_count do
+					-- добавляем должность
+					sj[#sj + 1] = {
+						section = table_concat({"logic@", idstr, i}),
+						prior = 1, state = {1}, squad = squad, group = groups[1],
+						out_rest = table_concat({ gname, "_restr" })
+					}
+				end
+
+				i = i + 1
+				way_name = table_concat({ idstr, "_", i, "_walk" })
+			end
+		end,
+		ltx = function(gname)
+			local ltx = "[danger@ignore_corpse]\nignore_types = corpse\n"
+			local res_t
+
+			local idstr = table_concat({ gname, "_guard" })
+			local i = 1
+			while level_patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", idstr, i, "]\nactive = camper@", idstr, i, "\n",
+
+					"[camper@", idstr, i, "]\npath_walk = guard_",
+					i, "_walk\ndef_state_moving = assault\nradius = 10\ndanger = danger@ignore_corpse\n" }
+				if level_patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
+					res_t[#res_t+1] = "path_look = guard_"
+					res_t[#res_t+1] = i
+					res_t[#res_t+1] = "_look\n"
+				end
+				ltx = ltx..table_concat(res_t)
+
+				i = i + 1
+			end
+
+			i = 1
+			idstr = table_concat({ gname, "_raid" })
+			local way_name = table_concat({ idstr .. "_" .. i .. "_walk" })
+			while level_patrol_path_exists(way_name) do
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", idstr, i, "]\nactive = patrol@", idstr, i, "\n",
+
+					"[patrol@", idstr, i, "]\npath_walk = raid_",
+					i, "_walk\nformation = around\ndef_state_moving1 = assault\ndef_state_moving2 = assault\ndanger = danger@ignore_corpse\n" }
+
+				if level_patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
+					res_t[#res_t+1] = "path_look = raid_"
+					res_t[#res_t+1] = i
+					res_t[#res_t+1] = "_look\n"
+				end
+				ltx = ltx..table_concat(res_t)
+
+				i = i + 1
+				way_name = table_concat({ idstr, "_", i, "_walk" })
+			end
+
+			return ltx
+		end,
+		state = function(gulag)
+			if gulag.state == 0 then
+				if gulag.state_switch_1 and gulag.state_switch_1:pick_section_from_condlist(gulag.smrttrn) ~= nil then
+					return 1
+				end
+				return 0
+			elseif gulag.state == 1 then
+				if gulag.state_switch_0 and gulag.state_switch_0:pick_section_from_condlist(gulag.smrttrn) ~= nil then
+					return 0
+				end
+				return 1
+			end
+		end,
+		check = function(npc_community)
+			return npc_community == "military"
+		end
+	},
+	["val_watchtower"] = {
+		job = function(sj, gname, squad, groups)
+			local d_sniper, d_wait, d
+			local ptr, wp_prop
+
+			local i = 1
+			-- Проверяем наличие часовых на вышке.
+			local idstr = table_concat({gname, "_guard"})
+			while level_patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@", idstr}),
+					prior = 1, squad = squad, group = groups[1],
+					position_threshold = 10,
+					predicate = wt_predicate_g,
+					out_rest = table_concat({gname, "_restr"})
+				}
+
+				i = i + 1
+			end
+
+			-- Проверяем наличие снайперов на вышке.
+			i = 1
+			idstr = table_concat({ gname, "_sniper" })
+			local way_name = table_concat({idstr, "_", i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+				d_sniper, d_wait, d = 20, 90, 0
+				if wp_prop.ds ~= nil then
+					d = tonumber(wp_prop.ds)
+					if d ~= nil and d > 0 then
+						d_sniper = d
+					end
+				end
+				if wp_prop.dw ~= nil then
+					d = tonumber(wp_prop.dw)
+					if d ~= nil and d > 0 then
+						d_wait = d
+					end
+				end
+
+				-- добавляем должность
+				sj[#sj + 1] = {
+					section = table_concat({"logic@", idstr}),
+					prior = 2, squad = squad, group = groups[1],
+					position_threshold = 10,
+					out_rest = table_concat({gname, "_restr" }),
+					predicate = wt_predicate_s
+				}
+
+				i = i + 1
+				way_name = table_concat({idstr, "_", i,"_walk"})
+			end
+		end,
+		ltx = function(gname)
+			local d_sniper, d_wait, d
+			local ltx, res_t = ""
+			local ptr, wp_prop
+
+			local i = 1
+			local combat_ignore_cond_str =
+				"combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(401) -val_sacrifice_finish}\n"
+			-- Проверяем наличие часовых на вышке.
+			local idstr = table_concat({gname, "_guard"})
+			while level_patrol_path_exists(table_concat({idstr, "_", i, "_walk"})) do
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", idstr, "]\nactive = walker@", idstr, "\ncombat_ignore = combat_ignore\n",
+
+					"[walker@", idstr, "]\npath_walk = guard_",
+					i, "_walk\ndef_state_moving1 = patrol\ndef_state_moving2 = patrol\n",
+					combat_ignore_cond_str }
+
+				if level_patrol_path_exists(table_concat({idstr, "_", i, "_look"})) then
+					res_t[#res_t+1] = "path_look = guard_"
+					res_t[#res_t+1] = i
+					res_t[#res_t+1] = "_look\n"
+				end
+				ltx = ltx..table_concat(res_t)
+
+				i = i + 1
+			end
+
+			-- Проверяем наличие снайперов на вышке.
+			i = 1
+			idstr = table_concat({ gname, "_sniper" })
+			local way_name = table_concat({idstr, "_", i,"_walk"})
+			while level_patrol_path_exists(way_name) do
+				-- Необходимо вычитать количество работ из названия точки пути.
+				ptr = patrol(way_name)
+				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+				d_sniper, d_wait, d = 20, 90, 0
+				if wp_prop.ds ~= nil then
+					d = tonumber(wp_prop.ds)
+					if d ~= nil and d > 0 then
+						d_sniper = d
+					end
+				end
+				if wp_prop.dw ~= nil then
+					d = tonumber(wp_prop.dw)
+					if d ~= nil and d > 0 then
+						d_wait = d
+					end
+				end
+
+				-- добавляем описание должности в лтх.
+				res_t = {
+					"[logic@", idstr, "]\nactive = camper@", idstr, "\n",
+
+					"[camper@", idstr, "]\npath_walk = sniper_",
+					i, "_walk\npath_look = sniper_",
+					i, "_look\ndef_state_campering = threat\ndef_state_campering_fire = threat_sniper_fire\nsniper = true\n",
+					combat_ignore_cond_str,
+					"on_actor_dist_le_nvis = 50 | walker@", idstr, "_free\non_timer = ", d_sniper, "000 | remark@", idstr, "\n",
+
+					"[walker@", idstr, "_free]\npath_walk = sniper_",
+					i, "_walk\npath_look = sniper_",
+					i, "_look\n",
+					combat_ignore_cond_str,
+					"on_actor_dist_ge_nvis = 60 | camper@", idstr, "\n",
+
+					"[remark@", idstr, "]\nanim = guard\n",
+					combat_ignore_cond_str,
+					"on_actor_dist_le_nvis   = 50 | walker@", idstr, "_free\non_timer = ",
+					d_wait, "000 | camper@", idstr, "\n" }
+				ltx = ltx..table_concat(res_t)
+
+				i = i + 1
+				way_name = table_concat({idstr, "_", i,"_walk"})
+			end
+
+			return ltx
+		end,
+		check = function(npc_community)
+			return npc_community == "bandit"
+		end
+	}
+}
+
+function get_gulag(gulag_type)
+	return gulags[gulag_type]
 end

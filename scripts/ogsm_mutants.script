@@ -1,0 +1,224 @@
+---------------------- Обработчик монстров для OGSM 2.4 -----------------------
+
+------------------------- Copyright 2007-2018 DEXXX ---------------------------
+
+function remove_pp_eff(self)
+	local pp_id = self.pp_id
+	if not pp_id then return end
+
+	level.remove_pp_effector(pp_id)
+	self.pp_id = nil
+end
+
+-- Атака насекомых при приближении к чумному зомби
+
+function init_zombie_plague(self)
+	self.insect_particle = particles_object("ogsm\\ogsm_flies_00")
+	self.insect_sound = voice([[anomaly\flies]])
+end
+
+-- Эффект при приближении к пси-бюреру
+
+local psy_sounds = {
+	voice([[ambient\random\rnd_moan1]]),
+	voice([[ambient\random\rnd_moan2]]),
+	voice([[ambient\random\rnd_moan4]]),
+	voice([[ambient\random\rnd_moan5]])
+}
+
+function init_psy_burer(self)
+	self.sound_obj_right = voice([[ambient\random\rnd_moan1]])
+	self.sound_obj_left = voice([[ambient\random\rnd_moan2]])
+end
+
+-- Взрыв зомби-камикадзе
+function blow_zombie(self)
+	if self.timer > time_real_ms then return end
+	self.timer = self.timer + 250
+
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		return
+	end
+
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if not (enemy and obj:see(enemy)) then return end
+
+	local dist = obj:position():distance_to(enemy:position())
+	if dist > 2 then return end
+
+	amk_monsters.zombie_blow(self)
+end
+
+-- Разряд электрохимеры
+function charge_chimera(self)
+	if self.timer > time_real_ms then return end
+
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		return
+	end
+
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if not (enemy and obj:see(enemy)) then return end
+
+	local dist = obj:position():distance_to(enemy:position())
+	if dist > 4 then return end
+
+	amk_monsters.el_chimera_hit(self)
+end
+
+-- Атака насекомых чумного зомби
+function zombie_insect(self)
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		remove_pp_eff(self)
+		return
+	end
+
+	local pos, apos = self.object:position(), Actor:position()
+	if pos:distance_to(apos) > 10 then
+		remove_pp_eff(self)
+		return
+	end
+
+	if not self.pp_id then
+		pp_id = self.object:id()
+		level.add_pp_effector("dead_zone.ppe", pp_id, true)
+		level.set_pp_effector_factor(pp_id, 0.1)
+		self.pp_id = pp_id
+	end
+
+	local particle_pos = apos:add(xyz(0, 1.8, 0))
+	if not self.insect_particle:playing() then 
+		self.insect_particle:play_at_pos(particle_pos)
+	else
+		self.insect_particle:move_to(particle_pos, particle_pos)
+	end
+
+	if not self.insect_sound:playing() then 
+		self.insect_sound:play_at_pos(Actor, apos)
+
+		local zh = hit()
+		zh.draftsman = Actor
+		zh.type = hit.chemical_burn
+		zh.direction = pos:sub(apos)
+		zh:bone("bip01_spine")
+		zh.power = 1
+		zh.impulse = 1
+		Actor:hit(zh)
+	else
+		self.insect_sound:set_position(apos)
+	end
+end
+
+-- Удаление насекомых после убийства чумного зомби
+function stop_insects(self)
+	if self.insect_particle:playing() then
+		self.insect_particle:stop()
+	end
+	remove_pp_eff(self)
+end
+
+-- Аура пси-бюрера
+function psy_burer(self)
+	if not actor_flags.alive or actor_flags.sleep_state or
+	   actor_flags.bloodsucker_vampire_state then
+		remove_pp_eff(self)
+		return
+	end
+
+	local pos, apos = self.object:position(), Actor:position()
+	if pos:distance_to(apos) > 20 then
+		remove_pp_eff(self)
+		return
+	end
+
+	if not self.pp_id then
+		pp_id = self.object:id()
+		level.add_pp_effector("dead_zone.ppe", pp_id, true)
+		self.pp_id = pp_id
+	end
+
+	self.sound_obj_right.volume = 0.5
+	self.sound_obj_left.volume = 0.5
+
+	if not self.sound_obj_left:playing() then
+		self.sound_obj_left = table.random(psy_sounds)
+		self.sound_obj_left:play_at_pos(Actor, xyz(1, 0, 1), 0, sound_object.s2d)
+
+		local zh = hit()
+		zh.draftsman = Actor
+		zh.type = hit.telepatic
+		zh.direction = pos:sub(apos)
+		zh:bone("bip01_spine")
+		zh.power = 0.3
+		Actor:hit(zh)
+	end
+
+	if not self.sound_obj_right:playing() then
+		self.sound_obj_right = table.random(psy_sounds)
+		self.sound_obj_right:play_at_pos(Actor, xyz(-1, 0, 1), 0, sound_object.s2d)
+
+		local zh = hit()
+		zh.draftsman = Actor
+		zh.type = hit.telepatic
+		zh.direction = pos:sub(apos)
+		zh:bone("bip01_spine")
+		zh.power = 0.3
+		Actor:hit(zh)
+	end
+end
+
+-- Удар контролера руками, demover123, lvg_brest
+function controller_fists(self)
+	local obj = self.object
+	local enemy = obj:get_enemy()
+	if enemy and obj:see(enemy) and enemy:id() == 0 then
+		local dist = obj:position():distance_to(enemy:position())
+		if dist <= 1 then
+			if not self.get_hit then
+				self.get_hit = time_global() + 100
+				self.start_anim_hit_cont = true
+			elseif self.get_hit <= time_global() then
+				if self.start_anim_hit_cont then
+					if obj:animation_count() > 0 then
+						obj:clear_animations()
+					end
+					obj:play_cycle("stand_attack_1", true)
+					self.start_anim_hit_cont = false
+				end
+				if not self.hit_to_enemy then
+					self.hit_to_enemy = time_global() + 300
+				elseif self.hit_to_enemy <= time_global() then
+					local snd_hit = voice("monsters\\zombie\\zombie_attack_hit_0")
+					snd_hit:play_at_pos(obj, obj:position(), sound_object.s3d)
+					level.add_cam_effector("camera_effects\\hit_back_left.anm", 777, false, "")
+					local h = hit()
+					h.draftsman = obj
+					h.type      = hit.wound
+					h.direction = vector():set(0,0,0)
+					h:bone("bip01_spine")
+					h.power     = 0.40
+					h.impulse   = 240
+					enemy:hit(h)
+					self.hit_to_enemy = nil
+					self.get_hit = nil
+				end
+			end
+		else
+			self.hit_to_enemy = nil
+			self.get_hit = nil
+		end
+	end
+	if obj:animation_count() < 1 then
+		local i = math.random(0,5)
+		obj:add_animation("stand_walk_fwd_"..i, true)
+	end
+end
+
+---------------------- Обработчик монстров для OGSM 2.4 -----------------------
+
+------------------------- Copyright 2007-2018 DEXXX ---------------------------

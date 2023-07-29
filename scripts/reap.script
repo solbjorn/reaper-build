@@ -16,10 +16,6 @@ function net_spawn()
 	reap_misc.net_spawn()
 end
 
-function net_destroy()
-	bolt_ending.net_destroy()
-end
-
 function actor_death(victim, who)
 	Dream:stopper()
 	reap_misc.kill_online_controllers()
@@ -42,7 +38,6 @@ function update()
 	end
 
 	update_timers()
-	bolt_ending.update()
 
 	if next_update_200 <= time_real_ms then
 		safe_place()
@@ -59,7 +54,7 @@ end
 
 function item_take(obj)
 	local sect = obj:section()
-	if screen.precache_frame <= 1 and Actor:is_in_slot(obj) and
+	if screen.precache_frame <= 1 and not Actor:is_in_ruck(obj) and
 	   config:r_bool_cache(sect, "default_to_ruck", true) then
 		Actor:move_to_ruck(obj)
 	end
@@ -86,6 +81,7 @@ function item_drop_from_belt(obj)
 	if obj:section() == "bioradar" then
 		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
+	belt_redraw()
 
 	bolt_ending.on_item_drop_from_belt(obj, true)
 end
@@ -95,6 +91,7 @@ function item_belt(obj)
 	if obj:section() == "bioradar" then
 		biodetector.switch(true)
 	end
+	belt_redraw()
 
 	bolt_ending.on_item_belt(obj)
 	grenade_belt.on_item_belt(obj)
@@ -105,6 +102,7 @@ function item_move_from_belt(obj)
 	if obj:section() == "bioradar" then
 		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
+	belt_redraw()
 
 	bolt_ending.on_item_drop_from_belt(obj)
 end
@@ -139,8 +137,17 @@ function take_item_from_box(box, item)
 	end
 end
 
-function info(info_id)
-	process_ui_info(info_id)
+local smart_info = table.tohash({
+	"bar_deactivate_radar_done", "sar_finish_decoding",
+	"sar2_monolith_miracle", "aes2_monolit_teleport_ready_final"
+})
+
+function info(info_id, ui_info)
+	if ui_info then
+		process_ui_info(info_id)
+	elseif smart_info[info_id] then
+		smart_terrain.init_level_groups()
+	end
 end
 
 function new_game()
@@ -302,6 +309,8 @@ function process_ui_info(info_id)
 	if fn then
 		fn(info_id)
 	end
+
+	belt_redraw()
 end
 
 --[[---------------------------------------------------------------------------
@@ -353,6 +362,111 @@ function safe_place()
 			hud:RemoveCustomStatic("sleep_static")
 			sleep_cs = nil
 		end
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Full belt on HUD
+--]]---------------------------------------------------------------------------
+
+local belt_pri = {
+	bioradar	= 7,
+	bolt_box	= 1
+}
+for i, sect in ipairs({
+	"detector_simple", "detector_advances",
+	"detector_elite", "detector_elite_sak"
+}) do
+	belt_pri[sect] = 6
+end
+
+local belt_ui = { }
+
+function belt_item(obj)
+	local sect = obj:section()
+	local ret = {
+		sect	= sect,
+		cost	= obj:cost()
+	}
+
+	ret.pri = belt_pri[sect]
+	if ret.pri then
+		return ret
+	end
+
+	if obj:is_ammo() then
+		ret.width = config:r_u32_cache(sect, "inv_grid_width")
+		ret.box = config:r_u32_cache(sect, "box_size")
+		ret.pri = 3
+	elseif obj:is_artefact() then
+		ret.pri = 5
+	elseif obj:is_grenade() then
+		ret.pri = 2
+	else
+		ret.pri = 4
+	end
+
+	return ret
+end
+
+function belt_sort(a, b)
+	if a.pri ~= b.pri then
+		return a.pri > b.pri
+	elseif a.box then
+		if a.width ~= b.width then
+			return a.width > b.width
+		elseif a.box ~= b.box then
+			return a.box > b.box
+		end
+	end
+	if a.cost ~= b.cost then
+		return a.cost > b.cost
+	else
+		return a.sect < b.sect
+	end
+end
+
+function belt_redraw()
+	if #belt_ui > 0 then
+		for i = 1, #belt_ui do
+			hud:RemoveDialogToRender(belt_ui[i])
+		end
+
+		belt_ui = { }
+	end
+
+	if level.main_input_receiver() or Actor:belt_count() == 0 then return end
+
+	local belt_tbl = { }
+	for id, obj in pairs(Inventory.belt_by_id) do
+		belt_tbl[#belt_tbl + 1] = belt_item(obj)
+	end
+
+	table.sort(belt_tbl, belt_sort)
+
+	local path = "ui\\ui_icon_equipment"
+	local item, static
+	local x, y, w, h
+	local cur_x = 25
+
+	for i = 1, #belt_tbl do
+		item = belt_tbl[i]
+		w = item.width or config:r_u32_cache(item.sect, "inv_grid_width")
+
+		static = CUIStatic()
+		static:Init(path, cur_x, 640, 19 * w, 25)
+		cur_x = cur_x + 19 * w + 1
+
+		x = config:r_u32_cache(item.sect, "inv_grid_x") * 50
+		y = config:r_u32_cache(item.sect, "inv_grid_y") * 50
+		w = w * 50
+		h = config:r_u32_cache(item.sect, "inv_grid_height") * 50
+
+		static:SetOriginalRect(x, y, w, h)
+		static:SetStretchTexture(true)
+		hud:AddDialogToRender(static)
+
+		belt_ui[i] = static
 	end
 end
 
@@ -551,7 +665,7 @@ function dynamic_fire:update(delta)
 
 	local active = false
 	for k, v in pairs(db.creatures) do
-		if v:is_stalker() and (v:position()):distance_to(self.object:position()) < 4 then
+		if v:is_stalker() and v:alive() and (v:position()):distance_to(self.object:position()) < 4 then
 			active = true
 			break
 		end

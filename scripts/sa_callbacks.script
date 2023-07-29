@@ -37,7 +37,6 @@ end
 ---------------------------------------------------------------------------------------------------
 function actor_net_destroy()
 	hud_animations_mgr:clear_scope_texture()
-	reap.net_destroy()
 end
 ---------------------------------------------------------------------------------------------------
 local last_health
@@ -121,8 +120,8 @@ end
 function info(info_id, ui_info)
 	if ui_info then
 		sa_main.dead_body_sounds(info_id)
-		reap.info(info_id)
 	end
+	reap.info(info_id, ui_info)
 end
 ---------------------------------------------------------------------------------------------------
 function scope_zoom_mode(mode_on)
@@ -145,12 +144,16 @@ function key_press(dik)
 	if not level.main_input_receiver() then
 		sa_main.pda_info_fix(dik)
 	end
-	hud_animations_mgr:on_keyboard(dik, key_events.pressed)
+	if hud_animations_mgr then
+		hud_animations_mgr:on_keyboard(dik, key_events.pressed)
+	end
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
 function key_release(dik)
-	hud_animations_mgr:on_keyboard(dik, key_events.released)
+	if hud_animations_mgr then
+		hud_animations_mgr:on_keyboard(dik, key_events.released)
+	end
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------
@@ -181,23 +184,6 @@ end
 --[[-----------------------------------------------------------------------------------------------
  * MONSTER
 --]]-----------------------------------------------------------------------------------------------
-function monster_update(obj)
-	if obj:alive() and Actor:alive() and not (actor_flags.sleep_state or actor_flags.bloodsucker_vampire_state) then
-		local enemy = obj:get_enemy()
-		if enemy and obj:see(enemy) and enemy:id() == 0 then
-			sa_monsters.bloodsucker_vampire(obj)
-			sa_monsters.pseudodog_psy_effect(obj)
-			sa_monsters.burer_tele_attack(obj)
-		end
-		sa_monsters.controller_death_zone(obj)
-	end
-	sa_monsters.poltergeist_particles(obj)
-end
----------------------------------------------------------------------------------------------------
-function monster_net_spawn(obj)
-	sa_monsters.poltergeist_particles_init(obj)
-end
----------------------------------------------------------------------------------------------------
 function monster_use(obj, who)
 	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
 		Actor:give_info_portion("ui_dead_body")

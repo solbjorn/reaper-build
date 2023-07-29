@@ -1,4 +1,3 @@
-
 function spawn_banderos()
 	--свободный торговец
 	local obj = AI:create("trader_banderos",vector():set(109.98,4.22,-11.57),306355,987)
@@ -23,84 +22,11 @@ function spawn_banderos()
 	amk.write_stalker_params(params,obj)
 end
 
---не используется
-function spawn_my_inventory_box()
-	local obj = AI:create("my_inventory_box",vector():set(-212.54, -23.18, -123.95),40607,59)
-	AI:create_ammo("wpn_rg-6",
-	obj.position,
-	obj.m_level_vertex_id,
-	obj.m_game_vertex_id,
-	obj.id,
-	1)
-end
-
 ---квестовые--предметы--
 function spawn_banderos_art()
 	AI:create("banderos_art", vector():set(-3.19,-3.05,-31.46), 160313, 1022)
 	AI:create("banderos_art", vector():set(48.07,-2.49,-26.02), 235691, 1093)
 	AI:create("banderos_art", vector():set(20.19,1.02,-83.55), 198785, 1096)
-end
-
-function spawn_sniper_banderos()
- --1-й Снайпер на вышке
-	local sobj = AI:object("val_watchtower4_restr")
-	AI:release(sobj, true)
-	local obj = AI:create("darkval_sniper_one",vector():set(37.97,11.18,-99.77),221455,820)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_one_walk1\npath_look = banderos_sniper_one_look1"
-	params.sid=481531
-	amk.write_stalker_params(params,obj)
- --2-й Снайпер на вышке
-	local sobj = AI:object("val_watchtower1_restr")
-	AI:release(sobj, true)
-	local obj = AI:create("darkval_sniper_zwai",vector():set(-49.01,11.20,7.58),116927,819)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_zwai_walk1\npath_look = banderos_sniper_zwai_look1"
-	params.sid=481521
-	amk.write_stalker_params(params,obj)
- --3-й Снайпер на вышке
-	local sobj = AI:object("val_watchtower2_restr")
-	AI:release(sobj, true)
-	local obj = AI:create("darkval_sniper_dray",vector():set(49.56,11.35,47.82),237451,818)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_dray_walk1\npath_look = banderos_sniper_dray_look1"
-	params.sid=481522
-	amk.write_stalker_params(params,obj)
- --4-й Снайпер на вышке
-	local sobj = AI:object("val_watchtower3_restr")
-	AI:release(sobj, true)
-	local obj = AI:create("darkval_sniper_fir",vector():set(50.62,11.21,4.30),238146,817)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_fir_walk1\npath_look = banderos_sniper_fir_look1"
-	params.sid=481523
-	amk.write_stalker_params(params,obj)
-end
-
-function two_spawn_sniper_darkval()
- --1-й Снайпер на вышке
-	local obj = AI:create("darkval_sniper_one",vector():set(37.97,11.18,-99.77),221455,820)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_one_walk1\npath_look = banderos_sniper_one_look1"
-	params.sid=481527
-	amk.write_stalker_params(params,obj)
- --2-й Снайпер на вышке
-	local obj = AI:create("darkval_sniper_zwai",vector():set(-49.01,11.20,7.58),116927,819)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_zwai_walk1\npath_look = banderos_sniper_zwai_look1"
-	params.sid=481528
-	amk.write_stalker_params(params,obj)
- --3-й Снайпер на вышке
-	local obj = AI:create("darkval_sniper_dray",vector():set(49.56,11.35,47.82),237451,818)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_dray_walk1\npath_look = banderos_sniper_dray_look1"
-	params.sid=481529
-	amk.write_stalker_params(params,obj)
- --4-й Снайпер на вышке
-	local obj = AI:create("darkval_sniper_fir",vector():set(50.62,11.21,4.30),238146,817)
-	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_fir_walk1\npath_look = banderos_sniper_fir_look1"
-	params.sid=481530
-	amk.write_stalker_params(params,obj)
 end
 
 function spawn_advokat()

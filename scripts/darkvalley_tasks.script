@@ -2,31 +2,32 @@
 -- Proceed
 ----------------------------------------------------------------------------------------------------
 function proceed()
-    local actor = Actor
-
-	if not has_alife_info("dar_document4") and
-		actor:object("dar_document4") then
-		actor:give_info_portion("dar_document4")
+	local doc
+	for i = 1, 5 do
+		doc = "dar_document" .. i
+		if not has_info(doc) and has(doc) then
+			give_info(doc)
+		end
 	end
 
 	if not has_alife_info("dar_ring_spawn2") and
 		has_alife_info("dar_ring_spawn2_1") and
 		has_alife_info("dar_ring_spawn2_2")
 	then
-		actor:give_info_portion("dar_ring_spawn2")
+		give_info("dar_ring_spawn2")
 	end
 
 	if not has_alife_info("dar_password_info1_know") and
 		has_alife_info("dar_password_info1")
 	then
-		actor:give_info_portion("dar_password_info1_know")
+		give_info("dar_password_info1_know")
 		news_manager.send_tip("pass_to_1st_door", nil, "kalugin")
 	end
 
 	if not has_alife_info("dar_password_info2_know") and
 		has_alife_info("dar_password_info2")
 	then
-		actor:give_info_portion("dar_password_info2_know")
+		give_info("dar_password_info2_know")
 		news_manager.send_tip("pass_to_2nd_door", nil, "kalugin")
 	end
 end
@@ -71,13 +72,23 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Common functions
 ----------------------------------------------------------------------------------------------------
-function has_darklab_key(task, objective)
-	return Actor:object("borov_flash") ~= nil
+function has_darklab_key()
+	return has("borov_flash")
 end
 
-function has_darklab_documents(task, objective)
-	return Actor:object("dar_document4") ~= nil
+-- DotPack
+
+function has_darklab_documents()
+	for i = 1, 5 do
+		if not has("dar_document" .. i) then
+			return false
+		end
+	end
+
+	return true
 end
+
+-- DotPack
 
 function escort_task_done(task, objective)
        return not has_alife_info("val_escort_captive_dead") and

@@ -508,8 +508,6 @@ local return_location = {
 	return_for_reward_bring = "blue_location_2"
 }
 
-local kill_targets
-
 local table_insert = table.insert
 local table_remove = table.remove
 local string_byte = string.byte
@@ -849,7 +847,7 @@ function CRandomTask:__init()
 
   --' начальная установка
   self.task_info = {}
-	kill_targets = container:get("kill_targets", { })
+	self.kill_targets = container:get("kill_targets", { })
 
 	ini:iterate_lines("list", function(result, id, value)
 		if not ini:section_exist(id) then
@@ -876,6 +874,7 @@ function CRandomTask:__init()
 		curr_task_info.type			= ini:r_string(id, "type")
 
 		curr_task_info.name			= id
+
 		if ini:line_exist(id, "parent") then
 			curr_task_info.parent		= ini:r_string(id, "parent")
 			curr_task_info.complex_type = curr_task_info.type .. "_" .. self.task_info[id].parent
@@ -897,25 +896,10 @@ function CRandomTask:__init()
 
 		curr_task_info.prior		= get_field_number(id, "prior", 0) --' Приоритет квеста, выдаются доступные квесты с наименьшим приоритетом
 
-	curr_task_info.parent_quest = utils.cfg_get_string(ini, id, "parent", nil, false, "")
-	local sss = self:lin_task(curr_task_info.name, curr_task_info.parent_quest)
-
-	--В случае если функция обратила для sss значение false наполнить таблицу предметами по умолчанию
-	if sss == "false" then
-		sss = utils.cfg_get_string(ini, id, "reward_item", nil, false, "")
+		local sss = (ini:line_exist(id, "reward_item") and ini:r_string(id, "reward_item")) or nil
 		curr_task_info.reward_item = sss and string.parse_names(sss)
-	--Если функция lin_task вернула переменной sss значение отменное от нуля то создать таблицу с помощью count_item
-	else
-		curr_task_info.reward_item = sss and self:count_item(sss)
-	end
 
-	--Переменной money задается значение из строки reward_money после чего переменную уменьшаем в два раза
-	local money = get_field_number(id, "reward_money")
-	if money ~= nil then
-		curr_task_info.reward_money = math.floor(money/3)
-	end
-
-    -- Награда информацией
+		-- Награда информацией
 		curr_task_info.reward_info = ini:r_string_ex(id, "reward_info")
 		if curr_task_info.reward_info then
 			self:read_info_reward_section(ini, curr_task_info)
@@ -1601,13 +1585,13 @@ function CRandomTask:init_task_dialog(dlg, parent)
 
 	for k,v in ipairs(self.task_id_by_parent[parent]) do
 		local task_desc = self.task_info[v]
-		phr = dlg:AddPhrase(self.task_info[v].name, tostring(task_desc.init_phrase_id), "1", -10000)
+		phr = dlg:AddPhrase(task_desc.name, tostring(task_desc.init_phrase_id), "1", -10000)
 		phrase_script = phr:GetPhraseScript()
 		phrase_script:AddPrecondition("task_manager.precondition_task_avail")
 
-		phr = dlg:AddPhrase(self.task_info[v].text, tostring(task_desc.desc_phrase_id), tostring(task_desc.init_phrase_id), -10000)
-		--phrase_script = phr:GetPhraseScript()
-		--phrase_script:AddAction("task_manager.show_reward")
+		phr = dlg:AddPhrase(task_desc.text, tostring(task_desc.desc_phrase_id), tostring(task_desc.init_phrase_id), -10000)
+		phrase_script = phr:GetPhraseScript()
+		phrase_script:AddAction("task_manager.show_reward")
 
 		phr = dlg:AddPhrase("tm_seek_job_yes", tostring(task_desc.yes_phrase_id), tostring(task_desc.desc_phrase_id), -10000)
 		phrase_script = phr:GetPhraseScript()
@@ -1638,8 +1622,14 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 		if can_finish == true then
 			task_desc.status = "rewarded"
 
-			if task_desc.reward_money ~= nil then
-				got_money(task_desc.reward_money)
+			if get_value("option_reward", 0) > 0 then
+				local sss = self:lin_task(task_desc.name, task_desc.parent)
+
+				--В случае если функция обратила для sss значение false наполнить таблицу предметами по умолчанию
+				if sss and sss ~= "false" then
+					--Если функция lin_task вернула переменной sss значение отменное от нуля то создать таблицу с помощью count_item
+					curr_task_info.reward_item = self:count_item(sss)
+				end
 			end
 
 			if task_desc.reward_item ~= nil then
@@ -1693,7 +1683,7 @@ function CRandomTask:task_reward_storyline(task)
   end
 
 	local desc = translate(task_desc.name)
-	local char_name = reap.story_name(story_by_parent[task_desc.parent])
+	local char_name = task_desc.parent and reap.story_name(story_by_parent[task_desc.parent])
 	if char_name then
 		desc = "%c[255,160,160,160]" .. char_name .. "%c[default]: " .. desc
 	end
@@ -2020,51 +2010,43 @@ function task_fail(p1, p2)
 end
 
 function amk_add_target_id_to_kill_targets(id,dialog,task_id)
-	kill_targets[#kill_targets + 1] = {id=id,dialog=dialog,task_id=task_id}
+	random_task.kill_targets[#random_task.kill_targets + 1] = {id=id,dialog=dialog,task_id=task_id}
 end
 
 function amk_remove_target_id_from_kill_targets(id)
-	for n = 1, #kill_targets do
-		if kill_targets[n].id == id then
-			table_remove(kill_targets, n)
+	for n = 1, #random_task.kill_targets do
+		if random_task.kill_targets[n].id == id then
+			table_remove(random_task.kill_targets, n)
 			break
 		end
 	end
 end
 
 function amk_kill_targets()
-	return kill_targets
+	return random_task.kill_targets
 end
 
 function make_task_failed(task_id)
 	random_task:make_task_failed(task_id)
 end
 
---[[function show_reward(actor,npc,p1,p2)
-	local reward_text, reward_money --task_details
+function show_reward(actor,npc,p1,p2)
+	local reward_text, task_details
 
-	task_details = random_task.task_info[random_task.task_id_by_init_phrase_id[p2-1]]
+	task_details = random_task.task_info[random_task.task_id_by_init_phrase_id[tostring(p2-1)]]
+	if task_details == nil then return end
 
---[[	if task_details == nil then return end
+	if get_value("option_reward", 0) == 0 then
+		reward_text = format_reward_text(task_details.reward_item)
+	else
+		reward_text = "Награда скрыта"
+	end
 
-	reward_text = format_reward_text(task_details.reward_item)
-	reward_money = task_details.reward_money
-
-	local task_texture, task_rect = get_texture_info("ui_iconsTotal_find_item")
+	local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
 	if reward_text ~= nil and reward_text ~= "" then
 		Actor:give_talk_message("Я тебе за это дам вот что:", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
 		Actor:give_talk_message(reward_text, task_texture, task_rect,"iconed_trade_info")
 	end
-
-	if reward_money ~= nil then
-		task_texture, task_rect = get_texture_info("ui_iconsTotal_found_money")
-		if reward_text == "" then
-			Actor:give_talk_message(reward_money .. " RU (" .. game.translate_string("return_for_reward") .. ")", task_texture, task_rect, "iconed_trade_info")
-		else
-			Actor:give_talk_message(reward_money .. " RU", task_texture, task_rect,"iconed_trade_info")
-		end
-	end
-
 end
 
 function format_reward_text(reward_list)
@@ -2090,4 +2072,4 @@ function format_reward_text(reward_list)
 		reward_text = string_sub (reward_text, 1, string_len(reward_text)-2)
 	end
 	return reward_text
-end]]--
+end

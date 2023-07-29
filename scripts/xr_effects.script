@@ -422,6 +422,15 @@ function actor_punch(npc)
 	local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
 	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 
+	local h = hit()
+	h.draftsman = Actor
+	h.type = hit.strike
+	h.direction = xyz()
+	h:bone("pelvis")
+	h.power = 0.25
+	h.impulse = 0
+	Actor:hit(h)
+
 	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
 	level.add_pp_effector("amk_shoot.ppe", 2011, false)
 	amk_offline_alife.clear_be_enemy(npc:id())
@@ -523,6 +532,7 @@ function gar_hellcar_victory(actor, npc)
 end
 
 function gar_seryi_victory(actor, npc)
+	give_info("gar_seriy_bandits_killed")
 	news_manager.send_tip("gar_hellcar_victory", 0, "seryi", 0)
 end
 
@@ -573,7 +583,7 @@ end
 --' garbage
 
 function gar_mapspot_blockpost (actor, npc)
-  level_tasks.add_location(115, "green_location", "gar_dolg_blokpost_leader_name")
+	level_tasks.add_location(115, "crlc_small", "gar_dolg_blokpost_leader_name")
 end
 
 function actor_friend(actor, npc)
@@ -1102,13 +1112,13 @@ function mil_bomb_explode (actor, npc)
        return
     end
 
-    local h = hit ();
-    h.power = 1000000;
-    h.direction = vector():set( 1, 0, 0 );
-    h.impulse = 1;
-    h.draftsman = source;
-    h.type = hit.chemical_burn;
-    source:hit (h);
+    local h = hit ()
+    h.power = 1000000
+    h.direction = vector():set( 1, 0, 0 )
+    h.impulse = 1
+    h.draftsman = source
+    h.type = hit.chemical_burn
+    source:hit (h)
 
     source:explode(0)
 end
@@ -1133,13 +1143,13 @@ function sar2_monolith_explode (actor, npc)
     if monolith == nil then
        abort ("Object MONOLITH with SID 1305 not found")
     end
-    local h = hit ();
-    h.power = 1000;
-    h.direction = vector():set( 1, 0, 0 );
-    h.impulse = 1;
+    local h = hit ()
+    h.power = 1000
+    h.direction = vector():set( 1, 0, 0 )
+    h.impulse = 1
     h.draftsman = Actor
-    h.type = hit.chemical_burn;
-    monolith:hit (h);
+    h.type = hit.chemical_burn
+    monolith:hit (h)
 end
 
 function set_stalker_enemy (sid, draftsman)
@@ -1368,13 +1378,6 @@ function pri_give_ammo_og7b(actor, npc)
     AI:create("ammo_og-7b", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
 end
 
----------------------------------------------------------
--- Sarcofag + Monolith
----------------------------------------------------------
-function osoznanie_call(actor, npc)
-	news_manager.send_tip("o_soznanie_text", 0, "o_soznanie")
-end
-
 -------------------------------------------------------------------------------------
 -- Функции для работы с вертолётами
 -------------------------------------------------------------------------------------
@@ -1415,13 +1418,25 @@ end
 -- Функции для работы с погодными эффектами
 -------------------------------------------------------------------------------------
 function start_small_reject (actor, npc)
-    level.set_weather_fx ("surge_day")
+	local hr = level.get_time_hours()
+	if level.get_time_minutes() >= 30 then
+		hr = hr < 23 and hr + 1 or 0
+	end
+
+	level.set_weather_fx("surge_day_" .. hr)
+
   level.add_pp_effector ("vibros_p.ppe", 1974, false)
   this.aes_earthshake (npc)
 end
 
 function start_full_reject (actor, npc)
-    level.set_weather_fx ("surge_day")
+	local hr = level.get_time_hours()
+	if level.get_time_minutes() >= 30 then
+		hr = hr < 23 and hr + 1 or 0
+	end
+
+	level.set_weather_fx("surge_day_" .. hr)
+
     level.remove_pp_effector (1974)
     level.add_pp_effector ("vibros.ppe", 1974, false)
 end
@@ -1429,13 +1444,13 @@ end
 function aes_grenade_explode (actor, npc)
     local obj = level_object_by_sid (1101)
     if obj == nil then return end
-    local h = hit ();
-    h.power = 1000;
-    h.direction = vector():set (1, 0, 0);
-    h.impulse = 1;
-    h.draftsman = obj;
-    h.type = hit.chemical_burn;
-    obj:hit (h);
+    local h = hit ()
+    h.power = 1000
+    h.direction = vector():set (1, 0, 0)
+    h.impulse = 1
+    h.draftsman = obj
+    h.type = hit.chemical_burn
+    obj:hit (h)
 end
 
 function aes_kill_actor (actor, npc)
@@ -1629,13 +1644,15 @@ function destroy_monolith_generator(actor, npc)
        return
     end
 
-    local h = hit ();
-    h.power = 1000000;
-    h.direction = vector():set( 1, 0, 0 );
-    h.impulse = 1;
-    h.draftsman = source;
-    h.type = hit.chemical_burn;
-    source:hit (h);
+    local h = hit ()
+    h.power = 1000000
+    h.direction = vector():set( 1, 0, 0 )
+    h.impulse = 1
+    h.draftsman = source
+    h.type = hit.chemical_burn
+    source:hit (h)
+
+	del_value("mon_destroy_generator")
 end
 
 function del_mon_counter()

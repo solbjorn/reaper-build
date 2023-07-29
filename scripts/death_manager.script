@@ -10,8 +10,6 @@ local ammo_types = {}
 --' Множители и минимаксы для выпадения вещей в зависимости от уровня
 local count_by_level = {}
 
---' Предметы, которые нельзя удалять (квестовые например)
-local always_keep_item = {}
 local always_offs_items = {
 	["device_pda"]=true,
 	["hand_radio"]=true,
@@ -20,7 +18,6 @@ local always_offs_items = {
 	["binocular_a"]=true,
 	["wpn_knife"]=true,
 	["wpn_binoc"]=true,
-	["bolt"]=true,
 	["grenade_f1"]=true,
 	["grenade_rgd5"]=true,
 	["bandage"]=true,
@@ -367,13 +364,6 @@ function init_drop_settings()
 		end)
 	end
 
-	--' Предметы, которые нельзя удалять (квестовые например)
-	death_ini:iterate_lines("keep_items", function(result, id, value)
-		if value == "true" then
-			always_keep_item[id] = true
-		end
-	end)
-
 	--' Заполняем таблицу зависимостей
 	death_ini:iterate_lines("item_dependence", function(result, id, value)
 		item_dependence[id] = {}
@@ -386,40 +376,38 @@ function init_drop_settings()
 	end)
 end
 
-class "drop_manager"
-function drop_manager:__init(npc)
-	self.npc = npc
-end
-
-function drop_manager:create_release_item()
-	local self_npc = self.npc
-	if self_npc == nil then return end
+function create_release_item(npc)
+	if npc == nil then return end
 	--' Спрашиваем у серверного объекта генерились ли предметы
-	local se_obj = server_object(self_npc)
+	local se_obj = server_object(npc)
 	se_obj.death_droped = true
 
 	local npc_ammo = {}
-	local cond = weap_conds[self_npc:character_community()]
+	local cond = weap_conds[npc:character_community()]
 
 	--' Запускаем итератор на удаление предметов
-	self_npc:iterate_inventory(function(arg, item)
+	npc:iterate_inventory(function(arg, item)
 		local section = item:section()
-		if section == "bolt" then return end
 
 		if always_offs_items[section] then
 			release(item)
 			return
 		end
 
-		if always_keep_item[section] or not item:is_weapon() then
+		if not item:is_weapon() then
 			item:set_condition(item:condition())
 			return
 		end
 
-		local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
+		if not quest_section[section] then
+			local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
 
-		--' Тут надо уменьшить кондишн оружия
-		item:set_condition((math_random(from-cond)+cond)*item:condition()/100)
+			--' Тут надо уменьшить кондишн оружия
+			item:set_condition((math_random(from-cond)+cond)*item:condition()/100)
+		else
+			item:set_condition(item:condition())
+		end
+
 		item:set_ammo_elapsed(0)
 
 		for k, v in pairs(ammo_types[section]) do
@@ -428,7 +416,7 @@ function drop_manager:create_release_item()
 	end)
 
     --' Проверка на отсутствие спауна лута
-    local ini = self_npc:spawn_ini()
+    local ini = npc:spawn_ini()
 
     if ini and ini:section_exist("dont_spawn_loot") then
         return
@@ -436,9 +424,10 @@ function drop_manager:create_release_item()
 
     --' Доспавниваем необходимое количество итемов:
     --' Необходимо составить список объектов которые могут быть заспавнены для персонажа
-	local npc_pos, npc_lvid, npc_gvid, npc_id = self_npc:position(), self_npc:level_vertex_id(), self_npc:game_vertex_id(), self_npc:id()
-    local spawn_items = item_by_community[self_npc:character_community()]
-    if spawn_items then
+	local npc_pos, npc_lvid, npc_gvid, npc_id = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
+	local spawn_items = item_by_community[npc:character_community()]
+	if not spawn_items then return end
+
 	local diff = level.get_game_difficulty()
 	local count, number
 	for k,v in pairs(spawn_items) do
@@ -472,14 +461,11 @@ function drop_manager:create_release_item()
 			end
 		end
 	end
-    end
 
 	local vis, sect, otf
-	local npc_name = self_npc:name()
-	if not string_find(self_npc:section(), "arena") and
-	   self_npc:character_community() ~= "arena_enemy" and
-	   npc_name ~= "yan_specnaz_dead" and
-	   npc_name ~= "x16_stalker_ghost" then
+	local npc_name = npc:name()
+	if not string_find(npc:section(), "arena") and
+	   npc_name ~= "yan_specnaz_dead" and npc_name ~= "x16_stalker_ghost" then
 		sect = out_by_name[npc_name]
 		if not sect then
 			local t = amk.read_stalker_params(se_obj)
@@ -511,6 +497,6 @@ function drop_manager:create_release_item()
 
 	local info = dead_portion_names[npc_name]
 	if info and not has_info(info) then
-		Actor:give_info_portion(info)
+		give_info(info)
 	end
 end

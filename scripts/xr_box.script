@@ -9,7 +9,7 @@ local count_by_level = {}
 
 function init_drop_box()
 	local drop_ini = ini_file("misc\\ph_box_generic.ltx")
-	local string_gfind = string.gfind
+	local string_gmatch = string.gmatch
 
 	local community_list = {
 		"def_box",
@@ -37,7 +37,7 @@ function init_drop_box()
 
 			--' Нужно распарсить value в два значения
 			t = {}
-			for v in string_gfind(value, "[%d%.%-]+") do
+			for v in string_gmatch(value, "[%d%.%-]+") do
 				t[#t+1] = tonumber(v) or 0
 			end
 

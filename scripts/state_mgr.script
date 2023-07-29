@@ -48,19 +48,31 @@ function evaluator_state_mgr_idle:__init(name, state_manager) super (nil, name)
 end
 function evaluator_state_mgr_idle:evaluate()
 	local self_st = self.st
-	if self_st.target_state == "idle" and
-			self.movement_eval:evaluate() and
-			self.animstate_eval:evaluate() and
-			self.animation_eval:evaluate() then
-		if self.mgr == nil then
-			self.mgr = self.object:motivation_action_manager()
-		end
-		if self.mgr:initialized() and self.mgr:current_action_id() == operator_state_mgr_to_idle_combat then
-			self_st.combat = true
-		end
+	local t = self_st.target_state == "idle" and
+		self.movement_eval:evaluate() and
+		self.animstate_eval:evaluate() and
+		self.animation_eval:evaluate()
+
+	local mgr = self.mgr
+	if not mgr then
+		mgr = self.object:motivation_action_manager()
+		self.mgr = mgr
+	end
+	if not mgr:initialized() then
+		return false
 	end
 
-	if self_st.combat == true then return true end
+	if xr_wounded.is_wounded(self.object) then
+		self.st.combat = false
+		return false
+	end
+
+	if t == true and mgr:current_action_id() == operator_state_mgr_to_idle_combat then
+		self_st.combat = true
+	end
+	if self_st.combat == true then
+		return true
+	end
 
 	return false
 end
@@ -109,13 +121,26 @@ function evaluator_state_mgr_idle_alife:evaluate()
 	-- апдейт менеджера анимаций
 	-- раньше он был тут, сейчас он вынесен из эвалуатора
 
-	if self.mgr == nil then
-		self.mgr = self.object:motivation_action_manager()
+	local mgr = self.mgr
+	if not mgr then
+		mgr = self.object:motivation_action_manager()
+		self.mgr = mgr
 	end
-	if self.mgr:initialized() then
-		if self.mgr:current_action_id() ~= xr_actions_id_alife then
-			self_st.alife = false
-		end
+	if not mgr:initialized() then
+		return false
+	end
+
+	if mgr:current_action_id() ~= xr_actions_id_alife then
+		self_st.alife = false
+	end
+
+	if self_st.combat == true then
+		return false
+	end
+
+	if xr_wounded.is_wounded(self.object) then
+		self_st.alife = false
+		return false
 	end
 
 	if db.storage[self_st.npc:id()].active_section == nil then
@@ -217,10 +242,12 @@ function eva_state_mgr_end:__init(name, st) super (nil, name)
 end
 function eva_state_mgr_end:evaluate()
 	if self.mgr == nil then
+		action_base.finalize(self)
 		self.mgr = self.object:motivation_action_manager()
 	end
 
 	if not self.mgr:initialized() then
+		self.st.combat = false
 		return false
 	end
 
@@ -378,7 +405,7 @@ function state_manager:__init(npc)
 end
 function state_manager:set_state(state_name, callback, timeout, target, emerg, synsound, extrakeys)
 	if state_lib.states[state_name] == nil then
-		state_name="idle"
+		state_name = "idle"
 	end
 
 	--сперва устанавливаем цели
@@ -462,16 +489,19 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 			self.callback.timeout = nil
 		end
 	end
+
+	if switched == true and (self.npc:best_enemy() or self.npc:best_danger()) and
+	   (last_state == nil or last_state == "idle") then
+		self:update()
+	end
 end
 function state_manager:get_state()
 	return self.target_state
 end
 function state_manager:update()
-	--printf("Update called")
 	self.animstate:update()
 	self.animation:update()
 	self.planner:update()
-	--self.planner:show("")
 end
 
 function set_state(npc, state_name, callback, timeout, target, emerg, synsound, extrakeys)

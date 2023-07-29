@@ -1,390 +1,210 @@
-function load_job(sj, gname, type, squad, groups)
-	local t
-
-	-- Yantar Zombies
-	if type == "yantar_zombies" then
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp1",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp2",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0}, squad = squad, group = groups[3],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp3",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[4],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@yantar_zombies_kamp4",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[5],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp4",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[5],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp4",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[5],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp4",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[5],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_kamp4",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 5, state = {0,1}, squad = squad, group = groups[5],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@yantar_zombies_walker",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 7, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_walker",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 7, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_walker",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 7, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_walker",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 7, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yantar_zombies_walker",
-			idle = 0, timeout = math.random(10,20)*60*1000,
-			prior = 7, state = {0}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-	-- Yantar scientist
-	if type == "yan_scientist" then
-		t = { section = "logic@scientist_offline",
-			idle = 0,
-            online = false,
-			prior = 9, state = {0,1,2}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 900
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_offline",
-			idle = 0,
-            online = false,
-			prior = 9, state = {3,4,5}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 905
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_out_rest",
-			idle = 0,
-			prior = 5, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 905
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_not_in_rest",
-			idle = 0,
-			prior = 5, state = {1}, squad = squad, group = groups[2],
-		    online = true,
-			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 905
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_return_out_rest",
-			idle = 0,
-			prior = 5, state = {2}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 905
-						 end
-		}
-		sj[#sj+1] = t
-		 t = { section = "logic@scientist_out_rest",
-			idle = 0,
-			prior = 5, state = {3}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 900
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_not_in_rest",
-			idle = 0,
-			prior = 5, state = {4}, squad = squad, group = groups[2],
-		    online = true,
-			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 900
-						 end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@scientist_return_out_rest",
-			idle = 0,
-			prior = 5, state = {5}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
-            predicate = function(obj_info)
-                       			return obj_info.story_id == 900
-						 end
-		}
-		sj[#sj+1] = t
-		return true
-	end
-	if type == "yan_tonnel_snorks" then
-		t = { section = "logic@yan_tonnel_snork_home_1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_1",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_2",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@yan_tonnel_snork_home_3",
-			idle = 0,
-			prior = 9, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
+function predicate_kruglov(obj_info)
+	return obj_info.story_id == 900
 end
 
-function load_states(type)
-    if type == "yantar_zombies" then
-		return function()
-			return 0
+function predicate_semenov(obj_info)
+	return obj_info.story_id == 905
+end
+
+local gulags = {
+	-- Yantar Zombies
+	["yantar_zombies"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp1", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[2]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2",
+				prior = 9, squad = squad, group = groups[3]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2",
+				prior = 9, squad = squad, group = groups[3]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2",
+				prior = 9, squad = squad, group = groups[3]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[3]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[3]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp2", timeout = math.random(10,20)*60*1000,
+				squad = squad, group = groups[3]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3",
+				prior = 9, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3",
+				prior = 9, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3",
+				prior = 9, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3",
+				prior = 9, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp3", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[4]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp4",
+				prior = 9, squad = squad, group = groups[5]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp4",
+				prior = 9, squad = squad, group = groups[5]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp4", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[5]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp4", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[5]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_kamp4", timeout = math.random(10,20)*60*1000,
+				state = {0,1}, squad = squad, group = groups[5]
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_walker", timeout = math.random(10,20)*60*1000,
+				prior = 7, squad = squad, group = groups[1]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_walker", timeout = math.random(10,20)*60*1000,
+				prior = 7, squad = squad, group = groups[1]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_walker", timeout = math.random(10,20)*60*1000,
+				prior = 7, squad = squad, group = groups[1]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_walker", timeout = math.random(10,20)*60*1000,
+				prior = 7, squad = squad, group = groups[1]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yantar_zombies_walker", timeout = math.random(10,20)*60*1000,
+				prior = 7, squad = squad, group = groups[1]
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "zombied"
 		end
-    end
-    if type == "yan_scientist" then
-		return function()
+	},
+	-- Yantar scientist
+	["yan_scientist"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@scientist_offline",
+				online = false,
+				prior = 9, state = {0,1,2}, squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_kruglov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_offline",
+				online = false,
+				prior = 9, state = {3,4,5}, squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_semenov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_out_rest",
+				squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_semenov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_not_in_rest",
+				state = {1}, squad = squad, group = groups[2],
+				online = true,
+				in_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_semenov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_return_out_rest",
+				state = {2}, squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_semenov
+			}
+			 sj[#sj + 1] = {
+				section = "logic@scientist_out_rest",
+				state = {3}, squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_kruglov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_not_in_rest",
+				state = {4}, squad = squad, group = groups[2],
+				online = true,
+				in_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_kruglov
+			}
+			sj[#sj + 1] = {
+				section = "logic@scientist_return_out_rest",
+				state = {5}, squad = squad, group = groups[2],
+				out_rest = "yantar_bunker_space_restrictor",
+				predicate = predicate_kruglov
+			}
+		end,
+		state = function()
 			local t
 
 			if 	has_alife_info("bar_heli_scene_professor_die") then
@@ -401,35 +221,80 @@ function load_states(type)
 			end
 
 			return t
+		end,
+		check = function(npc_community)
+			return npc_community == "ecolog"
 		end
-    end
-
-	if type == "yan_tonnel_snorks" then
-		return function()
-			return 0
+	},
+	["yan_tonnel_snorks"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_1",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_2",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_2",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_2",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_2",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_2",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+			sj[#sj + 1] = {
+				section = "logic@yan_tonnel_snork_home_3",
+				prior = 9, squad = squad, group = groups[2]
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "snork"
 		end
-	end
-end
+	}
+}
 
---------------------------------------------------------------------------
--- Dynamic ltx
---------------------------------------------------------------------------
-
-function checkStalker(npc_community, gulag_type)
-	if gulag_type == "yantar_zombies" then
-		return npc_community == "zombied"
-	end
-	if gulag_type == "yan_scientist" then
-		return npc_community == "ecolog"
-	end
-
-	return false
-end
-
-function checkMonster(npc_community, gulag_type)
-	if gulag_type == "yan_tonnel_snorks" then
-		return npc_community == "snork"
-	end
-
-	return false
+function get_gulag(gulag_type)
+	return gulags[gulag_type]
 end

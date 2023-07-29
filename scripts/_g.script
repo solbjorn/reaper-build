@@ -1,4 +1,4 @@
-if not jit then abort("JIT is nil") end
+if not jit then fail("JIT is nil") end
 
 prefetch("sa_init")
 prefetch('xr_extensions')
@@ -81,10 +81,10 @@ end
 function init_container()
 	if not container then
 		container = keyvals()
+		Variable = xr_logic.CVariable()
 		freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
 		random_task = task_manager.CRandomTask()
 		Treasure = treasure_manager.CTreasure()
-		Variable = xr_logic.CVariable()
 	end
 end
 
@@ -99,6 +99,7 @@ end
 
 -- Короткие имена для частых функций
 voice = xr_sound.get_safe_sound_object
+sms = news_manager.send_tip
 translate = game.translate_string
 
 -- метки на карте
@@ -350,7 +351,14 @@ end
 
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(fmt, ...)
-	error(string.format(tostring(fmt), ...))
+	fmt = tostring(fmt)
+	local reason = ... == nil and fmt or string.format(fmt, ...)
+
+	log1("FATAL ERROR: " .. reason)
+	log1(debug.traceback())
+	fail(reason)
+
+	console:execute("quit")
 end
 
 function set_inactivate_input_time(delta)

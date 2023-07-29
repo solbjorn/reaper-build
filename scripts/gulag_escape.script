@@ -14,2151 +14,504 @@ function a_predicate_a3(obj_info)
 	return obj_info.name == "esc_novice_attacker3"
 end
 
-function load_job(sj, gname, type, squad, groups)
-	local t
+function predicate_kostya(obj_info)
+	return obj_info.profile_name == "esc_kostya"
+end
 
+function check_kostya(npc_community, se_obj)
+	return se_obj ~= nil and se_obj:profile_name() == "esc_kostya"
+end
+
+local gulags = {
 --- новый лагерь ---
-	if type == "esc_new_lager" then
-		t = { section = "logic@esc_new_lager_esc_kostya",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
+	["esc_new_lager"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_new_lager_esc_kostya",
+				predicate = predicate_kostya
+			}
+		end,
+		check = check_kostya
+	},
 --- svalka лагерь ---
-	if type == "svalka_lager" then
-		t = { section = "logic@svalka_lager_esc_kostya",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
+	["svalka_lager"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@svalka_lager_esc_kostya",
+				predicate = predicate_kostya,
+				online = true
+			}
+		end,
+		check = check_kostya
+	},
 --- bar лагерь ---
-	if type == "bar_lager" then
-		t = { section = "logic@bar_lager_esc_kostya",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
+	["bar_lager"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@bar_lager_esc_kostya",
+				predicate = predicate_kostya,
+				online = true
+			}
+		end,
+		check = check_kostya
+	},
 --- as лагерь ---
-    if type == "as_lager" then
-		t = { section = "logic@as_lager_esc_kostya",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
+	["as_lager"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@as_lager_esc_kostya",
+				predicate = predicate_kostya,
+				online = true
+			}
+		end,
+		check = check_kostya
+	},
 --- pripyat лагерь ---
-    if type == "pripyat_lager" then
-		t = { section = "logic@pripyat_lager_esc_kostya",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
+	["pripyat_lager"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@pripyat_lager_esc_kostya",
+				predicate = predicate_kostya,
+				online = true
+			}
+		end,
+		check = check_kostya
+	},
 --'--------------------------------------------------------------------------
 --' ESCAPE
 --'--------------------------------------------------------------------------
 	--' Escape blockpost
-	if type == "esc_blokpost" then
-		t = { section = "logic@esc_blockpost_patrol1",
-			idle = 0,
-			prior = 8, state = {0},
-			position_threshold = 100,
-			online = true,
-			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_follower1",
-			idle = 0,
-			prior = 7, state = {0},
-			position_threshold = 100,
-			online = true,
-			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_follower2",
-			idle = 0,
-			prior = 7, state = {0},
-			position_threshold = 100,
-			online = true,
-			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_commander_day",
-			idle = 0,
-			prior = 100, state = {0,2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone",
-			predicate = function(obj_info)
-			            	return obj_info.name == "esc_blokpost_commander"
-			            end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_post1",
-			idle = 0,
-			prior = 8, state = {0,1,2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_post2",
-			idle = 0,
-			prior = 8, state = {0,1,2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_camper_day",
-			idle = 0,
-			prior = 6, state = {0,2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_patrol_yard",
-			idle = 0,
-			prior = 5, state = {0,1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_watch_tv1",
-			idle = 0,
-			prior = 2, state = {0},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_watch_tv2",
-			idle = 0,
-			prior = 2, state = {0},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_kamp1",
-			idle = 0,
-			prior = 4, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_kamp1",
-			idle = 0,
-			prior = 4, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_kamp2",
-			idle = 0,
-			prior = 10, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone",
-			predicate = function(obj_info)
-			            	return obj_info.name == "esc_blokpost_commander"
-			            end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_sleep1",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_sleep2",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_sleep3",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_sleep4",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_comander_guard1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_comander_guard2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_camper1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_camper2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_alarm_patrol1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_blockpost_alarm_patrol2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	--' Спецназ на блокпосте
-	if type == "esc_specnaz" then
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_raid1",
-			idle = 0,
-			prior = 10, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_raid2",
-			idle = 0,
-			prior = 10, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_follower1",
-			idle = 0,
-			prior = 7, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_follower2",
-			idle = 0,
-			prior = 7, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_follower3",
-			idle = 0,
-			prior = 7, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_specnaz_follower4",
-			idle = 0,
-			prior = 7, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	--' Лагерь новичков на Escape
-	if type == "esc_lager" then
-		-- охранники
-		t = { section = "logic@esc_lager_zoneguard1",
-			idle = 0,
-			prior = 9, state = {0, 1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_zoneguard2",
-			idle = 0,
-			prior = 9, state = {0, 1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_walker3",
-			idle = 0,
-			prior = 8, state = {0, 1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_walker4",
-			idle = 0,
-			prior = 8, state = {0, 1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		-- у костра днём
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 6, state = {0},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 6, state = {0},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 6, state = {0},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		-- Волк, собственной персоной.
-		t = { section = "logic@esc_lager_volk",
-			idle = 0,
-			prior = 16, state = {0,1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_wolf"
-						end
-		}
-		sj[#sj+1] = t
-		-- Шустрый
-		t = { section = "logic@esc_lager_shustryi",
-			idle = 0,
-			prior = 16, state = {0,1},
-            online = true,
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_shustryi"
-						end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 16, state = {2},
-            online = true,
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_shustryi"
-						end
-		}
-		sj[#sj+1] = t
-
-		-- Фанат
-		t = { section = "logic@esc_lager_fanat",
-			idle = 0,
-			prior = 16, state = {0,1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_fanat"
-						end
-		}
-		sj[#sj+1] = t
-
-		-- спящие ночью
-		t = { section = "logic@esc_lager_sleeper1",
-			idle = 0,
-			prior = 3, state = {1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_sleeper2",
-			idle = 0,
-			prior = 3, state = {1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 3, state = {1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		-- спящие ночью и днёи
-		t = { section = "logic@esc_lager_sleeper5",
-			idle = 0,
-			prior = 5, state = {0,1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_kamp1",
-			idle = 0,
-			prior = 0, state = {0,1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_sleeper7",
-			idle = 0,
-			prior = 0, state = {0,1},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_lager_defend1",
-			idle = 0,
-			prior = 15, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend2",
-			idle = 0,
-			prior = 14, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend3",
-			idle = 0,
-			prior = 13, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend4",
-			idle = 0,
-			prior = 12, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend5",
-			idle = 0,
-			prior = 11, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend6",
-			idle = 0,
-			prior = 10, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend7",
-			idle = 0,
-			prior = 9, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend8",
-			idle = 0,
-			prior = 8, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend9",
-			idle = 0,
-			prior = 16, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend10",
-			idle = 0,
-			prior = 16, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_vagon_wounded"
-						end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend11",
-			idle = 0,
-			prior = 5, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend12",
-			idle = 0,
-			prior = 20, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_fanat"
-						end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_lager_defend13",
-			idle = 0,
-			prior = 20, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_wolf" and not (has_alife_info("agroprom_military_case_have") and has_alife_info("esc_fanat_spawn"))
-						end
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	--' Бандиты на фабрике
-	if type == "esc_fabrika_bandit" then
-		-- часовые днём
-		t = { section = "logic@esc_fabrika_bandit_walker1",
-			idle = 0,
-			prior = 2, state = {0},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_fabrika_bandit_walker2",
-			idle = 0,
-			prior = 2, state = {0},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_fabrika_bandit_walker3",
-			idle = 0,
-			prior = 2, state = {0},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_fabrika_bandit_walker4",
-			idle = 5,
-			prior = 10, state = {0,2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor",
+	["esc_blokpost"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_patrol1",
+				prior = 8,
+				position_threshold = 100,
+				online = true,
+				out_rest = "esc_blockpost_patrol_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_follower1",
+				prior = 7,
+				position_threshold = 100,
+				online = true,
+				out_rest = "esc_blockpost_patrol_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_follower2",
+				prior = 7,
+				position_threshold = 100,
+				online = true,
+				out_rest = "esc_blockpost_patrol_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_commander_day",
+				prior = 100, state = {0,2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone",
 				predicate = function(obj_info)
-        					return obj_info.name == "esc_factory_prisoner_guard"
-						end
-		}
-		sj[#sj+1] = t
-		-- сидящие у костра
-		t = { section = "logic@esc_fabrika_bandit_kamp",
-			idle = 0,
-			prior = 1, state = {0},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_fabrika_bandit_kamp",
-			idle = 0,
-			prior = 1, state = {0},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		-- аларм
-		t = { section = "camper@esc_fabrika_bandit_walker1",
-			idle = 0,
-			prior = 5, state = {2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "camper@esc_fabrika_bandit_walker2",
-			idle = 0,
-			prior = 5, state = {2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "camper@esc_fabrika_bandit_walker3",
-			idle = 0,
-			prior = 5, state = {2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
---		t = { section = "camper@esc_fabrika_bandit_walker4",
---			idle = 0,
---			prior = 5, state = {2},
---			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
---		}
---		sj[#sj+1] = t
-		t = { section = "camper@esc_fabrika_bandit_walker5",
-			idle = 0,
-			prior = 2, state = {2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "camper@esc_fabrika_bandit_walker6",
-			idle = 0,
-			prior = 2, state = {2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "camper@esc_fabrika_bandit_walker7",
-			idle = 0,
-			prior = 5, state = {0,2},
-			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	--' Солдаты на мосту
-	if type == "esc_bridge" then
-		-- часовые днём
-		t = { section = "logic@esc_bridge_post1",
-			idle = 0,
-			prior = 7, state = {0},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_post2",
-			idle = 0,
-			prior = 15, state = {0,1},
-			in_rest = "", out_rest = "escape_bridge_zone",
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_soldier_commander"
-			            end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_post3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_post4",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_post5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_post6",
-			idle = 0,
-			prior = 8, state = {0,1},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_kamp1",
-			idle = 0,
-			prior = 2, state = {1},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_kamp3",
-			idle = 0,
-			prior = 2, state = {1},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_kamp4",
-			idle = 0,
-			prior = 2, state = {1},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_patrol",
-			idle = 0,
-			prior = 5, state = {1},
-			in_rest = "", out_rest = "escape_bridge_zone"
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	--' Наемники, атакующие новичков.
-	if type == "esc_killers" then
-		t = { section = "logic@esc_killer_leader_raid",
-			idle = 0,
-			prior = 10, state = {4},
-			in_rest = "", out_rest = "",
-			online = true,
-			predicate = k_predicate_m
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer1_raid",
-			idle = 0,
-			prior = 8, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer2_raid",
-			idle = 0,
-			prior = 8, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer1_follower",
-			idle = 0,
-			prior = 7, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = "",
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer1_follower",
-			idle = 0,
-			prior = 7, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = "",
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer2_follower",
-			idle = 0,
-			prior = 7, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = "",
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer2_follower",
-			idle = 0,
-			prior = 7, state = {4},
-			online = true,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = "",
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 15, state = {1},
-			online = true,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			position_threshold = 400,
-			predicate = k_predicate_m
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_fight",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 15, state = {2},
-			in_rest = "", out_rest = "",
-			position_threshold = 400,
-			predicate = k_predicate_m
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp",
-			idle = 0,
-			prior = 5, state = {2},
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_killer_kamp_wait",
-			idle = 0,
-			prior = 5, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_wait",
-			idle = 0,
-			prior = 5, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_wait",
-			idle = 0,
-			prior = 5, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_wait",
-			idle = 0,
-			prior = 15, state = {3},
-			in_rest = "", out_rest = "",
-			online = true,
-			position_threshold = 400,
-			predicate = k_predicate_m
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_wait",
-			idle = 0,
-			prior = 5, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_guard1",
-			idle = 0,
-			prior = 8, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_guard2",
-			idle = 0,
-			prior = 8, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_guard3",
-			idle = 0,
-			prior = 8, state = {3},
-			online = true,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_m,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_killer_kamp_offline",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			predicate = k_predicate_s,
-			position_threshold = 400,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_dogs_to_fox" then
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox_home",
-			idle = 0,
-			prior = 5, state = {2},
-			position_threshold = 100,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox",
-			idle = 0,
-			prior = 5, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_dogs_fox_attack"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox",
-			idle = 0,
-			prior = 5, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_dogs_fox_attack"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox",
-			idle = 0,
-			prior = 5, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_dogs_fox_attack"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox",
-			idle = 0,
-			prior = 5, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_dogs_fox_attack"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_to_fox",
-			idle = 0,
-			prior = 5, state = {1},
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_dogs_fox_attack"
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_dogs_swarm" then
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm1",
-			idle = 0,
-			prior = 5, state = {0},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm3",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_dogs_swarm2",
-			idle = 0,
-			prior = 5, state = {2},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_boars_dogs" then
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs_old",
-			idle = 0,
-			prior = 5, state = {0},
-			online = false,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_boars_dogs",
-			idle = 0,
-			prior = 5, state = {1},
-			online = true,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_ambush" then
-		t = { section = "logic@esc_ambush1",
-			idle = 0,
-			prior = 8, state = {0},
-			in_rest = "", out_rest = "esc_ambush_out_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_ambush2",
-			idle = 0,
-			prior = 8, state = {0},
-			in_rest = "", out_rest = "esc_ambush_out_restrictor"
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_corps" then
-		t = { section = "logic@esc_corps_wounded",
-			idle = 4,
-			prior = 10, state = {0},
-			online = false,
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_vagon_wounded"
-						end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_corps_wounded",
-			idle = 0,
-			prior = 10, state = {1},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_vagon_wounded"
-						end
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_assault" then
-		t = { section = "logic@esc_assault1",
-			idle = 0,
-			prior = 8, state = {1},
-			online = true,
-			predicate = a_predicate_a3,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault2",
-			idle = 0,
-			prior = 9, state = {1},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a2
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault3",
-			idle = 0,
-			prior = 10, state = {1},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault1",
-			idle = 0,
-			prior = 8, state = {0},
-			online = false,
-			predicate = a_predicate_a3,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault2",
-			idle = 0,
-			prior = 9, state = {0},
-			online = false,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a2
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault3",
-			idle = 0,
-			prior = 10, state = {0},
-			online = false,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_assault_fight1",
-			idle = 0,
-			prior = 8, state = {2},
-			online = true,
-			predicate = a_predicate_a3,
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor"
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_fight2",
-			idle = 0,
-			prior = 9, state = {2},
-			online = true,
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
-			predicate = a_predicate_a2
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_fight3",
-			idle = 0,
-			prior = 10, state = {2},
-			online = true,
-			position_threshold = 100,
-			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_assault_home1",
-			idle = 0,
-			prior = 8, state = {3},
-			online = true,
-			predicate = a_predicate_a3,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_home2",
-			idle = 0,
-			prior = 9, state = {3},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a2
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_home_leader",
-			idle = 0,
-			prior = 10, state = {3},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_assault_kamp",
-			idle = 0,
-			prior = 8, state = {4},
-			online = true,
-			predicate = a_predicate_a3,
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_kamp",
-			idle = 0,
-			prior = 9, state = {4},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a2
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_assault_kamp",
-			idle = 0,
-			prior = 10, state = {4},
-			online = true,
-			in_rest = "", out_rest = "",
-			predicate = a_predicate_a1
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_zombie_1" then
-		t = { section = "logic@esc_zombie_1_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_3_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_4_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_5_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_6_fd",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_zombie_2" then
-		t = { section = "logic@esc_zombie_2_home",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_zombie_2_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_flesh_1" then
-		t = { section = "logic@esc_flesh_1_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_flesh_1_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_flesh_1_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_flesh_2" then
-		t = { section = "logic@esc_flesh_2_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_flesh_2_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_flesh_2_camp",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_bridge_boar" then
-		t = { section = "logic@esc_bridge_boar",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_boar",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_boar",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_boar",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_bridge_boar",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home1" then
-		t = { section = "logic@esc_small_home1",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home1",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home2" then
-		t = { section = "logic@esc_small_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home2",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home3" then
-		t = { section = "logic@esc_small_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home3",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home4" then
-		t = { section = "logic@esc_small_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home4",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home5" then
-		t = { section = "logic@esc_small_home5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home5",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_small_home6" then
-		t = { section = "logic@esc_small_home6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_small_home6",
-			idle = 0,
-			prior = 5, state = {0},
-			in_rest = "", out_rest = ""
-		}
-		sj[#sj+1] = t
-		return true
-	end
-
-	if type == "esc_stalker_camp" then
-		t = { section = "logic@esc_stalker_camp_provodnik",
-			idle = 0,
-			prior = 10, state = {0},
-			online = false,
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_provodnik"
-			            end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_stalker_fox",
-			idle = 0,
-			prior = 10, state = {0},
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_fox"
-			            end
-		}
-		sj[#sj+1] = t
-
-		t = { section = "logic@esc_stalker_camp_provodnik",
-			idle = 0,
-			prior = 10, state = {1},
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_provodnik"
-			            end
-		}
-		sj[#sj+1] = t
-		t = { section = "logic@esc_stalker_camp1",
-			idle = 0,
-			prior = 8, state = {1},
-			in_rest = "", out_rest = "",
-			predicate = function(obj_info)
-			            	return obj_info.profile_name == "esc_fox"
-			            end
-		}
-		sj[#sj+1] = t
-		return true
-	end
-end
-
-function load_states(type)
-	--- новый лагерь ---
-	if type == "esc_new_lager" then
-		return function (gulag)
-			return 0
-		end
-	end
-
-	--- svalka лагерь ---
-	if type == "svalka_lager" then
-		return function (gulag)
-			return 0
-		end
-	end
-
-	--- bar лагерь ---
-	if type == "bar_lager" then
-		return function (gulag)
-			return 0
-		end
-	end
-
-	--- as лагерь ---
-	if type == "as_lager" then
-		return function (gulag)
-			return 0
-		end
-	end
-
-	--- pripyat лагерь ---
-	if type == "pripyat_lager" then
-		return function (gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_blokpost" then
-		return function (gulag)
-			local actor = Actor
-			if not actor then
+						return obj_info.name == "esc_blokpost_commander"
+					    end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_post1",
+				prior = 8, state = {0,1,2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_post2",
+				prior = 8, state = {0,1,2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_camper_day",
+				prior = 6, state = {0,2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_patrol_yard",
+				state = {0,1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_watch_tv1",
+				prior = 2,
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_watch_tv2",
+				prior = 2,
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_kamp1",
+				prior = 4, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_kamp1",
+				prior = 4, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_kamp2",
+				prior = 10, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone",
+				predicate = function(obj_info)
+						return obj_info.name == "esc_blokpost_commander"
+					    end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_sleep1",
+				prior = 2, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_sleep2",
+				prior = 2, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_sleep3",
+				prior = 2, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_sleep4",
+				prior = 2, state = {1},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_comander_guard1",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_comander_guard2",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_camper1",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_camper2",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_alarm_patrol1",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_blockpost_alarm_patrol2",
+				prior = 6, state = {2},
+				position_threshold = 100,
+				out_rest = "escape_blockpost_zone"
+			}
+		end,
+		state = function(gulag)
+			if not Actor then
 				return gulag.state
 			end
 
 			for k,v in pairs(gulag.Object) do
 				if v ~= true and v:best_enemy() ~= nil then
-					gulag.alarm_start = game.get_game_time()
-					actor:give_info_portion("esc_blockpost_alarm")
+					gulag.alarm_start = time_game_ct
+					give_info("esc_blockpost_alarm")
 					return 2 -- тревога
 				end
 			end
 
-			if gulag.alarm_start == nil or
-				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+			if gulag.alarm_start == nil or time_game_ct:diffSec(gulag.alarm_start) > 300 then
+				give_info("esc_blockpost_normal")
 				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-				actor:give_info_portion("esc_blockpost_normal")
 					return 0  -- день
 				else
 					return 1  -- ночь
 				end
 			else
+				give_info("esc_blockpost_alarm")
 				return 2
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "military"
 		end
-	end
+	},
+	--' Спецназ на блокпосте
+	["esc_specnaz"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_kamp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_raid1",
+				prior = 10, state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_raid2",
+				prior = 10, state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_follower1",
+				prior = 7, state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_follower2",
+				prior = 7, state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_follower3",
+				prior = 7, state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_specnaz_follower4",
+				prior = 7, state = {1},
+				online = true
+			}
+		end,
+		state = function(gulag)
+			return has_info("esc_raid1_start") and 1 or 0
+		end,
+		check = function(npc_community, se_obj)
+			return se_obj ~= nil and se_obj:profile_name() == "esc_soldier_specnaz"
+		end
+	},
+	--' Лагерь новичков на Escape
+	["esc_lager"] = {
+		job = function(sj, gname, squad, groups)
+			-- охранники
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_zoneguard1",
+				prior = 9, state = {0, 1},
+				out_rest = "esc_lager_guard_kill_zone",
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_zoneguard2",
+				prior = 9, state = {0, 1},
+				out_rest = "esc_lager_guard_kill_zone",
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_walker3",
+				prior = 8, state = {0, 1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_walker4",
+				prior = 8, state = {0, 1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			-- у костра днём
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 6,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 6,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 6,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			-- Волк, собственной персоной.
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_volk",
+				prior = 16, state = {0,1},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_wolf"
+							end
+			}
+			-- Шустрый
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_shustryi",
+				prior = 16, state = {0,1},
+		    online = true,
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_shustryi"
+							end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 16, state = {2},
+		    online = true,
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_shustryi"
+							end
+			}
 
-	if type == "esc_lager" then
-		return function(gulag)
-			local actor = Actor
-			if not actor then
+			-- Фанат
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_fanat",
+				prior = 16, state = {0,1},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_fanat"
+							end
+			}
+
+			-- спящие ночью
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_sleeper1",
+				prior = 3, state = {1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_sleeper2",
+				prior = 3, state = {1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 3, state = {1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			-- спящие ночью и днёи
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_sleeper5",
+				state = {0,1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_kamp1",
+				prior = 0, state = {0,1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_sleeper7",
+				prior = 0, state = {0,1},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend1",
+				prior = 15, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend2",
+				prior = 14, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend3",
+				prior = 13, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend4",
+				prior = 12, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend5",
+				prior = 11, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend6",
+				prior = 10, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend7",
+				prior = 9, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend8",
+				prior = 8, state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend9",
+				prior = 16, state = {2},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = a_predicate_a1
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend10",
+				prior = 16, state = {2},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = function(obj_info)
+							return obj_info.name == "esc_vagon_wounded"
+							end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend11",
+				state = {2},
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend12",
+				prior = 20, state = {2},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_fanat"
+							end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_lager_defend13",
+				prior = 20, state = {2},
+				out_rest = "esc_lager_guard_kill_zone",
+				predicate = function(obj_info)
+							return obj_info.profile_name == "esc_wolf" and not (has_info("agroprom_military_case_have") and has_info("esc_fanat_spawn"))
+							end
+			}
+		end,
+		state = function(gulag)
+			if not Actor then
 				return gulag.state
 			end
-			if has_alife_info("escape_lager_spawn_killers") then
+			if has_info("escape_lager_spawn_killers") then
 				if xr_gulag.getGulagPopulationComed("esc_killers") == 0 then
-					actor:give_info_portion("escape_lager_killers_die")
+					give_info("escape_lager_killers_die")
 				end
 				return 2 -- оборона лагеря
 			elseif level.get_time_hours() >= 5 and level.get_time_hours() <= 22 then
@@ -2166,11 +519,158 @@ function load_states(type)
 			else
 				return 1  -- ночь
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
 		end
-	end
+	},
+	--' Бандиты на фабрике
+	["esc_fabrika_bandit"] = {
+		job = function(sj, gname, squad, groups)
+			-- часовые днём
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_walker1",
+				prior = 2,
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_walker2",
+				prior = 2,
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_walker3",
+				prior = 2,
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_walker4",
+				idle = 5,
+				prior = 10, state = {0,2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor",
+					predicate = function(obj_info)
+							return obj_info.name == "esc_factory_prisoner_guard"
+							end
+			}
+			-- сидящие у костра
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_kamp",
+				prior = 1,
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_fabrika_bandit_kamp",
+				prior = 1,
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			-- аларм
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker1",
+				state = {2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker2",
+				state = {2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker3",
+				state = {2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker5",
+				prior = 2, state = {2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker6",
+				prior = 2, state = {2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "camper@esc_fabrika_bandit_walker7",
+				state = {0,2},
+				in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+		end,
+		state = function(gulag)
+			for k,v in pairs(gulag.Object) do
+				if v ~= true and v:best_enemy() ~= nil then
+					gulag.alarm_start = game.get_game_time()
+					return 2 -- тревога
+				end
+			end
 
-	if type == "esc_bridge" then
-		return function(gulag)
+			if gulag.alarm_start == nil or
+				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+				return 0  -- день
+			else
+				return 2
+			end
+		end,
+		check = function(npc_community)
+			return npc_community == "bandit"
+		end
+	},
+	--' Солдаты на мосту
+	["esc_bridge"] = {
+		job = function(sj, gname, squad, groups)
+			-- часовые днём
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post1",
+				prior = 7,
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post2",
+				prior = 15, state = {0,1},
+				out_rest = "escape_bridge_zone",
+				predicate = function(obj_info)
+						return obj_info.profile_name == "esc_soldier_commander"
+					    end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post3",
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post4",
+				prior = 10,
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post5",
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_post6",
+				prior = 8, state = {0,1},
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_kamp1",
+				prior = 2, state = {1},
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_kamp3",
+				prior = 2, state = {1},
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_kamp4",
+				prior = 2, state = {1},
+				out_rest = "escape_bridge_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_patrol",
+				state = {1},
+				out_rest = "escape_bridge_zone"
+			}
+		end,
+		state = function(gulag)
 			if Actor ~= nil then
 				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
 					return 0  -- день
@@ -2180,83 +680,534 @@ function load_states(type)
 			else
 				return gulag.state
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "military"
 		end
-	end
+	},
+	--' Наемники, атакующие новичков.
+	["esc_killers"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_leader_raid",
+				prior = 10, state = {4},
+				online = true,
+				predicate = k_predicate_m
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer1_raid",
+				prior = 8, state = {4},
+				online = true,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer2_raid",
+				prior = 8, state = {4},
+				online = true,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer1_follower",
+				prior = 7, state = {4},
+				online = true,
+				predicate = k_predicate_s,
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer1_follower",
+				prior = 7, state = {4},
+				online = true,
+				predicate = k_predicate_s,
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer2_follower",
+				prior = 7, state = {4},
+				online = true,
+				predicate = k_predicate_s,
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer2_follower",
+				prior = 7, state = {4},
+				online = true,
+				predicate = k_predicate_s,
+			}
 
-	if type == "esc_fabrika_bandit" then
-		return function(gulag)
-				for k,v in pairs(gulag.Object) do
-					if v ~= true and v:best_enemy() ~= nil then
-   						gulag.alarm_start = game.get_game_time()
-   						return 2 -- тревога
-					end
-				end
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				prior = 15, state = {1},
+				online = true,
+				out_rest = "esc_lager_guard_kill_zone",
+				position_threshold = 400,
+				predicate = k_predicate_m
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_fight",
+				state = {1},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400,
+				out_rest = "esc_lager_guard_kill_zone"
+			}
 
-				if gulag.alarm_start == nil or
-					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
-					return 0  -- день
-				else
-					return 2
-				end
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				prior = 15, state = {2},
+				position_threshold = 400,
+				predicate = k_predicate_m
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp",
+				state = {2},
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_wait",
+				state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_wait",
+				state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_wait",
+				state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_wait",
+				prior = 15, state = {3},
+				online = true,
+				position_threshold = 400,
+				predicate = k_predicate_m
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_wait",
+				state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_guard1",
+				prior = 8, state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_guard2",
+				prior = 8, state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_guard3",
+				prior = 8, state = {3},
+				online = true,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_m
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_killer_kamp_offline",
+				online = false,
+				predicate = k_predicate_s,
+				position_threshold = 400
+			}
+		end,
+		state = function(gulag)
+			if not Actor then
+				return gulag.state
+			end
+			if not has_info("escape_lager_spawn_killers") then
+				return 0 -- offline
+			elseif has_info("escape_lager_spawn_killers") and not has_info("esc_killers_raid") then
+				return 3 -- wait
+			elseif has_info("esc_killers_raid") and not has_info("esc_open_killer_fire") then
+				return 4 -- raid
+			elseif has_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") > 0 then
+				return 1 -- fight
+			elseif has_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") <= 0 then
+				return 2 -- kamp
+			end
+			return gulag.state
+		end,
+		check = function(npc_community)
+			return npc_community == "killer"
 		end
-	end
-
-	if type == "esc_dogs_to_fox" then
-		return function(gulag)
-			local actor = Actor
-			if not has_alife_info("escape_stalker_dog_spawn") then
+	},
+	["esc_dogs_to_fox"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				online = false,
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				online = false,
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				online = false,
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				online = false,
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				online = false,
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				state = {2},
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				state = {2},
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				state = {2},
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				state = {2},
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox_home",
+				state = {2},
+				position_threshold = 100
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox",
+				state = {1},
+				position_threshold = 100,
+				out_rest = "esc_dogs_fox_attack"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox",
+				state = {1},
+				position_threshold = 100,
+				out_rest = "esc_dogs_fox_attack"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox",
+				state = {1},
+				position_threshold = 100,
+				out_rest = "esc_dogs_fox_attack"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox",
+				state = {1},
+				position_threshold = 100,
+				out_rest = "esc_dogs_fox_attack"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_to_fox",
+				state = {1},
+				position_threshold = 100,
+				out_rest = "esc_dogs_fox_attack"
+			}
+		end,
+		state = function(gulag)
+			if not has_info("escape_stalker_dog_spawn") then
 				return 0 -- оффлайн
-			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then
+			elseif (has_info("escape_stalker_dog_spawn") and not has_info("escape_stalker_done")) or has_info("esc_dogs_return") then
 				return 2 -- онлайн
 			else
 				return 1 -- атака
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "dog"
 		end
-	end
+	},
+	["esc_dogs_swarm"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm1",
+				online = true
+			}
 
-	if type == "esc_specnaz" then
-		return function(gulag)
-			local actor = Actor
-			if has_alife_info("esc_raid1_start") then
-				return 1
-			end
-			return 0
-		end
-	end
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm3",
+				state = {1},
+				online = true
+			}
 
-	if type == "esc_boars_dogs" then
-	    return function(gulag)
-			if has_alife_info("tutorial_wounded_give_info") then
-				return 1
-			else
-				return 0
-			end
-		end
-	end
-
-	if type == "esc_killers" then
-		return function(gulag)
-			local actor = Actor
-			if not actor then
-				return gulag.state
-			end
-			if not has_alife_info("escape_lager_spawn_killers") then
-				return 0 -- offline
-			elseif has_alife_info("escape_lager_spawn_killers") and not has_alife_info("esc_killers_raid") then
-				return 3 -- wait
-			elseif has_alife_info("esc_killers_raid") and not has_alife_info("esc_open_killer_fire") then
-				return 4 -- raid
-			elseif has_alife_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") > 0 then
-				return 1 -- fight
-			elseif has_alife_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") <= 0 then
-				return 2 -- kamp
-			end
-			return gulag.state
-		end
-	end
-
-	if type == "esc_dogs_swarm" then
-		return function(gulag)
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_dogs_swarm2",
+				state = {2},
+				online = true
+			}
+		end,
+		state = function(gulag)
 			if game.get_game_time():diffSec(gulag.stateBegin) > 900 then
 				if gulag.state == 0 then
 					return 1
@@ -2268,247 +1219,541 @@ function load_states(type)
 			else
 				return gulag.state
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "dog"
 		end
-	end
+	},
+	["esc_boars_dogs"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs_old",
+				online = false
+			}
 
-	if type == "esc_ambush" then
-		return function(gulag)
-			return 0
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_boars_dogs",
+				state = {1},
+				online = true
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "dog" or npc_community == "boar"
 		end
-	end
-	if type == "esc_corps" then
-		return function(gulag)
-			if has_alife_info("tutorial_wounded_start") then
-				return 1
-			else
-				return 0
-			end
+	},
+	["esc_ambush"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_ambush1",
+				prior = 8,
+				out_rest = "esc_ambush_out_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_ambush2",
+				prior = 8,
+				out_rest = "esc_ambush_out_restrictor"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "bandit"
 		end
-	end
+	},
+	["esc_corps"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_corps_wounded",
+				idle = 4,
+				prior = 10,
+				online = false,
+				predicate = function(obj_info)
+							return obj_info.name == "esc_vagon_wounded"
+							end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_corps_wounded",
+				prior = 10, state = {1},
+				online = true,
+				predicate = function(obj_info)
+							return obj_info.name == "esc_vagon_wounded"
+							end
+			}
+		end,
+		state = function(gulag)
+			return has_info("tutorial_wounded_start") and 1 or 0
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
+		end
+	},
+	["esc_assault"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_assault1",
+				prior = 8, state = {1},
+				online = true,
+				predicate = a_predicate_a3
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault2",
+				prior = 9, state = {1},
+				online = true,
+				predicate = a_predicate_a2
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault3",
+				prior = 10, state = {1},
+				online = true,
+				predicate = a_predicate_a1
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault1",
+				prior = 8,
+				online = false,
+				predicate = a_predicate_a3
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault2",
+				prior = 9,
+				online = false,
+				predicate = a_predicate_a2
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault3",
+				prior = 10,
+				online = false,
+				predicate = a_predicate_a1
+			}
 
-	if type == "esc_zombie_1" then
-		return function(gulag)
-			return 0
-		end
-	end
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_fight1",
+				prior = 8, state = {2},
+				online = true,
+				predicate = a_predicate_a3,
+				position_threshold = 100,
+				out_rest = "esc_fabrika_bandit_space_restrictor"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_fight2",
+				prior = 9, state = {2},
+				online = true,
+				position_threshold = 100,
+				out_rest = "esc_fabrika_bandit_space_restrictor",
+				predicate = a_predicate_a2
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_fight3",
+				prior = 10, state = {2},
+				online = true,
+				position_threshold = 100,
+				out_rest = "esc_fabrika_bandit_space_restrictor",
+				predicate = a_predicate_a1
+			}
 
-	if type == "esc_zombie_2" then
-		return function(gulag)
-			return 0
-		end
-	end
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_home1",
+				prior = 8, state = {3},
+				online = true,
+				predicate = a_predicate_a3
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_home2",
+				prior = 9, state = {3},
+				online = true,
+				predicate = a_predicate_a2
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_home_leader",
+				prior = 10, state = {3},
+				online = true,
+				predicate = a_predicate_a1
+			}
 
-	if type == "esc_flesh_1" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_flesh_2" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_bridge_boar" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home1" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home2" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home3" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home4" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home5" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_small_home6" then
-		return function(gulag)
-			return 0
-		end
-	end
-
-	if type == "esc_stalker_camp" then
-		return function(gulag)
-			if has_alife_info("yan_provodnik_spawn") then
-				return 1
-			else
-				return 0
-			end
-		end
-	end
-
-	if type == "esc_assault" then
-		return function(gulag)
-			if has_alife_info("esc_kill_bandits_quest_have") and not has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_done") then
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_kamp",
+				prior = 8, state = {4},
+				online = true,
+				predicate = a_predicate_a3
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_kamp",
+				prior = 9, state = {4},
+				online = true,
+				predicate = a_predicate_a2
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_assault_kamp",
+				prior = 10, state = {4},
+				online = true,
+				predicate = a_predicate_a1
+			}
+		end,
+		state = function(gulag)
+			if has_info("esc_kill_bandits_quest_have") and not has_info("esc_assault_start") and not has_info("esc_kill_bandits_quest_done") then
 				return 1 -- сидят у костра
-			elseif has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_kill") then
+			elseif has_info("esc_assault_start") and not has_info("esc_kill_bandits_quest_kill") then
 				return 2 -- атакуют фабрику
-			elseif has_alife_info("esc_kill_bandits_quest_kill") and (not has_alife_info("esc_kill_bandits_quest_done") or not has_alife_info("esc_petruha_great")) then
+			elseif has_info("esc_kill_bandits_quest_kill") and (not has_info("esc_kill_bandits_quest_done") or not has_info("esc_petruha_great")) then
 				return 3 -- идут домой
-			elseif has_alife_info("esc_kill_bandits_quest_done") or has_alife_info("esc_petruha_great") then
+			elseif has_info("esc_kill_bandits_quest_done") or has_info("esc_petruha_great") then
 				return 4 -- идут домой
 			else
 				return 0 -- сидят в оффлайне
 			end
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
 		end
-	end
-end
+	},
+	["esc_zombie_1"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_1_fd"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_fd"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_3_fd"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_4_fd"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_5_fd"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_6_fd"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "zombie"
+		end
+	},
+	["esc_zombie_2"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_zombie_2_home4"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "zombie"
+		end
+	},
+	["esc_flesh_1"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_1_camp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_1_camp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_1_camp"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "flesh"
+		end
+	},
+	["esc_flesh_2"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_2_camp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_2_camp"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_flesh_2_camp"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "flesh"
+		end
+	},
+	["esc_bridge_boar"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_boar"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_boar"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_boar"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_boar"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_bridge_boar"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "boar"
+		end
+	},
+	["esc_small_home1"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home1"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home1"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "boar"
+		end
+	},
+	["esc_small_home2"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home2"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home2"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "boar"
+		end
+	},
+	["esc_small_home3"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home3"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home3"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "dog"
+		end
+	},
+	["esc_small_home4"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home4"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home4"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "dog"
+		end
+	},
+	["esc_small_home5"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home5"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home5"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "dog"
+		end
+	},
+	["esc_small_home6"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home6"
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_small_home6"
+			}
+		end,
+		check = function(npc_community)
+			return npc_community == "flesh"
+		end
+	},
+	["esc_stalker_camp"] = {
+		job = function(sj, gname, squad, groups)
+			sj[#sj + 1] = {
+				section = "logic@esc_stalker_camp_provodnik",
+				prior = 10,
+				online = false,
+				predicate = function(obj_info)
+						return obj_info.profile_name == "esc_provodnik"
+					    end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_stalker_fox",
+				prior = 10,
+				predicate = function(obj_info)
+						return obj_info.profile_name == "esc_fox"
+					    end
+			}
 
---------------------------------------------------------------------------
--- Dynamic ltx
---------------------------------------------------------------------------
+			sj[#sj + 1] = {
+				section = "logic@esc_stalker_camp_provodnik",
+				prior = 10, state = {1},
+				predicate = function(obj_info)
+						return obj_info.profile_name == "esc_provodnik"
+					    end
+			}
+			sj[#sj + 1] = {
+				section = "logic@esc_stalker_camp1",
+				prior = 8, state = {1},
+				predicate = function(obj_info)
+						return obj_info.profile_name == "esc_fox"
+					    end
+			}
+		end,
+		state = function(gulag)
+			return has_info("yan_provodnik_spawn") and 1 or 0
+		end,
+		check = function(npc_community)
+			return npc_community == "stalker"
+		end
+	}
+}
 
-function checkStalker(npc_community, gulag_type, se_obj)
-	--- новый лагерь ---
-	if gulag_type == "esc_new_lager" then
-		return se_obj:profile_name() == "esc_kostya"
-	end
-
-	--- svalka лагерь ---
-	if gulag_type == "svalka_lager" then
-		return se_obj:profile_name() == "esc_kostya"
-	end
-
-	--- bar лагерь ---
-	if gulag_type == "bar_lager" then
-		return se_obj:profile_name() == "esc_kostya"
-	end
-
-	--- as лагерь ---
-	if gulag_type == "as_lager" then
-		return se_obj:profile_name() == "esc_kostya"
-	end
-
-	--- pripyat лагерь ---
-	if gulag_type == "pripyat_lager" then
-		return se_obj:profile_name() == "esc_kostya"
-	end
-
-	if gulag_type == "esc_bridge" then
-		return npc_community == "military"
-	end
-
-	if gulag_type == "esc_specnaz" then
-		return se_obj:profile_name() == "esc_soldier_specnaz"
-	end
-
-	if gulag_type == "esc_blokpost" then
-		return npc_community == "military"
-	end
-
-	if gulag_type == "esc_killers" then
-		return npc_community == "killer"
-	end
-
-	if gulag_type == "esc_lager" then
-		return npc_community == "stalker"
-	end
-
-	if gulag_type == "esc_fabrika_bandit" then
-		return npc_community == "bandit"
-	end
-
-	if gulag_type == "esc_ambush" then
-		return npc_community == "bandit"
-	end
-
-	if gulag_type == "esc_corps" then
-		return npc_community == "stalker"
-	end
-
-	if gulag_type == "esc_assault" then
-		return npc_community == "stalker"
-	end
-
-	if gulag_type == "esc_stalker_camp" then
-		return npc_community == "stalker"
-	end
-
-	return false
-end
-
-function checkMonster(npc_community, gulag_type)
-	if gulag_type == "esc_dogs_to_fox" then
-		return npc_community == "dog"
-	end
-
-	if gulag_type == "esc_dogs_swarm" then
-		return npc_community == "dog"
-	end
-
-	if gulag_type == "esc_boars_dogs" then
-		return npc_community == "dog" or
-			npc_community == "boar"
-	end
-
-	if gulag_type == "esc_zombie_1" then
-		return npc_community == "zombie"
-	end
-
-	if gulag_type == "esc_zombie_2" then
-		return npc_community == "zombie"
-	end
-
-	if gulag_type == "esc_flesh_1" then
-		return npc_community == "flesh"
-	end
-
-	if gulag_type == "esc_flesh_2" then
-		return npc_community == "flesh"
-	end
-
-	if gulag_type == "esc_bridge_boar" then
-		return npc_community == "boar"
-	end
-
-	if gulag_type == "esc_small_home1" then
-		return npc_community == "boar"
-	end
-
-	if gulag_type == "esc_small_home2" then
-		return npc_community == "boar"
-	end
-
-	if gulag_type == "esc_small_home3" then
-		return npc_community == "dog"
-	end
-
-	if gulag_type == "esc_small_home4" then
-		return npc_community == "dog"
-	end
-
-	if gulag_type == "esc_small_home5" then
-		return npc_community == "dog"
-	end
-
-	if gulag_type == "esc_small_home6" then
-		return npc_community == "flesh"
-	end
-
-	return false
+function get_gulag(gulag_type)
+	return gulags[gulag_type]
 end

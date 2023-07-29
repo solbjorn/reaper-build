@@ -273,6 +273,9 @@ damage					= m_chimera_damage
 
 ;species of monster
 species					= chimera
+rank					= 0
+spec_rank				= weak
+community				= chimera
 
 [m_Chimera_damage]
 ;bone_name		 = <hit_scale>,-1,<wound_scale>
@@ -297,6 +300,7 @@ Tele_Time_To_Hold	= 200
 
 [chimera_normal]:m_chimera_e
 $spawn               = "monsters\chimera"			; option for Level Editor
+visual			= monsters\chimera\chimera_normal
 monster_type		= indoor
 rank				= 0
 spec_rank			= normal
@@ -305,8 +309,7 @@ Tele_Time_To_Hold	= 200
 
 [chimera_strong]:m_chimera_e
 $spawn               = "monsters\chimera"   ; option for Level Editor
-visual     = monsters\chimera\chimera
-corpse_visual   = monsters\chimera\chimera
+visual			= monsters\chimera\chimera_strong
 monster_type  = indoor
 rank    = 0
 spec_rank   = strong
@@ -317,9 +320,7 @@ Tele_Time_To_Hold = 200
 [electro_chimera]:chimera_strong
 bones_particles = electro_chimera_particles
 immunities_sect	= electro_chimera_immunities
-;visual			 = monsters\el_chimera\el_chimera
-;corpse_visual		 = monsters\el_chimera\el_chimera
-icon = ui_npc_monster_chimera_new_electro
+icon = ui_npc_monster_chimera_electro
 
 [electro_chimera_immunities]:chimera_immunities
 shock_immunity = 0.0

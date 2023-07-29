@@ -213,11 +213,6 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 end
 
 -- Red75 +
-local safe_pp=
-{
-  l01_escape="esc_specnaz_way3",
-  l02_garbage="gar_psevdowounded_gar_way_spy"
-}
 
 -- Очищаем патрульный путь от аномалий.
 local pp_validated={}
@@ -227,15 +222,16 @@ function invalidate_pp_accessibility()
 end
 
 function validate_accessibility(npc,ppname)
-  local pp=patrol(ppname)
-  local valid=false
-	if pp_validated[ppname] then
-		return true,ppname
+	local valid = pp_validated[ppname]
+	if valid ~= nil then
+		return valid
 	end
-	pp_validated[ppname]=true
-  if pp then
-    for i=0,pp:count()-1 do
-			local alist=amk_anoms.get_anomaly_list_for_pos(pp:point(i),1)
+	valid = false
+
+	local pp=patrol(ppname)
+	if pp then
+		for i=0,pp:count()-1 do
+			local alist=amk_anoms.get_anomaly_list_for_pos(pp:point(i), 1, true)
 			for j,o in ipairs(alist) do
 				-- Отключаем аномалию. И немедленно убираем её из рестрикторов непися.
 				-- Для остальных неписей она удалится на следующем апдейте
@@ -243,13 +239,16 @@ function validate_accessibility(npc,ppname)
 				amk_anoms.remove_restriction(npc,o.id,o.name,true)
 			end
 		end
-    for i=0,pp:count()-1 do
+		for i=0,pp:count()-1 do
 			if npc:accessible(pp:level_vertex_id(i)) then
-        return true,ppname
-      end
+				valid = true
+				break
+			end
 		end
-  end
-	return false,ppname
+	end
+
+	pp_validated[ppname] = valid
+	return valid
 end
 -- Red75 -
 

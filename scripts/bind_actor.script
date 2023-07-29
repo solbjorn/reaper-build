@@ -129,10 +129,6 @@ end
 function actor_binder:reinit()
   object_binder.reinit(self)
 
-	_G.time_real_ms = time_global()
-	_G.time_game_ct = game_get_game_time()
-	_G.time_game_hours = game.hours()
-
 	self.st = { }
 	db.storage[0] = self.st
 	self.st.pstor = nil
@@ -154,6 +150,8 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.on_ruck, self.on_item_ruck, self)
 	self.object:set_callback(callback.on_slot, self.on_item_slot, self)
 	self.object:set_callback(callback.entity_alive_before_hit, self.before_hit_callback, self)
+
+	actor_flags.alive = self.object:alive()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
@@ -258,6 +256,7 @@ function actor_binder:hit_callback(obj, amount, local_direction, who, bone_index
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:death_callback(victim, who)
+	actor_flags.alive = false
 	sa_callbacks.actor_death(victim, who)
 end
 ----------------------------------------------------------------------------------------------------------------------

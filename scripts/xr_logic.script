@@ -6,7 +6,7 @@
 
 local math_random = math.random
 local string_find = string.find
-local string_gfind = string.gfind
+local string_gmatch = string.gmatch
 local string_len  = string.len
 local string_match = string.match
 local string_sub  = string.sub
@@ -702,7 +702,7 @@ function parse_infop(rslt, str, check)
 	local infop_name, sign
 	local infop_n = 1
 	local at, params
-	for s in string_gfind(str, "%s*([%-%+%~%=%!][^%-%+%~%=%!%s]+)%s*") do
+	for s in string_gmatch(str, "%s*([%-%+%~%=%!][^%-%+%~%=%!%s]+)%s*") do
 		sign = string_sub(s, 1, 1)
 		infop_name = string_sub(s, 2)
 		params = nil
@@ -715,7 +715,7 @@ function parse_infop(rslt, str, check)
 			end
 			if at < string_len(infop_name) - 1 then
 				params = {}
-				for par in string_gfind(string_sub(infop_name, at + 1, -2), "%s*([^:]+)%s*") do
+				for par in string_gmatch(string_sub(infop_name, at + 1, -2), "%s*([^:]+)%s*") do
 					params[#params+1] = tonumber(par) or par
 				end
 			end
@@ -770,7 +770,7 @@ function parse_condlist(src)
 	local at, to, infop_lst, remainings, newsect
 
 	local n = 1
-	for fld in string_gfind(src, "%s*([^,]+)%s*") do
+	for fld in string_gmatch(src, "%s*([^,]+)%s*") do
 		-- Здесь fld это набор infoportions в {} и имя секции, на которую переключиться.
 		local infop_check_table = {}
 		local infop_set_table = {}
@@ -819,7 +819,7 @@ end
 local function parse_params(params)
 	local rslt = {}
 	local n = 1
-	for fld in string_gfind(params, "%s*([^|]+)%s*") do
+	for fld in string_gmatch(params, "%s*([^|]+)%s*") do
 		rslt[n] = fld
 		n = n + 1
 	end
