@@ -1,0 +1,42 @@
+[zone_fog_base]: anomaly
+class			    = Z_RADIO
+ef_anomaly_type		= 3
+ef_weapon_type		= 15
+hit_impulse_scale	= 0.5
+effective_radius	= 0.75   ;размер радиуса в процентах от оригинального, где действует зона
+
+sound			    = zone_mosquito_bald
+
+min_start_power		= 0.99
+max_start_power		= 1.00
+hit_type		    = shock
+
+disable_time		= -1	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 500	;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= -1	;время отключения idle партиклов
+
+ignore_nonalive		= true
+ignore_small		= false
+ignore_artefacts	= true
+
+blowout_particles	= none
+blowout_sound		= $no_sound
+
+awaking_time		= 40
+blowout_time		= 5000
+accamulate_time		= 50
+
+blowout_light	    = off
+idle_light	        = off
+visible_by_detector = off
+blowout_wind	    = off
+
+; Сигаретный дым в помещении (OGSE Team)
+[zone_fog_cigarette]:zone_fog_base
+idle_sound		= $no_sound
+idle_particles	= a_ufp_particles\cigarette_dust
+
+; Туман в помещении (OGSE Team)
+[zone_fog_indoor]:zone_fog_base
+idle_sound		= $no_sound
+idle_particles	= a_ufp_particles\fog_indoor
