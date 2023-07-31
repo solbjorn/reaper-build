@@ -18,6 +18,8 @@ end
 
 function actor_death(victim, who)
 	Dream:stopper()
+
+	reap_misc.actor_killed()
 	reap_misc.kill_online_controllers()
 
 	news_main.on_death(victim, who)

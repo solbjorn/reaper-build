@@ -30,6 +30,35 @@ function cached_condlist:pick_section_from_condlist(npc)
 end
 
 --[[---------------------------------------------------------------------------
+ * SkyLoader
+--]]---------------------------------------------------------------------------
+
+function black_screen()
+	level.add_pp_effector("deadcity_wake.ppe", 4467, false)
+	timer("reap_misc.black_screen", 1000, true)
+end
+
+function actor_killed()
+	local dir = screen.cam_dir
+	Actor:set_actor_direction(dir.x, dir.y, 0)
+
+	local cam_inert = console:get_float("cam_inert")
+	console:execute("cam_inert 0")
+
+	level.add_cam_effector("camera_effects\\surge_02.anm", 2532, false, "")
+	level.add_pp_effector("surge_fade.ppe", 2011, false)
+
+	level.disable_input()
+	level.hide_indicators()
+
+	timer(function()
+		console:execute("cam_inert " .. cam_inert)
+		black_screen()
+		level.enable_input()
+	end, 1750, true)
+end
+
+--[[---------------------------------------------------------------------------
  * utak3r
 --]]---------------------------------------------------------------------------
 
