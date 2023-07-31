@@ -60,7 +60,8 @@ function action_car:reset_scheme(loading)
 	self.tip_locked = self.st.tip_locked
 
 	if self.st.invulnerable then
-	    self.def_health = self.object.health
+		self.object.health = 1
+		self.car:SetfHealth(1)
 	end
 
 	self.headlights = object.deactivate
@@ -73,8 +74,7 @@ function action_car:reset_scheme(loading)
 	action(self.object, object("right_light", self.headlights), cond(cond.time_end, time_infinite))
 
     self.usable = self.st.usable
-
-    if self.usable == nil then
+    if not self.usable then
 	    self.car:SetExplodeTime(0) -- (-1)
 
 	    if self.car:HasWeapon() then
@@ -117,7 +117,6 @@ function action_car:reset_scheme(loading)
 		        abort("object '%s': unable to find path_walk '%s' on the map", self.object:name(), self.st.path_walk)
 	        end
 
-            self:start_car()
 	        self.path_walk_count = self.path_walk:count()
 
 		    self.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
@@ -140,8 +139,13 @@ function action_car:reset_scheme(loading)
 
 	        if self:at_target_walkpoint() then
 		        self:walk_arrival_callback(self.target_walk_pt)
-	        end
-
+				if self.target_walk_pt >= 0 then
+					self:start_car()
+				end
+			else
+				if self.speed == 0 then self.speed = def_moving_speed end
+				self:start_car()
+			end
 	        self:go_to_walkpoint(self.target_walk_pt)
 	    else
 	        self.target_walk_pt = -2
@@ -154,7 +158,7 @@ function action_car:reset_scheme(loading)
 
 	    self.target_fire_pt = nil
 	    self.target_fire_pt_idx = 0
-	    self.target_obj = nil
+	    self.target_id = nil
 
 	    self.on_target_vis = nil
 	    self.on_target_nvis = nil
@@ -162,19 +166,19 @@ function action_car:reset_scheme(loading)
 	    if self.hasWeapon then
 	        self:set_shooting(self.state_shooting)
 
-	        local n = 0
+	        local n, obj = 0
 	        if self.st.fire_target == "points" then
 	            self.state_firetarget = state_firetarget_points
 	        else
 	            if self.st.fire_target == "actor" and Actor:alive() then
-	                self.target_obj = Actor
+	                self.target_id = 0
 	                self.state_firetarget = state_firetarget_enemy
 	            else
 	                n = tonumber(self.st.fire_target)
 	                if n then
-	                    obj = level_object_by_sid(n)
+					obj = level_story_object(n)
 	                    if obj and obj:alive() then
-	                        self.target_obj = obj
+	                        self.target_id = obj:id()
 	                        self.state_firetarget = state_firetarget_enemy
 	                    end
 	                end
@@ -183,14 +187,14 @@ function action_car:reset_scheme(loading)
 	        self.fire_track_target = self.st.fire_track_target
 
 	        if self.st.on_target_vis then
-	            vis = self.st.on_target_vis
+	            local vis = self.st.on_target_vis
 	            if vis.v1 == "actor" then
 	                vis.v1 = Actor
 	                self.on_target_vis = vis
 	            else
 	                n = tonumber(vis.v1)
 	                if n then
-	                    obj = level_object_by_sid(n)
+	                    obj = level_story_object(n)
 	                    if obj and obj:alive() then
 	                        vis.v1 = obj
 	                        self.on_target_vis = vis
@@ -199,14 +203,14 @@ function action_car:reset_scheme(loading)
 	            end
 	        end
 	        if self.st.on_target_nvis then
-	            nvis = self.st.on_target_nvis
+	            local nvis = self.st.on_target_nvis
 	            if nvis.v1 == "actor" then
 	                nvis.v1 = Actor
 	                self.on_target_nvis = nvis
 	            else
 	                n = tonumber(nvis.v1)
 	                if n then
-	                    obj = level_object_by_sid(n)
+	                    obj = level_story_object(n)
 	                    if obj and obj:alive() then
 	                        nvis.v1 = obj
 	                        self.on_target_nvis = nvis
@@ -260,7 +264,6 @@ function action_car:reset_scheme(loading)
 	            end
 
 	            self:fire_arrival_callback(self.target_fire_pt_idx)
-
 	        elseif self.state_firetarget == state_firetarget_enemy then
 	            self.state_shooting = state_none
 	            self.state_cannon = state_cannon_follow
@@ -276,7 +279,7 @@ function action_car:reset_scheme(loading)
 end
 
 function action_car:save()
-    if self.usable == nil then
+    if not self.usable then
 	    xr_logic.pstor_store(self.object, "speed", self.speed)
 	    xr_logic.pstor_store(self.object, "loop", self.loop)
 	    xr_logic.pstor_store(self.object, "min_delta_per_sec", self.min_delta_per_sec)
@@ -321,8 +324,8 @@ function action_car:at_target_walkpoint()
 	    arrived = dist < 2 or diff_angle >= math.pi
 	end
 
-	local diff = dist - self.target_dist
 	if self.target_dist ~= -1 and not arrived then
+		local diff = dist - self.target_dist
 	    if diff > 0 then
 	        if diff > def_arriving_dist then
 	            arrived = true
@@ -417,10 +420,10 @@ function action_car:walk_arrival_callback(index)
 	if index == -2 then return end
 
 	local suggested_explode = self.path_walk_info[index]["explode"]
-	if suggested_explode == "true" then
-		--self:car_explode()
+	if suggested_explode then
 		self.object.health = 0
 		self.car:Action(CCar.eWpnActivate, 0)
+		self.car:CarExplode()
 	end
 
 	local suggested_spd = self.path_walk_info[index]["spd"]
@@ -458,7 +461,6 @@ function action_car:walk_arrival_callback(index)
 
     if self.hasWeapon and self.state_firetarget == state_firetarget_points then
         local next_idx = self:get_next_walkpoint()
-        --local next_idx = self.target_walk_pt
         if next_idx >= 0 then
 	        local fw = self.path_walk_info[next_idx]["fw"]
 	        if fw then
@@ -486,7 +488,6 @@ function action_car:walk_arrival_callback(index)
 
 	-- Выбрать следующую точку езды:
 	self.target_walk_pt = self:get_next_walkpoint()
-
     if self.target_walk_pt >= 0 then
 	    -- Если эта точка рядом и уже приехали - не ждать апдейта, чтобы вызвать callback
 	    if self:at_target_walkpoint() then
@@ -529,9 +530,8 @@ function action_car:change_fire_pts()
 		    return
 	    end
 
-        local this_val
 	    for fire_idx = 0, self.path_fire:count() - 1 do
-		    this_val = self.path_fire_info[fire_idx].flags
+		    local this_val = self.path_fire_info[fire_idx].flags
 		    if this_val:equal(fire_flags) then
 			    table.insert(self.fire_pt_arr, fire_idx)
 			    self.fire_pt_count = self.fire_pt_count + 1
@@ -605,8 +605,8 @@ function action_car:fire_arrival_callback(cur_index)
 
 	    if self.target_fire_pt then
 	        self.state_cannon = state_cannon_rotate
-		    if self.fire_rot_dir == 1  and self.fire_forward or
-		       self.fire_rot_dir == -1 and self.fire_backward then
+		    if (self.fire_rot_dir == 1  and self.fire_forward) or
+		       (self.fire_rot_dir == -1 and self.fire_backward) then
 		        self.state_shooting = state_shooting_on
 	        else
 		        self.state_shooting = state_none
@@ -672,8 +672,8 @@ function action_car:fire_arrival_callback(cur_index)
 	    -- Если мы уже целимся в эту точку - не ждать апдейта, чтобы вызвать callback
 	    if self.target_fire_pt then
 		    self.state_cannon = state_cannon_rotate
-		    if self.fire_rot_dir == 1  and self.fire_forward or
-		       self.fire_rot_dir == -1 and self.fire_backward then
+		    if (self.fire_rot_dir == 1  and self.fire_forward) or
+		       (self.fire_rot_dir == -1 and self.fire_backward) then
 		        self.state_shooting = state_shooting_on
 	        else
 		        self.state_shooting = state_none
@@ -750,16 +750,7 @@ function action_car:fastcall()
 end
 
 function action_car:update(delta)
-
-	self.friends={}
-	for k,v in pairs(amk_mod.btrs_friends) do
-		local tmp=level.object_by_id(k)
-		if tmp and ( (tmp:is_stalker() and tmp:character_community()=="military" and tmp:alive()) or
-		(tmp:section()=="vehicle_btr" and tmp:id()~=self.object:id()) ) and
-		self.fire_range_sqr>self.object:position():distance_to_sqr(tmp:position()) then
-				self.friends[k] = tmp:section()
-		end
-	end
+	self:update_friends_and_target()
 
 	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
@@ -771,7 +762,8 @@ function action_car:update(delta)
 	end
 
 	if self.st.invulnerable then
-	    self.object.health = self.def_health
+		self.object.health = 1
+		self.car:SetfHealth(1)
 	end
 end
 
@@ -792,9 +784,21 @@ function action_car:destroy_car()
 
 	xr_logic.mob_release(self.object)
 	if self.st.on_death_info ~= nil then
-	    Actor:give_info_portion(self.st.on_death_info)
+		give_info(self.st.on_death_info)
+	end
+	if self.st.on_death_func then
+		loadstring(self.st.on_death_func)()
 	end
 	self.destroyed = true
+end
+
+function action_car:get_target_obj()
+	if self.target_id then
+		local obj = level_object( self.target_id )
+		if obj then return obj end
+		self.target_id = nil
+	end
+	return nil
 end
 
 -- Вернуть true, если апдейты больше не нужны
@@ -824,26 +828,6 @@ function action_car:fast_update()
 			return true -- апдейты больше не нужны
 		end
 		return false
-	end
-
-	if self.state_moving ~= state_moving_end and
-	   self.state_moving ~= state_moving_stop and
-	   cur_time >= self.last_pos_time + self.min_car_explode_time
-	then
-		if not self.last_pos then
-			self.last_pos = self.object:position()
-			self.last_pos_time = cur_time
-		else
-			local cur_pos = self.object:position()
-			local diff = self.last_pos:distance_to(cur_pos)
-			if diff < self.min_delta_per_sec then
-                self:stop_car()
-				self.state_moving = state_moving_end
-			else
-			    self.last_pos = cur_pos
-			end
-			self.last_pos_time = cur_time
-		end
 	end
 
 	if self.state_moving ~= state_moving_end and
@@ -890,6 +874,7 @@ function action_car:fast_update()
       end
 		end
 
+		local target_obj = self:get_target_obj()
 	    if self.state_firetarget == state_firetarget_points then
         if self.fire_pt_count > 0 and self.state_cannon ~= state_cannon_stop then
             if self.state_cannon == state_cannon_delay then
@@ -903,23 +888,22 @@ function action_car:fast_update()
               end
             end
         end
-	    elseif self.state_firetarget == state_firetarget_enemy then
+		elseif target_obj and self.state_firetarget == state_firetarget_enemy then
+			local target_dist = self.object:position():distance_to_sqr(target_obj:position())
+			local has_friends_on_fire_line = self:check_friends_on_fire_line(target_obj)
 
-				local target_dist = self.object:position():distance_to_sqr(self.target_obj:position())
-
-				local has_friends_on_fire_line = self:check_friends_on_fire_line()
-
-        if self.target_obj:alive() and
+        if target_obj:alive() and
            target_dist <= self.fire_range_sqr and
-           self.car:IsObjectVisible(self.target_obj) and
+           self.car:IsObjectVisible(target_obj) and
 					 not has_friends_on_fire_line
         then
-          self.target_fire_pt = self:extrapolate_pos(self.target_obj)
+          self.target_fire_pt = self:extrapolate_pos(target_obj)
           self:rot_to_firepoint(self.target_fire_pt)
 
             if self.car:CanHit() then
                 if self.state_shooting == state_none then
                   self.state_shooting = state_shooting_on
+					else
                   self:set_shooting(self.state_shooting)
               end
           else
@@ -935,7 +919,7 @@ function action_car:fast_update()
 		        end
 
 	            if self.fire_track_target then
-								self.target_fire_pt = self:extrapolate_pos(self.target_obj)
+					self.target_fire_pt = self:extrapolate_pos(target_obj)
 		            self:rot_to_firepoint(self.target_fire_pt)
 	            end
 		    end
@@ -946,67 +930,82 @@ function action_car:fast_update()
 end
 
 function action_car:extrapolate_pos(obj)
-  local mypos=self.object:position()
-  if not self.prev_pos then
-    self.prev_pos=obj:bone_position("bip01_spine1")
-    self.prev_delta=vector():set(0,0,0)
-  end
-  local curpos=obj:bone_position("bip01_spine1")
-  local hcorr=mypos:distance_to_sqr(curpos)/180/180*1.3
-  local delta=obj:bone_position("bip01_spine1"):sub(self.prev_pos)
-  self.prev_delta:mul(1):add(delta):mul(0.5)
-  local extrapos=vector():set(self.prev_delta.x,self.prev_delta.y,self.prev_delta.z):mul(10):add(curpos):add(vector():set(0,hcorr,0))
-  self.prev_pos=curpos
-  return extrapos
-end
+	if not self.prev_pos then
+		self.prev_pos=obj:center()
+		self.prev_delta=vector():set(0,0,0)
+	end
 
-function action_car:car_explode()
-	self.object:explode(time_global())
+	local curpos = obj:center()
+	local mypos = self.object:position()
+	local hcorr=mypos:distance_to_sqr(curpos)/180/180*1.3
+	local delta=obj:center():sub(self.prev_pos)
+	self.prev_delta:mul(1):add(delta):mul(0.5)
+	local extrapos = vector():set(self.prev_delta.x,self.prev_delta.y,self.prev_delta.z):mul(10):add(curpos):add(vector():set(0,hcorr,0))
+	self.prev_pos=curpos
+	return extrapos
 end
 
 function action_car:net_destroy()
 	if self.object and xr_logic.mob_captured(self.object) then
 	    xr_logic.mob_release(self.object)
-	    if self.st.on_death_info ~= nil then
-	        Actor:give_info_portion(self.st.on_death_info)
+	    if self.st.on_death_info ~= nil and self.car:GetfHealth() <= 0 then
+			give_info(self.st.on_death_info)
 	    end
+		if self.st.on_death_func then
+			loadstring(self.st.on_death_func)()
+		end
 	end
 end
 
-function action_car:check_friends_on_fire_line()
+function action_car:check_friends_on_fire_line(target_obj)
 	if self.target_fire_pt then
 		local pos=self.object:bone_position("mashine_gun_fire_point")
 		local dir_aim = vector():set(self.target_fire_pt.x - pos.x, self.target_fire_pt.y - pos.y , self.target_fire_pt.z - pos.z)
-		local target_dist = pos:distance_to(self.target_obj:position())
---проверяем позиции солдат и текущего сектора обстрела
+		local target_dist = pos:distance_to(target_obj:position())
+		local self_pos = self.object:position()
+		-- проверяем позиции солдат и текущего сектора обстрела
+		local tmp
 		for a,v in pairs(self.friends) do
-			tmp=level.object_by_id(a)
-			if tmp and tmp:alive() then
+			tmp = level_object(a)
+			if tmp
+				and (tmp:is_stalker() and tmp:alive())
+				or v == "vehicle_btr"
+			then
 				local pos_soldier = tmp:position()
-				local radius=4
-				if v=="vehicle_btr" then
-					radius=4
-				else
-					radius=1.7
-				end
-				local friend_dist=self.object:position():distance_to(pos_soldier)-radius
+				local radius = (v == "vehicle_btr") and 4 or 1.7
+				local friend_dist=self_pos:distance_to(pos_soldier)-radius
 
 				if friend_dist < target_dist then
-					--считаем попадает ли текущий солдат в сектор обстрела
+					-- считаем попадает ли текущий солдат в сектор обстрела
 					local dir_soldier = vector():set(pos_soldier.x - pos.x, pos_soldier.y - pos.y , pos_soldier.z - pos.z)
-					local x=dir_soldier.x*dir_aim.x+dir_soldier.z*dir_aim.z
-					local y=-dir_soldier.z*dir_aim.x+dir_soldier.x*dir_aim.z -- повернули систему координат
-					local angle=math.atan2(y,x) -- угол доворота от -180 до 180
+					local x = dir_soldier.x*dir_aim.x+dir_soldier.z*dir_aim.z
+					-- повернули систему координат
+					local y = -dir_soldier.z*dir_aim.x+dir_soldier.x*dir_aim.z
+					local angle = math.atan2(y,x) -- угол доворота от -180 до 180
 
 					local div=radius/friend_dist
 					if angle >= -div and angle <= div then return true end
-
 				end
 			end
 		end
 	end
 
 	return false
+end
+
+function action_car:update_friends_and_target()
+	self.friends = {}
+
+	local obj
+	local self_pos = self.object:position()
+	for k,v in pairs(amk_mod.btrs_friends) do
+		obj = level_object(k)
+		if obj and ( (obj:is_stalker() and obj:character_community()=="military" and obj:alive()) or
+		(obj:section()=="vehicle_btr" and obj:id()~=self.object:id()) ) and
+		self.fire_range_sqr>self_pos:distance_to_sqr(obj:position()) then
+			self.friends[k] = obj:section()
+		end
+	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -1044,4 +1043,5 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.invulnerable     = utils.cfg_get_bool(ini,   section, "invulnerable",    npc, false, false)
 	st.headlights       = utils.cfg_get_string(ini, section, "headlights",      npc, false, gulag_name, "off")
 	st.on_death_info    = utils.cfg_get_string(ini, section, "on_death_info",   npc, false, gulag_name, nil)
+	st.on_death_func = ini:r_string_ex(section, "on_death_func")
 end
