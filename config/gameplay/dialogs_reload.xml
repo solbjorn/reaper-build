@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1251" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <game_dialogs>
     <dialog id="flame_reload">
 		<has_info>game_over</has_info>
@@ -82,4 +82,158 @@
             </phrase>
         </phrase_list>
     </dialog>
+
+<!--------------------------------RyLiosha spawn--|--modified-by-phobos2077-------------------->
+	<dialog id="rul_sidor_cars">
+		<precondition>rul.sidor_has_cars</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>rul_cars_000</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>rul_cars_001</text>
+				<action>rul.sidor_offers</action>
+				<next>11</next>
+				<next>12</next>
+				<next>13</next>
+				<next>5</next>
+			</phrase>
+			<phrase id="11">
+				<dont_has_info>rul_car1_create</dont_has_info>
+				<precondition>rul.have_money_for_car1</precondition>
+				<text>rul_cars_011</text>
+				<next>21</next>
+			</phrase>
+			<phrase id="12">
+				<dont_has_info>rul_car2_create</dont_has_info>
+				<precondition>rul.have_money_for_car2</precondition>
+				<text>rul_cars_012</text>
+				<next>22</next>
+			</phrase>
+			<phrase id="13">
+				<dont_has_info>rul_car3_create</dont_has_info>
+				<precondition>rul.have_money_for_car3</precondition>
+				<text>rul_cars_013</text>
+				<next>23</next>
+			</phrase>
+			<phrase id="21">
+				<text>rul_cars_021</text>
+				<action>rul.car1_spawn</action>
+				<give_info>rul_car1_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="22">
+				<text>rul_cars_022</text>
+				<action>rul.car2_spawn</action>
+				<give_info>rul_car2_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="23">
+				<text>rul_cars_023</text>
+				<action>rul.car3_spawn</action>
+				<give_info>rul_car3_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>rul_cars_002</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="5">
+				<text>rul_cars_005</text>
+			</phrase>
+			<phrase id="6">
+				<text>rul_cars_006</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="rul_barmen_cars">
+		<precondition>rul.barmen_has_cars</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>rul_cars_100</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>rul_cars_101</text>
+				<action>rul.barmen_offers</action>
+				<next>14</next>
+				<next>16</next>
+				<next>5</next>
+			</phrase>
+			<phrase id="14">
+				<dont_has_info>rul_car4_create</dont_has_info>
+				<precondition>rul.have_money_for_car4</precondition>
+				<text>rul_cars_114</text>
+				<next>24</next>
+			</phrase>
+			<phrase id="16">
+				<dont_has_info>rul_car6_create</dont_has_info>
+				<precondition>rul.have_money_for_car6</precondition>
+				<text>rul_cars_116</text>
+				<next>26</next>
+			</phrase>
+			<phrase id="24">
+				<text>rul_cars_124</text>
+				<action>rul.car4_spawn</action>
+				<give_info>rul_car4_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="26">
+				<text>rul_cars_126</text>
+				<action>rul.car6_spawn</action>
+				<give_info>rul_car6_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>rul_cars_002</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="5">
+				<text>rul_cars_005</text>
+			</phrase>
+			<phrase id="6">
+				<text>rul_cars_006</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="rul_mudlo_cars">
+		<precondition>rul.mudlo_has_cars</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>rul_cars_200</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>rul_cars_201</text>
+				<action>rul.mudlo_offers</action>
+				<next>15</next>
+				<next>5</next>
+			</phrase>
+			<phrase id="15">
+				<dont_has_info>rul_car5_create</dont_has_info>
+				<precondition>rul.have_money_for_car5</precondition>
+				<text>rul_cars_215</text>
+				<next>25</next>
+			</phrase>
+			<phrase id="25">
+				<text>rul_cars_225</text>
+				<action>rul.car5_spawn</action>
+				<give_info>rul_car5_create</give_info>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>rul_cars_002</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="5">
+				<text>rul_cars_005</text>
+			</phrase>
+			<phrase id="6">
+				<text>rul_cars_206</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
 </game_dialogs>

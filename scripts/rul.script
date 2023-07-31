@@ -1,0 +1,122 @@
+--Скрипт тачек
+
+-- Автор: Phobos_2077
+-- Оригинальный скрипт: РуЛеша
+
+-- Заз и Нива на Кордоне
+local car1_price = 10000
+
+-- Нива на Свалке
+local car2_price = 30000
+
+-- Уаз на Агропроме
+local car3_price = 15000
+
+-- Камаз и Трактор в ТД
+local car4_price = 45000
+local car4a_price = 15000
+
+-- Уаз на Янтаре
+local car5_price = 35000
+
+-- Нива на Складах
+local car6_price = 30000
+
+function gen_car_spawn (first_speaker, second_speaker, type, pos, gv, lv, price)
+    create(type,pos,gv,lv,65535)
+    lost_money(price)
+
+    amk.add_spot_on_map(obj.id,"green_location",type)
+end
+
+function car1_spawn (fs, ss)
+     gen_car_spawn (fs, ss,"vehicle_zaz",vector():set(-208.9,-20.3,-167.8),43917,50,car1_price)
+end
+
+function car2_spawn (fs, ss)
+     gen_car_spawn (fs, ss,"vehicle_niva",vector():set(-90,-2.6,-224.4),118854,271,car2_price)
+end
+
+function car3_spawn (fs, ss)
+     gen_car_spawn (fs, ss,"vehicle_uaz",vector():set(-135.7,-0.2,-220.7),103198,553,car3_price)
+end
+
+function car4_spawn (fs, ss)
+     -- ; спавн на бензоколонке
+     gen_car_spawn (fs, ss,"vehicle_kamaz",vector():set(87.97,0.06,-56.57),282361,991,car4_price)
+end
+
+function car4a_spawn (fs, ss)
+     -- ; спавн гдето у болота
+     gen_car_spawn (fs, ss,"vehicle_tr13",vector():set(-56.4,-4.0,-234.9),107719,852,car4a_price)
+end
+
+function car5_spawn (fs, ss)
+     gen_car_spawn (fs, ss,"vehicle_uaz",vector():set(26.3,-11.2,-296.4),51967,1479,car5_price)
+end
+
+function car6_spawn (fs, ss)
+     -- ; Спавн тачки на Складах, на хуторе долга
+     gen_car_spawn (fs, ss,"vehicle_niva",vector():set(-217.06,-12.59,59.5),111821,1679,car6_price)
+end
+
+function have_money_for_car1()
+	return has_money(car1_price)
+end
+
+function have_money_for_car2()
+	return has_money(car2_price)
+end
+
+function have_money_for_car3()
+	return has_money(car3_price)
+end
+
+function have_money_for_car4()
+	return has_money(car4_price)
+end
+
+function have_money_for_car5()
+	return has_money(car5_price)
+end
+
+function have_money_for_car6()
+	return has_money(car6_price)
+end
+
+function sidor_has_cars()
+	return not (has_info("rul_car1_create") and has_info("rul_car2_create") and has_info("rul_car3_create"))
+end
+
+function barmen_has_cars()
+	return not (has_info("rul_car4_create") and has_info("rul_car6_create"))
+end
+
+function mudlo_has_cars()
+	return not has_info("rul_car5_create")
+end
+
+function car_offer(info,text,price)
+      local task_texture, task_rect = get_texture_info("ui_iconsTotal_lost_money")
+      local name_and_price
+
+      if not has_alife_info(info) then
+          name_and_price = game.translate_string(text).." %c[255,238,155,23]"..price.." RU%c[default]."
+          Actor:give_talk_message(name_and_price, task_texture, task_rect, "iconed_trade_info")
+      end
+end
+
+function sidor_offers(first_speaker, second_speaker)
+      car_offer("rul_car1_create","rul_cars_011",car1_price)
+      car_offer("rul_car2_create","rul_cars_012",car2_price)
+      car_offer("rul_car3_create","rul_cars_013",car3_price)
+end
+
+function barmen_offers(first_speaker, second_speaker)
+      car_offer("rul_car4_create","rul_cars_114",car4_price)
+      car_offer("rul_car6_create","rul_cars_116",car6_price)
+end
+
+function mudlo_offers(first_speaker, second_speaker)
+      car_offer("rul_car5_create","rul_cars_215",car5_price)
+end
