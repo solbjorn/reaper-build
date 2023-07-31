@@ -57,7 +57,7 @@ main_gear_ratio    		= 20.0        	; Передаточное отношение
 auto_transmission  		= on            ; Автоматическая коробка (on/off)
 
 [transmission_gear_ratio]
-										; shift down/ shift up. (rpm, необходимое для переключения)
+; shift down/ shift up. (rpm, необходимое для переключения)
 R                  		= 2.0, 1500,2450
 N1                 		= 2.0, 1500,2450
 N2                 		= 1.0, 1500,2450
@@ -75,7 +75,7 @@ bone               		= left_light
 color              		= 1.0,1.0,1.0,0.8
 range              		= 25
 cone_angle         		= 50
-spot_texture       		= lights\lights_blamplight
+spot_texture       		= internal\internal_light_attpoint
 glow_texture       		= glow\glow_Yellow
 glow_radius        		= 1.5
 
@@ -84,19 +84,19 @@ bone               		= right_light
 color              		= 1.0,1.0,1.0,0.8
 range              		= 25
 cone_angle         		= 50
-spot_texture       		= lights\lights_blamplight
+spot_texture       		= internal\internal_light_attpoint
 glow_texture       		= glow\glow_Yellow
 glow_radius        		= 1.5
 
 [car_sound]
-snd_volume         		= 1.0
-snd_name           		= car\apc_run
+snd_volume         		    = 1.0
+snd_name           		    = car\apc_run
 engine_sound_start_dellay	= 0.5
-engine_start			= car\apc_start
-engine_stop				= car\apc_stop
-transmission_switch		= car\car_gearchange
-explosion_sound    		= weapons\heli_explosion
-relative_pos       		= 0.0,0.5,3.0.
+engine_start			    = car\apc_start
+engine_stop				    = car\apc_stop
+transmission_switch		    = car\gear_old
+explosion_sound    		    = weapons\heli_explosion
+relative_pos       		    = 0.0,0.5,3.0
 
 ;-------------------------------------------------------------------------------
 ;------ animations params ------------------------------------------------------
@@ -105,22 +105,19 @@ relative_pos       		= 0.0,0.5,3.0.
 open_torque_factor 		= 10	;множитель момента сил для открывания двери (default = 2)
 
 [animations]
-
 driver_animation_type 	= 0	;тип анимаций актера для данной машины.
 
 ;-------------------------------------------------------------------------------
 ;------ damage params ----------------------------------------------------------
 
 [damage_particles]
-
-explosion_particles     = explosions\expl_mushroom_01
-car_damage_particles1   = explosions\expl_car_smoke_small
-car_damage_particles2   = explosions\expl_car_smoke_big
+explosion_particles      = explosions\expl_mushroom_01
+car_damage_particles1    = explosions\expl_car_smoke_small
+car_damage_particles2    = explosions\expl_car_smoke_big
 wheels_damage_particles1 = vehiclefx\exhaust_1
 wheels_damage_particles2 = vehiclefx\exhaust_1
-
-particle_bones1                 = kabina
-particle_bones2                 = root
+particle_bones1          = kabina
+particle_bones2          = root
 
 ;-------------------------------------------------------------------------------
 ;------ particle bones ---------------------------------------------------------
@@ -190,34 +187,34 @@ fire_wound_immunity   	= 0.0001
 ;----------------explosion params-----------------------------------------------
 
 [explosion]
-blast					= 1
-blast_r					= 15
-blast_impulse			= 350
-frags		        	= 15
-frags_r					= 30
-frag_hit				= 0.5
-frag_hit_impulse		= 350
-hit_type_blast			= explosion
-hit_type_frag			= fire_wound
-up_throw_factor			= 0.25
-wm_size             	= 0.1
-explode_particles		= a_ufp_particles\flame_grenade
-light_color				= 0.6,0.5,0.3
-light_range				= 15.0
-light_time 				= 0.5
+blast			    = 20
+blast_r			    = 8
+blast_impulse		= 350
+frags		        = 44
+frags_r			    = 20
+frag_hit			= 1.7
+frag_hit_impulse	= 350
+hit_type_blast		= explosion
+hit_type_frag		= fire_wound
+up_throw_factor		= 0.25
+wm_size             = 0.1
+explode_particles	= a_ufp_particles\flame_grenade
+light_color		    = 0.6,0.5,0.3
+light_range		    = 15.0
+light_time 		    = 0.5
 
 ;трассы от осколков
-fragment_speed				= 76
+fragment_speed		        = 76
 fragment_tracer_max_length	= 3
-explode_duration    		= 50			;подолжительность взрыва (с)
 
+explode_duration    = 60          ;подолжительность взрыва (с)
 ;звуки
-snd_explode 			= weapons\heli_explosion
+snd_explode 		= weapons\heli_explosion
 ;wallmarks
-wallmark_section		= explosion_marks
+wallmark_section	= explosion_marks
 
 [explode_effector]
-effect_sect_name= effector_explode_hit
+effect_sect_name = effector_explode_hit
 
 ;-------------------------------------------------------------------------------
 ;------ Others params ----------------------------------------------------------
@@ -302,19 +299,10 @@ wpn_section     = stationary_mgun
 ;------ destroyed part ---------------------------------------------------------
 
 [destroyed]
-physics\vehicles\btr\part\veh_btr_u_01_part1
-physics\vehicles\btr\part\veh_btr_u_01_part2
-physics\vehicles\btr\part\veh_btr_u_01_part3
-physics\vehicles\btr\part\veh_btr_u_01_part4
-physics\vehicles\btr\part\veh_btr_u_01_part5
-physics\vehicles\btr\part\veh_btr_u_01_part6
-physics\vehicles\btr\part\veh_btr_u_01_part7
-physics\vehicles\btr\part\veh_btr_u_01_part8
-physics\vehicles\btr\part\veh_btr_u_01_part9
-physics\vehicles\btr\part\veh_btr_u_01_part10
+physics\vehicles\btr\veh_btr_u_dead
 
 [autoremove_parts]
-time					 = 30
+time					 = 900     ; время удаления обломков (c)
 
 ;-------------------------------------------------------------------------------
 ;--- part impulse_transition ---------------------------------------------------
@@ -322,11 +310,10 @@ time					 = 30
 [impulse_transition_to_parts]
 random_min               = 10.0    ; величина случайно направленного импульса пропорционально массе нового объекта
 random_hit_imp           = 1.0     ; величина случайно направленного импульса пропорционально разрушающему хиту
-;ref_bone                 =         ; кость из по которой определяется скорость для частей у который связь не задана, по умолчанию рут
+;ref_bone                =         ; кость из по которой определяется скорость для частей у который связь не задана, по умолчанию рут
 imp_transition_factor    = 1.0     ; фактор с которым прикладывается хит по исходному объекту ко всем частям
 lv_transition_factor     = 0.5     ; коэффициент передачи линейной скорости
 av_transition_factor     = 0.5     ; коэффициент передачи угловой скорости
 
 ;-------------------------------------------------------------------------------
 ;------ End params -------------------------------------------------------------
-
