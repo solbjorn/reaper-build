@@ -7,20 +7,25 @@ angular_factor		= 0.5
 
 [car_definition]
 time_to_explosion		= 10
-camera_pos				= -0.37, 1.49, -0.2                                                      ; позиция камеры актора в машине
+camera_pos				= -0.4, 1.4, -0.05
+camera_pos_look			= 0.0, 1.8, 0.0
+camera_pos_free			= 0.0, 2.0, 0.0
 driving_wheels			= back_left_wheel,back_right_wheel,front_left_wheel,front_right_wheel   ; ведущие колёса
 steering_wheels			= front_left_wheel,front_right_wheel                                    ; рулевые колёса
 breaking_wheels			= front_left_wheel,front_right_wheel,back_left_wheel,back_right_wheel   ; тормозящие колёса
-doors					= left_door,right_door                                                  ; двери
+doors					= ;left_door,right_door                                                  ; двери
 steer					= stearing_wheel                                                        ; руль
 driver_place			= seat_left                                                             ; место водителя
-exhausts				= exhaust                                                               ; выхлопная труба
+exhausts				= exhaust                                                              ; выхлопная труба
 ;exhaust_particles		= vehiclefx\exhaust_1
+
+trunk_enabled			= true			; багажник
+trunk_bone_group		= back_door		; доступность багажника при открытии двери
 
 ;-------------------------------------------------------------------------------
 ;------ Factory parameters of Engine -------------------------------------------
-fuel_tank         		= 43         	; L
-fuel_consumption  		= 11		    ; L / (100k R); liters per 100 000 rotations
+fuel_tank         		= 80         	; L
+fuel_consumption  		= 70		    ; L / (100k R); liters per 100 000 rotations
 engine_power      		= 60	        ; horse_power (kW=hp*0.808) max power
 max_power_rpm     		= 4500       	; (nominal rpm ) on this rpm value engine power reaches maximum
 max_torque_rpm    		= 4000      	; on this rpm engine torque reaches maximum
@@ -91,15 +96,30 @@ engine_stop					= car\niva_stop
 transmission_switch			= car\car_gearchange
 explosion_sound    			= weapons\heli_explosion
 relative_pos       			= 0,1,1.1
+engine_fail					= car\test_car_fail
+horn_sound					= car\car_horn
+door_open					= car\car_door_open1
+door_close					= car\car_door_close1
 
 ;-------------------------------------------------------------------------------
 ;------ animations params ------------------------------------------------------
 
 [doors]
-open_torque_factor	= 3.		;множитель момента сил для открывания двери (default = 2)
+open_torque_factor	= 2		;множитель момента сил для открывания двери (default = 2)
 
 [animations]
 driver_animation_type	= 0		;тип анимаций актера для данной машины.
+
+;-------------------------------------------------------------------------------
+;------ bone groups ------------------------------------------------------------
+[bone_groups]
+; первая кость у дверей всегда главная (родительская)
+; последним значением может быть число - для того, чтобы указать куда и с какой силой открывать дверь
+; если оно не указано, используется значение по умолчанию для данного типа двери
+left_door			= left_door, left_door_partition_1, left_door_partition_2, left_door_partition_3, left_mirror, left_window, left_window2
+right_door			= right_door, right_door_partition_1, right_door_partition_2, right_door_partition_3, right_mirror, right_window, right_window2
+back_door			= back_door, back_door_partition_1, back_door_partition_2, back_door_partition_3, back_window
+enter				= seat_left, seat_right, stearing_wheel
 
 ;-------------------------------------------------------------------------------
 ;------ damage params ----------------------------------------------------------
@@ -127,16 +147,21 @@ back_left_wheel   		= 5000
 back_right_wheel  		= 5000
 front_left_wheel  		= 5000
 front_right_wheel 		= 5000
-left_door         		= 2000
-right_door        		= 2000
 
 ;-------------------------------------------------------------------------------
 ;------ collisiondamage --------------------------------------------------------
 
 [collision_damage]
-root				= 0.00001
-front_bamper		= 0.00001
-kapot				= 0.00001
+root					= 0.0001
+front_bamper			= 0.001
+kapot					= 0.0001
+left_door				= 0.0001
+right_door				= 0.0001
+back_door				= 0.0001
+back_left_wheel			= 0.00001
+back_right_wheel		= 0.00001
+front_left_wheel		= 0.00001
+front_right_wheel		= 0.00001
 
 ;-------------------------------------------------------------------------------
 ;------ damage bones -----------------------------------------------------------
@@ -146,10 +171,10 @@ kapot				= 0.00001
 ;<hit_scale> 			- коэфф. изменения хита (уменьшения здоровья)
 ;<wound_scale> 			- коэфф. изменения величины открытой раны - незадействован
 
-default       			= 1, -1, 0.1
+default       			= 0.5, -1, 0.0 ;1, -1, 0.1
 
 [immunities]
-burn_immunity         	= 0.005
+burn_immunity         	= 0.005       ;коэффициенты иммунитета
 strike_immunity       	= 0.0001
 shock_immunity        	= 0.0001
 wound_immunity        	= 0.005
@@ -240,6 +265,7 @@ not_collide_parts		= 1
 ;------ destroyed part ---------------------------------------------------------
 
 [destroyed]
+physics\vehicles\niva\veh_niva_u_01_br
 
 [autoremove_parts]
 time					 = 900     ; время удаления обломков (c)

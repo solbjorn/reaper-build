@@ -1,14 +1,19 @@
 RvP()	-- init Lua extension
 
-set_static_rescale_factor(device().height / device().width / 0.75)
+set_static_rescale_factor(screen.height / screen.width / 0.75)
+_G.refactor = get_static_rescale_factor()
 
 -- X-ray extensions callbacks
 -- CActor
 callback.on_key_press                 = 123
 callback.on_key_release               = 124
+callback.on_mouse_wheel               = 126
+callback.on_mouse_move                = 127
 callback.on_belt                      = 130
 callback.on_ruck                      = 131
 callback.on_slot                      = 132
+callback.on_attach_vehicle            = 137
+callback.on_detach_vehicle            = 139
 -- CTorch
 callback.on_switch_torch              = 134
 -- CEntityAlive
@@ -23,6 +28,8 @@ key_bindings.kCONTACTS		= 55
 _G.extensions_flags = {
 	key_press        = 1,
 	key_release      = 2,
+	mouse_wheel      = 8,
+	mouse_move       = 16,
 	all              = 31
 }
 

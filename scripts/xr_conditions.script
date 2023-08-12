@@ -1188,17 +1188,6 @@ end
 -- Special for Radar
 -------------------------------------------------------------------------------------
 
-function check_time_interval(fh, fm, th, tm)
-	local from = game.CTime():set_table({ hour = fh, ["min"] = fm })
-	local to = game.CTime():set_table({ hour = th, ["min"] = tm })
-	local cur = game.CTime():set_table({
-		hour	= level.get_time_hours(),
-		["min"]	= level.get_time_minutes()
-	})
-
-	return cur >= from and cur < to
-end
-
 local rad_antenna_state = true
 
 function rad_pass_time(actor, npc)
@@ -1236,26 +1225,6 @@ end
 
 function actor_on_level(actor, npc, p)
 	return p[1] == level.name()
-end
-
-function treasure_exist(actor, npc, p)
-	return true
-end
-
-function can_send_tutorial(actor, npc, p)
-	if Actor:is_talking() then
-		return false
-	end
-	if game.has_active_tutorial() then
-		return false
-	end
-	if has_info("ui_inventory") then
-		return false
-	end
-	if has_info("ui_pda") then
-		return false
-	end
-	return true
 end
 
 ---------------------------------------------------------------ARENA_EXTENSION_MOD------------------------------------------------------------------
@@ -1315,3 +1284,19 @@ function aem_on_place(actor, npc)
 end
 
 ---------------------------------------------------------------ARENA_EXTENSION_MOD------------------------------------------------------------------
+
+function car_engaged(actor, npc, p)
+	local obj = level_story_object(p[1])
+	if not obj then return false end
+
+	local car = obj:get_car()
+	return car ~= nil and car:engaged()
+end
+
+function car_destroyed(actor, npc, p)
+	local obj = level_story_object(p[1])
+	if not obj then return false end
+
+	local car = obj:get_car()
+	return car ~= nil and car:GetfHealth() <= 0
+end

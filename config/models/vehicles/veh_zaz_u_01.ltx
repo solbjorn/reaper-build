@@ -7,21 +7,26 @@ angular_factor    		= 0.5
 
 [car_definition]
 time_to_explosion		= 10
-camera_pos        		= -0.33, 1.35, 0.06                                                      ; позиция камеры актора в машине
+camera_pos        		= -0.37, 1.2, 0.26
+camera_pos_look			= 0.0, 1.6, 0.26
+camera_pos_free			= 0.0, 1.7, 0.0
 driving_wheels    		= back_left_wheel,back_right_wheel 					                    ; ведущие колёса
 steering_wheels   		= front_left_wheel,front_right_wheel					                ; рулевые колёса
 breaking_wheels   		= back_left_wheel,back_right_wheel,front_left_wheel,front_right_wheel 	; тормозящие колёса
-doors             		= left_door								                                ; двери
+doors             		= ;left_door;,front_door,back_door	; двери
 steer             		= stearing_wheel 							                            ; руль
 driver_place      		= seat_left 								                            ; место водителя
 exhausts          		= exhaust 								                                ; выхлопная труба
 exhaust_particles 		= vehiclefx\exhaust_1
 damage              	= damage_bones
 
+trunk_enabled			= true			; багажник
+trunk_bone_group		= front_door	; доступность багажника при открытии двери
+
 ;-------------------------------------------------------------------------------
 ;------ Factory parameters of Engine -------------------------------------------
-fuel_tank         		= 30        ; L
-fuel_consumption  		= 6		    ; L / (100k R); liters per 100 000 rotations
+fuel_tank         		= 80         	; L
+fuel_consumption  		= 70		    ; L / (100k R); liters per 100 000 rotations
 engine_power      		= 20       	; horse_power (kW=hp*0.808) max power
 max_power_rpm     		= 3000      ; (nominal rpm ) on this rpm value engine power reaches maximum, must be within every diapason 	- shift down/ shift up
 max_torque_rpm    		= 2000     	; on this rpm engine torque reaches maximum
@@ -83,6 +88,10 @@ engine_stop				    = car\zaz_off
 transmission_switch			= car\gear_middle
 explosion_sound    			= weapons\heli_explosion
 relative_pos       			= 0.0,1,-1.5
+engine_fail					= car\test_car_fail
+horn_sound					= car\car_horn
+door_open					= car\car_door_open
+door_close					= car\car_door_close
 
 ;-------------------------------------------------------------------------------
 ;------ animations params ------------------------------------------------------
@@ -92,6 +101,17 @@ open_torque_factor 		= 2	;множитель момента сил для отк
 
 [animations]
 driver_animation_type 	= 0	;тип анимаций актера для данной машины.
+
+;-------------------------------------------------------------------------------
+;------ bone groups ------------------------------------------------------------
+[bone_groups]
+; первая кость у дверей всегда главная (родительская)
+; последним значением может быть число - для того, чтобы указать куда и с какой силой открывать дверь
+; если оно не указано, используется значение по умолчанию для данного типа двери
+left_door			= left_door, -3
+back_door			= trunk, trunk1, trunk2, trunk3
+front_door			= kapot, kapot1, kapot2
+enter				= seat_left, seat_left_back, seat_right, seat_right_back, stearing_wheel
 
 ;-------------------------------------------------------------------------------
 ;------ damage params ----------------------------------------------------------
@@ -119,15 +139,17 @@ back_left_wheel   		= 3000
 back_right_wheel  		= 3000
 front_left_wheel  		= 3000
 front_right_wheel 		= 3000
-left_door         		= 3000
 
 ;-------------------------------------------------------------------------------
 ;------ collisiondamage --------------------------------------------------------
 
 [collision_damage]
 root                  	= 0.001
-front_bamper          	= 0.0001
-left_door             	= 0.0001
+front_bamper          	= 0.001
+gitter                	= 0.001
+left_door             	= 0.001
+kapot            		= 0.001
+trunk             		= 0.001
 back_left_wheel       	= 0.0001
 back_right_wheel      	= 0.0001
 front_left_wheel      	= 0.0001

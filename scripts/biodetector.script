@@ -58,8 +58,8 @@ local dot_size = 3
 local dots = {}
 local creatures = {}
 local d = 128
-local koef_x = 0
-local koef_x_old = 0
+local x_add = refactor < 1 and 50 or 24
+local x_add_d = refactor < 1 and 32 or 0
 local a,s,c,b,xa = 0,0,1,0,0
 local level_object_by_id = level.object_by_id
 local ms, mc, math_atan2 = math.sin, math.cos, math.atan2
@@ -94,24 +94,15 @@ function update()
 		return
 	end
 
-	-- скорректируем ширину под ш\ф
-	koef_x = (device().height/device().width) / (768/1024)
-	if koef_x ~= koef_x_old then
-		koef_x_old = koef_x
-		hud:RemoveCustomStatic("biomap_sweep")
-		hud:RemoveCustomStatic("biomap")
-		biomap = nil
-		dots={}
-	end
 	if not biomap then
 		biomap = hud:AddCustomStatic("biomap"):wnd()
-		biomap:SetWndPos(1024 + 3 - biomap_width*koef_x,1)
-		biomap:SetWidth(biomap_width*koef_x)
+		biomap:SetWndPos(1024 + x_add - biomap_width,1 - 24)
+		biomap:SetWidth(biomap_width)
 
 		if biomap_sweep_enabled then
 			biomap_sweep = hud:AddCustomStatic("biomap_sweep"):wnd()
 			biomap_sweep:SetColor(GetARGB(100,68,255,96)) -- устанавливаем цвет
-			biomap_sweep:Init(1024 + 3 - (biomap_width + biomap_sweep_width)*koef_x/2,2 + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width*koef_x,biomap_sweep_width)
+			biomap_sweep:Init(1024 + x_add - (biomap_width + biomap_sweep_width)/2,2 - 24 + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width,biomap_sweep_width)
 		end
 	end
 
@@ -127,14 +118,6 @@ function update()
 
 	if biomap_sweep_enabled then
 		biomap_sweep:SetHeading(angle) -- поворачиваем статик
-
-		if koef_x<1 then -- коррекция волны на ш/ф
-			local delta = ms(angle)
-			delta = biomap_sweep_width*(koef_x-1)          --(убрал под 1.0006 alen-fantom)
-			local delta_x = biomap_sweep_width*koef_x - delta
-			local delta_y = biomap_sweep_width + delta
-			biomap_sweep:Init(1024 + 3 - biomap_width*koef_x/2 - delta_x/2,2 + biomap_width/2 - delta_y/2,delta_x,delta_y)
-		end
 	end
 
 	if fading then
@@ -185,13 +168,13 @@ function dot:__init(o,is_stalker)
 	self.need_show, self.color = self:get_color(o, is_stalker)
 	self.a = fading and (self.o_id==0 and 255 or 0) or 255
 	self.st = CUIStatic()
-	self.st:Init(1024,0,dot_size,dot_size)
+	self.st:Init(1024, 0, dot_size * refactor, dot_size)
 	self.st:InitTexture("biomap\\white_dot")
 	self.st:SetStretchTexture(true)
 	hud:GetCustomStatic("biomap"):wnd():AttachChild(self.st)
 	self.st:SetAutoDelete(true)
 	self.cnt = 0
-	self.st:SetWndPos(d * koef_x - 1,d)
+	self.st:SetWndPos(x_add_d + d * refactor - 1,d)
 	self.st:SetColor(GetARGB(self.a,self.color[1],self.color[2],self.color[3]))
 end
 
@@ -214,7 +197,7 @@ function dot:draw(dir,obj_alive)
 		end
 		local vx,vz = dir.x/max_dist * screen_max_dist , -dir.z/max_dist * screen_max_dist
 		local x,y = vx * c - vz * s , vx * s + vz * c
-		self.st:SetWndPos( (x + d)*koef_x - 1, y + d)
+		self.st:SetWndPos(x_add_d + (x + d)*refactor - 1, y + d)
 		if self.o_id == 0 then self.cnt = 100000 return end
 		-------- угасание точек -------
 		if fading then

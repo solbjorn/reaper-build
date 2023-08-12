@@ -48,6 +48,8 @@ function action_car:__init(obj, storage)
 	self.car = self.object:get_car()
 	self.st = storage
 	self.friends = {}
+
+	self.nextupd_1000 = 0
 end
 
 function action_car:reset_scheme(loading)
@@ -166,7 +168,7 @@ function action_car:reset_scheme(loading)
 	    if self.hasWeapon then
 	        self:set_shooting(self.state_shooting)
 
-	        local n, obj = 0
+	        local n, obj
 	        if self.st.fire_target == "points" then
 	            self.state_firetarget = state_firetarget_points
 	        else
@@ -521,7 +523,6 @@ function action_car:change_fire_pts()
 
     if not self.path_fire then return end
 
-    local fire_idx
     if self.target_walk_pt >= 0 then
 	    -- «начение флагов огневых точек, котые будем искать:
 	    local fire_flags = self.path_walk_info[self.target_walk_pt].flags
@@ -530,8 +531,9 @@ function action_car:change_fire_pts()
 		    return
 	    end
 
+        local this_val
 	    for fire_idx = 0, self.path_fire:count() - 1 do
-		    local this_val = self.path_fire_info[fire_idx].flags
+		    this_val = self.path_fire_info[fire_idx].flags
 		    if this_val:equal(fire_flags) then
 			    table.insert(self.fire_pt_arr, fire_idx)
 			    self.fire_pt_count = self.fire_pt_count + 1
@@ -875,6 +877,16 @@ function action_car:fast_update()
 		end
 
 		local target_obj = self:get_target_obj()
+
+		if self.nextupd_1000 <= time_real_ms then
+			if target_obj and self.target_id == 0 and self.car:IsObjectVisible(target_obj) and
+			   self.object:position():distance_to(target_obj:position()) < self.st.fire_range * 2 then
+				amk.enemy_see_actor(self.object, true)
+			end
+
+			self.nextupd_1000 = time_real_ms + 1000
+		end
+
 	    if self.state_firetarget == state_firetarget_points then
         if self.fire_pt_count > 0 and self.state_cannon ~= state_cannon_stop then
             if self.state_cannon == state_cannon_delay then
@@ -903,8 +915,12 @@ function action_car:fast_update()
             if self.car:CanHit() then
                 if self.state_shooting == state_none then
                   self.state_shooting = state_shooting_on
+						news_main.on_btr_combat(self.object)
 					else
                   self:set_shooting(self.state_shooting)
+						if self.target_id == 0 then
+							amk.npc_shot_actor(self.object)
+						end
               end
           else
               if self.state_shooting ~= state_none then
@@ -965,19 +981,17 @@ function action_car:check_friends_on_fire_line(target_obj)
 		local self_pos = self.object:position()
 		-- провер€ем позиции солдат и текущего сектора обстрела
 		local tmp
-		for a,v in pairs(self.friends) do
+		for a, is_btr in pairs(self.friends) do
 			tmp = level_object(a)
-			if tmp
-				and (tmp:is_stalker() and tmp:alive())
-				or v == "vehicle_btr"
-			then
+			if tmp and ((is_btr and tmp:get_car():GetfHealth() > 0) or
+				    (tmp:is_stalker() and tmp:alive())) then
 				local pos_soldier = tmp:position()
-				local radius = (v == "vehicle_btr") and 4 or 1.7
-				local friend_dist=self_pos:distance_to(pos_soldier)-radius
+				local radius = is_btr and 4 or 1.7
+				local friend_dist = self_pos:distance_to(pos_soldier) - radius
 
 				if friend_dist < target_dist then
 					-- считаем попадает ли текущий солдат в сектор обстрела
-					local dir_soldier = vector():set(pos_soldier.x - pos.x, pos_soldier.y - pos.y , pos_soldier.z - pos.z)
+					local dir_soldier = vector():set(pos_soldier.x - pos.x, pos_soldier.y - pos.y, pos_soldier.z - pos.z)
 					local x = dir_soldier.x*dir_aim.x+dir_soldier.z*dir_aim.z
 					-- повернули систему координат
 					local y = -dir_soldier.z*dir_aim.x+dir_soldier.x*dir_aim.z
@@ -997,13 +1011,14 @@ function action_car:update_friends_and_target()
 	self.friends = {}
 
 	local obj
+	local self_id = self.object:id()
 	local self_pos = self.object:position()
-	for k,v in pairs(amk_mod.btrs_friends) do
+	for k, is_btr in pairs(amk_mod.btrs_friends) do
 		obj = level_object(k)
-		if obj and ( (obj:is_stalker() and obj:character_community()=="military" and obj:alive()) or
-		(obj:section()=="vehicle_btr" and obj:id()~=self.object:id()) ) and
-		self.fire_range_sqr>self_pos:distance_to_sqr(obj:position()) then
-			self.friends[k] = obj:section()
+		if obj and ((is_btr and obj:id() ~= self_id and obj:get_car():GetfHealth() > 0) or
+			    (obj:is_stalker() and obj:character_community() == "military" and obj:alive())) and
+		   self.fire_range_sqr > self_pos:distance_to_sqr(obj:position()) then
+			self.friends[k] = is_btr or false
 		end
 	end
 end

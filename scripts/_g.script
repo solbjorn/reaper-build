@@ -1,5 +1,8 @@
 if not jit then fail("JIT is nil") end
 
+screen = device()
+refactor = 1
+
 prefetch("sa_init")
 prefetch('xr_extensions')
 
@@ -24,7 +27,6 @@ end
 config = system_ini()
 console = get_console()
 graph = game_graph()
-screen = device()
 
 -- Следующие singletone классы задаются в start_game_callback
 AI = nil
@@ -90,6 +92,7 @@ end
 
 function after_objs_load_callback() --калбек вызывается после загрузки объектов из сейва
 	init_container()
+	level.show_indicators()
 end
 
 -- запущена ли игра
@@ -117,6 +120,9 @@ function get_value(var, default, delete)
 end
 function del_value(var)
 	return Variable:del(var)
+end
+function has_value(var)
+	return Variable:has(var)
 end
 
 -- Инвентарь ГГ, объявляется в bind_actor.net_spawn

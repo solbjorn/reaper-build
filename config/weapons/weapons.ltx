@@ -1440,7 +1440,7 @@ blast_impulse		= 210
 ;delete
 blast_impulse_factor = 1
 
-frags				= 5
+frags				= 10
 frags_r				= 15
 frag_hit			= 0.75
 frag_hit_impulse	= 150
@@ -1461,7 +1461,7 @@ light_time 		         = 1.5
 ;трассы от осколков
 fragment_speed				= 100
 
-explode_duration		 = 5		;подолжительность взрыва (с)
+explode_duration		 = 7	;5		;подолжительность взрыва (с)
 ;wallmarks
 wallmark_section		= explosion_marks
 ;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
@@ -1511,7 +1511,7 @@ blast_impulse		= 210
 ;delete
 blast_impulse_factor = 1
 
-frags				= 5
+frags				= 8
 frags_r				= 15
 frag_hit			= 0.75
 frag_hit_impulse	= 150
@@ -1532,7 +1532,7 @@ light_time 		         = 1
 ;трассы от осколков
 fragment_speed				= 100		;скорость осколков (м/с)
 
-explode_duration		 = 5		;подолжительность взрыва (с)
+explode_duration		 = 6	;5		;подолжительность взрыва (с)
 ;wallmarks
 wallmark_section		= explosion_marks
 
@@ -1552,7 +1552,7 @@ radiation_immunity		= 1.0
 telepatic_immunity		= 1.0
 chemical_burn_immunity	= 1.0
 explosion_immunity		= 1.0
-fire_wound_immunity		= 6.0
+fire_wound_immunity		= 0.7
 
 [explosive_barrel_low]:identity_immunities,delayed_action_fuse
 
@@ -1582,7 +1582,7 @@ blast_impulse		= 210
 ;delete
 blast_impulse_factor = 1
 
-frags				= 5
+frags				= 8	;5
 frags_r				= 15
 frag_hit			= 0.75
 frag_hit_impulse	= 150
@@ -1618,7 +1618,7 @@ immunities_sect			= explosive_barrel_low_immunities_sect
 [explosive_barrel_low_immunities_sect]
 ;коэффициенты для попаданий различными типами хитов
 burn_immunity			= 1
-strike_immunity			= 1
+strike_immunity			= 5	;1
 shock_immunity			= 1
 wound_immunity			= 1
 radiation_immunity		= 1
@@ -1650,15 +1650,15 @@ can_take			= false
 cost				= 500
 ;-----------------------------------------------------------------------------------
 blast				= 1.50
-blast_r				= 8
-blast_impulse		= 210
+blast_r				= 10	;8
+blast_impulse		= 240
 ;delete
 blast_impulse_factor = 1
 
-frags				= 5
+frags				= 10	;5
 frags_r				= 15
 frag_hit			= 0.75
-frag_hit_impulse	= 150
+frag_hit_impulse	= 200	;150
 
 hit_type_blast		= explosion
 hit_type_frag		= burn
@@ -1676,7 +1676,7 @@ light_time 		         = 0.85
 ;трассы от осколков
 fragment_speed				= 100		;скорость осколков (м/с)
 
-explode_duration		 = 5		;подолжительность взрыва (с)
+explode_duration		 = 9	;5		;подолжительность взрыва (с)
 
 ;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
 ;звуки
@@ -1689,7 +1689,7 @@ wallmark_section		= explosion_marks
 [explosive_barrel_immunities_sect]
 ;коэффициенты для попаданий различными типами хитов
 burn_immunity			= 1
-strike_immunity			= 1
+strike_immunity			= 5	;1
 shock_immunity			= 1
 wound_immunity			= 1
 radiation_immunity		= 1
@@ -1707,18 +1707,20 @@ $prefetch			= 16
 class				= II_EXPLO
 cform				= skeleton
 visual				= physics\balon\kanistra.ogf
-inv_name			= kanistra
-inv_name_short		= kanistra
-inv_weight			= .1
+inv_name			= Fuel_canister
+inv_name_short		= Fuel_canister
+inv_weight			= 8
+description			= enc_equipment_fuel_canister1
 
-inv_grid_width		= 1
-inv_grid_height		= 1
-inv_grid_x			= 9
-inv_grid_y			= 9
+inv_grid_width		= 2
+inv_grid_height		= 2
+inv_grid_x			= 8
+inv_grid_y			= 36
 ;вещь невозможно подобрать
-can_take			= false
+can_take			= true
 
-cost				= 500
+cost				= 2500
+fuel_volume			= 40 ; литров в канистре
 ;-----------------------------------------------------------------------------------
 blast				= 1.50
 blast_r				= 8
@@ -1729,7 +1731,7 @@ blast_impulse_factor = 1
 frags				= 5
 frags_r				= 15
 frag_hit			= 0.75
-frag_hit_impulse	= 150
+frag_hit_impulse	= 100	;150
 
 hit_type_blast		= explosion
 hit_type_frag		= burn
@@ -1760,7 +1762,7 @@ wallmark_section		= explosion_marks
 [explosive_mobiltank_immunities_sect]
 ;коэффициенты для попаданий различными типами хитов
 burn_immunity			= 1.0
-strike_immunity			= 1.0
+strike_immunity			= 5	;1.0
 shock_immunity			= 1.0
 wound_immunity			= 1.0
 radiation_immunity		= 1.0
@@ -1798,10 +1800,10 @@ blast_impulse		= 210
 ;delete
 blast_impulse_factor = 1
 
-frags				= 5
+frags				= 8	;5
 frags_r				= 8
 frag_hit			= 0.55
-frag_hit_impulse	= 150
+frag_hit_impulse	= 250	;150
 
 hit_type_blast		= chemical_burn ;explosion
 hit_type_frag		= burn
@@ -1832,15 +1834,15 @@ wallmark_section		= explosion_marks
 
 [dinamit_immunities_sect]
 ;коэффициенты для попаданий различными типами хитов
-burn_immunity			= 0.0
-strike_immunity			= 0.0
-shock_immunity			= 0.0
+burn_immunity			= 0.5
+strike_immunity			= 2	;0.5
+shock_immunity			= 0.8
 wound_immunity			= 0.0
 radiation_immunity		= 0.0
 telepatic_immunity		= 0.0
 chemical_burn_immunity	= 1.0
-explosion_immunity		= 0.0
-fire_wound_immunity		= 0.0
+explosion_immunity		= 0.5
+fire_wound_immunity		= 0.8	;0.5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;	WEAPON ADDON
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2372,9 +2374,9 @@ inv_name		= ammo-arbolt
 inv_name_short	= ammo-arbolt
 inv_weight		= .05
 
-inv_grid_width		= 1
-inv_grid_height		= 3
-inv_grid_x			= 30
+inv_grid_width		= 3
+inv_grid_height		= 1
+inv_grid_x			= 28
 inv_grid_y			= 23
 
 k_dist			= 1.7

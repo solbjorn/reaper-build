@@ -78,22 +78,35 @@ function item_drop(obj)
 	grenade_belt.on_item_drop(obj)
 end
 
+local detectors = table.tohash({
+	"detector_simple", "detector_advances",
+	"detector_elite", "detector_elite_sak"
+})
+
 function item_drop_from_belt(obj)
 	Inventory:on_item_move_from_belt(obj)
-	if obj:section() == "bioradar" then
+	belt_redraw()
+
+	local sect = obj:section()
+	if detectors[sect] then
+		detector_from_belt()
+	elseif sect == "bioradar" then
 		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
-	belt_redraw()
 
 	bolt_ending.on_item_drop_from_belt(obj, true)
 end
 
 function item_belt(obj)
 	Inventory:on_item_belt(obj)
-	if obj:section() == "bioradar" then
+	belt_redraw()
+
+	local sect = obj:section()
+	if detectors[sect] then
+		ui_rad.switch(true)
+	elseif sect == "bioradar" then
 		biodetector.switch(true)
 	end
-	belt_redraw()
 
 	bolt_ending.on_item_belt(obj)
 	grenade_belt.on_item_belt(obj)
@@ -101,10 +114,14 @@ end
 
 function item_move_from_belt(obj)
 	Inventory:on_item_move_from_belt(obj)
-	if obj:section() == "bioradar" then
+	belt_redraw()
+
+	local sect = obj:section()
+	if detectors[sect] then
+		detector_from_belt()
+	elseif sect == "bioradar" then
 		biodetector.switch(Inventory:on_belt("bioradar") ~= nil)
 	end
-	belt_redraw()
 
 	bolt_ending.on_item_drop_from_belt(obj)
 end
@@ -152,6 +169,12 @@ function info(info_id, ui_info)
 	end
 end
 
+function attach_vehicle(obj)
+	if has_map_spot(obj:id(), "green_location") > 0 then
+		del_map_spot(obj:id(), "green_location")
+	end
+end
+
 function new_game()
 	level_tasks.add_lchanger_location()
 	load_del_bolt = true
@@ -164,7 +187,7 @@ function new_game()
 	news_main.new_game()
 	trade_manager.new_game()
 
-	wake_up()
+	reap_misc.wake_up()
 end
 
 function actor_save(packet)
@@ -256,7 +279,8 @@ end
 function wpn_hide_disable(info_id)
 	local act = Actor:active_slot()
 	if act < 10 then
-		if (act == 1 or act == 2) and Actor:active_item():get_ammo_in_magazine() == 0 then
+		local item = (act == 1 or act == 2) and Actor:active_item()
+		if item and item:get_ammo_in_magazine() == 0 then
 			level.parked_call(function()
 				Actor:activate_slot(-1)
 			end)
@@ -320,37 +344,9 @@ end
  * HUD
 --]]---------------------------------------------------------------------------
 
-local gg_kick = config:r_u32_ex("gg_kick", "enabled", 0) > 0
 local sleep_cs = nil
 
-function hit_effectors(amount)
-	if gg_kick ~= true or amount <= 0.05 or not Actor:alive() then
-		return
-	end
-
-	level.add_pp_effector("amk_shoot.ppe", effector_ids.hit, false)
-	level.set_pp_effector_factor(effector_ids.hit, amount * 100)
-
-	if amount <= 0.3 then
-		return
-	end
-
-	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
-	local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
-	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
-
-	if math.random() < (amount / 2) then
-		drop_weapon()
-	end
-end
-
-function wake_up()
-	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
-	level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
-	level.add_pp_effector("total_recall.ppe", 2008, false)
-	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
-	level.add_cam_effector("camera_effects\\fatigue.anm", 27, false, "")
-end
+hit_effectors = reap_misc.hit_effectors
 
 function safe_place()
 	local need_hit, khit = amk_mod.blowout_khit()
@@ -366,6 +362,17 @@ function safe_place()
 			sleep_cs = nil
 		end
 	end
+end
+
+function detector_from_belt()
+	for sect, v in pairs(detectors) do
+		if Inventory:on_belt(sect) ~= nil then
+			ui_rad.switch(true)
+			return
+		end
+	end
+
+	ui_rad.switch(false)
 end
 
 --[[---------------------------------------------------------------------------
@@ -451,14 +458,16 @@ function belt_redraw()
 	local item, static
 	local x, y, w, h
 	local cur_x = 25
+	local sta_w
 
 	for i = 1, #belt_tbl do
 		item = belt_tbl[i]
 		w = item.width or config:r_u32_cache(item.sect, "inv_grid_width")
+		sta_w = 25 * w * refactor
 
 		static = CUIStatic()
-		static:Init(path, cur_x, 640, 19 * w, 25)
-		cur_x = cur_x + 19 * w + 1
+		static:Init(path, cur_x, 640, sta_w, 25)
+		cur_x = cur_x + sta_w + 1
 
 		x = config:r_u32_cache(item.sect, "inv_grid_x") * 50
 		y = config:r_u32_cache(item.sect, "inv_grid_y") * 50
@@ -807,6 +816,26 @@ function fix_all_spawn()
 	for i = 1, #remove_items do
 		release(remove_items[i])
 	end
+end
+
+function hit_by_actor(who)
+	if who == nil then
+		return -1
+	end
+
+	if type(who) == "userdata" then
+		who = who.section_name and who.id or who:id()
+	end
+	if who == 0 or who == -1 then
+		return who
+	end
+
+	local car_mgr = sa_cars.get_car_mgr()
+	if car_mgr and car_mgr.object:id() == who then
+		return 0
+	end
+
+	return who
 end
 
 function story_name(sid)

@@ -317,7 +317,7 @@ function act_state_mgr_end:execute()
 				self.st.look_object = nil
 				return
 			end
-			if self.object:see(look_object) and
+			if (self.object:see(look_object) or look_object:is_car() or look_object:is_helicopter()) and
 				(not look_object:is_stalker() or
 				self.object:relation(look_object) == game_object_enemy) and
 				look_object:alive() == true

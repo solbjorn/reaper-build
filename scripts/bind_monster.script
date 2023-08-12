@@ -109,11 +109,15 @@ function generic_object_binder:update(delta)
 
 	if time_real_ms >= self.next_update_1000 then
 		if self.object.health>0.03 then
-			if self.object:see(Actor) and Actor:position():distance_to(self.object:position())<40 then
-				amk.enemy_see_actor(self.object,"monster")
+			local dist = Actor:position():distance_to(self.object:position())
+			if dist < 40 then
+				local enemy = self.object:get_enemy()
+				if enemy and enemy:id() == 0 and self.object:see(enemy) then
+					amk.enemy_see_actor(self.object)
+				end
 			end
-			if Actor:see(self.object) and Actor:position():distance_to(self.object:position())<80 then
-				amk.actor_see_enemy(self.object,"monster")
+			if dist < 80 and Actor:see(self.object) then
+				amk.actor_see_enemy(self.object)
 			end
 		end
 		self.next_update_1000 = time_real_ms + 1000
@@ -174,7 +178,7 @@ end
 function generic_object_binder:death_callback(victim, who)
 	if not self.object then return end
 
-	if who:id() == 0 then
+	if reap.hit_by_actor(who) == 0 then
 		xr_statistic.addKillCount(self.object)
 		freeplay_stats:check_monster_killed_count(self.object)
 

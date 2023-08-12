@@ -1,65 +1,53 @@
-[vehicle_btr]
-GroupControlSection		= spawn_group
-$spawn					= "vehicles\vehicle_btr"
-class					= SCRPTCAR
-cform                   = skeleton
-visual                  = physics\vehicles\btr\veh_btr_u_01.ogf
-actor_visual			= physics\vehicles\btr\veh_btr_u_01.ogf
-ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
+;-------------------------------------
+; CARS
+;-------------------------------------
 
-[vehicle_kamaz]
+[car_base]
 GroupControlSection		= spawn_group
-$spawn 					= "vehicles\vehicle_kamaz"
 class					= SCRPTCAR
-cform           		= skeleton
-visual          		= physics\vehicles\kamaz\veh_kamaz_u_01.ogf
-actor_visual			= physics\vehicles\kamaz\veh_kamaz_u_01.ogf
+cform					= skeleton
 ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
+custom_data				= scripts\collide_ignore_ragdoll.ltx
+script_binding			= sa_cars.init
 
-[vehicle_zaz]
-GroupControlSection		= spawn_group
-$spawn 					= "vehicles\vehicle_zaz"
-class					= SCRPTCAR
-cform           		= skeleton
-visual          		= physics\vehicles\zaz\veh_zaz_u_01.ogf
-actor_visual			= physics\vehicles\zaz\veh_zaz_u_01.ogf
-ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
+[vehicle_raf]:car_base
+$spawn					= "vehicles\vehicle_raf"
+visual					= physics\vehicles\raf\veh_raf.ogf
+actor_visual			= physics\vehicles\raf\veh_raf.ogf
 
-[vehicle_uaz]
-GroupControlSection		= spawn_group
-$spawn 					= "vehicles\vehicle_uaz"
-class					= SCRPTCAR
-cform           		= skeleton
-visual          		= physics\vehicles\uaz\veh_uaz_u_01.ogf
-actor_visual			= physics\vehicles\uaz\veh_uaz_u_01.ogf
-ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
-
-[vehicle_niva]
-GroupControlSection		= spawn_group
-$spawn 					= "vehicles\vehicle_niva"
-class					= SCRPTCAR
-cform           		= skeleton
-visual          		= physics\vehicles\niva\veh_niva_u_01.ogf
+[vehicle_niva_01]:car_base
+$spawn					= "vehicles\vehicle_niva_01"
+visual					= physics\vehicles\niva\veh_niva_u_01.ogf
 actor_visual			= physics\vehicles\niva\veh_niva_u_01.ogf
-ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
 
-[vehicle_tr13]
-GroupControlSection		= spawn_group
-$spawn 					= "vehicles\vehicle_tr13"
-class					= SCRPTCAR
-cform           		= skeleton
-visual          		= physics\vehicles\tr13\veh_tr13_u_01.ogf
+[vehicle_niva_02]:car_base
+$spawn					= "vehicles\vehicle_niva_02"
+visual					= physics\vehicles\niva\veh_niva_u_02.ogf
+actor_visual			= physics\vehicles\niva\veh_niva_u_02.ogf
+
+[vehicle_btr_02]:car_base
+$spawn					= "vehicles\vehicle_btr"
+visual					= physics\vehicles\btr\veh_btr_u_02.ogf
+actor_visual			= physics\vehicles\btr\veh_btr_u_02.ogf
+
+[vehicle_zaz_01]:car_base
+$spawn					= "vehicles\vehicle_zaz_01"
+visual					= physics\vehicles\zaz\veh_zaz_u_01.ogf
+actor_visual			= physics\vehicles\zaz\veh_zaz_u_01.ogf
+
+[vehicle_kamaz]: car_base
+visual				= physics\vehicles\kamaz\veh_kamaz_u_01.ogf
+actor_visual			= physics\vehicles\kamaz\veh_kamaz_u_01.ogf
+
+[vehicle_tr13]: car_base
+visual				= physics\vehicles\tr13\veh_tr13_u_01.ogf
 actor_visual			= physics\vehicles\tr13\veh_tr13_u_01.ogf
-ef_equipment_type		= 3
-ph_mass			 		= 100000
-script_binding      	= bind_physic_object.init
+
+[vehicle_uaz]: car_base
+visual				= physics\vehicles\uaz\veh_uaz_u_01.ogf
+actor_visual			= physics\vehicles\uaz\veh_uaz_u_01.ogf
+
+[vehicle_btr]: car_base
+visual				= physics\vehicles\btr\veh_btr_u_01.ogf
+actor_visual			= physics\vehicles\btr\veh_btr_u_01.ogf
+script_binding			= bind_physic_object.init

@@ -10,11 +10,21 @@ local math_floor = math.floor
 --]]---------------------------------------------------------------------------
 
 effector_ids.snd_shock = 3015
+
 actor_flags.alive = false
+actor_flags.in_car = false
 
 --[[---------------------------------------------------------------------------
  * Ini
 --]]---------------------------------------------------------------------------
+
+ini_file.r_vector_ex = function(ini, section, line, def)
+	if not ini:line_exist(section, line) then
+		return def
+	end
+
+	return ini:r_vector(section, line)
+end
 
 ini_file.r_bool_cache = function(ini, section, line, def)
 	local cache = ini.cache
@@ -201,7 +211,10 @@ local methods = {
 	"is_anomaly",
 	"is_artefact",
 	"is_binoculars",
+	"is_btr",
+	"is_car",
 	"is_grenade",
+	"is_helicopter",
 	"is_knife",
 	"is_monster",
 	"is_stalker",
@@ -239,9 +252,8 @@ game_object.modify_netpk = function(obj, ...)
 	return netpacket:modify(server_object(obj), ...)
 end
 
-game_object.is_stalker = function(obj)
-	return iam_any.is_stalker(obj)
-end
+game_object.is_btr = iam_any.is_btr
+game_object.is_stalker = iam_any.is_stalker
 
 game_object.is_story_object = function(obj)
 	return obj:story_id() < 4294967295

@@ -235,6 +235,8 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
   -- added by xStream for AMK miniSDK
   amk.on_npc_hit(obj, amount, local_direction, who, bone_index)
   -- end of addition
+
+	sa_callbacks.npc_hit(obj, amount, local_direction, who, bone_index)
 end
 
 function motivator_binder:death_callback(victim, who)
@@ -248,7 +250,7 @@ function motivator_binder:death_callback(victim, who)
 
 	local community = self_object:character_community()
 
-  if who:id() == 0 then
+	if reap.hit_by_actor(who) == 0 then
 		if community == "freedom" then
 			if Actor:character_community() == "actor_freedom" then
 				Actor:set_character_community("actor", 0, 0)
@@ -387,10 +389,11 @@ function motivator_binder:update(delta)
 	end
 
 	if time_real_ms > self.update_time then
-                        if amk.get_npc_relation(self_object,Actor)=="enemy" and self_object:alive() and self_object.health>0.01 then
-                                        if self_object:see(Actor) then
-                                                amk.enemy_see_actor(self_object,"npc")
-                                        end
+		if amk.get_npc_relation(self_object, Actor) == "enemy" and npc_alive and self_object.health > 0.01 then
+			local be = self_object:best_enemy()
+			if be and be:id() == 0 and self_object:see(be) then
+				amk.enemy_see_actor(self_object, "npc")
+			end
                                         if Actor:see(self_object) then
                                                 amk.actor_see_enemy(self_object,"npc")
                                         end
@@ -416,11 +419,12 @@ function motivator_binder:update(delta)
 	local active_item = self_object:active_item()
 	local ammo = active_item and active_item:is_weapon() and active_item:get_ammo_in_magazine() or nil
 	if ammo ~= nil then
+		if self.prev_ammo > ammo then
                         local enemy = self_object:best_enemy()
-                        if enemy and enemy:id()==0 and self_object:see(Actor) and self.prev_ammo>ammo then
+                        if enemy and enemy:id()==0 and self_object:see(Actor) then
                                 amk.npc_shot_actor(self_object)
                         end
-
+		end
 		self.prev_ammo = ammo
 	end
 

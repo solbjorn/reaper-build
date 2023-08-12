@@ -12,9 +12,18 @@ prefetch("sa_utils")
 --]]-----------------------------------------------------------------------------------------------
 local hud_animations_mgr
 local hud_interface_mgr
+local last_move_time
 local next_500 = 0
+local car_mgr
 ---------------------------------------------------------------------------------------------------
 function actor_update(delta)
+	if car_mgr then
+		if last_move_time and last_move_time < time_real_ms then
+			car_mgr.is_mouse_moving = false
+			last_move_time = nil
+		end
+		car_mgr:update()
+	end
 	if not hud_animations_mgr then
 		hud_animations_mgr = sa_hud_animations_mgr.get_hud_animations_mgr()
 		hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
@@ -56,7 +65,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function item_take(obj)
 	reap.item_take(obj)
-	if device().precache_frame == 0 then
+	if screen.precache_frame == 0 then
 		sa_inventory_items_mgr.artefacts_statistic(obj)
 	end
 end
@@ -140,7 +149,27 @@ function hit_effector()
 	end
 end
 ---------------------------------------------------------------------------------------------------
+function attach_vehicle(car)
+	local binder = car:binded_object()
+	if binder then
+		binder:attach_holder()
+		car_mgr = sa_cars.get_car_mgr()
+	end
+	reap.attach_vehicle(car)
+end
+---------------------------------------------------------------------------------------------------
+function detach_vehicle(car)
+	local binder = car:binded_object()
+	if binder then
+		binder:detach_holder()
+		car_mgr = sa_cars.get_car_mgr()
+	end
+end
+---------------------------------------------------------------------------------------------------
 function key_press(dik)
+	if car_mgr then
+		car_mgr:on_keyboard(dik, key_events.pressed)
+	end
 	if not level.main_input_receiver() then
 		sa_main.pda_info_fix(dik)
 	end
@@ -151,10 +180,29 @@ function key_press(dik)
 end
 ---------------------------------------------------------------------------------------------------
 function key_release(dik)
+	if car_mgr then
+		car_mgr:on_keyboard(dik, key_events.released)
+	end
 	if hud_animations_mgr then
 		hud_animations_mgr:on_keyboard(dik, key_events.released)
 	end
 	pressed_keys[dik] = nil
+end
+---------------------------------------------------------------------------------------------------
+function mouse_wheel(vol)
+	if car_mgr then
+		car_mgr:zoom_factor(vol)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function mouse_move()
+	if not car_mgr then
+		return
+	end
+	if not last_move_time then
+		car_mgr.is_mouse_moving = true
+	end
+	last_move_time = time_real_ms + 80
 end
 ---------------------------------------------------------------------------------------------------
 function new_game()
@@ -178,7 +226,16 @@ function npc_use(obj, who)
 	end
 end
 ---------------------------------------------------------------------------------------------------
+function npc_hit(obj, amount, local_direction, who, bone_index)
+	if car_mgr then
+		car_mgr:update_relation_registry(obj, who)
+	end
+end
+---------------------------------------------------------------------------------------------------
 function npc_death(victim, who)
+	if car_mgr then
+		car_mgr:update_relation_registry(victim, who)
+	end
 	sa_main.restore_torch(victim)
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -187,5 +244,14 @@ end
 function monster_use(obj, who)
 	if not (obj:alive() or is_key_pressed(bind_to_dik(key_bindings.kACCEL))) then
 		Actor:give_info_portion("ui_dead_body")
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PHYSIC OBJECT
+--]]-----------------------------------------------------------------------------------------------
+function physic_object_net_spawn(obj)
+	local sect = obj:section()
+	if sect == "mounted_weapon" or sect == "stationary_mgun" then
+		obj:set_tip_text("mounted_weapon_use")
 	end
 end

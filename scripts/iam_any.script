@@ -11,6 +11,8 @@ function iAmAnyInit()
 	iAmStalkerInit()
 	iAmMonsterInit()
 	iAmArtefactInit()
+
+	iam_tech_init()
 end
 
 local iAmOutfit
@@ -183,6 +185,14 @@ function iAmArtefactInit()
 	}
 end
 
+local clsid_car_s
+local clsid_script_heli
+
+function iam_tech_init()
+	clsid_car_s = clsid.car_s
+	clsid_script_heli = clsid.script_heli
+end
+
 function clsid_monster(clsid)
 	return iAmMonster[clsid] == true
 end
@@ -203,8 +213,31 @@ function is_binoculars(obj)
 	return obj:clsid() == clsid_wpn_binocular_s
 end
 
+function is_btr(obj)
+	if obj:clsid() ~= clsid_car_s then
+		return false
+	end
+
+	local vis
+	if obj.section_name then
+		vis = obj:get_netpk("visual_name")
+	else
+		vis = obj:get_visual_name()
+	end
+
+	return (vis and string.find(vis, "btr")) ~= nil
+end
+
+function is_car(obj)
+	return obj:clsid() == clsid_car_s
+end
+
 function is_grenade(obj)
 	return iAmGrenade[obj:clsid()] == true
+end
+
+function is_helicopter(obj)
+	return obj:clsid() == clsid_script_heli
 end
 
 function is_knife(obj)

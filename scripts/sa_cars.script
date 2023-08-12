@@ -1,0 +1,756 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_cars.script
+ Description  : Расширение функционала машин
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Thanks       : Real Wolf за идеи по реализации багажников и сохранению топлива
+ Date         : 25.10.2011
+ Last edit    : 29.01.2019
+---------------------------------------------------------------------------------------------------
+ * Описание нововведений
+ - фикс зависших в воздухе машин после спавна
+ - фикс сброса количества топлива после загрузки
+ - фикс использования медицины по горячим клавишам
+ - прогресс-бар количества топлива
+ - спидометр
+ - багажник (параметр trunk_enabled) и его уничтожение с последующим разлетом предметов
+ - звуки клаксона (horn_sound) и неудачного пуска двигателя (engine_fail)
+ - звук поворота башни БТР (turret_movement_sound)
+ - звук изменения зума в БТР (zoom_inc_sound и zoom_dec_sound)
+ - работающий пулемет (параметр weapon_enabled)
+ - переключение позиции камеры при виде от первого и третьего лица (параметры camera_pos, camera_pos_look, camera_pos_free)
+ - работающие двери у машин и зависимость багажника от них (секция bone_groups и параметр trunk_bone_group)
+ - звуки открытия и закрытия двери (door_open и door_close)
+ - изменение текущего fov при входе в машину (параметр camera_fov)
+ - активность прицела при входе в машину (параметр hide_crosshair)
+ - ремонт машины при наличии ремонтного набора и заправка машины при наличии канистры
+ - окошко со списком клавиш управления машиной
+ - выключение фонарика при входе в машину
+--]]-----------------------------------------------------------------------------------------------
+local car_mgr
+local car_door_mgrs = {}
+--[[-----------------------------------------------------------------------------------------------
+ * CONSTANTS
+--]]-----------------------------------------------------------------------------------------------
+local ZOOM_FACTOR_STEP = 10
+local ZOOM_FACTOR_MIN = 20
+local ZOOM_FACTOR_MAX = 80
+local TURRET_MOVEMENT_VOLUME_STEP = 2.3
+local TURRET_MOVEMENT_MAX_VOLUME = 0.5
+local CRITICAL_CONDITION = 0.33
+--[[-----------------------------------------------------------------------------------------------
+ * CAR BINDER
+--]]-----------------------------------------------------------------------------------------------
+function init(obj)
+	obj:bind_object(CCarBinder(obj))
+end
+---------------------------------------------------------------------------------------------------
+class "CCarBinder" (object_binder)
+function CCarBinder:__init(obj) super(obj)
+	self.se_obj = server_object(obj)
+	self.trunk_id = self.se_obj.trunk_id
+	self.fuel = self.se_obj.fuel
+	self.first_update = true
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:reload(section)
+	object_binder.reload(self, section)
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:reinit()
+	object_binder.reinit(self)
+	self.object:set_callback(callback.use_object, self.use_callback, self)
+	self.object:set_callback(callback.death, self.death_callback, self)
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:net_save_relevant()
+	return true
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:net_spawn(data)
+	if not object_binder.net_spawn(self, data) then
+		return false
+	end
+	-- flying cars fix
+	xr_logic.mob_capture(self.object, true)
+	action(self.object, move(move.off, 0), cond(cond.time_end, 10))
+	-- init params
+	self.ini = self.object:get_visual_ini()
+	self.trunk_enabled = self.ini:r_bool_ex("car_definition", "trunk_enabled")
+	-- set special tip
+	if self.trunk_enabled then
+		self.object:set_tip_text("car_character_use_or_trunk")
+	end
+	return true
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:net_destroy()
+	object_binder.net_destroy(self)
+	self.object:set_callback(callback.use_object, nil)
+	self.object:set_callback(callback.death, nil)
+	self.se_obj.fuel = self.object:get_fuel()
+	-- call detach in CCarMgr
+	if car_mgr then
+		car_mgr:detach()
+	end
+	car_door_mgrs[self.object:id()] = nil
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:update(delta)
+	object_binder.update(self, delta)
+	if self.first_update then
+		-- restore fuel
+		if self.fuel and self.fuel ~= -1 then
+			self.object:set_fuel(self.fuel)
+		end
+		-- create CCarDoorMgr
+		if self.ini:section_exist("bone_groups") then
+			self.door_mgr = CCarDoorMgr(self.object, self.ini, self.trunk_enabled)
+			car_door_mgrs[self.object:id()] = self.door_mgr
+		end
+		-- reset flag
+		self.first_update = false
+	end
+	-- call update in CCarDoorMgr
+	if self.door_mgr then
+		self.door_mgr:update()
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:attach_holder()
+	-- create CCarMgr
+	if not car_mgr then
+		car_mgr = CCarMgr(self.object, self.ini)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:detach_holder()
+	-- call detach in CCarMgr
+	if car_mgr then
+		car_mgr:detach()
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:use_callback(obj, who)
+	-- call use_callback in CCarDoorMgr
+	if self.door_mgr then
+		self.door_mgr:use_callback()
+		if not self.door_mgr:can_trunk_use() then
+			return
+		end
+	end
+	-- open trunk
+	if is_key_pressed(bind_to_dik(key_bindings.kACCEL)) and self.trunk_enabled and not actor_flags.in_car then
+		if self.trunk_id == 0 then
+			local trunk = create("invisible_box", self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id())
+			level.client_spawn_manager():add(trunk.id, 0, open_trunk)
+			self.se_obj.trunk_id = trunk.id
+			self.trunk_id = trunk.id
+		else
+			local trunk = level_object(self.trunk_id)
+			if trunk then
+				open_trunk(self.trunk_id, trunk)
+			else
+				AI:teleport_object(nil, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id(), self.trunk_id)
+				level.client_spawn_manager():add(self.trunk_id, 0, open_trunk)
+			end
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarBinder:death_callback(victim, who)
+	-- remove trunk
+	if self.trunk_id ~= 0 then
+		local trunk = level_object(self.trunk_id)
+		if not trunk then
+			AI:teleport_object(nil, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id(), self.trunk_id)
+			level.client_spawn_manager():add(self.trunk_id, 0, remove_trunk)
+		else
+			remove_trunk(self.trunk_id, trunk)
+		end
+		self.trunk_id = 0
+	end
+	if who and who:id() == 0 then
+		xr_statistic.addKillCount(self.object)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function open_trunk(trunk_id, trunk)
+	Actor:open_inventory_box(trunk)
+end
+---------------------------------------------------------------------------------------------------
+function remove_trunk(trunk_id, trunk)
+	local item
+	for i = 0, trunk:inv_box_count() - 1 do
+		item = trunk:object_from_inv_box(i)
+		trunk:drop_item(item)
+		make_hit(item, 0, math.random(100, 200), hit.strike)
+		if item:is_weapon_magazined() and not item:is_binoculars() or item:is_outfit() then
+			item:set_condition(item:condition() - math.random(10, 30) / 100)
+		end
+	end
+	release(trunk_id)
+end
+--[[-----------------------------------------------------------------------------------------------
+ * CAR MANAGER
+--]]-----------------------------------------------------------------------------------------------
+class "CCarMgr"
+function CCarMgr:__init(obj, ini)
+	self.object = obj
+	self.car = self.object:get_car()
+	-- init params
+	self.camera_pos = ini:r_vector_ex("car_definition", "camera_pos")
+	self.camera_pos_look = ini:r_vector_ex("car_definition", "camera_pos_look")
+	self.camera_pos_free = ini:r_vector_ex("car_definition", "camera_pos_free")
+	self.camera_fov = ini:r_float_ex("car_definition", "camera_fov")
+	self.hide_crosshair = ini:r_bool_ex("car_definition", "hide_crosshair")
+	self.weapon_enabled = ini:r_bool_ex("car_definition", "weapon_enabled")
+	self.engine_fail_snd_name = ini:r_string_ex("car_sound", "engine_fail")
+	self.horn_snd_name = ini:r_string_ex("car_sound", "horn_sound")
+	self.turret_movement_snd_name = ini:r_string_ex("car_sound", "turret_movement_sound")
+	self.zoom_inc_snd_name = ini:r_string_ex("car_sound", "zoom_inc_sound")
+	self.zoom_dec_snd_name = ini:r_string_ex("car_sound", "zoom_dec_sound")
+	self.last_camera_fov = Actor:get_camera_fov()
+	self.show_crosshair = console:get_bool("hud_crosshair")
+	self.is_mouse_moving = false
+	self:attach()
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:attach()
+	-- set default camera
+	set_car_data(self.object, "camera_position", self.camera_pos)
+	-- set new fov
+	if self.camera_fov then
+		Actor:set_camera_fov(self.camera_fov)
+	end
+	-- hide crosshair
+	if self.hide_crosshair then
+		console:execute("hud_crosshair off")
+	end
+	-- enable car weapon
+	if self.weapon_enabled then
+		hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(1024)
+		self.btr_crosshair = true
+		self.car:Action(CCar.eWpnActivate, 1)
+		if self.turret_movement_snd_name then
+			local turret_movement_sound = voice(self.turret_movement_snd_name)
+			turret_movement_sound:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d + sound_object.looped)
+			turret_movement_sound.volume = 0
+		end
+	end
+	-- show car controls message box
+	if self.weapon_enabled and not has_info("car_controls_btr_msg_box") then
+		level.start_stop_menu(CUICarControlsMessageBox("ui_st_car_controls_btr_title", "ui_st_car_controls_btr_list"), true)
+		give_info("car_controls_btr_msg_box")
+	end
+	if not has_info("car_controls_msg_box") then
+		level.start_stop_menu(CUICarControlsMessageBox(), true)
+		give_info("car_controls_msg_box")
+	end
+	-- turn off flashlight
+	local torch = Actor:item_in_slot(9)
+	if torch then
+		torch:switch_torch(false)
+	end
+	-- init car panel
+	self:speedometer_static()
+	self:fuel_indicator()
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:detach()
+	-- restore fov
+	Actor:set_camera_fov(self.last_camera_fov)
+	-- restore crosshair
+	if self.show_crosshair then
+		console:execute("hud_crosshair on")
+	end
+	-- disable car weapon
+	if self.weapon_enabled then
+		hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(0)
+		self.btr_crosshair = false
+		self.car:Action(CCar.eWpnActivate, 0)
+		if self.turret_movement_snd_name then
+			voice(self.turret_movement_snd_name):stop()
+		end
+	end
+	-- remove statics
+	self:clear_statics()
+	-- delete car manager
+	car_mgr = nil
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:update()
+	if is_hud_draw() then
+		self:speedometer_static()
+		self:fuel_indicator()
+	else
+		self:clear_statics()
+	end
+	self:weapon_control()
+	self:update_sounds()
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:speedometer_static()
+	if not self.sback then
+		self.sback = hud:AddCustomStatic("car_speedometer_background", true):wnd()
+		self.strans = hud:AddCustomStatic("car_speedometer_transmission", true):wnd()
+		self.sptr = hud:AddCustomStatic("car_speedometer_pointer", true):wnd()
+	end
+	local speed = self.car:CurrentVel():magnitude() or 0
+	local transmission_num = get_car_data(self.object, "current_transmission_num")
+	if transmission_num == 0 then
+		transmission_num = "R"
+	end
+	self.sback:SetText(math.floor(speed * 3.6).." km/h")
+	self.strans:SetText(transmission_num)
+	if speed < 38 then
+		self.sptr:SetHeading(-22.79 - 0.6 * 0.204 * speed)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:fuel_indicator()
+	if not self.st_car_fuel then
+		self.st_car_fuel = hud:AddCustomStatic("car_fuel_static"):wnd()
+		local xml = CScriptXmlInit()
+		xml:ParseFile("car_panel.xml")
+		self.pb_car_fuel = xml:InitProgressBar("car_fuel_progress_bar", self.st_car_fuel)
+	end
+	self.pb_car_fuel:SetProgressPos(refactor * self.object:get_fuel() / self.object:get_fuel_tank() * 100)
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:clear_statics()
+	if self.sback then
+		hud:RemoveCustomStatic("car_speedometer_background")
+		self.sback = nil
+		hud:RemoveCustomStatic("car_speedometer_transmission")
+		self.strans = nil
+		hud:RemoveCustomStatic("car_speedometer_pointer")
+		self.sptr = nil
+	end
+	if self.st_car_fuel then
+		hud:RemoveCustomStatic("car_fuel_static")
+		self.st_car_fuel = nil
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:weapon_control()
+	if self.weapon_enabled then
+		if actor_flags.alive and not level.main_input_receiver() then
+			self.car:SetParam(CCar.eWpnDesiredPos, screen.cam_pos:mad(screen.cam_dir, level.get_target_dist()))
+			if is_key_pressed(bind_to_dik(key_bindings.kWPN_FIRE)) and not self.weapon_active then
+				self.car:Action(CCar.eWpnAutoFire, 1)
+				self.car:Action(CCar.eWpnFire, 1)
+				self.weapon_active = true
+			elseif self.weapon_active then
+				self.car:Action(CCar.eWpnAutoFire, 0)
+				self.car:Action(CCar.eWpnFire, 0)
+				self.weapon_active = false
+			end
+		elseif self.weapon_active then
+			self.car:Action(CCar.eWpnAutoFire, 0)
+			self.car:Action(CCar.eWpnFire, 0)
+			self.weapon_active = false
+		end
+		if self.turret_movement_snd_name then
+			local turret_movement_sound = voice(self.turret_movement_snd_name)
+			local step = TURRET_MOVEMENT_VOLUME_STEP
+			if not (self.is_mouse_moving and actor_flags.alive) then
+				step = -step
+			end
+			turret_movement_sound.volume = math.clamp(turret_movement_sound.volume + step * screen.f_time_delta, 0, TURRET_MOVEMENT_MAX_VOLUME)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:update_sounds()
+	if self.engine_fail_snd_name then
+		local engine_fail_sound = voice(self.engine_fail_snd_name)
+		if engine_fail_sound and engine_fail_sound:playing() then
+			engine_fail_sound:set_position(self.object:position())
+		end
+	end
+	if self.horn_snd_name then
+		local horn_sound = voice(self.horn_snd_name)
+		if horn_sound and horn_sound:playing() then
+			horn_sound:set_position(self.object:position())
+		end
+	end
+	if self.turret_movement_snd_name then
+		local turret_movement_sound = voice(self.turret_movement_snd_name)
+		if turret_movement_sound and turret_movement_sound:playing() then
+			turret_movement_sound:set_position(self.object:position())
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:update_relation_registry(victim, who)
+	if self.weapon_enabled and self.object:id() == who:id() then
+		local relation = victim:relation(Actor)
+		if relation == game_object.friend or relation == game_object.neutral then
+			Actor:change_character_reputation(-50)
+		end
+		if relation == game_object.friend then
+			victim:set_relation(game_object.neutral, Actor)
+		else
+			victim:set_relation(game_object.enemy, Actor)
+		end
+		local goodwill = relation_registry.community_goodwill(victim:character_community(), 0)
+		if goodwill > -500 then
+			goodwill = -500
+		end
+		relation_registry.set_community_goodwill(victim:character_community(), 0, goodwill)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:zoom_factor(vol)
+	if self.btr_crosshair and actor_flags.alive and not level.main_input_receiver() then
+		local step, snd_name = 0
+		local last_fov = Actor:get_camera_fov()
+		if vol == 99880 then
+			step = ZOOM_FACTOR_STEP
+			snd_name = self.zoom_inc_snd_name
+		elseif vol == 100120 then
+			step = -ZOOM_FACTOR_STEP
+			snd_name = self.zoom_dec_snd_name
+		end
+		Actor:set_camera_fov(math.clamp(last_fov + step, ZOOM_FACTOR_MIN, ZOOM_FACTOR_MAX))
+		if snd_name and Actor:get_camera_fov() ~= last_fov then
+			play_safe_sound_object(snd_name)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarMgr:on_keyboard(dik, keyboard_action)
+	if actor_flags.alive and not level.main_input_receiver() then
+		if keyboard_action == key_events.pressed then
+			-- switch camera
+			if dik == bind_to_dik(key_bindings.kCAM_2) or dik == bind_to_dik(key_bindings.kCAM_3) then
+				-- restore fov
+				Actor:set_camera_fov(self.last_camera_fov)
+				-- restore crosshair
+				if self.show_crosshair then
+					console:execute("hud_crosshair on")
+				end
+				-- remove car weapon static
+				hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(0)
+				self.btr_crosshair = false
+				-- set new camera position
+				if dik == bind_to_dik(key_bindings.kCAM_2) then
+					set_car_data(self.object, "camera_position", self.camera_pos_look)
+				else
+					set_car_data(self.object, "camera_position", self.camera_pos_free)
+				end
+			elseif dik == bind_to_dik(key_bindings.kCAM_1) then
+				-- set new fov
+				if self.camera_fov then
+					Actor:set_camera_fov(self.camera_fov)
+				end
+				-- hide crosshair
+				if self.hide_crosshair then
+					console:execute("hud_crosshair off")
+				end
+				-- add car weapon static
+				if self.weapon_enabled then
+					hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(1024)
+					self.btr_crosshair = true
+				end
+				-- set new camera position
+				set_car_data(self.object, "camera_position", self.camera_pos)
+			-- engine fail sound
+			elseif dik == bind_to_dik(key_bindings.kENGINE) and self.object:get_fuel() <= 0 then
+				if self.engine_fail_snd_name then
+					voice(self.engine_fail_snd_name):play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+				end
+				add_message("gun_jammed", "car_empty_fuel_tank")
+			-- horn sound
+			elseif dik == bind_to_dik(key_bindings.kDROP) then
+				if self.horn_snd_name then
+					voice(self.horn_snd_name):play_at_pos(self.object, self.object:position(), 0, sound_object.s3d + sound_object.looped)
+				end
+			-- refuel car
+			elseif dik == bind_to_dik(key_bindings.kWPN_NEXT) then
+				local fuel_canister_item = Actor:object("explosive_mobiltank")
+				if fuel_canister_item then
+					change_car_fuel(self.object, config:r_float("explosive_mobiltank", "fuel_volume"))
+					release(fuel_canister_item)
+					add_message("cant_walk_weight", "car_refueled")
+				else
+					add_message("gun_jammed", "car_cant_be_refueled")
+				end
+			-- repair car
+			elseif dik == bind_to_dik(key_bindings.kWPN_RELOAD) then
+				local repair_kit_item = Actor:object("repair_kit_vehicle")
+				if repair_kit_item then
+					if self.car:GetfHealth() > CRITICAL_CONDITION then
+						change_car_health(self.object, config:r_float("repair_kit_vehicle", "car_health_inc"))
+						release(repair_kit_item)
+						add_message("cant_walk_weight", "car_repaired")
+					else
+						add_message("gun_jammed", "car_repair_critical_condition")
+					end
+				else
+					add_message("gun_jammed", "car_cant_be_repaired")
+				end
+			-- use medicine
+			elseif dik == bind_to_dik(key_bindings.kUSE_BANDAGE) or dik == bind_to_dik(key_bindings.kUSE_MEDKIT) then
+				local medicine_item
+				if dik == bind_to_dik(key_bindings.kUSE_BANDAGE) then
+					medicine_item = Actor:object("bandage")
+				else
+					medicine_item = Actor:object("medkit") or Actor:object("medkit_army") or Actor:object("medkit_scientic")
+				end
+				if medicine_item then
+					local st_item_used = hud:AddCustomStatic("item_used", true)
+					st_item_used:wnd():SetText(translate("st_item_used")..": "..get_inventory_item_data(medicine_item, "inv_name"))
+					st_item_used.m_endTime = time_real_ms / 1000 + 3
+					Actor:eat(medicine_item)
+				end
+			-- call use_callback in CCarDoorMgr
+			elseif dik == bind_to_dik(key_bindings.kUSE) then
+				local door_mgr = car_door_mgrs[self.object:id()]
+				if door_mgr then
+					door_mgr:use_callback()
+				end
+			elseif dik == bind_to_dik(key_bindings.kNIGHT_VISION) then
+				local torch = Actor:item_in_slot(9)
+				if torch then
+					torch:switch_night_vision(level.has_pp_effector(effector_ids.night_vision) == 0)
+				end
+			end
+		elseif keyboard_action == key_events.released then
+			-- horn sound
+			if dik == bind_to_dik(key_bindings.kDROP) then
+				if self.horn_snd_name then
+					voice(self.horn_snd_name):stop()
+				end
+			end
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * CAR DOOR MANAGER
+--]]-----------------------------------------------------------------------------------------------
+class "CCarDoorMgr"
+function CCarDoorMgr:__init(obj, ini, trunk_enabled)
+	self.object = obj
+	self.ini = ini
+	self.trunk_enabled = trunk_enabled
+	-- init params
+	self.trunk_bone_group = self.ini:r_string_ex("car_definition", "trunk_bone_group")
+	self.door_open_snd_name = self.ini:r_string_ex("car_sound", "door_open")
+	self.door_close_snd_name = self.ini:r_string_ex("car_sound", "door_close")
+	self.bone_ids = {}
+	self.door_groups = {}
+	self.need_to_detach = false
+	-- init bone groups
+	self.ps = self.object:get_physics_shell()
+	if self.ps then
+		-- door groups
+		self:add_bone_group("left_door", 3)
+		self:add_bone_group("right_door", -3)
+		self:add_bone_group("back_door", 3)
+		self:add_bone_group("front_door", -3)
+		-- enter group
+		self:add_bone_group("enter")
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:update()
+	self.focused_bone_id = self:get_focused_bone_id()
+	self.active_door_group = self:get_active_door_group()
+	self:tips_control()
+	self:update_sounds()
+	if self.need_to_detach then
+		self:detach()
+		self.need_to_detach = false
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:use_callback()
+	if not self:door_switch() then
+		if Actor:get_current_holder() then
+			if self:can_detach() then
+				self.need_to_detach = true
+			end
+		elseif self:can_attach() then
+			Actor:attach_vehicle(self.object)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:add_bone_group(group_name, velocity)
+	local bones = self.ini:r_string_ex("bone_groups", group_name)
+	if bones then
+		local bones_table = string.explode(bones, ",")
+		if velocity then
+			local last_value = bones_table[#bones_table]
+			if type(last_value) == "number" then
+				velocity = last_value
+				table.remove(bones_table)
+			end
+			self[group_name.."_parent_bone"] = bones_table[1]
+			self[group_name.."_velocity"] = velocity
+			self[group_name.."_opened"] = false
+			self[group_name] = self.ps:get_joint_by_bone_name(self[group_name.."_parent_bone"])
+			if self[group_name] then
+				self[group_name]:set_max_force_and_velocity(150, self[group_name.."_velocity"], 0)
+			end
+			self.door_groups[#self.door_groups + 1] = group_name
+		end
+		self.bone_ids[group_name] = {}
+		for i, v in ipairs(bones_table) do
+			self.bone_ids[group_name][self.object:get_bone_id(v)] = true
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:get_focused_bone_id()
+	local target_obj = level.get_target_obj()
+	if target_obj and target_obj:id() == self.object:id() then
+		return level.get_target_element()
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:get_active_door_group()
+	if self.focused_bone_id then
+		for i, v in ipairs(self.door_groups) do
+			if self:bone_group_in_focus(v) then
+				return v
+			end
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:can_trunk_use()
+	return not self.active_door_group and (not self.trunk_bone_group or self[self.trunk_bone_group.."_opened"])
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:can_attach()
+	return self:bone_group_in_focus("enter") and (self.left_door_opened or self.right_door_opened)
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:can_detach()
+	return not self.focused_bone_id
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:bone_group_in_focus(group_name)
+	local group = self.bone_ids[group_name]
+	if group then
+		return group[self.focused_bone_id]
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:door_switch()
+	self.active_door_group = self:get_active_door_group()
+	if self.active_door_group then
+		local velocity = self[self.active_door_group.."_velocity"]
+		-- switch door
+		if self[self.active_door_group.."_opened"] then
+			self[self.active_door_group]:set_max_force_and_velocity(150, velocity, 0)
+			self[self.active_door_group.."_opened"] = false
+		else
+			self[self.active_door_group]:set_max_force_and_velocity(150, -velocity, 0)
+			self[self.active_door_group.."_opened"] = true
+		end
+		-- door sound
+		self.active_door_parent_bone = self[self.active_door_group.."_parent_bone"]
+		if self[self.active_door_group.."_opened"] then
+			if self.door_open_snd_name then
+				voice(self.door_open_snd_name):play_at_pos(self.object, self.object:bone_position(self.active_door_parent_bone), 0, sound_object.s3d)
+			end
+		elseif self.door_close_snd_name then
+			local active_door = self.ps:get_joint_by_bone_name(self.active_door_parent_bone)
+			local low_limits = 0
+			active_door:get_limits(low_limits, 0, 0)
+			level.add_call(
+				function()
+					if velocity > 0 then
+						return active_door:get_axis_angle(90) >= low_limits
+					else
+						return active_door:get_axis_angle(90) <= low_limits
+					end
+				end,
+				function()
+					voice(self.door_close_snd_name):play_at_pos(self.object, self.object:bone_position(self.active_door_parent_bone), 0, sound_object.s3d)
+				end
+			)
+		end
+		return true
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:detach()
+	local car_dir = self.object:direction()
+	if vector():crossproduct(car_dir, screen.cam_dir).y > 0 then
+		if self.right_door_opened then
+			Actor:detach_vehicle(vector_rotate_y(car_dir, -90):add(self.object:bone_position(self.right_door_parent_bone)):mul(1))
+		end
+	else
+		if self.left_door_opened then
+			Actor:detach_vehicle(vector_rotate_y(car_dir, 90):add(self.object:bone_position(self.left_door_parent_bone)):mul(1))
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:tips_control()
+	if self.focused_bone_id then
+		local tip_text = ""
+		if self.active_door_group then
+			if self[self.active_door_group.."_opened"] then
+				tip_text = "car_character_door_close"
+			else
+				tip_text = "car_character_door_open"
+			end
+		elseif self:can_attach() then
+			tip_text = "car_character_use"
+		elseif self:can_trunk_use() and self.trunk_enabled then
+			tip_text = "car_character_trunk"
+		end
+		self.object:set_tip_text(tip_text)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CCarDoorMgr:update_sounds()
+	if self.active_door_parent_bone then
+		if self.door_open_snd_name then
+			local door_open_sound = voice(self.door_open_snd_name)
+			if door_open_sound and door_open_sound:playing() then
+				door_open_sound:set_position(self.object:bone_position(self.active_door_parent_bone))
+			end
+		end
+		if self.door_close_snd_name then
+			local door_close_sound = voice(self.door_close_snd_name)
+			if door_close_sound and door_close_sound:playing() then
+				door_close_sound:set_position(self.object:bone_position(self.active_door_parent_bone))
+			end
+		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * CAR CONTROLS MESSAGE BOX
+--]]-----------------------------------------------------------------------------------------------
+class "CUICarControlsMessageBox" (CUIScriptWnd)
+function CUICarControlsMessageBox:__init(title, msg_text) super()
+	self:Init(0, 0, 1024, 768)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("message_box.xml")
+	-- background static
+	self.st_background = xml:InitStatic("msg_box_car_controls", self)
+	if title then
+		self.st_background:SetTextST(title)
+	end
+	-- text static
+	self.st_msg_text = xml:InitStatic("msg_box_car_controls:message_text", self.st_background)
+	if msg_text then
+		self.st_msg_text:SetTextST(msg_text)
+	end
+	-- okay button
+	self:Register(xml:Init3tButton("msg_box_car_controls:button_ok", self.st_background), "ok_button")
+	self:AddCallback("ok_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(self, true) end)
+end
+--[[-----------------------------------------------------------------------------------------------
+ * INIT
+--]]-----------------------------------------------------------------------------------------------
+function get_car_mgr()
+	return car_mgr
+end

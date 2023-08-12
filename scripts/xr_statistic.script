@@ -15,7 +15,25 @@ for k, v in pairs(comms) do
 	comms[k] = k
 end
 
-local tech = table.tohash({ clsid.car_s, clsid.script_heli })
+local tech_vis = { "btr", "kamaz", "niva", "raf", "tr13", "uaz", "zaz" }
+
+function get_tech_sect(npc)
+	if not (npc:is_car() or npc:is_helicopter()) then return nil end
+
+	local sect = npc:section()
+	if sect ~= "car_base" and sect ~= "m_car" then
+		return sect
+	end
+
+	local vis = npc:get_visual_name()
+	for i, key in ipairs(tech_vis) do
+		if string.find(vis, key) then
+			return "vehicle_" .. key
+		end
+	end
+
+	return nil
+end
 
 function getNpcType(npc)
 	if not npc then return nil, nil end
@@ -27,12 +45,13 @@ function getNpcType(npc)
 	elseif npc:is_monster() then
 		return "monsterkills", npc:section()
 	else
-		if not tech[npc:clsid()] then 
+		local sect = get_tech_sect(npc)
+		if not sect then 
 			abort("Statistics ERROR: cannot find entry for [%s]", npc:name())
 			return nil, nil
 		end
 
-		return "techkills", npc:section()
+		return "techkills", sect
 	end
 end
 

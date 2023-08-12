@@ -20,6 +20,8 @@ end
 class "se_car" (cse_alife_car)
 --------------------
 function se_car:__init (section) super (section)
+	self.trunk_id = 0
+	self.fuel = -1
 end
 --------------------
 function se_car:can_switch_offline ()
@@ -29,6 +31,31 @@ end
 function se_car:can_switch_online ()
 	return cse_alife_car.can_switch_online(self)
 		and check_spawn(self)
+end
+--------------------
+function se_car:STATE_Write(packet)
+	cse_alife_car.STATE_Write(self, packet)
+
+	local obj = level_object(self.id)
+	if obj then
+		self.fuel = obj:get_fuel()
+	end
+
+	if self.fuel ~= -1 or self.trunk_id ~= 0 then
+		packet:w_u16(self.trunk_id)
+		packet:w_float(self.fuel)
+	end
+end
+--------------------
+function se_car:STATE_Read(packet, size)
+	cse_alife_car.STATE_Read(self, packet, size)
+
+	if packet:r_eof() then
+		return
+	end
+
+	self.trunk_id = packet:r_u16()
+	self.fuel = packet:r_float()
 end
 --------------------
 

@@ -5,6 +5,38 @@
 local clsid_controller_s = clsid.controller_s
 
 --[[---------------------------------------------------------------------------
+ * AMK
+--]]---------------------------------------------------------------------------
+
+local gg_kick = config:r_u32_ex("gg_kick", "enabled", 0) > 0
+
+function hit_effectors(amount)
+	if not gg_kick or amount <= 0.05 or not actor_flags.alive then
+		return
+	end
+
+	level.add_pp_effector("amk_shoot.ppe", 2011, false)
+	level.set_pp_effector_factor(2011, amount * 100)
+
+	if amount <= 0.3 then return end
+
+	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
+	say([[actor\pain_3]])
+
+	if math.random() < amount / 2 then
+		reap.drop_weapon()
+	end
+end
+
+function wake_up()
+	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+	level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
+	level.add_pp_effector("total_recall.ppe", 2008, false)
+	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
+	level.add_cam_effector("camera_effects\\fatigue.anm", 27, false, "")
+end
+
+--[[---------------------------------------------------------------------------
  * dsh
 --]]---------------------------------------------------------------------------
 

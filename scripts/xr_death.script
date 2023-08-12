@@ -14,7 +14,7 @@ function action_process_death:death_callback(victim, who)
 	local killer_id
 	local actor = Actor
 	if who ~= nil then
-		killer_id = who:id()
+		killer_id = reap.hit_by_actor(who)
 		if killer_id == 0 and victim:best_enemy() == nil then
 			killer_id = -1
 			if victim:relation(actor) ~= game_object.enemy then

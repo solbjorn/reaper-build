@@ -473,8 +473,8 @@ function on_npc_spawn(npc)
 	news_main.on_spawn(npc)
 end
 
-function on_net_spawn(obj)
-	amk_mod.build_btrs_table(obj)
+function on_net_spawn(obj, is_btr)
+	amk_mod.build_btrs_table(obj, is_btr)
 end
 
 --колбэк на удаление непися (точнее на его переход в оффлайн), использует следующую за ним функцию для выбора действия
@@ -506,19 +506,22 @@ end
 	amk_anoms.unreg_in_anom_manager(victim)
 	amk_mod.generate_recipe(victim,who)
 	amk_mod.firebated(victim, 1, nil, who, 14)
+	if reap.hit_by_actor(who) == 0 then
+		amk_mod.calc_adrenaline("actor_hit_enemy", victim)
+	end
 	amk_mod.zomby_blow(victim)
 end
 
 function on_npc_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if Actor and who and who:id()==0 and amount>0 then
+	if amount > 0 and reap.hit_by_actor(who) == 0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"npc")
 	end
 end
 
 function on_monster_hit(obj, amount, local_direction, who, bone_index)
 	amk_mod.firebated(obj, amount, local_direction, who, bone_index)
-	if Actor and who and who:id()==0 and amount>0 then
+	if amount > 0 and reap.hit_by_actor(who) == 0 then
 		amk_mod.calc_adrenaline("actor_hit_enemy",obj,"monster")
 	end
 end

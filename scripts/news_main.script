@@ -22,6 +22,7 @@ local timer_general 			= 30  --20	-- Прочее
 local distance_close 			= 100	-- При каком расстоянии между обьектами считать их в одной группе
 local timer_weather 			= 60	-- При изменнии погоды
 local timer_heli 				= 10	-- При замеченном вертолетике
+local timer_btr					= 10	-- При замеченном БТР
 
 local timer_last_showed 		= 0 	-- Последняя показанная новость
 local timer_show_freq 			= 7		-- Сколько ждать между новостями минимально (игровые минуты)
@@ -35,7 +36,9 @@ local timer_random_spawn_freq 	= 2 * 60 	-- Как часто генерить новости со спавно
 local timer_def_spawn			= 0			-- Последняя новость с "красивым" спавном
 local timer_def_spawn_freq 		= 3 * 60 	-- Как часто генерить новости с "красивым" спавном (игровые минуты)
 local timer_heli_showed			= 0			-- Последняя новость про вертолетик
+local timer_btr_showed			= 0			-- Последняя новость про БТР
 local timer_heli_freq			= 1 		-- Как часто показывать новости про вертолетик (игровые минуты)
+local timer_btr_freq			= 1 		-- Как часто показывать новости про БТР (игровые минуты)
 local timer_alife_showed		= 0			-- Последнее событие в оффлайн
 local timer_alife_freq 			= 5 		-- Как часто генерить события в оффлайн (игровые минуты)
 local timer_weather_showed 		= 0 		-- Последняя новость о погоде
@@ -48,6 +51,7 @@ local dist_close = 100
 local dist_seen = 200
 local dist_far = 200
 local dist_heli_seen = 400
+local dist_btr_seen = 400
 local dist_hear_min = 50
 local dist_hear_max = 400
 
@@ -83,6 +87,7 @@ function init()
 		timer_eternal_stalker = timer_last_showed - math_random(timer_eternal_stalker_freq)
 		timer_blow_showed = timer_last_showed - math_random(timer_blow_freq)
 		timer_heli_showed = timer_last_showed - math_random(timer_heli_freq)
+		timer_btr_showed = timer_last_showed - math_random(timer_btr_freq)
 		timer_alife_showed = timer_last_showed - math_random(timer_alife_freq)
 		timer_weather_showed = timer_last_showed - math_random(timer_weather_freq)
 		timer_daytime_showed = timer_last_showed - math_random(timer_daytime_freq)
@@ -264,6 +269,8 @@ function on_stalker_death(victim_, killer_)
 				if (m_s_weapon2 == 7 or m_s_weapon2 == 5) then m_killer_str = "граната" end
 			end
 			m_killer = format_death_by_stalker(killer)
+		elseif killer:is_car() or killer:is_helicopter() then
+			m_killer, m_killer_str = format_death_by_tech(killer)
 		else
 			m_killer_str = "причина смерти - неизвестна"
 			m_killer = ""
@@ -342,6 +349,8 @@ function on_npc_death(victim_, killer_)
 				m_killer = format_death_by_stalker(killer)
 			elseif killer:is_anomaly() then
 				m_killer = format_death_by_anomaly(killer)
+			elseif killer:is_car() or killer:is_helicopter() then
+				m_killer = format_death_by_tech(killer)
 			else
 				m_killer = ""
 			end
@@ -892,6 +901,38 @@ function format_death_by_weapon(obj)
 	return m_s
 end
 
+function format_death_by_tech(obj)
+	local id
+	if obj:is_btr() then
+		id = 11
+	elseif obj:is_helicopter() then
+		id = 13
+	else
+		id = 12
+	end
+
+	return format_template_weapon(id), translate(news_data.weapon_classes[id].name[1])
+end
+
+function format_death_hear_tech(victim, who)
+	local id
+	if who:is_btr() then
+		id = 11
+	elseif who:is_helicopter() then
+		id = 13
+	else
+		id = 12
+	end
+
+	local cls = news_data.weapon_classes[id]
+	if math_random() > cls.hear_p then
+		return ""
+	end
+
+	return format_template_hear(victim, translate(table_random(cls.hear_a)),
+				    translate(table_random(cls.hear_z)))
+end
+
 function format_death_stalker_corpse(obj)
 	local m_s = ""
 	if (obj) then
@@ -948,6 +989,8 @@ function format_death_hear_sounds(victim_, killer_, weapon_)
 					m_s = format_template_hear(victim_, m_hear_a, m_hear_z)
 				end
 			end
+		elseif killer_ and (killer_:is_car() or killer_:is_helicopter()) then
+			m_s = format_death_hear_tech(victim_, killer_)
 		elseif (killer_ and victim_ and victim_:is_monster() ~= true and (killer_:is_anomaly() or killer_:is_monster())) then -- Если killer == аномалия и victim ~= монстры - то крики
 			m_hear_a = "Слышал ужасные крики"
 			m_hear_z = "слышал ужасные крики"
@@ -1024,14 +1067,41 @@ function format_template_heli(obj, template_type)
 	return m_s
 end
 
+function format_template_btr(obj, template_type)
+	if not (obj ~= nil and template_type and news_data.btr_templates[template_type]) then
+		return ""
+	end
+
+	local m_pos = get_object_position(obj)
+	local m_level = m_pos and get_point_description(get_object_levelname(obj), m_pos)
+	if not m_level then return "" end
+
+	local t = {
+		["level"]	= m_level,
+		["carefull_a"]	= table_random(news_data.common["carefull_a"]),
+		["carefull_z"]	= table_random(news_data.common["carefull_z"]),
+		["when_a"]	= table_random(news_data.common["when_a"]),
+		["when_z"]	= table_random(news_data.common["when_z"])
+	}
+	local m_string = translate(table_random(news_data.btr_templates[template_type]))
+
+	local m_s
+	for key0, value in pairs(t) do
+		m_s = string_gsub(m_string, "%$"..key0, value)
+		m_string = m_s
+	end
+
+	return m_string
+end
+
 function format_template_weapon(weapon_type)
 	local m_s = ""
 	if(weapon_type and news_data.weapon_classes[weapon_type] ~= nil and news_data.weapon_classes[weapon_type]["name"]) then
 		local t = {
-			["weapon_name_2"] = news_data.weapon_classes[weapon_type]["name"][2],
-			["weapon_name_3"] = news_data.weapon_classes[weapon_type]["name"][3],
-			["weapon_hit_a"] = news_data.weapon_classes[weapon_type]["hit_a"][math_random(#news_data.weapon_classes[weapon_type]["hit_a"])],
-			["weapon_hit_z"] = news_data.weapon_classes[weapon_type]["hit_z"][math_random(#news_data.weapon_classes[weapon_type]["hit_z"])],
+			["weapon_name_2"] = translate(news_data.weapon_classes[weapon_type]["name"][2]),
+			["weapon_name_3"] = translate(news_data.weapon_classes[weapon_type]["name"][3]),
+			["weapon_hit_a"] = translate(table_random(news_data.weapon_classes[weapon_type]["hit_a"])),
+			["weapon_hit_z"] = translate(table_random(news_data.weapon_classes[weapon_type]["hit_z"])),
 			["kill_a"] = news_data.common["kill_a"][math_random(#news_data.common["kill_a"])],
 			["kill_z"] = news_data.common["kill_z"][math_random(#news_data.common["kill_z"])],
 			["sad_a"] = news_data.common["sad_a"][math_random(#news_data.common["sad_a"])],
@@ -1869,6 +1939,80 @@ function on_heli_retreat(obj)
 	end
 end
 
+function on_btr_seen(obj)
+	if (obj and game_minutes() - timer_btr_showed > timer_btr_freq) then
+		if (math_random() < prob) then
+			local s_author
+			local m_str = ""
+			m_str = format_template_btr(obj, "seen")
+			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_btr_seen, 0)
+			if (author) then
+				s_author = get_npc_name(author)
+			else
+				return
+			end
+			do_news(m_str, s_author, math_random(timer_btr, timer_btr * 5), 15, "gen_info", author.id, 1)
+			timer_btr_showed = game_minutes()
+		end
+	end
+end
+
+function on_btr_combat(obj)
+	if (obj and game_minutes() - timer_btr_showed > timer_btr_freq) then
+		if (math_random() < 0.5) then
+			if (math_random() < prob) then
+				local s_author
+				local m_str = ""
+				m_str = format_template_btr(obj, "combat")
+				local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_btr_seen, 0)
+				if (author) then
+					s_author = get_npc_name(author)
+				else
+					return
+				end
+				do_news(m_str, s_author, math_random(timer_btr, timer_btr * 5), 15, "gen_info", author.id, 1)
+				timer_btr_showed = game_minutes()
+			end
+		end
+	end
+end
+
+function on_btr_flame(obj)
+	if (obj and game_minutes() - timer_btr_showed > timer_btr_freq) then
+		if (math_random() < prob) then
+			local s_author
+			local m_str = ""
+			m_str = format_template_btr(obj, "flame")
+			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_btr_seen, 0)
+			if (author) then
+				s_author = get_npc_name(author)
+			else
+				return
+			end
+			do_news(m_str, s_author, math_random(timer_btr, timer_btr * 5), 15, "gen_info", author.id, 1)
+			timer_btr_showed = game_minutes()
+		end
+	end
+end
+
+function on_btr_die(obj)
+	if (obj and game_minutes() - timer_btr_showed > timer_btr_freq) then
+		if (math_random() < prob) then
+			local s_author
+			local m_str = ""
+			m_str = format_template_btr(obj, "die")
+			local author = get_nearest_stalker(get_object_levelname(obj), get_object_position(obj), dist_btr_seen, 0)
+			if (author) then
+				s_author = get_npc_name(author)
+			else
+				return
+			end
+			do_news(m_str, s_author, math_random(timer_btr, timer_btr * 5), 15, "gen_info", author.id, 1)
+			timer_btr_showed = game_minutes()
+		end
+	end
+end
+
 -- Видели монстров. Будем спавнить.
 local reward_type = {
 	money	= 1,
@@ -2401,6 +2545,8 @@ function on_offline_stalker_death(victim_, killer_, weapon_)
 				if (m_s_weapon2 == 7 or m_s_weapon2 == 5) then m_killer_str = "граната" end
 			end
 			m_killer = format_death_by_weapon(weapon_)
+		elseif killer_:is_car() or killer_:is_helicopter() then
+			m_killer, m_killer_str = format_death_by_tech(killer_)
 		else
 			m_killer_str = "причина смерти - не установлена"
 			m_killer = ""
@@ -2458,6 +2604,8 @@ function on_offline_npc_death(victim_, killer_, weapon_)
 			m_killer = format_death_by_weapon(weapon_)
 		elseif killer_:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer_)
+		elseif killer_:is_car() or killer_:is_helicopter() then
+			m_killer = format_death_by_tech(killer_)
 		else
 			m_killer = ""
 		end

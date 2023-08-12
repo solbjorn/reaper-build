@@ -1,111 +1,41 @@
 -- UI Radiation Mod
 -- by sokol_jack (sokol_jack@mail.ru)
 -- version 0.3
-local posx = 0
-local posy = 0
-local width = 0
-local height = 0
-local p_dx = 0
-local p_dy =0
-local p_width = 0
-local p_height = 0
-local saved_aspect = 0
-local saved_width = -1
 
-local detectors = { "detector_simple", "detector_advances", "detector_elite", "detector_elite_sak" }
+local progress, last_rad
+local enabled
 
-function update(bShow)
-	if (Actor == nil) then return end
-	if (Actor.radiation == nil) then return end
-	local hud_rad = get_hud()
-	local wnd_
-	if (hud_rad) then
-		local custom_static_rad_back = hud_rad:GetCustomStatic("hud_rad_back")
-		local custom_static_rad = hud_rad:GetCustomStatic("hud_rad_level")
-		if ((screen.height / screen.width) ~= saved_aspect) then
-			local asp = (screen.height / screen.width)
-			if (math.abs(asp - saved_aspect) > 0.01) then
-				saved_aspect = (screen.height / screen.width)
-				if(custom_static_rad_back) then hud_rad:RemoveCustomStatic("hud_rad_back") end
-				if(custom_static_rad) then hud_rad:RemoveCustomStatic("hud_rad_level") end
-				custom_static_rad_back = nil
-				custom_static_rad = nil
-			end
-		end
-		local bDetected = false
-		if bShow then
-			for i, det in ipairs(detectors) do
-				if Inventory:on_belt(det) then
-					bDetected = true
-					break
-				end
-			end
-		end
-		if not bDetected then
-			if (custom_static_rad_back) then hud_rad:RemoveCustomStatic("hud_rad_back") end
-			if (custom_static_rad) then hud_rad:RemoveCustomStatic("hud_rad_level") end
-			return
-		end
-		if (custom_static_rad_back == nil or custom_static_rad == nil) then
-			if ((screen.height / screen.width) < 0.75) then --widescreen. Use coords from maingame_16.xml
-				read_params(true)
-			else --normal -- Use coords from maingame.xml
-				read_params()
-			end
-
-			if custom_static_rad_back == nil then
-				hud_rad:AddCustomStatic("hud_rad_back", true)
-				custom_static_rad_back = hud_rad:GetCustomStatic("hud_rad_back")
-				if (custom_static_rad_back and custom_static_rad_back.wnd) then
-					 wnd_ = custom_static_rad_back:wnd()
-					 if (wnd_) then
-						wnd_:SetWndPos(posx, posy)
-						wnd_:SetHeight(height)
-						wnd_:SetWidth(width)
-					end
-				end
-			end
-			if custom_static_rad == nil then
-				hud_rad:AddCustomStatic("hud_rad_level", true)
-				custom_static_rad = hud_rad:GetCustomStatic("hud_rad_level")
-				if (custom_static_rad and custom_static_rad.wnd) then
-					wnd_ = custom_static_rad:wnd()
-					if(wnd_) then
-						wnd_:SetWndPos(posx + p_dx, posy + p_dy)
-						wnd_:SetHeight(p_height)
-						wnd_:SetWidth(p_width)
-					end
-				end
-			end
-		end
-		local new_width = Actor.radiation * p_width
-		if (saved_width ~= new_width) then
-			if Actor.radiation > 0.0 then
-				custom_static_rad:wnd():SetWidth(new_width)
-			else
-				custom_static_rad:wnd():SetWidth(new_width)
-			end
-		end
-	end
+function switch(state)
+	enabled = state == true
 end
 
-function read_params(bWide)
-	local ui_rad_ini = ini_file("misc\\ui_rad.ltx")
-	if not ui_rad_ini then return end
-	section = "ui_rad"
-	if bWide == true then section = "ui_rad_wide" end
-	if ui_rad_ini:section_exist(section) then
-		posx = ui_rad_ini:r_float(section, "x") or 0
-		posy = ui_rad_ini:r_float(section, "y") or 0
-		width = ui_rad_ini:r_float(section, "width") or 0
-		height = ui_rad_ini:r_float(section, "height") or 0
+function add_static()
+	local back = hud:AddCustomStatic("hud_rad_back"):wnd()
+
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_custom_msgs.xml")
+	progress = xml:InitProgressBar("hud_rad_level", back)
+end
+
+function remove_static()
+	hud:RemoveCustomStatic("hud_rad_back")
+	progress = nil
+	last_rad = nil
+end
+
+function update()
+	if not enabled then
+		if progress then
+			remove_static()
+		end
+		return
 	end
-	section = "ui_rad_progress"
-	if bWide == true then section = "ui_rad_progress_wide" end
-	if ui_rad_ini:section_exist(section) then
-		p_dx = ui_rad_ini:r_float(section, "dx") or 0
-		p_dy = ui_rad_ini:r_float(section, "dy") or 0
-		p_width = ui_rad_ini:r_float(section, "width") or 0
-		p_height = ui_rad_ini:r_float(section, "height") or 0
+	if not progress then
+		add_static()
+	end
+
+	if last_rad ~= Actor.radiation then
+		progress:SetProgressPos(refactor * Actor.radiation * 100)
+		last_rad = Actor.radiation
 	end
 end

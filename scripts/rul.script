@@ -23,18 +23,18 @@ local car5_price = 35000
 local car6_price = 30000
 
 function gen_car_spawn (first_speaker, second_speaker, type, pos, gv, lv, price)
-    create(type,pos,gv,lv,65535)
+    local obj = create(type,pos,gv,lv,65535)
     lost_money(price)
 
     amk.add_spot_on_map(obj.id,"green_location",type)
 end
 
 function car1_spawn (fs, ss)
-     gen_car_spawn (fs, ss,"vehicle_zaz",vector():set(-208.9,-20.3,-167.8),43917,50,car1_price)
+     gen_car_spawn (fs, ss,"vehicle_zaz_01",vector():set(-208.9,-20.3,-167.8),43917,50,car1_price)
 end
 
 function car2_spawn (fs, ss)
-     gen_car_spawn (fs, ss,"vehicle_niva",vector():set(-90,-2.6,-224.4),118854,271,car2_price)
+     gen_car_spawn (fs, ss,"vehicle_niva_01",vector():set(-90,-2.6,-224.4),118854,271,car2_price)
 end
 
 function car3_spawn (fs, ss)
@@ -57,7 +57,7 @@ end
 
 function car6_spawn (fs, ss)
      -- ; Спавн тачки на Складах, на хуторе долга
-     gen_car_spawn (fs, ss,"vehicle_niva",vector():set(-217.06,-12.59,59.5),111821,1679,car6_price)
+     gen_car_spawn (fs, ss,"vehicle_niva_01",vector():set(-217.06,-12.59,59.5),111821,1679,car6_price)
 end
 
 function have_money_for_car1()

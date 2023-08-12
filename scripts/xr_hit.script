@@ -9,7 +9,7 @@ function action_process_hit:hit_callback(obj, amount, local_direction, who, bone
 	if amount == 0 then
 		return
 	end
-	db.storage[obj:id()].hit.who = (who and who:id()) or -1
+	db.storage[obj:id()].hit.who = reap.hit_by_actor(who)
 	if db.storage[self.object:id()].active_scheme then
 		xr_logic.try_switch_to_another_section(obj, self.st)
 	end

@@ -42,8 +42,7 @@ function artefacts_statistic(obj)
 	if obj:is_artefact() then
 		local se_obj = AI:object(obj:id())
 		if not se_obj.already_taken then
-			local inv_name = read_line(obj:section(), "inv_name", "string")
-			actor_stats.add_points("artefacts", inv_name, 1, 1)
+			actor_stats.add_points("artefacts", get_inventory_item_data(obj, "inv_name"), 1, 1)
 			Actor:set_character_rank(Actor:character_rank() + 1)
 			se_obj.already_taken = true
 		end

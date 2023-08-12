@@ -12,12 +12,17 @@
 local hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
 ---------------------------------------------------------------------------------------------------
 function reattach_statics()
-	local statics = { "hud_timer", "hud_timer_text", "hud_time", "hud_date", "cs_psy_danger", "cs_radiation_danger", "gun_jammed", "cant_walk", "cant_walk_weight", "gun_reload" }
+	local statics = { "hud_timer", "hud_timer_text", "hud_time", "hud_date", "cs_psy_danger", "cs_radiation_danger", "gun_jammed", "cant_walk", "cant_walk_weight", "car_speedometer_background", "car_speedometer_transmission", "car_speedometer_pointer", "car_fuel_static", "gun_reload" }
 	for i = 1, #statics do
 		hud:RemoveCustomStatic(statics[i])
 	end
 	hud_interface_mgr.nextupd_200 = 0
 	hud_interface_mgr.nextupd_1000 = 0
+	hud_interface_mgr.night_vision_active = false
+	ui_rad.remove_static()
+end
+---------------------------------------------------------------------------------------------------
+function rect_change()
 	hud_interface_mgr.night_vision_active = false
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -125,6 +130,21 @@ function bunker_cooling_sound()
 			cooling_snd:stop()
 			cooling_snd = nil
 		end
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PDA news
+--]]-----------------------------------------------------------------------------------------------
+function dynamic_news()
+	local community = math.random(4)
+	if community == 1 then
+		send_tip(translate("stalker_phrase_"..math.random(25)), generate_name("stalker"), 0, 10, "stalker", "pda_news")
+	elseif community == 2 then
+		send_tip(translate("dolg_phrase_"..math.random(15)), generate_name("stalker"), 0, 10, "dolg", "pda_news")
+	elseif community == 3 then
+		send_tip(translate("freedom_phrase_"..math.random(16)), generate_name("stalker"), 0, 10, "freedom", "pda_news")
+	elseif community == 4 then
+		send_tip(translate("bandit_phrase_"..math.random(23)), generate_name("bandit"), 0, 10, "bandit", "pda_news")
 	end
 end
 --[[-----------------------------------------------------------------------------------------------

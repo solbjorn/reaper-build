@@ -104,7 +104,7 @@ function clear_fuel(first_speaker, second_speaker)
 		trader = first_speaker
 	end
 	trader:iterate_inventory( function (dummy,item)
-	if item:section() == "amk_ballon" or item:section() == "amk_kanistra" or item:section() == "wpn_flame" then
+	if item:section() == "amk_ballon" or item:section() == "explosive_mobiltank" or item:section() == "wpn_flame" then
 	  AI:release(AI:object(item:id()), true)
 	end
 	end, nil)
@@ -255,11 +255,7 @@ function have_a_ballon()
 end
 
 function have_a_kanistra()
-    local actor = Actor
-    if actor ~= nil and actor:object("amk_kanistra") ~= nil then
-		return true
-	end
-	return false
+	return has("explosive_mobiltank")
 end
 
 function have_a_flamethrower()
@@ -387,13 +383,13 @@ end
 
 function calc_reload(first_speaker, second_speaker)
 	if have_a_ballon() and have_a_kanistra() then
-		if not has("amk_kanistra", 2) or not has("amk_ballon", 2) then
-			lost("amk_kanistra")
+		if not has("explosive_mobiltank", 2) or not has("amk_ballon", 2) then
+			lost("explosive_mobiltank")
 			lost("amk_ballon")
 --rpm в конфиге 300, значит полминуты - 150, а минута 300.
 			amk.save_variable("flame_reload_count", min_fuel)
 		else
-			lost("amk_kanistra", 2)
+			lost("explosive_mobiltank", 2)
 			lost("amk_ballon", 2)
 			amk.save_variable("flame_reload_count", max_fuel)
 		end

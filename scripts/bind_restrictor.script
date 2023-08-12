@@ -11,6 +11,7 @@ local removed_names = {
 	['rostok_sniper_killer_restrictor'] = true,
 	['agr_u_bloodsucker_rest'] = true,
 
+	esc_tutorial_trigger				= true,
 	esc_tutorial_zone				= true,
 	esc_anomaly_tips_zone				= true,
 	trader_zone					= true,
@@ -28,10 +29,28 @@ local removed_names = {
 
 local updatable_binders = {}    -- биндеры, которые требуют обновлений (update)
 
+for i, int in ipairs({ 200, 1000, 5000 }) do
+	updatable_binders[int] = {
+		binders		= { },
+		last		= 0,
+		["next"]	= 0
+	}
+end
+
 function actor_update(delta)
-  for i, v in pairs(updatable_binders) do
-    v:actor_update(delta)
-  end
+	for int, cont in pairs(updatable_binders) do
+		if cont.next <= time_real_ms then
+			delta = time_real_ms - cont.last
+			cont.last = time_real_ms
+
+			for id, rest in pairs(cont.binders) do
+				cont.binders[id] = nil
+				rest:actor_update(delta)
+			end
+
+			cont.next = time_real_ms + int
+		end
+	end
 end
 
 function bind( obj )
@@ -63,28 +82,37 @@ function restrictor_binder:reinit()
 end
 
 function restrictor_binder:net_spawn(data)
-  if not object_binder.net_spawn( self,data ) then
-    return false
-  end
-
-  db.add_zone( self.object )
-
-  -- Не регистрироваться на апдейты, если у объекта в customdata
-  -- нет секции logic вообще.
-	local ini = self.object:spawn_ini()
-	if ini and xr_logic.logic_not_empty(self.object, ini) then
-		updatable_binders[self.object:id()] = self
+	if not object_binder.net_spawn(self, data) then
+		return false
 	end
 
-	if self.object:section() == "zone_psy" then
-		ogsm_psyzones.register(self.object)
+	local obj = self.object
+	db.add_zone(obj)
+
+	-- Не регистрироваться на апдейты, если у объекта в customdata
+	-- нет секции logic вообще.
+	local ini = obj:spawn_ini()
+	if not (ini and xr_logic.logic_not_empty(obj, ini)) then
+		return true
 	end
 
-  return true
+	local sect = obj:section()
+	if sect == "zone_psy" then
+		ogsm_psyzones.register(obj)
+	end
+
+	self.removable = sect == "space_restrictor" and
+			 obj:name() == "space_restrictor" .. obj:id() and
+			 not obj:is_story_object()
+	self.radius = obj:get_shape_radius()
+	updatable_binders[200].binders[obj:id()] = self
+
+	return true
 end
 
 function restrictor_binder:net_destroy()
-  local st = db.storage[self.object:id()]
+	local id = self.object:id()
+	local st = db.storage[id]
   if st.active_scheme then
     xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
   end
@@ -95,7 +123,9 @@ function restrictor_binder:net_destroy()
 
   db.del_zone( self.object )
 
-  updatable_binders[self.object:id()] = nil
+	for int, cont in pairs(updatable_binders) do
+		cont.binders[id] = nil
+	end
 
   object_binder.net_destroy(self)
 end
@@ -107,15 +137,22 @@ function restrictor_binder:actor_update(delta)
 		xr_logic.initialize_obj(self.object, self.st, self.loaded, modules.stype_restrictor)
   end
 
-	if self.st.active_section ~= nil then
-		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
-	elseif self.object:section() == "space_restrictor" and
-	       self.object:name() == "space_restrictor" .. self.object:id() and
-	       not self.object:is_story_object() then
-		release(self.object)
-	else
-		updatable_binders[self.object:id()] = nil
+	if self.st.active_section == nil then
+		if self.removable then
+			release(self.object)
+		end
+		return
 	end
+
+	xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+
+	local dist = self.object:position():distance_to(Actor:position()) - self.radius
+	if dist < 0 then dist = 0 end
+
+	local tbl = (dist < 25 and 200) or (dist < 100 and 1000) or 5000
+	updatable_binders[tbl].binders[self.object:id()] = self
+
+	return true
 end
 
 function restrictor_binder:net_save_relevant()

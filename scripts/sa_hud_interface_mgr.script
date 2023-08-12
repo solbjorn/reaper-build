@@ -12,10 +12,10 @@ local hud_interface_mgr
 --]]-----------------------------------------------------------------------------------------------
 class "CHudInterfaceMgr"
 function CHudInterfaceMgr:__init()
+	hud:AddCustomStatic("btr_crosshair"):wnd():SetWidth(0)
 	hud:AddCustomStatic("night_vision_static")
-	local nv = hud:GetCustomStatic("night_vision_static"):wnd()
-	nv:SetWidth(0)
-	self.night_vision = nv
+	self.night_vision = hud:GetCustomStatic("night_vision_static"):wnd()
+	self.night_vision:SetWidth(0)
 	self.night_vision_active = false
 	self.nextupd_200 = 0
 	self.nextupd_1000 = 0
@@ -44,7 +44,7 @@ function CHudInterfaceMgr:reload_static()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:date_static()
-	if is_hud_draw() then
+	if is_hud_draw() and not hud:GetCustomStatic("hud_timer") then
 		hud:AddCustomStatic("hud_time", true):wnd():SetText(time_game_ct:timeToString(game.CTime.TimeToMinutes))
 		hud:AddCustomStatic("hud_date", true):wnd():SetText(time_game_ct:dateToString(game.CTime.DateToDay))
 	else

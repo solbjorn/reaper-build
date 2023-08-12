@@ -2,6 +2,7 @@
   TAG фенечка 1.2 стр.240, 369-387
 ]]
 
+local bind_restrictor_actor_update = bind_restrictor.actor_update
 local game_get_game_time = game.get_game_time
 local object_binder_update = object_binder.update
 local string_sub = string.sub
@@ -63,7 +64,8 @@ function actor_binder:net_spawn(data)
 	xr_box.init_drop_box()
 
 	sa_callbacks.actor_net_spawn()
-	set_extensions_flags(extensions_flags.key_press + extensions_flags.key_release)
+	set_extensions_flags(extensions_flags.key_press + extensions_flags.key_release +
+			     extensions_flags.mouse_wheel + extensions_flags.mouse_move)
 
   -- added by xStream for AMK miniSDK
   xrs_ai.actor_net_spawn(self)
@@ -108,9 +110,13 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.death, nil)
 	self.object:set_callback(callback.on_key_press, nil)
 	self.object:set_callback(callback.on_key_release, nil)
+	self.object:set_callback(callback.on_mouse_wheel, nil)
+	self.object:set_callback(callback.on_mouse_move, nil)
 	self.object:set_callback(callback.on_belt, nil)
 	self.object:set_callback(callback.on_ruck, nil)
 	self.object:set_callback(callback.on_slot, nil)
+	self.object:set_callback(callback.on_attach_vehicle, nil)
+	self.object:set_callback(callback.on_detach_vehicle, nil)
 	self.object:set_callback(callback.entity_alive_before_hit, nil)
 
   if sr_psy_antenna.psy_antenna then
@@ -146,9 +152,13 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.death, self.death_callback, self)
 	self.object:set_callback(callback.on_key_press, self.on_key_press, self)
 	self.object:set_callback(callback.on_key_release, self.on_key_release, self)
+	self.object:set_callback(callback.on_mouse_wheel, self.on_mouse_wheel, self)
+	self.object:set_callback(callback.on_mouse_move, self.on_mouse_move, self)
 	self.object:set_callback(callback.on_belt, self.on_item_belt, self)
 	self.object:set_callback(callback.on_ruck, self.on_item_ruck, self)
 	self.object:set_callback(callback.on_slot, self.on_item_slot, self)
+	self.object:set_callback(callback.on_attach_vehicle, self.attach_vehicle, self)
+	self.object:set_callback(callback.on_detach_vehicle, self.detach_vehicle, self)
 	self.object:set_callback(callback.entity_alive_before_hit, self.before_hit_callback, self)
 
 	actor_flags.alive = self.object:alive()
@@ -268,6 +278,14 @@ function actor_binder:on_key_release(dik)
 	sa_callbacks.key_release(dik)
 end
 ----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_mouse_wheel(vol)
+	sa_callbacks.mouse_wheel(vol)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_mouse_move()
+	sa_callbacks.mouse_move()
+end
+----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_belt(obj)
 	sa_callbacks.item_belt(obj)
 end
@@ -280,7 +298,17 @@ function actor_binder:on_item_slot(obj)
 	sa_callbacks.item_slot(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:before_hit_callback(hit_data, ignore_flags)
+function actor_binder:attach_vehicle(car)
+	sa_callbacks.attach_vehicle(car)
+	actor_flags.in_car = true
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:detach_vehicle(car)
+	actor_flags.in_car = false
+	sa_callbacks.detach_vehicle(car)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:before_hit_callback()
 	sa_callbacks.hit_effector()
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -331,9 +359,9 @@ function actor_binder:update(delta)
 -- ----------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 
 	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
-	if next_200 <= time_real_ms then
-		bind_restrictor.actor_update(delta)
+	bind_restrictor_actor_update(delta)
 
+	if next_200 <= time_real_ms then
 		-- апдейт схемы детектора
 		self.actor_detector:update()
 

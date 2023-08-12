@@ -5,7 +5,6 @@
 -- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
-local clsid_car_s = clsid.car_s
 local clsid_projector = clsid.projector
 
 function init(obj)
@@ -49,7 +48,15 @@ function generic_physics_binder:reinit()
 	db.storage[self.object:id()] = self.st
 
 	self.is_drop_box = self.object:spawn_ini():section_exist("drop_box")
-  self.health=self.object:get_car() and self.object:get_car():GetfHealth()
+
+	self.car = self.object:get_car()
+	if not self.car then return end
+
+	self.health = self.car:GetfHealth()
+	self.is_btr = self.object:is_btr()
+	if self.is_btr then
+		self.nextupd_1000 = 0
+	end
 end
 
 function generic_physics_binder:update(delta)
@@ -94,18 +101,27 @@ function generic_physics_binder:update(delta)
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
 
 		-- для бтра hit_callback и death_callback не вызывается. заткнём эти дырки.
-    if self.health and (not self.nofixonhit) then
-      local health=self.object:get_car() and self.object:get_car():GetfHealth()
-      if health then
-			if health < 0 then
+		if self.health and not self.nofixonhit then
+			local health = self.car:GetfHealth()
+			local amount = self.health - health
+			self.health = health
+			if health <= 0 then
 				self:death_callback(self.object, Actor)
-			elseif self.health-health>0.001 then
-          self.health=health
-          self:hit_callback(self.object, self.health-health, vector():set(1,0,0), Actor, 0)
-          self.nofixonhit=nil
-        end
-      end
-    end
+				self.nofixonhit = nil
+			elseif amount > 0.0001 then
+				self:hit_callback(self.object, amount, vector():set(1, 0, 0), Actor, 0)
+				self.nofixonhit = nil
+			end
+		end
+	end
+
+	if self.is_btr and self.nextupd_1000 <= time_real_ms then
+		if self.health > 0.005 and Actor:see(self.object) and
+		   self.object:position():distance_to(Actor:position()) < 150 then
+			amk.actor_see_enemy(self.object, true)
+		end
+
+		self.nextupd_1000 = time_real_ms + 1000
 	end
 end
 
@@ -116,10 +132,7 @@ function generic_physics_binder:net_spawn(data)
 
 	if self.is_drop_box then
 		self.box_items = xr_box.ph_item_box(self.object)
-	end
 
-	-- car_physic_fix
-	if self.object:clsid() == clsid_car_s and self.object:section() ~= "vehicle_btr" then
 		local h = hit()
 		h.draftsman = self.object
 		h.type = hit.strike
@@ -129,13 +142,25 @@ function generic_physics_binder:net_spawn(data)
 		self.object:hit(h)
 	end
 
-	amk.on_net_spawn(self.object)
+	-- flying cars fix
+	if self.car then
+		xr_logic.mob_capture(self.object, true)
+		action(self.object, move(move.off, 0), cond(cond.time_end, 10))
+	end
+
+	if self.is_btr then
+		amk.on_net_spawn(self.object, true)
+		news_main.on_btr_seen(self.object)
+	else
+		sa_callbacks.physic_object_net_spawn(self.object)
+	end
 
 	return true
 end
 
 function generic_physics_binder:net_destroy()
-	local st = db.storage[self.object:id()]
+	local id = self.object:id()
+	local st = db.storage[id]
 	if st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
@@ -144,7 +169,10 @@ function generic_physics_binder:net_destroy()
         self.particle:stop()
     end
 
-	db.storage[self.object:id()] = nil
+	if self.is_btr then
+		amk_mod.btrs_friends[id] = nil
+	end
+	db.storage[id] = nil
 
 	self.object:set_callback(callback_hit, nil)
 	self.object:set_callback(callback_death, nil)
@@ -176,22 +204,51 @@ function generic_physics_binder:use_callback(obj, who)
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
 
-	--AMK UTILS--
-	amk.on_use(obj, who)
-	--AMK UTILS--
+	if self.is_btr then
+		local snd = voice("characters_voice\\human_03\\military\\fight\\fire\\fire_" .. math.random(1, 5))
+		snd:play_at_pos(obj, obj:position(), sound_object.s3d)
+		snd = voice("weapons\\pm\\pm_shoot")
+		snd:play_at_pos(obj, obj:position(), sound_object.s3d)
+		Actor:kill(obj)
+	end
 end
 
 function generic_physics_binder:hit_callback(obj, amount, local_direction, who, bone_index)
-  self.nofixonhit=true
+	if self.health then
+		self.nofixonhit = true
+	end
+
 	if self.st.ph_on_hit then
 		xr_logic.issue_event(self.object, self.st.ph_on_hit, "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
+
+	if not self.car then return end
+
+	local who_id = reap.hit_by_actor(who)
+	if who_id ~= -1 then
+		xr_logic.pstor_store(self.object, "last_hit", who_id)
+	end
+
+	if not self.is_btr then return end
+
+	if amount > 0 and who_id == 0 then
+		amk_mod.calc_adrenaline("actor_hit_enemy", obj, true)
+	end
+
+	if self.health < 0.2 and not self.in_flames then
+		news_main.on_btr_flame(obj)
+		self.in_flames = true
+	end
 end
 
 function generic_physics_binder:death_callback(victim, who)
+	if self.health then
+		self.nofixonhit = true
+	end
+
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
@@ -204,8 +261,20 @@ function generic_physics_binder:death_callback(victim, who)
         graph:accessible(self.disable_graph_point, true)
     end
 
-	if self.object:clsid() == clsid_car_s and who:id() == 0 then
-		xr_statistic.addKillCount(self.object)
+	if self.is_btr then
+		amk_mod.btrs_friends[self.object:id()] = nil
+		news_main.on_btr_die(victim)
+	end
+	if self.car then
+		local who_id = reap.hit_by_actor(who)
+		local hit_id = xr_logic.pstor_retrieve(victim, "last_hit", -1, true)
+
+		if who_id == -1 then
+			who_id = hit_id
+		end
+		if who_id == 0 then
+			xr_statistic.addKillCount(self.object)
+		end
 	end
 
 	if self.is_drop_box then

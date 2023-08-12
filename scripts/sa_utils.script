@@ -9,6 +9,23 @@
 _G.base_time_factor = level.get_time_factor()
 _G.pressed_keys = {}
 --[[-----------------------------------------------------------------------------------------------
+ * Car
+--]]-----------------------------------------------------------------------------------------------
+function _G.change_car_health(obj, health)
+	if obj and health > 0 then
+		local car = obj:get_car()
+		if car then
+			car:SetfHealth(math.clamp(car:GetfHealth() + health, 0, 1))
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.change_car_fuel(obj, fuel)
+	if obj and fuel > 0 then
+		obj:set_fuel(math.clamp(obj:get_fuel() + fuel, 0, obj:get_fuel_tank()))
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Object data
 --]]-----------------------------------------------------------------------------------------------
 function _G.get_weapon_data(obj, param)
@@ -92,6 +109,9 @@ function _G.get_inventory_item_data(obj, param)
 	if obj and param then
 		if param == "slot" then
 			return obj:get_inventory_item_int(nil, 156)
+		elseif param == "inv_name" then
+			set_int_arg0(140)
+			return obj:get_inventory_item_shared_str()
 		end
 	end
 end
@@ -105,6 +125,24 @@ function _G.get_hud_data(obj, param)
 		if param == "hud_section" then
 			set_int_arg0(24)
 			return obj:get_hud_shared_str()
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.get_car_data(obj, param)
+	if obj and param then
+		if param == "current_transmission_num" then
+			return obj:get_car_int(nil, 1560)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.set_car_data(obj, param, value)
+	if obj and param and value then
+		if param == "camera_position" then
+			obj:set_car_float(nil, value.x, 1324)
+			obj:set_car_float(nil, value.y, 1328)
+			obj:set_car_float(nil, value.z, 1332)
 		end
 	end
 end
@@ -165,6 +203,18 @@ function _G.camera_rotate_on_position(pos, speed, action, ...)
 				end
 			end
 		)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * HUD
+--]]-----------------------------------------------------------------------------------------------
+function _G.add_message(xml, text, x, y, a, r, g, b)
+	if xml and text then
+		local st = hud:AddCustomStatic(xml, true):wnd()
+		st:SetTextST(text)
+		if x then st:SetTextX(x) end
+		if y then st:SetTextY(y) end
+		if a and r and g and b then st:SetTextColor(a, r, g, b) end
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -302,6 +352,34 @@ function _G.make_hit(victim, power, impulse, type, direction, who, bone_name)
 		h.draftsman = who
 		victim:hit(h)
 	end
+end
+---------------------------------------------------------------------------------------------------
+local names_cnt = { }
+for i, group in ipairs({ "stalker", "bandit", "science", "private", "sergeant", "lieutenant", "captain" }) do
+	names_cnt[group] = {
+		name	= config:r_u32("stalker_names_" .. group, "name_cnt"),
+		lname	= config:r_u32("stalker_names_" .. group, "last_name_cnt")
+	}
+end
+---------------------------------------------------------------------------------------------------
+function _G.generate_name(group)
+	local cnt = names_cnt[group]
+	if not cnt then
+		return ""
+	end
+	local fname = translate("name_stalker_" .. math.random(cnt.name))
+	local sname = translate("lname_stalker_" .. math.random(cnt.lname))
+	return string.format("%s %s", fname, sname)
+end
+---------------------------------------------------------------------------------------------------
+function _G.check_time_interval(hours_from, minutes_from, hours_to, minutes_to)
+	local time_from = game.CTime():set_table({ hour = hours_from, ["min"] = minutes_from })
+	local time_to = game.CTime():set_table({ hour = hours_to, ["min"] = minutes_to })
+	local cur_time = game.CTime():set_table({
+		hour	= level.get_time_hours(),
+		["min"]	= level.get_time_minutes()
+	})
+	return cur_time >= time_from and cur_time < time_to
 end
 ---------------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)

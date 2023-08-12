@@ -1,0 +1,62 @@
+-- звук реакции пилотов вертолёта на разные события
+-- Чугай
+
+local snd = {
+	snd_see_enemy = {
+		voice( [[helicopter\see_enemy_1]] ),
+		voice( [[helicopter\see_enemy_2]] ),
+		voice( [[helicopter\see_enemy_3]] ),
+		voice( [[helicopter\see_enemy_4]] ),
+		voice( [[helicopter\see_enemy_5]] ),
+		voice( [[helicopter\see_enemy_6]] ),
+		voice( [[helicopter\see_enemy_7]] )
+	},
+	snd_hit = {
+		voice( [[helicopter\hit_1]] ),
+		voice( [[helicopter\hit_2]] ),
+		voice( [[helicopter\hit_3]] ),
+		voice( [[helicopter\hit_4]] ),
+		voice( [[helicopter\hit_5]] ),
+		voice( [[helicopter\hit_6]] ),
+		voice( [[helicopter\hit_7]] ),
+		voice( [[helicopter\hit_8]] ),
+		voice( [[helicopter\hit_9]] )
+	},
+	snd_damaged = {
+		voice( [[helicopter\damage_1]] ),
+		voice( [[helicopter\damage_2]] ),
+		voice( [[helicopter\damage_3]] ),
+		voice( [[helicopter\damage_4]] )
+	},
+	snd_down = {
+		voice( [[helicopter\death_1]] ),
+		voice( [[helicopter\death_2]] ),
+		voice( [[helicopter\death_3]] ),
+		voice( [[helicopter\death_4]] ),
+		voice( [[helicopter\death_5]] ),
+		voice( [[helicopter\death_6]] )
+	}
+}
+
+--------------------------------------------------------------------------------
+
+function play_snd( st, snd_set, priority )
+	if not st.mute and
+	   ( not st.snd_obj or
+	   not st.snd_obj:playing() or
+	   st.snd_priority < priority )
+	then
+		stop_snd( st )
+
+		st.snd_obj = table.random(snd[snd_set])
+		st.snd_obj:play( Actor, 0, sound_object.s2d )
+
+		st.snd_priority = priority
+	end
+end
+
+function stop_snd( st )
+	if st.snd_obj then
+		st.snd_obj:stop()
+	end
+end

@@ -1092,7 +1092,33 @@ function add_medkit(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "medkit", "in")
 end
 function set_community(actor, npc)
-	Actor:set_character_community("stranger", 0, 0)
+	local gw = relation_registry.community_goodwill("bandit", 0)
+	if gw < 0 and not has_value("bandit_goodwill") then
+		set_value("bandit_goodwill", gw)
+	end
+	relation_registry.set_community_goodwill("bandit", 0, 500)
+
+	-- поссорим актёра с конвоем Макса Любера
+	local obj
+	for i = 1, 2 do
+		obj = server_object("val_escort_guard" .. i)
+		if obj and obj:alive() then
+			relation_registry.set_goodwill(obj.id, 0, -1000)
+		end
+	end
+
+	-- Помирим Макса Любера и Пулю с Монголом
+	obj = server_object("val_escort_bandit_halfdead")
+	if not (obj and obj:alive()) then return end
+
+	local npc
+	for i, name in ipairs({ "val_escort_nap1", "val_escort_captive" }) do
+		npc = server_object(name)
+		if npc and npc:alive() then
+			relation_registry.set_goodwill(obj.id, npc.id, 1500)
+			relation_registry.set_goodwill(npc.id, obj.id, 1500)
+		end
+	end
 end
 function drink_vodka()
 	Actor:eat(Actor:object("vodka"))
@@ -1167,8 +1193,12 @@ function add_tail()
 	if curr_level == "l04_darkvalley" then
 		local obj=AI:story_object(425)
 		if obj and obj:is_stalker() and obj:alive() then
-			if Actor:has_info("val_bandit_talk") then
-				set_value("bandit_goodwill", relation_registry.community_goodwill("bandit", 0))
+			if has_info("val_bandit_talk") then
+				local gw = relation_registry.community_goodwill("bandit", 0)
+				if gw < 0 and not has_value("bandit_goodwill") then
+					set_value("bandit_goodwill", gw)
+				end
+
 				relation_registry.set_community_goodwill("bandit", 0, 500)
 				reset = false
 			end

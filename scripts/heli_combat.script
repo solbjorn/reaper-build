@@ -20,16 +20,6 @@ local round_shoot_delay          = 2000
 
 local dummy_vector = vector()
 
-local debug_combat_type
-
-function debug_switch_combat_type()
-	if debug_combat_type == combat_type_flyby then
-		debug_combat_type = combat_type_search
-	else
-		debug_combat_type = combat_type_flyby
-	end
-end
-
 function distance_2d( a, b )
 	return math.sqrt( (b.x-a.x)^2 + (b.z-a.z)^2 )
 end
@@ -80,7 +70,8 @@ function heli_combat:__init( object, heliObject )
 	self.attack_before_retreat = false
 	self.enemy_forgetable      = true
 	self.section_changed       = false
-	debug_combat_type          = nil
+
+	self.nextupd_1000 = 0
 end
 
 function heli_combat:read_custom_data( ini, section )
@@ -283,13 +274,6 @@ function heli_combat:update_forgetting()
 end
 
 function heli_combat:update_combat_type( see_enemy )
-	-- DEBUG
-	if debug_combat_type ~= nil then
-		self:set_combat_type( debug_combat_type )
-		return
-	end
-	--------
-
 	local ct = self.combat_type
 
 	if self.combat_type == combat_type_flyby then
@@ -399,6 +383,14 @@ function heli_combat:update()
 
 	local see_enemy = self:update_enemy_visibility()
 
+	if self.nextupd_1000 <= time_real_ms then
+		if see_enemy and self.enemy_id == 0 then
+			amk.enemy_see_actor(self.object, true)
+		end
+
+		self.nextupd_1000 = time_real_ms + 1000
+	end
+
 	self:update_combat_type( see_enemy )
 
 	if self.combat_type == combat_type_search then
@@ -471,6 +463,10 @@ function heli_combat:round_update_shooting( see_enemy )
 		if self.round_begin_shoot_time then
 			if self.round_begin_shoot_time < time_global() then
 				self.heliObject:SetEnemy( self.enemy )
+
+				if self.enemy_id == 0 then
+					amk.npc_shot_actor(self.object)
+				end
 			end
 		else
 			self.round_begin_shoot_time = time_global() + round_shoot_delay
@@ -556,6 +552,10 @@ function heli_combat:search_update_shooting( see_enemy )
 		if self.search_begin_shoot_time then
 			if self.search_begin_shoot_time < time_global() then
 				self.heliObject:SetEnemy( self.enemy )
+
+				if self.enemy_id == 0 then
+					amk.npc_shot_actor(self.object)
+				end
 			end
 		else
 			self.search_begin_shoot_time = time_global() + search_shoot_delay
@@ -663,6 +663,10 @@ function heli_combat:flyby_update_flight( see_enemy )
 		if not self.state_initialized then
 			self.heliObject:SetEnemy( self.enemy )
 			self.heliObject:UseFireTrail( true )
+
+			if self.enemy_id == 0 then
+				amk.npc_shot_actor(self.object)
+			end
 
 			self.flyby_states_for_one_pass = self.flyby_states_for_one_pass - 1
 

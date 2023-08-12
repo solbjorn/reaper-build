@@ -6,6 +6,7 @@ angular_factor    		= 0.5
 ;-------------------------------------------------------------------------------
 
 [car_definition]
+time_to_explosion		= 10
 camera_pos        		= -0.7, 2.5, 3.0
 driving_wheels    		= back_left_wheel,back_right_wheel,front_left_wheel,front_right_wheel,back_left_wheel2,back_right_wheel2   ; ведущие колёса
 steering_wheels   		= front_left_wheel,front_right_wheel                                    ; рулевые колёса
@@ -17,11 +18,13 @@ exhausts          		= exhausts                                                  
 exhaust_particles 		= vehiclefx\exhausts\exhaust_kamaz
 damage              	= damage_bones
 
+trunk_enabled			= true
+
 ;-------------------------------------------------------------------------------
 ;------ Factory parameters of Engine -------------------------------------------
 
-fuel_tank         		= 250.         	; L
-fuel_consumption  		= 8		       	; L / (100k R); liters per 100 000 rotations
+fuel_tank         		= 250         	; L
+fuel_consumption  		= 200	       	; L / (100k R); liters per 100 000 rotations
 engine_power      		= 400        	; horse_power (kW=hp*0.808) max power
 max_power_rpm     		= 4000        	; (nominal rpm ) on this rpm value engine power reaches maximum
 max_torque_rpm    		= 3000       	; on this rpm engine torque reaches maximum
@@ -95,12 +98,14 @@ engine_stop				    = car\kamaz_stop
 transmission_switch		    = car\gear_old
 explosion_sound    		    = weapons\heli_explosion
 relative_pos       		    = 0.0,0.5,0.5
+engine_fail					= car\test_car_fail
+horn_sound					= car\car_horn
 
 ;-------------------------------------------------------------------------------
 ;------ animations params ------------------------------------------------------
 
 [doors]
-open_torque_factor 		= 10			;множитель момента сил для открывания двери (default = 2)
+open_torque_factor 		= 10	;множитель момента сил для открывания двери (default = 2)
 
 [animations]
 driver_animation_type 	= 0				;тип анимаций актера для данной машины.
@@ -158,7 +163,7 @@ front_right_wheel     	= 0.00001
 ;<hit_scale> 			- коэфф. изменения хита (уменьшения здоровья)
 ;<wound_scale> 			- коэфф. изменения величины открытой раны - незадействован
 
-default       			= 1, -1, 0.1
+default       			= 0.5, -1, 0.0 ;1, -1, 0.1
 
 [immunities]
 burn_immunity         	= 0.005
@@ -203,7 +208,7 @@ snd_explode 		        = weapons\heli_explosion
 wallmark_section		    = explosion_marks
 
 [explode_effector]
-effect_sect_name= effector_explode_hit
+effect_sect_name = effector_explode_hit
 
 ;-------------------------------------------------------------------------------
 ;------ Others params ----------------------------------------------------------
@@ -265,7 +270,7 @@ friction_factor         = 1.7		;
 ;------ destroyed part ---------------------------------------------------------
 
 [destroyed]
-physics\vehicles\kamaz\veh_kamaz_u_01
+physics\vehicles\kamaz\veh_kamaz_u_03
 
 [autoremove_parts]
 time					 = 900     ; время удаления обломков (c)
