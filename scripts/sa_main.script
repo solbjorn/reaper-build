@@ -7,6 +7,19 @@
  Last edit    : 11.11.2018
 --]]-----------------------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------------------------
+ * Hit effectors
+--]]-----------------------------------------------------------------------------------------------
+function hit_effectors(obj)
+	local attack_effector = config:r_string_cache(obj:section(), "attack_effector")
+	if attack_effector then
+		local ce_time = config:r_float_cache(attack_effector, "ce_time")
+		local ce_amplitude = config:r_float_cache(attack_effector, "ce_amplitude")
+		local ce_period_number = config:r_float_cache(attack_effector, "ce_period_number")
+		local ce_power = config:r_float_cache(attack_effector, "ce_power")
+		level.add_cam_effector3(ce_time, ce_amplitude, ce_period_number, ce_power)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Fix custom statics overlap
 --]]-----------------------------------------------------------------------------------------------
 local hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()

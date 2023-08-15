@@ -51,9 +51,11 @@ end
 local last_health
 ---------------------------------------------------------------------------------------------------
 function actor_hit(obj, amount, local_direction, who, bone_index)
-	if last_health then
-		reap.hit_effectors(last_health - Actor.health)
+	if not last_health then
+		return
 	end
+	reap.hit_effectors(last_health - Actor.health)
+	sa_main.hit_effectors(who)
 	last_health = nil
 end
 ---------------------------------------------------------------------------------------------------
