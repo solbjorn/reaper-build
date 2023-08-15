@@ -92,25 +92,40 @@ grenade_flame_particles		= weapons\generic_weapon01
 shell_point		 			= 0.00, 0.262, 0.189			; position (3rd person view) for shell to throw out
 shell_particles	 			= weapons\generic_shells	; name of the particles for shells
 
-PDM_disp_base = 9.0
+PDM_disp_base = 10.0
 PDM_disp_vel_factor = 2.3
 PDM_disp_accel_factor = 1.3
 PDM_crouch = 2.5
 PDM_crouch_no_acc = 1.8
 
-; ttc
-hit_power                 = 1.0, 1.15, 1.30, 1.55		;size of damage by bullet
-hit_impulse		 		= 2		;size of physic impulse by bullet
-hit_type 				= fire_wound 	;[] type of the wound
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.70, 0.73, 0.76, 0.79
+hit_impulse	        = 2
+hit_type 	        = fire_wound
+hit_rate	        = 1.92
+fire_distance       = 210
+bullet_speed		= 845
+rpm                 = 650
 
-fire_distance             = 200 ; maximum fire distance that bullet can fly
-bullet_speed = 430 ; starting bullet speed
-rpm                       = 550 ; max round per minute
-
-silencer_hit_power       		= 0.90, 1.10, 1.20, 1.30
+silencer_hit_power       		= 0.6
 silencer_hit_impulse	 		= 2
-silencer_fire_distance   		= 250
-silencer_bullet_speed	 		= 600
+silencer_fire_distance   		= 150
+silencer_bullet_speed	 		= 450
+
+weapon_min_queue_size_far = 15
+weapon_max_queue_size_far = 15
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 30
+weapon_max_queue_size_medium = 30
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 100
+weapon_max_queue_size_close = 100
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
 
 hud                      	= wpn_pkm_hud				; name of the section of the hud
 
@@ -153,31 +168,12 @@ snd_empty					= weapons\pkm\pkm_empty, 0.5
 snd_reload					= weapons\pkm\pkm_reload
 
 snd_switch					= weapons\groza_switch, 1.0, 0.5
-;------------------------------------------------------------------------------------------
-
-weapon_min_queue_size_far = 15
-weapon_max_queue_size_far = 15
-weapon_min_queue_interval_far = 500
-weapon_max_queue_interval_far = 700
-
-weapon_min_queue_size_medium = 30
-weapon_max_queue_size_medium = 30
-weapon_min_queue_interval_medium = 400
-weapon_max_queue_interval_medium = 600
-
-weapon_min_queue_size_close = 100
-weapon_max_queue_size_close = 100
-weapon_min_queue_interval_close = 300
-weapon_max_queue_interval_close = 500
 
 ;-----------------------------------------------------------------------------
 ;-- HUD DESCRIPTION
 ;-----------------------------------------------------------------------------
 
 [wpn_pkm_hud]
-
-;similar to corresponding params in weapon section but for 1st person view
-
 shell_point          		= 0.15, -0.03, -0.05
 shell_dir		 	= 0.0, 1.0, 0.0
 

@@ -8,15 +8,16 @@ scheduled				= off
 cform               	= skeleton
 class               	= WP_LR300
 min_radius          	= 0
-max_radius          	= 100
+max_radius			    = 100
 description		= enc_weapons1_wpn-p90
 
 ef_main_weapon_type		= 2
 ef_weapon_type			= 6
 
 ;-----------------------------------------------------------------------------------
-holder_range_modifier	= 1.0
-holder_fov_modifier	= 0.7
+;----------------------------------------------
+holder_range_modifier	= 1.15
+holder_fov_modifier		= 0.65
 ;-----------------------------------------------------------------------------------
 
 cost					= 3000
@@ -24,7 +25,7 @@ weapon_class			= assault_rifle
 ammo_limit				= 300
 ammo_elapsed			= 50
 ammo_mag_size			= 50
-fire_modes				= 1, -1
+fire_modes				= 1, 3, -1
 ammo_class			= ammo_5.7x28_ss190, ammo_5.7x28_ap
 hand_dependence			= 1
 single_handed			= 0
@@ -45,22 +46,19 @@ kill_msg_y			= 123
 kill_msg_width		= 69
 kill_msg_height		= 30
 
-fire_dispersion_base			= 0.18
+fire_dispersion_base	= 0.2
 control_inertion_factor			= 1.1f
-
-;Отдача
-cam_relax_speed        			= 6.5;0.2	;скорость возврата в исходное положение
-cam_dispersion         			= 0.3	;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc			= 0.15	;увеличениe cam_dispersion с каждым выстрелом
-cam_dispertion_frac			= 0.4	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
-cam_max_angle				= 6.0	;максимальный угол отдачи
-cam_max_angle_horz			= 9.0	;(degree) maximum shot horizontal degree
-cam_step_angle_horz			= 0.6	;(degree) size of step camera moved in horizontal position while shooting
-
+cam_relax_speed			= 5.6
+cam_dispersion			= 0.11
+cam_dispersion_inc		= 0.05
+cam_dispertion_frac		= 0.2
+cam_max_angle			= 2.5
+cam_max_angle_horz		= 9.0
+cam_step_angle_horz		= 0.4
 fire_dispersion_condition_factor 	= 5
-misfire_probability 			= 0.003
+misfire_probability		= 0.005
 misfire_condition_k			= 0.05
-condition_shot_dec 			= 0.0003
+condition_shot_dec 			= 0.00003
 ;-----------------------------------------------------------------------------------
 
 fire_point             		=  0.0, 0.262, 0.27
@@ -71,25 +69,40 @@ smoke_particles				= weapons\generic_shoot_00
 shell_point		 			= 0.00, 0.262, -0.05
 shell_particles	 			= weapons\generic_shells ; weapons\generic_shells_p90
 
-PDM_disp_base 			= 4.5
-PDM_disp_vel_factor 		= 1.8
-PDM_disp_accel_factor 		= 1.2
+PDM_disp_base			= 3.0
+PDM_disp_vel_factor		= 1.05
+PDM_disp_accel_factor	= 1.05
 PDM_crouch	 		= 1.0
 PDM_crouch_no_acc 		= 1.0
 
-; ttc
-hit_power        				= 0.63, 0.67, 0.69, 0.72
-hit_impulse		 		= 1
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.52
+hit_impulse	        = 2
 hit_type 				= fire_wound
-
-fire_distance            		= 150
+hit_rate	        = 1.85
+fire_distance           = 130
 bullet_speed				= 715
-rpm                      		= 800
+rpm                 = 900
 
-silencer_hit_power       		= 0.62, 0.66, 0.68, 0.71
-silencer_hit_impulse	 		= 1
-silencer_fire_distance   		= 100
-silencer_bullet_speed	 		= 300
+weapon_min_queue_size_far = 1
+weapon_max_queue_size_far = 6
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 6
+weapon_max_queue_size_medium = 10
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 20
+weapon_max_queue_size_close = 40
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
+
+silencer_hit_power       	= 0.45
+silencer_hit_impulse	 	= 2
+silencer_fire_distance   	= 80
+silencer_bullet_speed	 	= 500
 
 hud                      	= wpn_p90_hud
 
@@ -105,9 +118,9 @@ strap_bone1					= bip01_spine1
 visual         		        = weapons\p90\wpm_p90.ogf
 
 light_color					= 0.6,0.5,0.3
-light_range					= 5
+light_range			    = 4
 light_var_color				= 0.05
-light_var_range				= 0.5
+light_var_range			= 0.1
 light_time 					= 0.2
 
 ph_mass						= 5
@@ -127,7 +140,6 @@ silencer_x 				= 121
 silencer_y 				= -1
 
 ;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
-;sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
 snd_draw					= weapons\p90\p90_draw
 snd_holster					= weapons\generic_holster
 snd_shoot					= weapons\p90\p90_shoot

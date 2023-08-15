@@ -64,7 +64,7 @@ kill_msg_height		= 30
 ;
 ;-----------------------------------------------------------------------------------
 ;params of weapon recoil
-fire_dispersion_base			= 0.5		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base			= 0.7		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor			= 1.25f
 
 ;отдача
@@ -79,7 +79,7 @@ cam_step_angle_horz			= 1.25;1.1		;(degree) size of step camera moved in horizon
 fire_dispersion_condition_factor 	= 5		;увеличение дисперсии в процентах при максимальном износе
 misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
 misfire_condition_k			= 0.05
-condition_shot_dec 			= 0.00001	;увеличение износа при каждом выстреле
+condition_shot_dec 			= 0.0001	;увеличение износа при каждом выстреле
 ;-----------------------------------------------------------------------------------
 
 fire_point             		=  0.0, 0.07, 0.447		; position (3rd person view) for particles of fire
@@ -92,20 +92,35 @@ grenade_flame_particles		= weapons\generic_weapon01
 shell_point		 			= 0.00, 0.262, 0.189			; position (3rd person view) for shell to throw out
 ;shell_particles	 			= weapons\generic_shells	; name of the particles for shells
 
-PDM_disp_base 			= 1.3
+PDM_disp_base 			= 5.5
 PDM_disp_vel_factor 		= 1.7
 PDM_disp_accel_factor 		= 1.7
 PDM_crouch	 		= 1.0
 PDM_crouch_no_acc 		= 1.0
 
-; ttc
-hit_power        			= 0.85, 0.79, 0.85, 0.90
-hit_impulse      			= 4
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.70, 0.75, 0.80, 0.85
+hit_impulse	        = 4
 hit_type 					= fire_wound
+hit_rate	= 2.0
+fire_distance       = 50
+bullet_speed		= 370
+rpm                 = 200
 
-fire_distance            		= 80;100 		;maximum fire distance that bullet can fly
-bullet_speed				= 300		;starting bullet speed
-rpm                      		= 200;600		;max round per minute
+weapon_min_queue_size_far = 1
+weapon_max_queue_size_far = 2
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 2
+weapon_max_queue_size_medium = 3
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 4
+weapon_max_queue_size_close = 8
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
 
 hud                      	= wpn_saiga12c_hud				; name of the section of the hud
 

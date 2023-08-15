@@ -25,9 +25,7 @@ weapon_class			 	= sniper_rifle
 ammo_limit		         	= 180
 ammo_current		     	= 90
 ammo_elapsed		     	= 10
-
-ammo_mag_size		     	= 20
-
+ammo_mag_size		     	= 10
 hand_dependence		     	= 1
 single_handed				= 0
 
@@ -59,6 +57,7 @@ disp_rate = 1.8
 
 ;отдача
 cam_relax_speed         		= 6.75	;скорость возврата в исходное положение
+cam_relax_speed_ai         	= 5
 cam_dispersion          	= 0.21	;увеличения угла (в градусах) с каждым выстрелом
 cam_dispersion_inc			= 0.15	;увеличениe cam_dispersion с каждым выстрелом
 cam_dispertion_frac			= 0.9	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
@@ -67,10 +66,32 @@ cam_max_angle_horz				= 10.0	;(degree) maximum shot horizontal degree
 cam_step_angle_horz				= 1.4	;(degree) size of step camera moved in horizontal position while shooting
 
 fire_dispersion_condition_factor = 4	;увеличение дисперсии в процентах при максимальном износе
-misfire_probability 	= 0.005	;0.00001 ;вероятность осечки при максимальном износе
+misfire_probability 	= 0.005 ;вероятность осечки при максимальном износе
 misfire_condition_k		= 0.3
-condition_shot_dec 		= 0.001 ;0.000002 ;увеличение износа при каждом выстреле
+condition_shot_dec 		    = 0.00002
 ;-----------------------------------------------------------------------------------
+
+rpm_empty_click 	     	= 200
+
+PDM_disp_base 			    = 4.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		        = 5.5
+PDM_crouch_no_acc 		    = 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power                   = 0.31
+hit_impulse	        = 2
+hit_type 			= fire_wound
+hit_rate	= 1.95
+fire_distance       = 180
+bullet_speed		= 295
+rpm                     = 800
+
+hud                      	= wpn_vintorez_hud
+normal                   	= 0, 1, 0
+position                 	= -0.026, -0.084, 0.0
+orientation              	= 0, 0, 0
 
 direction                	= 0, 0, 1
 
@@ -81,30 +102,6 @@ smoke_particles				= weapons\generic_shoot_00
 shell_point		 			= 0.0, 0.127, 0.10
 shell_dir		 			= 0.0, 1.0, 0.0
 shell_particles	 			= weapons\generic_shells
-
-rpm_empty_click 	     	= 200
-
-PDM_disp_base 			= 4.5
-PDM_disp_vel_factor 		= 1.8
-PDM_disp_accel_factor 		= 1.0
-PDM_crouch	 		= 1.5
-PDM_crouch_no_acc 		= 1.0
-
-; ttc
-hit_power           = 0.81, 0.84, 0.87, 0.90
-hit_impulse		    = 2
-hit_type 			= fire_wound
-hit_rate	= 1.95
-
-fire_distance           = 200
-bullet_speed			= 315	;КОЭФФИЦИЕНТ начальной скорости пули
-rpm                     = 800
-; end ttc
-
-hud                      	= wpn_vintorez_hud
-normal                   	= 0, 1, 0
-position                 	= -0.026, -0.084, 0.0
-orientation              	= 0, 0, 0
 
 ;--STRAP PARAMETERS-----------------------------------------------------------------
 ;под мишкой
