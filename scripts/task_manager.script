@@ -1697,13 +1697,13 @@ function CRandomTask:init_reward_dialog(dlg, parent)
 	local phr = dlg:AddPhrase("tm_reward_job","0","",-10000)
 	local phrase_script
 
-	phr = dlg:AddPhrase("tm_"..parent.."_job_ask", "2", "0", -10000)
+	phr = dlg:AddPhrase("tm_"..parent.."_job_ask", "1", "0", -10000)
 
   -- Список возможных квестов трейдера.
 	for k,v in ipairs(self.task_id_by_parent[parent]) do
 		local task_desc = self.task_info[v]
 
-		phr = dlg:AddPhrase(task_desc.name, tostring(task_desc.init_phrase_id), "2", -10000)
+		phr = dlg:AddPhrase(task_desc.name, tostring(task_desc.init_phrase_id), "1", -10000)
     phrase_script = phr:GetPhraseScript()
     phrase_script:AddPrecondition("task_manager.precondition_active_task")
 
