@@ -1,0 +1,623 @@
+--[[
+Автор: Призрак
+Описание: Вспомогательный файл для болталки через ПДА.
+В нем проиходит вся грязная работа, на выходе минимум
+
+TODO:
+		Перевести этот жуткий ахтунг на классы и не ипать себе мозг
+
+upd. by Ray Twitty aka Shadows:
+- исправлен вылет при попытке обработать диалоги, у которых первая фраза является пустышкой
+- исправлен вылет, в случае если диалог в файле был всего один
+- добавлена фраза "Я отключаюсь. Пока.", которая завершает текущий диалог - аналог фразы "До встречи!" при обычном диалоге
+- заменена биография по умолчанию
+- убран код присоединения окна, теперь этим занимается основной модуль
+--]]
+
+--
+BREAK_DIALOG = "actor_break_dialog_pda"								--Диалог о завершении разговора
+local default_bio = game.translate_string("default_bio")			--Биография НПС если мы ее не нашли
+
+--Следущие 3 таблицы
+local globalt_character={}
+local globalt_dialog={}
+local global_icon = { }
+local global_bio = { }
+
+local tblInitDialogTbl = {}
+local currentDialogTbl = {}
+
+local object,lastPhare
+
+function setLastPhare(phare)
+	lastPhare=phare
+end
+
+function mytonumber(num)
+	if (num~=nil) then
+		if (type(num)=="table") then
+			for i=1,#num do
+				num[i]=tonumber(num[i])
+			end
+			return num
+		else
+			return tonumber(num)
+		end
+	else
+		return nil
+	end
+end
+
+function onInit(dlg)
+	currentDialogTbl={}
+	local dialog = globalt_dialog[dlg]
+	if (dialog["init_func"]~=nil) then
+		currentDialogTbl=dialog["phrase_list"]["phrase"]
+		currentDialogTbl["id"]=dlg
+		return
+	end
+
+	if (#dialog["phrase_list"]["phrase"]~=0) then
+		for i=1,#dialog["phrase_list"]["phrase"] do
+			local text_id = dialog["phrase_list"]["phrase"][i]["text"]
+
+			if (type(text_id)=="table") then text_id = nil end											--обрабатываем вариант с <text\>
+
+			currentDialogTbl[tonumber(dialog["phrase_list"]["phrase"][i]["id"])] = {
+				precondition = dialog["phrase_list"]["phrase"][i]["precondition"],
+				has_info = dialog["phrase_list"]["phrase"][i]["has_info"],
+				dont_has_info = dialog["phrase_list"]["phrase"][i]["dont_has_info"],
+				give_info = dialog["phrase_list"]["phrase"][i]["give_info"],
+				disable_info = dialog["phrase_list"]["phrase"][i]["disable_info"],
+				action = dialog["phrase_list"]["phrase"][i]["action"],
+				next_id = mytonumber(dialog["phrase_list"]["phrase"][i]["next"]),
+				text = iif(text_id=="",nil,text_id)
+
+			}
+		end
+	else
+		local text_id = dialog["phrase_list"]["phrase"]["text"]
+		currentDialogTbl[0] = {
+				precondition = dialog["phrase_list"]["phrase"]["precondition"],
+				has_info = dialog["phrase_list"]["phrase"]["has_info"],
+				dont_has_info = dialog["phrase_list"]["phrase"]["dont_has_info"],
+				give_info = dialog["phrase_list"]["phrase"]["give_info"],
+				disable_info = dialog["phrase_list"]["phrase"]["disable_info"],
+				action = dialog["phrase_list"]["phrase"]["action"],
+				next_id = mytonumber(dialog["phrase_list"]["phrase"]["next"]),
+				text = iif(text_id=="",nil,text_id)
+		}
+	end
+end
+
+function actions(phare,who,id)
+	local give = phare.give_info
+	local dis = phare.disable_info
+	local action = phare.action
+	if (give~=nil) then
+		if (type(give)=="table") then
+			for i=1,#give do
+				give_info(give[i])
+			end
+		else
+			give_info(give)
+		end
+	end
+	if (dis~=nil) then
+		if (type(dis)=="table") then
+			for i=1,#dis do
+				disable_info(dis[i])
+			end
+		else
+			disable_info(dis)
+		end
+	end
+	if (action~=nil) then
+		if (type(action)=="table") then
+			for i=1,#action do
+				startFunction(action[i],who,tostring(id))
+			end
+		else
+			startFunction(action,who,tostring(id))
+		end
+	end
+end
+
+function initPhare(dlg)
+	onInit(dlg)
+end
+
+function checkNextPhare(id,who)
+	if CheckPreconditionsForPhare(id,who) then
+		local phare = currentDialogTbl[id]
+		if (phare.text~=nil) then
+			return id
+		else
+			if (phare.next_id~=nil) then
+				if (type(phare.next_id)=="table") then
+					for i=1,#phare.next_id do
+						local mid=checkNextPhare(phare.next_id[i])
+						if (mid~=nil) then
+							return mid
+						end
+					end
+				else
+					local mid=checkNextPhare(phare.next_id)
+					if (mid~=nil) then
+						return mid
+					end
+				end
+			end
+		end
+	end
+end
+
+function checkNextActorPhare(id,quetions,who)
+	if CheckPreconditionsForPhare(id,who) then
+		local phare = currentDialogTbl[id]
+		if (phare.text~=nil) then
+			quetions[#quetions+1]=id
+		else
+			if (phare.next_id~=nil) then
+				if (type(phare.next_id)=="table") then
+					for i=1,#phare.next_id do
+						quetions=checkNextActorPhare(phare.next_id[i],quetions)
+					end
+				else
+					quetions=checkNextActorPhare(phare.next_id,quetions)
+				end
+			end
+		end
+	end
+	return quetions
+end
+
+function getNextNPCPhare(id,who)
+	local next_id = currentDialogTbl[id].next_id
+	if (next_id~=nil) then
+		if (type(next_id)=="table") then
+			for i=1,#next_id do
+				local mid=checkNextPhare(next_id[i],who,id)
+				if (mid~=nil) then
+					return mid
+				end
+			end
+		else
+			return checkNextPhare(next_id,who,id)
+		end
+	end
+end
+
+function getNextActorPhare(id,who)
+	local next_id = currentDialogTbl[id].next_id
+	if (next_id~=nil) then
+		local quetions={}
+		if (type(next_id)=="table") then
+			for i=1,#next_id do
+				quetions=checkNextActorPhare(next_id[i],quetions,who)
+			end
+		else
+			quetions=checkNextActorPhare(next_id,quetions,who)
+		end
+		if (#quetions~=0) then return quetions end
+	end
+end
+
+function getFirstPhare(who)
+	local id = 0
+	local phare_text = currentDialogTbl[id].text
+	if (phare_text~=nil) then
+		return id
+	else
+		if (type(currentDialogTbl[id].next_id)=="table") then
+			for i=1,#currentDialogTbl[id].next_id do
+				local mid=checkNextPhare(id,who)
+				if (mid~=nil) then
+					return mid
+				end
+			end
+		else
+			local mid=checkNextPhare(currentDialogTbl[id].next_id,who)
+			if (mid~=nil) then
+				return mid
+			end
+		end
+	end
+end
+
+function getPhareById(id,who)
+	local phare = currentDialogTbl[id]
+	actions(phare,who,id)
+	return game.translate_string(phare.text)
+end
+function getPhareByIdNoAction(id)
+	local phare = currentDialogTbl[id]
+
+	return game.translate_string(phare.text)
+end
+
+function CheckPreconditionsForPhare(id,who)
+	local precond = currentDialogTbl[id].precondition
+	local has_info_tbl = currentDialogTbl[id].has_info
+	local dont_has_info = currentDialogTbl[id].dont_has_info
+	if (precond~=nil) then
+		if (type(precond)=="table") then
+			for i=1,#precond do
+				if (precondition(precond[i],who,id)) then return false end
+			end
+		else
+			if (precondition(precond,who,id)) then return false end
+		end
+	end
+
+	if (has_info_tbl~=nil) then
+		if (type(has_info_tbl)=="table") then
+			for i=1,#has_info_tbl do
+				if (has_info(has_info_tbl[i])==false) then return false end
+			end
+		else
+			if (has_info(has_info_tbl)==false) then return false end
+		end
+	end
+
+	if (dont_has_info~=nil) then
+		if (type(dont_has_info)=="table") then
+			for i=1,#dont_has_info do
+				if (has_info(dont_has_info[i])==true) then return false end
+			end
+		else
+			if (has_info(dont_has_info)==true) then return false end
+		end
+	end
+
+	return true
+end
+
+function CheckPreconditionsForDialog(tbl)
+	if tbl == nil then
+		abort("Kurwa tbl is nil")
+		return false
+	end
+
+	if (tbl["init_func"]~=nil) and (tbl["init_func"]~=false) then
+		startInitFunction(tbl["init_func"])
+		if (#tblInitDialogTbl==0) then
+			abort("NOT VALID DIALOG INIT!!! "..tbl["init_func"])
+			return false
+		else
+			local id = tbl["id"]
+			globalt_dialog[id]["phrase_list"]={}
+			globalt_dialog[id]["phrase_list"]["phrase"]=tblInitDialogTbl
+			tbl["phrase_list"]={}
+			tbl["phrase_list"]["phrase"]=tblInitDialogTbl
+			globalt_dialog[id]["init_func"]=false
+		end
+	end
+
+	local precond = tbl["precondition"]
+	local has_info_tbl = tbl["has_info"]
+	local dont_has_info = tbl["dont_has_info"]
+
+	local resultPrecond=true
+	local resultHasInfo=true
+	local resultDontHasInfo=true
+	if (precond~=nil) then
+		if (type(precond)=="table") then
+			for i=1,#precond do
+				if (precondition(precond[i],true)) then return false end
+			end
+		else
+			if (precondition(precond,true)) then return false end
+		end
+	end
+	if (has_info_tbl~=nil) then
+		if (type(has_info_tbl)=="table") then
+			for i=1,#has_info_tbl do
+				if (has_info(has_info_tbl[i])==false) then return false end
+			end
+		else
+			if (has_info(has_info_tbl)==false) then return false end
+		end
+	end
+	if (dont_has_info~=nil) then
+		if (type(dont_has_info)=="table") then
+			for i=1,#dont_has_info do
+				if (has_info(dont_has_info[i])==true) then return false end
+			end
+		else
+			if (has_info(dont_has_info)==true) then return false end
+		end
+	end
+
+	return true
+end
+
+function getListOfPharesByGameObject(obj,CheckStart)
+	if (obj==nil) then return {} end
+	object=obj
+	local t=globalt_character[obj:profile_name()]
+	local result={}							--Таблица из 2 таблиц
+	if (t~=nil) then
+		if CheckStart then
+			for i=1,#t[1] do
+				if (CheckPreconditionsForDialog(globalt_dialog[t[1][i]])) then
+					return t[1][i]
+				end
+			end
+		end
+		for i=1,#t[2] do
+			if (CheckPreconditionsForDialog(globalt_dialog[t[2][i]])) then
+				result[#result+1]=t[2][i]
+			end
+		end
+		if CheckPreconditionsForDialog(globalt_dialog[BREAK_DIALOG]) then
+			table.insert(result,BREAK_DIALOG)
+		end
+	end
+	return result
+end
+
+function makeTbl(tbl,returnTbl)
+	if (returnTbl==nil) then
+		if (type(tbl)=="table") then
+			return tbl
+		else
+			return {tbl}
+		end
+	end
+	if (tbl~=nil) then
+		if (type(tbl)=="table") then
+			for i=1,#tbl do
+				returnTbl[#returnTbl+1]=tbl[i]
+			end
+		else
+			returnTbl[#returnTbl+1]=tbl
+		end
+	end
+	return returnTbl
+end
+function addToGlobalPre(t)
+	for i=1,#t["xml"]["character"] do
+		local num=t["xml"]["character"][i]
+		local id=num["id"]
+		local specific_character=num["specific_character"]
+		local class=num["class"]
+		if (specific_character~=nil) then
+			globalt_character[specific_character]=id
+		else
+			globalt_character[class]=id
+		end
+	end
+end
+
+function addToGlobal(t)
+	for i=1,#t["xml"]["specific_character"] do
+		local num=t["xml"]["specific_character"][i]
+		local id=num["id"]
+		local class=num["class"]
+		local tbl_actor=makeTbl(num["actor_dialog"])
+		local tbl_start=makeTbl(num["start_dialog"])
+
+		if (globalt_character[id]~=nil) then
+			local profile_name = globalt_character[id]
+			globalt_character[id]=nil
+			globalt_character[profile_name]={tbl_start,tbl_actor}
+		else
+			if (globalt_character[class]~=nil) then
+				local profile_name = globalt_character[class]
+				globalt_character[profile_name]={tbl_start,tbl_actor}
+				globalt_character[class]=nil
+			end
+		end
+
+		global_icon[id] = num["icon"]
+		global_bio[id] = num["bio"]
+	end
+end
+
+function addToGlobalDialog(t)
+	local len=#t["game_dialogs"]["dialog"]
+	-- затычка на случай, если в файле всего один диалог
+	if len==0 then
+		local id=t["game_dialogs"]["dialog"]["id"]
+		globalt_dialog[id]=t["game_dialogs"]["dialog"]
+		return
+	end
+	for i=1,len do
+		local id=t["game_dialogs"]["dialog"][i]["id"]
+		globalt_dialog[id]=t["game_dialogs"]["dialog"][i]
+	end
+end
+
+function precondition(func,who,curPhare)
+	local result
+	if (who) then
+		result = loadstring("return "..func.."(...)")(Actor,object,currentDialogTbl["id"],tostring(lastPhare),tostring(curPhare))
+	else
+		result = loadstring("return "..func.."(...)")(object,Actor,currentDialogTbl["id"],tostring(lastPhare),tostring(curPhare))
+	end
+	return (result~=true)
+end
+function startFunction(func,who,curPhare)
+	if (who) then
+		loadstring("return "..func.."(...)")(Actor,object,currentDialogTbl["id"],curPhare)
+	else
+		loadstring("return "..func.."(...)")(object,Actor,currentDialogTbl["id"],curPhare)
+	end
+end
+function startInitFunction(func)
+	loadstring("return "..func.."(...)")(CustomCPhraseDialog())
+end
+
+function getGlobalCharacter()
+	return globalt_character
+end
+
+function getGlobalCharacterDialog(id)
+	return globalt_character[id]
+end
+
+function getDialogByDialogId(id)
+	return globalt_dialog[id]
+end
+
+function getDialog()
+	return globalt_dialog
+end
+
+function init()
+	local str = config:r_string("profiles","files")
+	local t = string.parse_names(str)
+	for i=1,#t do
+		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
+		addToGlobalPre(tbl)
+	end
+	local str = config:r_string("profiles","specific_characters_files")
+	local t = string.parse_names(str)
+	for i=1,#t do
+		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
+		addToGlobal(tbl)
+	end
+	local str = config:r_string("dialogs","files")
+	local t = string.parse_names(str)
+	for i=1,#t do
+		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
+		addToGlobalDialog(tbl)
+	end
+end
+
+function getBioById(id)
+	local profile
+	local sobj = server_object(id)
+	if sobj then
+		profile = sobj:get_netpk("specific_character")
+	end
+	if not profile then return nil end
+
+	local bio = global_bio[profile]
+	if type(bio) == "table" then
+		bio = table.random(bio)
+	elseif type(bio) ~= "string" then
+		bio = default_bio
+	end
+
+	return {
+		icon = global_icon[profile],
+		bio = bio
+	}
+end
+
+function checkIsPDA(dlg)
+	if (has_info("ui_pda_dialog")) then return CustomCPhraseDialog()
+	else return dlg end
+end
+
+class "CustomCPhraseDialog"
+function CustomCPhraseDialog:__init()
+	tblInitDialogTbl={}
+end
+
+function CustomCPhraseDialog:AddPhrase(ttext,phrase_id,prev_phrase_id,goodwil_level)
+	phrase_id=tonumber(phrase_id)
+	tblInitDialogTbl[phrase_id] = { ["text"]=ttext }
+	if (prev_phrase_id~="") then
+		prev_phrase_id=tonumber(prev_phrase_id)
+		local next_id=tblInitDialogTbl[prev_phrase_id].next_id
+		if (next_id==nil) then
+			tblInitDialogTbl[prev_phrase_id].next_id=phrase_id
+		elseif (type(next_id)=="table") then
+			table.insert(tblInitDialogTbl[prev_phrase_id].next_id,phrase_id)
+		else
+			tblInitDialogTbl[prev_phrase_id].next_id={tblInitDialogTbl[prev_phrase_id].next_id,phrase_id}
+		end
+	end
+	return CustomCPhrase(phrase_id)
+end
+
+class "CustomCPhrase"
+
+function CustomCPhrase:__init(phare_id)
+	self.phare_id = phare_id
+end
+
+function CustomCPhrase:GetPhraseScript()
+	return CustomCPhraseScript(self.phare_id)
+end
+
+class "CustomCPhraseScript"
+
+function CustomCPhraseScript:__init(phare_id)
+	self.phare_id = phare_id
+end
+
+function CustomCPhraseScript:AddPrecondition(func)
+	local precondition=tblInitDialogTbl[self.phare_id].precondition
+	if (precondition==nil) then
+		tblInitDialogTbl[self.phare_id].precondition=func
+	elseif (type(precondition)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].precondition,func)
+	else
+		tblInitDialogTbl[self.phare_id].precondition={tblInitDialogTbl[self.phare_id].precondition,func}
+	end
+end
+
+function CustomCPhraseScript:AddAction(func)
+	local action=tblInitDialogTbl[self.phare_id].action
+	if (action==nil) then
+		tblInitDialogTbl[self.phare_id].action=func
+	elseif (type(action)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].action,func)
+	else
+		tblInitDialogTbl[self.phare_id].action={tblInitDialogTbl[self.phare_id].action,func}
+	end
+end
+
+function CustomCPhraseScript:AddHasInfo(info)
+	local has_info_tbl=tblInitDialogTbl[self.phare_id].has_info
+	if (has_info_tbl==nil) then
+		tblInitDialogTbl[self.phare_id].has_info=info
+	elseif (type(has_info_tbl)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].has_info,info)
+	else
+		tblInitDialogTbl[self.phare_id].has_info={tblInitDialogTbl[self.phare_id].has_info,info}
+	end
+end
+
+function CustomCPhraseScript:AddDontHasInfo(info)
+	local dont_has_info=tblInitDialogTbl[self.phare_id].dont_has_info
+	if (dont_has_info==nil) then
+		tblInitDialogTbl[self.phare_id].dont_has_info=info
+	elseif (type(dont_has_info)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].dont_has_info,info)
+	else
+		tblInitDialogTbl[self.phare_id].dont_has_info={tblInitDialogTbl[self.phare_id].dont_has_info,info}
+	end
+end
+
+function CustomCPhraseScript:AddGiveInfo(info)
+	local give_info=tblInitDialogTbl[self.phare_id].give_info
+	if (give_info==nil) then
+		tblInitDialogTbl[self.phare_id].give_info=info
+	elseif (type(give_info)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].give_info,info)
+	else
+		tblInitDialogTbl[self.phare_id].give_info={tblInitDialogTbl[self.phare_id].give_info,info}
+	end
+end
+
+function CustomCPhraseScript:AddDisableInfo(info)
+	local disable_info=tblInitDialogTbl[self.phare_id].disable_info
+	if (disable_info==nil) then
+		tblInitDialogTbl[self.phare_id].disable_info=info
+	elseif (type(disable_info)=="table") then
+		table.insert(tblInitDialogTbl[self.phare_id].disable_info,info)
+	else
+		tblInitDialogTbl[self.phare_id].disable_info={tblInitDialogTbl[self.phare_id].disable_info,info}
+	end
+end
+
+function clear()
+	tblInitDialogTbl={}
+	currentDialogTbl={}
+	object=nil
+end

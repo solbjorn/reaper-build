@@ -115,6 +115,7 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.on_belt, nil)
 	self.object:set_callback(callback.on_ruck, nil)
 	self.object:set_callback(callback.on_slot, nil)
+	self.object:set_callback(callback.pda_contact, nil)
 	self.object:set_callback(callback.on_attach_vehicle, nil)
 	self.object:set_callback(callback.on_detach_vehicle, nil)
 	self.object:set_callback(callback.entity_alive_before_hit, nil)
@@ -157,6 +158,7 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.on_belt, self.on_item_belt, self)
 	self.object:set_callback(callback.on_ruck, self.on_item_ruck, self)
 	self.object:set_callback(callback.on_slot, self.on_item_slot, self)
+	self.object:set_callback(callback.pda_contact, self.select_pda_contact, self)
 	self.object:set_callback(callback.on_attach_vehicle, self.attach_vehicle, self)
 	self.object:set_callback(callback.on_detach_vehicle, self.detach_vehicle, self)
 	self.object:set_callback(callback.entity_alive_before_hit, self.before_hit_callback, self)
@@ -298,6 +300,10 @@ function actor_binder:on_item_slot(obj)
 	sa_callbacks.item_slot(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
+function actor_binder:select_pda_contact(id)
+	sa_callbacks.select_pda_contact(id)
+end
+----------------------------------------------------------------------------------------------------------------------
 function actor_binder:attach_vehicle(car)
 	sa_callbacks.attach_vehicle(car)
 	actor_flags.in_car = true
@@ -309,7 +315,7 @@ function actor_binder:detach_vehicle(car)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:before_hit_callback()
-	sa_callbacks.hit_effector()
+	sa_callbacks.actor_before_hit()
 end
 ----------------------------------------------------------------------------------------------------------------------
 

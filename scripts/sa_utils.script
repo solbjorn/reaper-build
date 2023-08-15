@@ -218,6 +218,15 @@ function _G.add_message(xml, text, x, y, a, r, g, b)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * UI
+--]]-----------------------------------------------------------------------------------------------
+function _G.validate_list(list)
+	if list and list:GetSize() ~= 0 then
+		local index = list:GetSelectedItem()
+		return index ~= -1 and list:GetItem(index)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Extended level namespace
 --]]-----------------------------------------------------------------------------------------------
 function level.add_cam_effector3(time, amplitude, period_number, power)
@@ -241,6 +250,19 @@ function level.indoor(lname)
 		end
 	end
 	return gcfg:r_string_cache(lname, "indoor", false)
+end
+---------------------------------------------------------------------------------------------------
+function level.parked_call(action, x)
+	if not x then
+		x = 1
+	end
+	level.add_call(
+		function()
+			x = x - 1
+			return x == 0
+		end,
+		action
+	)
 end
 --[[-----------------------------------------------------------------------------------------------
  * Extended math namespace
@@ -293,19 +315,6 @@ function _G.random_position(center, radius)
 	center.x = center.x + math.random(-radius, radius)
 	center.z = center.z + math.random(-radius, radius)
 	return center
-end
----------------------------------------------------------------------------------------------------
-function level.parked_call(action, x)
-	if not x then
-		x = 1
-	end
-	level.add_call(
-		function()
-			x = x - 1
-			return x == 0
-		end,
-		action
-	)
 end
 ---------------------------------------------------------------------------------------------------
 function _G.get_item_place(obj, npc)

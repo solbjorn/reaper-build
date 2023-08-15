@@ -9,6 +9,10 @@ end
 function break_dialog(first_speaker, second_speaker, id)
 	first_speaker:stop_talk()
 	second_speaker:stop_talk()
+
+	level.parked_call(function()
+		sa_pda.close_pda_talk_dialog()
+	end, 3)
 end
 
 function disable_talk_self(first_speaker, second_speaker)

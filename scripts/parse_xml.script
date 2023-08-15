@@ -1,0 +1,354 @@
+local sym_space = '\032'
+
+function read_xml(filename)
+	local fs = getFS()
+	local path = fs:update_path("$game_config$", filename)
+	local file = io.open(path)
+	local str
+
+	if file then -- файл в распакованном виде на диске
+		str = file:read('*a')
+		file:close()
+	elseif fs:exist(path) then -- файл в архиве
+		file = fs:r_open(path)
+		local chars = {}
+		local index = 1
+		local char = string.char
+
+		while not file:r_eof() do
+			chars[index] = char(file:r_u8())
+			index = index + 1
+		end
+
+		str = table.concat(chars)
+	end
+
+	local str_del = str
+	str_del = string.gsub(str_del,'[\013|\010]',"")
+	str_del = string.gsub(str_del,'\009'," ")
+	str_del = remove_xml_comments(str_del)
+	return str_del
+end
+
+function file(filename)
+	local str = read_xml(filename)
+	if not str then
+		return nil
+	end
+	local tab = {}
+	local header,str_wo_head = get_xml_header(str)
+
+	-- первичный поиск тегов
+	local teg_name,teg_type,in_teg,after_teg
+	after_teg = str_wo_head
+	local repeating_tegs = {} -- повторяющиеся теги
+	tab.includes = {}
+
+	repeat
+		local teg_start = string.find(after_teg,"<",1,true) or 1
+		local before_teg = string.sub(after_teg,1,teg_start)
+		if string.find(before_teg,"#include",1,true) then
+			local str = before_teg
+			while string.find(str,"#include",1,true) do
+				local inc_start = string.find(str,"#include",1,true)
+				local q1 = string.find(str,'"',inc_start+1,true)
+				local q2 = string.find(str,'"',q1+1,true)
+				local inc_string = string.sub(str,q1+1,q2-1)
+				table.insert(tab.includes,inc_string)
+				str = string.sub(str,q2+1)
+			end
+		end
+
+		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
+		if not repeating_tegs[teg_name] then
+			repeating_tegs[teg_name] = {}
+		end
+		if teg_type == "simple" then
+			in_teg = parse_simple_teg(in_teg,teg_name)
+			tab[teg_name] = in_teg
+		else
+			if string.find(in_teg,">") then
+				in_teg = parse_complex_teg(in_teg,teg_name)
+				tab[teg_name] = in_teg
+			else
+				tab[teg_name] = in_teg
+			end
+		end
+		table.insert(repeating_tegs[teg_name],tab[teg_name])
+
+		if not string.find(after_teg,"<") then
+			if string.find(after_teg,"#include",1,true) then
+				local str = after_teg
+				while string.find(str,"#include",1,true) do
+					local inc_start = string.find(str,"#include",1,true)
+					local q1 = string.find(str,'"',inc_start+1,true)
+					local q2 = string.find(str,'"',q1+1,true)
+					local inc_string = string.sub(str,q1+1,q2-1)
+					table.insert(tab.includes,inc_string)
+					str = string.sub(str,q2+1)
+				end
+			end
+			after_teg = nil
+		end
+	until after_teg == nil
+
+	for name,intab in pairs (repeating_tegs) do
+		if table.getn(intab) > 1 then
+			intab.repeating = true
+			tab[name] = intab
+		end
+	end
+
+	return tab,header
+end
+
+function teg(filename,tegname)
+	local str = read_xml(filename)
+	if not str then
+		return nil
+	end
+	if not tegname then
+		abort("Parse_xml: teg name not specified. Parsing file "..tostring(filename))
+		return file(filename)
+	end
+	local teg_start_a = '<'..tegname..' '
+	local teg_start_b = '<'..tegname..'>'
+	local teg_start_i,teg_start_o
+	teg_start_i = string.find(str,teg_start_a,1,true) or string.find(str,teg_start_b,1,true)
+	if not teg_start_i then
+		abort("Incorrect request: no teg '"..tegname.."' found in '"..filename.."'")
+		return nil
+	else
+		teg_start_o = teg_start_i+string.len(tegname)+1
+		if string.find(str,teg_start_a,teg_start_o+1,true) or string.find(str,teg_start_b,teg_start_o+1,true) then
+			abort("Incorrect request: multiple tegs '"..tegname.."' found in '"..filename.."'")
+			return nil
+		end
+	end
+	local teg_end_i,teg_end_o
+	local teg_end_c = '</'..tegname..'>'
+	local teg_end_s = '/>'
+	local teg_type
+	if string.find(str,teg_end_c,teg_start_o+1,true) then
+		teg_end_i,teg_end_o = string.find(str,teg_end_c,teg_start_o+1,true)
+		teg_type = "complex"
+	else
+		teg_end_i,teg_end_o = string.find(str,teg_end_s,teg_start_o+1,true)
+		teg_type = "simple"
+	end
+
+	local tab = {}
+	local in_teg = string.sub(str,teg_start_o+1,teg_end_i-1)
+	if teg_type == "simple" then
+		in_teg = parse_simple_teg(in_teg,tegname)
+		tab = in_teg
+	else
+		if string.find(in_teg,">") then
+			in_teg = parse_complex_teg(in_teg,tegname)
+			tab = in_teg
+		else
+			tab[tegname] = in_teg
+		end
+	end
+	return tab
+end
+
+function remove_xml_comments(st)
+	local comment_start = "<!--"
+	local comment_end = "-->"
+	local st1 = st
+	local str = ""
+	while string.find(st1,comment_start) do
+		local com_start = string.find(st1,comment_start,1,true)
+		local com_end_i = string.find(st1,comment_end,com_start+3,true)
+		local com_end = com_end_i + 2 or string.len(st1)
+		str = str..string.sub(st1,1,com_start-1)
+		st1 = string.sub(st1,com_end+1)
+	end
+	str = str..st1
+	return str
+end
+
+function parse_simple_teg(st,self_name)
+	local tab = {}
+	local str = st..'"'
+	local equal = string.find(str,'=')
+	if not equal then -- знак '=' не найден, параметров нет
+		return tab
+	end
+	local len = string.len(str)
+		local not_space = 0
+		local current_var = "k"
+		local k,v = "",""
+		for i = 1,len do
+			local sym = string.sub(st,i,i)
+			if current_var == "k" then
+				if sym ~= " " and sym ~= '"' then
+					if sym == "=" then
+						current_var = "v"
+					else
+						k = k..sym
+					end
+				end
+			else
+				if sym ~= " " and sym ~= '"' then
+					not_space = 1
+					v = v..sym
+				elseif string.sub(st,i,i+1) == [[""]] then
+					not_space = 1
+					v = ""
+					i = i + 1
+				elseif string.sub(st,i,i+2) == [[" "]] then
+					not_space = 1
+					v = " "
+					i = i + 2
+				else
+					if not_space == 1 then
+						not_space = 0
+						current_var = "k"
+						tab[k] = tonumber(v) or v
+						k = ""
+						v = ""
+					end
+				end
+			end
+		end
+		if k ~= "" then
+			tab[k] = tonumber(v) or v
+		end
+	return tab
+end
+
+function parse_complex_teg(st,self_name)
+	local str = st
+	local self_close = "</"..self_name..">"
+	local self_teg_close = string.find(str,self_close)
+	local simple_end = string.find(str,">")
+	local inner_teg_start = string.find(str,"<")
+	local tab = {}
+	local complex_part = str
+	if simple_end and
+		((inner_teg_start and simple_end < inner_teg_start) or
+		not inner_teg_start)
+	then
+		-- есть простая часть
+		local simple_part = string.sub(str,1,simple_end-1)
+		complex_part = string.sub(str,simple_end+1)
+		local simple_tab = parse_simple_teg(simple_part,self_name)
+		for k,v in pairs (simple_tab) do
+			tab[k] = v
+		end
+	end
+
+	if not string.find(complex_part,"<") and not string.find(complex_part,">") then
+		tab[self_name] = complex_part
+		return tab
+	end
+
+	local teg_name,teg_type,in_teg,after_teg
+	after_teg = complex_part or str
+	local repeating_tegs = {} -- повторяющиеся теги
+	tab.includes = {}
+
+	repeat
+		local teg_start = string.find(after_teg,"<",1,true) or 1
+		local before_teg = string.sub(after_teg,1,teg_start)
+		if string.find(before_teg,"#include",1,true) then
+			local str = before_teg
+			while string.find(str,"#include",1,true) do
+				local inc_start = string.find(str,"#include",1,true)
+				local q1 = string.find(str,'"',inc_start+1,true)
+				local q2 = string.find(str,'"',q1+1,true)
+				local inc_string = string.sub(str,q1+1,q2-1)
+				table.insert(tab.includes,inc_string)
+				str = string.sub(str,q2+1)
+			end
+		end
+
+		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
+		if not repeating_tegs[teg_name] then
+			repeating_tegs[teg_name] = {}
+		end
+
+		if teg_type == "simple" then
+			in_teg = parse_simple_teg(in_teg,teg_name)
+			tab[teg_name] = in_teg
+		else
+			if string.find(in_teg,">") then
+				in_teg = parse_complex_teg(in_teg,teg_name)
+				tab[teg_name] = in_teg
+			else
+				tab[teg_name] = in_teg
+			end
+		end
+		table.insert(repeating_tegs[teg_name],tab[teg_name])
+
+		if not string.find(after_teg,"<") then
+			if string.find(after_teg,"#include",1,true) then
+				local str = after_teg
+				while string.find(str,"#include",1,true) do
+					local inc_start = string.find(str,"#include",1,true)
+					local q1 = string.find(str,'"',inc_start+1,true)
+					local q2 = string.find(str,'"',q1+1,true)
+					local inc_string = string.sub(str,q1+1,q2-1)
+					table.insert(tab.includes,inc_string)
+					str = string.sub(str,q2+1)
+				end
+			end
+			after_teg = nil
+		end
+	until after_teg == nil
+
+	for name,intab in pairs (repeating_tegs) do
+		if table.getn(intab) > 1 then
+			intab.repeating = true
+			tab[name] = intab
+		end
+	end
+	return tab
+end
+
+function get_xml_header(str)
+	local h_begin_i = string.find(str,"<?")
+	local h_end_i = string.find(str,"?>")
+	if h_begin_i and h_end_i then
+		return string.sub(str,h_begin_i,h_end_i+1),string.sub(str,h_end_i+2)
+	else
+		return "",str
+	end
+end
+
+function find_teg(st)
+	local str = st
+
+	local open = string.find(str,"<") or 1
+	local len = string.len(str)
+	local declare_close = string.find(str,">",open+1,true) or len
+	local declare_space = string.find(str," ",open+1,true) or len
+	local declare_slash = string.find(str,"/",open+1,true) or len
+	local name_end = math.min(declare_close, declare_space, declare_slash) -- ближайший к открытию пробел или ">"
+
+	local teg_name = string.sub(str,open+1,name_end-1)
+
+	local teg_close_name = "</"..teg_name..">"
+	local teg_close_i,teg_close_o = string.find(str,teg_close_name,name_end)
+
+	local teg_type
+
+	local close_i,close_o
+	if teg_close_o then
+		teg_type = "complex"
+		close_i = teg_close_i
+		close_o = teg_close_o
+	else
+		teg_type = "simple"
+		local s_teg_close_i,s_teg_close_o = string.find(str,"/>",name_end)
+		close_i = s_teg_close_i
+		close_o = s_teg_close_o
+	end
+
+	local in_teg = string.sub(str,name_end+1,close_i-1)
+	local after_teg = string.sub(str,close_o+1)
+
+	return teg_name,teg_type,in_teg,after_teg
+end

@@ -1,0 +1,492 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_pda.script
+ Description  : Диалоги с контактами, отметки на карте, кнопка "Выход"
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Thanks       : _призрак_ за первоначальную реализацию интерфейса диалогов с контактами
+ Date         : 02.08.2011
+ Last edit    : 22.01.2019
+--]]-----------------------------------------------------------------------------------------------
+local pda_dialog, pda_contacts_dialog, pda_talk_dialog
+--[[-----------------------------------------------------------------------------------------------
+ * MAIN PDA DIALOG
+--]]-----------------------------------------------------------------------------------------------
+class "CUIPdaDialog" (CUIScriptWnd)
+function CUIPdaDialog:__init() super()
+	self:Init(0, 0, 1024, 768)
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("pda.xml")
+	-- background static
+	self.st_background = CUIStatic()
+	self.st_background:Init(0, 0, 1024, 768)
+	level.get_pda_wnd():AttachChild(self.st_background)
+	-- add spot button
+	self.btn_add_spot = self.xml:Init3tButton("btn_pda_add_spot", self.st_background)
+	self:Register(self.btn_add_spot, "add_spot_button")
+	self:AddCallback("add_spot_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(CUIAddSpotWnd(), true) end)
+	-- remove spot button
+	self.btn_remove_spot = self.xml:Init3tButton("btn_pda_remove_spot", self.st_background)
+	self:Register(self.btn_remove_spot, "remove_spot_button")
+	self:AddCallback("remove_spot_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(CUIRemoveSpotWnd(), true) end)
+	-- turn off button
+	self:Register(self.xml:Init3tButton("btn_pda_off", self.st_background), "turn_off_button")
+	self:AddCallback("turn_off_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(level.get_pda_wnd(), true) end)
+	-- hide buttons
+	self:show_spots_control(false)
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaDialog:show_spots_control(show)
+	self.btn_add_spot:Show(show)
+	self.btn_remove_spot:Show(show)
+end
+--[[-----------------------------------------------------------------------------------------------
+ * ADD SPOT WINDOW
+--]]-----------------------------------------------------------------------------------------------
+class "CUIAddSpotWnd" (CUIScriptWnd)
+function CUIAddSpotWnd:__init() super()
+	self:Init(0, 0, 1024, 768)
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("pda.xml")
+	-- background static
+	self.st_background = CUIStatic()
+	self.st_background:Init("ui\\ui_pda_1", 498, 160, 240, 98)
+	self.st_background:SetStretchTexture(true)
+	self.st_background:SetOriginalRect(10, 925, 240, 98)
+	self:AttachChild(self.st_background)
+	-- title editbox
+	self.eb_title = CUIEditBox()
+	self.eb_title:Init(11, 10, 220, 17)
+	self.st_background:AttachChild(self.eb_title)
+	-- add button
+	self.btn_add = CUI3tButton()
+	self.btn_add:Init("ui_PDA_arrow", 50, 35, 17, 17)
+	self:Register(self.btn_add, "add_button")
+	self:AddCallback("add_button", ui_events.BUTTON_DOWN, self.on_add, self)
+	self.st_background:AttachChild(self.btn_add)
+	-- close button
+	self.btn_close = CUI3tButton()
+	self.btn_close:Init("ui_PDA_close", 10, 35, 17, 17)
+	self:Register(self.btn_close, "close_button")
+	self:AddCallback("close_button", ui_events.BUTTON_DOWN, self.on_close, self)
+	self.st_background:AttachChild(self.btn_close)
+	-- language button
+	self.btn_language = CUI3tButton()
+	self.btn_language:Init("ui_PDA_sign", 30, 35, 17, 17)
+	self:Register(self.btn_language, "language_button")
+	self:AddCallback("language_button", ui_events.BUTTON_DOWN, self.on_language, self)
+	self.st_background:AttachChild(self.btn_language)
+	-- highlight button
+	self.xml:Init3tButton("btn_pda_editbox", self.st_background)
+	-- set default language
+	self.last_lang = get_input_language()
+	set_input_language(1)
+end
+---------------------------------------------------------------------------------------------------
+function CUIAddSpotWnd:on_language()
+	if get_input_language() == 0 then
+		set_input_language(1)
+	else
+		set_input_language(0)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CUIAddSpotWnd:on_add()
+	local se_obj = create("mapspot_space_restrictor", Actor:position(), Actor:level_vertex_id(), Actor:game_vertex_id())
+	map_spot(se_obj.id, "user", self.eb_title:GetText())
+	say("device\\pda\\pda_mapspot")
+	self:on_close()
+end
+---------------------------------------------------------------------------------------------------
+function CUIAddSpotWnd:on_close()
+	level.start_stop_menu(self, true)
+	set_input_language(self.last_lang)
+end
+---------------------------------------------------------------------------------------------------
+function CUIAddSpotWnd:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:on_close()
+		elseif dik == DIK_keys.DIK_RETURN then
+			self:on_add()
+		end
+	end
+	return true
+end
+--[[-----------------------------------------------------------------------------------------------
+ * REMOVE SPOT WINDOW
+--]]-----------------------------------------------------------------------------------------------
+class "CUIRemoveSpotListItem" (CUIListItemEx)
+function CUIRemoveSpotListItem:__init(text) super()
+	self.st_item_name = CUIStatic()
+	self.st_item_name:SetText(text)
+	self.st_item_name:SetTextPos(1, 1)
+	self.st_item_name:SetTextColor(255, 216, 186, 140)
+	self:AttachChild(self.st_item_name)
+end
+---------------------------------------------------------------------------------------------------
+class "CUIRemoveSpotWnd" (CUIScriptWnd)
+function CUIRemoveSpotWnd:__init() super()
+	self:Init(0, 0, 1024, 768)
+	self.spots = {}
+	-- background static
+	self.st_background = CUIStatic()
+	self.st_background:Init("ui\\ui_pda_1", 498, 160, 367, 145)
+	self.st_background:SetStretchTexture(true)
+	self.st_background:SetOriginalRect(260, 877, 367, 145)
+	self:AttachChild(self.st_background)
+	-- spots list
+	self.list_spots = CUIListWnd()
+	self.list_spots:Init(11, 11, 338, 75)
+	self.list_spots:SetItemHeight(18)
+	self.list_spots:ShowSelectedItem(true)
+	self:Register(self.list_spots, "spots_list")
+	for i = 1, 65534 do
+		local se_obj = server_object(i)
+		if se_obj and se_obj:section_name() == "mapspot_space_restrictor" then
+			self.spots[#self.spots + 1] = se_obj.id
+			local level_name = translate(object_level_name(se_obj))
+			local text = string.format("%s #%d [%s: %s]", translate("st_spot"), #self.spots, translate("st_level"), level_name)
+			self.list_spots:AddItem(CUIRemoveSpotListItem(text))
+		end
+	end
+	self:AddCallback("spots_list", ui_events.WINDOW_LBUTTON_DB_CLICK, self.on_list_spots, self)
+	self.st_background:AttachChild(self.list_spots)
+	-- close button
+	self.btn_close = CUI3tButton()
+	self.btn_close:Init("ui_PDA_close", 10, 95, 17, 17)
+	self:Register(self.btn_close, "close_button")
+	self:AddCallback("close_button", ui_events.BUTTON_DOWN, function() level.start_stop_menu(self, true) end)
+	self.st_background:AttachChild(self.btn_close)
+end
+---------------------------------------------------------------------------------------------------
+function CUIRemoveSpotWnd:on_list_spots()
+	if validate_list(self.list_spots) then
+		local index = self.list_spots:GetSelectedItem()
+		release(self.spots[index + 1])
+		table.remove(self.spots, index + 1)
+		self.list_spots:RemoveItem(index)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PDA CONTACTS DIALOG
+--]]-----------------------------------------------------------------------------------------------
+local current_contact
+---------------------------------------------------------------------------------------------------
+local silent_contacts = table.tohash({
+	"bar_arena_manager", "aem_admin", "aem_arny", "osoznanie"
+})
+local bio_statics = {
+	"icon_static", "rank_static", "rank_caption", "community_static",
+	"community_caption", "relation_static", "relation_caption"
+}
+---------------------------------------------------------------------------------------------------
+class "CUIPdaContactsDialog" (CUIScriptWnd)
+function CUIPdaContactsDialog:__init() super()
+	self:Init(0, 0, 1024, 768)
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("pda_dialog.xml")
+	-- background static
+	self.background = CUIStatic()
+	self.background:Init(0, 0, 1024, 768)
+	level.get_pda_wnd():AttachChild(self.background)
+	-- biography static
+	local bio = self.xml:InitStatic("biography_list", self.background)
+	self.character = {
+		biography_list	= bio
+	}
+	local xml = CScriptXmlInit()
+	xml:ParseFile("stalkers_ranking_character.xml")
+	local static
+	for i, key in ipairs(bio_statics) do
+		static = xml:InitStatic(key, bio)
+		static:Show(false)
+		self.character[key] = static
+	end
+	-- talk button
+	self.btn_talk = self.xml:Init3tButton("talk_button", self.background)
+	self.btn_talk:SetTextST("pda_btn_dialog_show")
+	self.btn_talk:Enable(false)
+	self:Register(self.btn_talk, "btn_talk")
+	self:AddCallback("btn_talk", ui_events.BUTTON_DOWN, self.ShowDialogWindow, self)
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaContactsDialog:choice_pda_contact(id)
+	if not pda_talk_dialog then
+		current_contact = level_object(id)
+		local relation = current_contact:relation(Actor)
+		if current_contact:is_talk_enabled() and Actor:is_talk_enabled() and relation ~= game_object.enemy and not silent_contacts[current_contact:profile_name()] then
+			self.btn_talk:Enable(true)
+		else
+			self.btn_talk:Enable(false)
+		end
+		local desc = pda_talk.getBioById(id)
+		self.character.icon_static:InitTexture(desc.icon)
+		self.character.icon_static:SetStretchTexture(true)
+		self.character.rank_static:SetTextST(ranks.get_obj_rank_name(current_contact))
+		self.character.community_static:SetTextST(current_contact:character_community())
+		if relation == game_object.neutral then
+			self.character.relation_static:SetTextST("neutral")
+			self.character.relation_static:SetTextColor(255, 192, 192, 192)
+		elseif relation == game_object.enemy then
+			self.character.relation_static:SetTextST("enemy")
+			self.character.relation_static:SetTextColor(255, 255, 0, 0)
+		else
+			self.character.relation_static:SetTextST("friend")
+			self.character.relation_static:SetTextColor(255, 0, 255, 0)
+		end
+		self.character.biography_list:SetTextST(desc.bio)
+		for name, static in pairs(self.character) do
+			static:Show(true)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaContactsDialog:ShowDialogWindow()
+	if pda_talk_dialog then
+		give_info("ui_pda_dialog_hide")
+		self.btn_talk:SetTextST("pda_btn_dialog_show")
+		pda_talk_dialog.background:DetachFromParent()
+		pda_talk_dialog = nil
+	else
+		give_info("ui_pda_dialog")
+		self.btn_talk:SetTextST("pda_btn_dialog_hide")
+		pda_talk_dialog = CUIPdaTalkDialog()
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PDA TALK DIALOG
+--]]-----------------------------------------------------------------------------------------------
+class "CUIPdaTalkDialog" (CUIScriptWnd)
+function CUIPdaTalkDialog:__init() super()
+	self:Init(0, 0, 1024, 768)
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("pda_dialog.xml")
+	self.CheckStartDialogs = true
+	self.WhoTalk = true
+	self.phrase = 0
+	self.phrase_tbl = { }
+	self.npc_name = current_contact:character_name()
+	self.actor_name = Actor:character_name()
+	-- background static
+	self.background = self.xml:InitStatic("main", level.get_pda_wnd())
+	-- top frame
+	self.top_frame = self.xml:InitFrame("top_frame_window", self.background)
+	-- top line label
+	self.top_frame_line = self.xml:InitLabel("top_frame_line", self.top_frame)
+	self.top_frame_line:SetText(self.npc_name)
+	-- animation static
+	self.xml:InitAnimStatic("a_static", self.top_frame_line)
+	-- bottom frame
+	self.bottom_frame = self.xml:InitFrame("bottom_frame_window", self.background)
+	-- bottom line label
+	self.xml:InitLabel("bottom_frame_line", self.bottom_frame):SetText(self.actor_name)
+	-- questions scroll view
+	self.questions_list = self.xml:InitScrollView("questions_list", self.background)
+	-- answers scroll view
+	self.answers_list = self.xml:InitScrollView("answers_list", self.background)
+	-- init start phrase
+	self:StartPhrase()
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:StartPhrase()
+	local tbl = pda_talk.getListOfPharesByGameObject(current_contact, self.CheckStartDialogs)
+	self.CheckStartDialogs = false
+	if type(tbl) == "string" then
+		pda_talk.initPhare(tbl)
+		self.WhoTalk = false
+		self.phrase = pda_talk.getFirstPhare(self.WhoTalk)
+		self:AddNpcPhrase(pda_talk.getPhareByIdNoAction(self.phrase), false)
+		self:ShowNextActorPhrases()
+	elseif type(tbl) == "table" then
+		self:AddNpcPhrase(translate("dm_intro_10"..math.random(0, 9)), false)
+		if #tbl == 0 then
+			tbl[1] = pda_talk.BREAK_DIALOG
+		end
+		self:GetFirstPhrases(tbl)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:ShowNextNpcPhrase()
+	self.WhoTalk = not self.WhoTalk
+	self.phrase = pda_talk.getNextNPCPhare(self.phrase, self.WhoTalk)
+	if not self.phrase then
+		self.answers_list:ScrollToEnd()
+		self:GetFirstPhrases()
+		self:ClearAfterDialog()
+		return false
+	end
+	self:AddNpcPhrase(pda_talk.getPhareById(self.phrase, self.WhoTalk), false)
+	pda_talk.setLastPhare(self.phrase)
+	self.answers_list:ScrollToEnd()
+	return true
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:ShowNextActorPhrases()
+	self.WhoTalk = not self.WhoTalk
+	local tbl = pda_talk.getNextActorPhare(self.phrase, self.WhoTalk)
+	if not tbl or #tbl == 0 then
+		self.answers_list:ScrollToEnd()
+		self:GetFirstPhrases()
+		self:ClearAfterDialog()
+		return false
+	end
+	for i = 1, #tbl do
+		tbl[i] = {pda_talk.getPhareByIdNoAction(tbl[i]), self.dialog, tbl[i]}
+	end
+	self:AddActorPhrases(tbl)
+	return true
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:AddNpcPhrase(text, name_caption)
+	local item = self.xml:InitStatic("answer_item", self.answers_list)
+	if name_caption then
+		item:SetTextColor(255, 238, 153, 26)
+		item:SetText(self.actor_name)
+	else
+		item:SetTextColor(255, 135, 183, 116)
+		item:SetText(self.npc_name)
+	end
+	item = self.xml:InitStatic("answer_item", self.answers_list)
+	item:SetText(text)
+	item:AdjustHeightToText()
+	item:SetHeight(item:GetHeight() + 5)
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:AddActorPhrases(tbl_text)
+	self.questions_list:Clear()
+	self.phrase_tbl = tbl_text
+	for i = 1, #tbl_text do
+		local uniq_idx = time_real_ms..i
+		local item = self.xml:Init3tButton("question_item", self.questions_list)
+		local height = item:GetHeight()
+		item:SetText((i < 10 and (" " .. i) or i) .. ". " .. tbl_text[i][1])
+		item:AdjustHeightToText()
+		height = math.max(item:GetHeight(), height)
+		item:SetHeight(height)
+		self:Register(item, "question_item_"..uniq_idx)
+		self:AddCallback("question_item_"..uniq_idx, ui_events.BUTTON_CLICKED, function()
+			level.parked_call(function()
+				self:ClickActorPhrase(i)
+			end)
+		end)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:ClickActorPhrase(i)
+	local item = self.phrase_tbl[i]
+	if not item then
+		return
+	end
+	self.phrase_tbl = { }
+	local dialog, phrase_id = item[2], item[3]
+	if dialog and self.phrase == 0 then
+		self.dialog = dialog
+		pda_talk.initPhare(self.dialog)
+	end
+	pda_talk.setLastPhare(self.phrase)
+	self.phrase = phrase_id
+	self:AddNpcPhrase(pda_talk.getPhareById(self.phrase, self.WhoTalk), true)
+	level.parked_call(function()
+		self:ShowNextPhrases()
+	end, 2)
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:ShowNextPhrases()
+	if self:ShowNextNpcPhrase() then
+		self:ShowNextActorPhrases()
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:GetFirstPhrases(start_tbl)
+	local tbl
+	if not start_tbl then
+		tbl = pda_talk.getListOfPharesByGameObject(current_contact, self.CheckStartDialogs)
+	else
+		tbl = start_tbl
+	end
+	for i = 1, #tbl do
+		pda_talk.initPhare(tbl[i])
+		local id = pda_talk.getFirstPhare(self.WhoTalk)
+		tbl[i] = {pda_talk.getPhareByIdNoAction(id), tbl[i], id}
+	end
+	self:AddActorPhrases(tbl)
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:ClearAfterDialog()
+	self.WhoTalk = true
+	self.phrase = 0
+end
+---------------------------------------------------------------------------------------------------
+function CUIPdaTalkDialog:on_keyboard(dik, keyboard_action)
+	if keyboard_action == key_events.pressed then
+		if dik >= DIK_keys.DIK_1 and dik <= DIK_keys.DIK_9 then
+			level.parked_call(function()
+				self:ClickActorPhrase(1 + dik - DIK_keys.DIK_1)
+			end)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function close_pda_talk_dialog()
+	if pda_contacts_dialog and pda_talk_dialog then
+		pda_contacts_dialog:ShowDialogWindow()
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * INIT
+--]]-----------------------------------------------------------------------------------------------
+local no_spots = table.tohash({ "events", "contacts", "ranking", "statictic", "encyclopedia" })
+local no_talk = table.tohash({ "quests", "map", "events", "ranking", "statictic", "encyclopedia", "pda_hide" })
+---------------------------------------------------------------------------------------------------
+function show_hide_menu(tab_id)
+	if tab_id == "pda_show" then
+		if not pda_dialog then
+			pda_dialog = CUIPdaDialog()
+		end
+	elseif tab_id == "pda_hide" then
+		if pda_dialog then
+			pda_dialog.st_background:DetachFromParent()
+			pda_dialog = nil
+		end
+	end
+	if tab_id == "quests" then
+		pda_dialog:show_spots_control(not has_info("ui_pda_task_description"))
+	elseif tab_id == "map" then
+		pda_dialog:show_spots_control(true)
+	elseif no_spots[tab_id] then
+		pda_dialog:show_spots_control(false)
+	end
+	if tab_id == "contacts" then
+		if not pda_contacts_dialog then
+			pda_contacts_dialog = CUIPdaContactsDialog()
+		end
+	elseif no_talk[tab_id] then
+		if pda_contacts_dialog then
+			if pda_talk_dialog then
+				pda_contacts_dialog:ShowDialogWindow()
+			end
+			pda_contacts_dialog.background:DetachFromParent()
+			pda_contacts_dialog = nil
+			pda_talk.clear()
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function info(info_id)
+	if pda_dialog then
+		if info_id == "ui_pda_task_description" then
+			pda_dialog:show_spots_control(false)
+		elseif info_id == "ui_pda_task_description_hide" then
+			pda_dialog:show_spots_control(true)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function get_pda_contacts_dialog()
+	return pda_contacts_dialog
+end
+---------------------------------------------------------------------------------------------------
+function get_pda_talk_dialog()
+	return pda_talk_dialog
+end

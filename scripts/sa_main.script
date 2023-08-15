@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------------------------------
  File         : sa_main.script
- Description  : Новые фичи и возможности
+ Description  : РќРѕРІС‹Рµ С„РёС‡Рё Рё РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё
  Copyright    : Shadows Addon
  Author       : Ray Twitty aka Shadows
  Date         : 21.07.2011
@@ -66,6 +66,40 @@ function pda_info_fix(dik)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * PDA tab callback
+--]]-----------------------------------------------------------------------------------------------
+local active_tab, last_info_id
+local pda_info_portions = {
+	ui_pda_quests		= "quests",
+	ui_pda_map		= "map",
+	ui_pda_events		= "events",
+	ui_pda_contacts		= "contacts",
+	ui_pda_ranking		= "ranking",
+	ui_pda_actor_info	= "statictic",
+	ui_pda_encyclopedia	= "encyclopedia"
+}
+---------------------------------------------------------------------------------------------------
+function pda_tab_callback(info_id)
+	if pda_info_portions[info_id] then
+		if has_info("ui_pda") then
+			active_tab = pda_info_portions[info_id]
+			sa_callbacks.pda_tab(active_tab)
+		elseif has_info("ui_pda_hide") then
+			last_info_id = info_id
+		end
+	elseif info_id == "ui_pda" then
+		sa_callbacks.pda_tab("pda_show")
+		if last_info_id then
+			active_tab = pda_info_portions[last_info_id]
+			sa_callbacks.pda_tab(active_tab)
+			last_info_id = nil
+		end
+	elseif info_id == "ui_pda_hide" then
+		sa_callbacks.pda_tab("pda_hide")
+		active_tab = nil
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Scope zoom mode callback
 --]]-----------------------------------------------------------------------------------------------
 function scope_zoom_mode_callback()
@@ -99,6 +133,25 @@ function dead_body_sounds(info_id)
 			give_info("ui_dead_body_hide")
 		end
 	end
+end
+--[[-----------------------------------------------------------------------------------------------
+ * PDA sounds
+--]]-----------------------------------------------------------------------------------------------
+local last_tab_id
+local pda_tabs = { }
+for info, tab in pairs(pda_info_portions) do
+	pda_tabs[tab] = true
+end
+---------------------------------------------------------------------------------------------------
+function pda_sounds(tab_id)
+	if tab_id == "pda_show" then
+		say("device\\pda\\pda_on")
+	elseif tab_id == "pda_hide" then
+		say("device\\pda\\pda_off")
+	elseif pda_tabs[tab_id] and last_tab_id ~= "pda_show" then
+		say("device\\pda\\pda_tab")
+	end
+	last_tab_id = tab_id
 end
 --[[-----------------------------------------------------------------------------------------------
  * Yantar psy blowout

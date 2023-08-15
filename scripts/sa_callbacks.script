@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------------------------------
  File         : sa_callbacks.script
- Description  : ¡Ë·ÎËÓÚÂÍ‡ ÍÓÎ·ÂÍÓ‚
+ Description  : –ë–∏–±–ª–∏–æ—Ç–µ–∫–∞ –∫–æ–ª–±–µ–∫–æ–≤
  Copyright    : Shadows Addon
  Author       : Ray Twitty aka Shadows
  Date         : 06.11.2012
@@ -10,6 +10,7 @@ prefetch("sa_utils")
 --[[-----------------------------------------------------------------------------------------------
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
+local pda_contacts_dialog
 local hud_animations_mgr
 local hud_interface_mgr
 local last_move_time
@@ -41,6 +42,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function actor_net_spawn()
 	sa_main.disable_ui_info()
+	pda_talk.init()
 	reap.net_spawn()
 end
 ---------------------------------------------------------------------------------------------------
@@ -130,9 +132,17 @@ end
 ---------------------------------------------------------------------------------------------------
 function info(info_id, ui_info)
 	if ui_info then
+		sa_main.pda_tab_callback(info_id)
 		sa_main.dead_body_sounds(info_id)
+		sa_pda.info(info_id)
 	end
 	reap.info(info_id, ui_info)
+end
+---------------------------------------------------------------------------------------------------
+function pda_tab(tab_id)
+	sa_pda.show_hide_menu(tab_id)
+	pda_contacts_dialog = sa_pda.get_pda_contacts_dialog()
+	sa_main.pda_sounds(tab_id)
 end
 ---------------------------------------------------------------------------------------------------
 function scope_zoom_mode(mode_on)
@@ -145,7 +155,13 @@ function scope_zoom_mode(mode_on)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function hit_effector()
+function select_pda_contact(id)
+	if pda_contacts_dialog then
+		pda_contacts_dialog:choice_pda_contact(id)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function actor_before_hit()
 	if not last_health then
 		last_health = Actor.health
 	end
@@ -169,6 +185,12 @@ function detach_vehicle(car)
 end
 ---------------------------------------------------------------------------------------------------
 function key_press(dik)
+	if pda_contacts_dialog then
+		local pda_talk_dialog = sa_pda.get_pda_talk_dialog()
+		if pda_talk_dialog then
+			pda_talk_dialog:on_keyboard(dik, key_events.pressed)
+		end
+	end
 	if car_mgr then
 		car_mgr:on_keyboard(dik, key_events.pressed)
 	end
