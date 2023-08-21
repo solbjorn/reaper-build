@@ -133,12 +133,19 @@ local tips_icons = {
 }
 local name_to_sender = { }
 
+local task_icons = { }
+
 function prepare_data()
 	for k, data in pairs(tips_icons) do
 		if data[3] then
 			data[3] = translate(data[3])
 			name_to_sender[data[3]] = k
 		end
+	end
+
+	local t = parse_xml.file("gameplay\\game_tasks.xml", true)
+	for i, v in ipairs(t.game_tasks_data.game_task) do
+		task_icons[v.id] = v.objective[1] and v.objective[1].icon or v.objective.icon
 	end
 end
 
@@ -220,29 +227,14 @@ local randtask = {
 function send_task(type, _task, objective)
 	if Actor == nil then return false end
 
-	local task_title = _task:get_title()
-	local task_time = string.find(task_title, "\\n", 1, true)
-	if task_time then
-		task_title = string.sub(task_title, 1, task_time-1)
-	end
-	local news_text, task_texture, task_rect
-	local objective_index = objective:get_idx() + 1
-
 	--' Играем дефолтный звук
 	pda_task:play(Actor, 0, sound_object.s2d)
 
 	-- цвет сообщения
-	local text_color = "%c[sender]"
-	if type == "fail" then
-		text_color = "%c[255,255,0,0]"
-	end
+	local text_color = type == "fail" and "%c[255,255,0,0]" or "%c[sender]"
 
-	local def_texture, def_rect = get_texture_info("ui_iconsTotal_locations", "ui_iconsTotal_locations")
-	task_texture, task_rect = get_texture_info("ui_iconsTotal_" .. task_title, "ui_iconsTotal_locations")
-	if task_texture == def_texture and task_rect.x1 == def_rect.x1 and task_rect.y1 == def_rect.y1 and
-	   task_rect.x2 == def_rect.x2 and task_rect.y2 == def_rect.y2 then
-		task_texture, task_rect = get_texture_info("ui_iconsTotal_" .. _task:get_id(), "ui_iconsTotal_locations")
-	end
+	local task_title = _task:get_title()
+	local news_text
 
 	if randtask[task_title] then
 		news_text = text_color..translate("general_" .. type .. "_task").."\\n"..
@@ -252,10 +244,11 @@ function send_task(type, _task, objective)
 		local color= (type=="complete") and "%c[green]" or "%c[255,0,255,255]"
 		news_text = text_color..translate("general_" .. type .. "_task").."\\n"..color..translate(task_title)
 		if type ~= "complete" and type ~= "fail" then
-			if _task:get_objectives_cnt() == objective_index then
-				objective_index = objective_index - 1
-			end
 			if type == "new" then
+				local objective_index = objective:get_idx() + 1
+				if _task:get_objectives_cnt() == objective_index then
+					objective_index = objective_index - 1
+				end
 				local obj_desc = _task:get_objective(objective_index):get_description()
 				if obj_desc ~= nil then
 					news_text = news_text.."\\n".."%c[task_colour]"..translate("news_next")..": "..color..translate(obj_desc)
@@ -303,6 +296,7 @@ function send_task(type, _task, objective)
 		end
 	end
 
+	local task_texture, task_rect = get_texture_info(task_icons[_task:get_id()], "ui_iconsTotal_locations")
 	if Actor:is_talking() then
 		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
