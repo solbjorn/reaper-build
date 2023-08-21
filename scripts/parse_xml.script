@@ -30,7 +30,7 @@ function read_xml(filename)
 	return str_del
 end
 
-function file(filename)
+function file(filename, recursive)
 	local str = read_xml(filename)
 	if not str then
 		return nil
@@ -45,19 +45,32 @@ function file(filename)
 	tab.includes = {}
 
 	repeat
-		local teg_start = string.find(after_teg,"<",1,true) or 1
-		local before_teg = string.sub(after_teg,1,teg_start)
-		if string.find(before_teg,"#include",1,true) then
-			local str = before_teg
-			while string.find(str,"#include",1,true) do
-				local inc_start = string.find(str,"#include",1,true)
-				local q1 = string.find(str,'"',inc_start+1,true)
-				local q2 = string.find(str,'"',q1+1,true)
-				local inc_string = string.sub(str,q1+1,q2-1)
-				table.insert(tab.includes,inc_string)
-				str = string.sub(str,q2+1)
+		local teg_start, before_teg
+		local included
+
+		repeat
+			teg_start = string.find(after_teg,"<",1,true) or 1
+			before_teg = string.sub(after_teg,1,teg_start)
+			if string.find(before_teg,"#include",1,true) then
+				included = ""
+				local str = before_teg
+				while string.find(str,"#include",1,true) do
+					local inc_start = string.find(str,"#include",1,true)
+					local q1 = string.find(str,'"',inc_start+1,true)
+					local q2 = string.find(str,'"',q1+1,true)
+					local inc_string = string.sub(str,q1+1,q2-1)
+					table.insert(tab.includes,inc_string)
+					str = string.sub(str,q2+1)
+					after_teg = string.sub(after_teg,q2+1)
+					if recursive then
+						included = included .. read_xml(inc_string)
+					end
+				end
+				after_teg = included .. after_teg
+			else
+				included = nil
 			end
-		end
+		until included == nil
 
 		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
 		if not repeating_tegs[teg_name] then
@@ -68,7 +81,7 @@ function file(filename)
 			tab[teg_name] = in_teg
 		else
 			if string.find(in_teg,">") then
-				in_teg = parse_complex_teg(in_teg,teg_name)
+				in_teg = parse_complex_teg(in_teg,teg_name, recursive)
 				tab[teg_name] = in_teg
 			else
 				tab[teg_name] = in_teg
@@ -219,7 +232,7 @@ function parse_simple_teg(st,self_name)
 	return tab
 end
 
-function parse_complex_teg(st,self_name)
+function parse_complex_teg(st,self_name, recursive)
 	local str = st
 	local self_close = "</"..self_name..">"
 	local self_teg_close = string.find(str,self_close)
@@ -251,19 +264,32 @@ function parse_complex_teg(st,self_name)
 	tab.includes = {}
 
 	repeat
-		local teg_start = string.find(after_teg,"<",1,true) or 1
-		local before_teg = string.sub(after_teg,1,teg_start)
-		if string.find(before_teg,"#include",1,true) then
-			local str = before_teg
-			while string.find(str,"#include",1,true) do
-				local inc_start = string.find(str,"#include",1,true)
-				local q1 = string.find(str,'"',inc_start+1,true)
-				local q2 = string.find(str,'"',q1+1,true)
-				local inc_string = string.sub(str,q1+1,q2-1)
-				table.insert(tab.includes,inc_string)
-				str = string.sub(str,q2+1)
+		local teg_start, before_teg
+		local included
+
+		repeat
+			teg_start = string.find(after_teg,"<",1,true) or 1
+			before_teg = string.sub(after_teg,1,teg_start)
+			if string.find(before_teg,"#include",1,true) then
+				included = ""
+				local str = before_teg
+				while string.find(str,"#include",1,true) do
+					local inc_start = string.find(str,"#include",1,true)
+					local q1 = string.find(str,'"',inc_start+1,true)
+					local q2 = string.find(str,'"',q1+1,true)
+					local inc_string = string.sub(str,q1+1,q2-1)
+					table.insert(tab.includes,inc_string)
+					str = string.sub(str,q2+1)
+					after_teg = string.sub(after_teg,q2+1)
+					if recursive then
+						included = included .. read_xml(inc_string)
+					end
+				end
+				after_teg = included .. after_teg
+			else
+				included = nil
 			end
-		end
+		until included == nil
 
 		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
 		if not repeating_tegs[teg_name] then
