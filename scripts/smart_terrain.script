@@ -184,11 +184,17 @@ end
 -- а) если сталкер: группировку сталкера и true
 -- б) если монстр:  вид монстра и false
 function se_smart_terrain:get_obj_community( obj )
-	if obj:is_stalker() then
-    return obj:community(), true
-  else
-    return monster_classes[cls], false
-  end
+	local cls = obj:clsid()
+	local is_stalker = cls == clsid_script_stalker
+
+	cls = is_stalker and obj:community() or monster_classes[cls]
+	if not cls then
+		abort("smart_terrain: failed to get community for %s %s",
+		      is_stalker and "stalker" or "monster", obj:name())
+		return nil, nil
+	end
+
+	return cls, is_stalker
 end
 
 -- инициализация.
