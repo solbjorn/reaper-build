@@ -1,0 +1,123 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : sa_mob_health_bar.script
+ Description  : Прогресс-бар жизни "боссов"
+ Copyright    : Shadows Addon
+ Author       : Ray Twitty aka Shadows
+ Date         : 21.06.2012
+ Last edit    : 12.12.2018
+---------------------------------------------------------------------------------------------------
+ * Описание возможностей
+ - возможность установки бара для монстра, НПС, вертолета и машины
+ - принудительный перевод "босса" в онлайн
+ - восстановление бара после ухода с локации
+--]]-----------------------------------------------------------------------------------------------
+local mob_health_bar
+local mobs = { }
+--[[-----------------------------------------------------------------------------------------------
+ * MOB HEALTH BAR
+--]]-----------------------------------------------------------------------------------------------
+class "CMobHealthBar"
+function CMobHealthBar:__init(obj, mob_type)
+	self.object = obj
+	if mob_type == "car" then
+		self.car = obj:get_car()
+	elseif mob_type == "helicopter" then
+		self.car = obj:get_helicopter()
+	end
+	self.mob_health = -1
+end
+---------------------------------------------------------------------------------------------------
+function CMobHealthBar:update()
+	if self.object:alive() then
+		if is_hud_draw() then
+			if not self.pb_mob_health then
+				self:show()
+			end
+			local health = self.car and self.car:GetfHealth() or self.object.health
+			if health ~= self.mob_health then
+				self.pb_mob_health:SetProgressPos(refactor * health * 100)
+				self.mob_health = health
+			end
+		elseif self.pb_mob_health then
+			self:hide()
+		end
+	else
+		self:hide()
+		mob_health_bar = nil
+		sa_callbacks.switch_mob_health_bar(nil)
+		mobs[self.object:id()] = nil
+		pick_next_mob()
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CMobHealthBar:show()
+	local st_mob_health = hud:AddCustomStatic("static_mob_health")
+	local xml = CScriptXmlInit()
+	xml:ParseFile("maingame.xml")
+	self.pb_mob_health = xml:InitProgressBar("progress_bar_mob_health", st_mob_health:wnd())
+	if self.mob_health > 0 then
+		self.pb_mob_health:SetProgressPos(refactor * self.mob_health * 100)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function CMobHealthBar:hide()
+	hud:RemoveCustomStatic("static_mob_health")
+	self.pb_mob_health = nil
+end
+---------------------------------------------------------------------------------------------------
+function pick_next_mob()
+	local se_obj
+	for id, _ in pairs(mobs) do
+		se_obj = server_object(id)
+		if se_obj and curr_level == object_level_name(se_obj) then
+			level.client_spawn_manager():add(id, 0, function(id, obj) add_mob_health_bar(obj) end)
+			break
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function save(packet)
+	packet:w_u8(table.size(mobs))
+	for id, _ in pairs(mobs) do
+		packet:w_u16(id)
+	end
+end
+---------------------------------------------------------------------------------------------------
+function load(reader)
+	local num = reader:r_u8()
+	if num == 0 then
+		return
+	end
+	for i = 1, num do
+		mobs[reader:r_u16()] = true
+	end
+	pick_next_mob()
+end
+--[[-----------------------------------------------------------------------------------------------
+ * INIT
+--]]-----------------------------------------------------------------------------------------------
+function add_mob_health_bar(obj)
+	if obj then
+		local mob_type
+		if obj:is_monster() or obj:is_stalker() or obj:is_trader() then
+			mob_type = "npc"
+		elseif obj:is_car() then
+			mob_type = "car"
+		elseif obj:is_helicopter() then
+			mob_type = "helicopter"
+		end
+		if mob_type then
+			local mob_id = obj:id()
+			mobs[mob_id] = true
+			switch_online(mob_id)
+			if not mob_health_bar then
+				mob_health_bar = CMobHealthBar(obj, mob_type)
+			end
+			sa_callbacks.switch_mob_health_bar(mob_health_bar)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function get_mob_health_bar()
+	return mob_health_bar
+end

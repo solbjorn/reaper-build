@@ -1583,28 +1583,36 @@ end
 function activate_agr_u_controller_boss()
 	local se_obj = server_object("kat2_m_controller_old_0000")
 	if se_obj then
-		level.client_spawn_manager():add(se_obj.id, 0, switch_online)
+		level.client_spawn_manager():add(se_obj.id, 0,
+			function(id, obj)
+				sa_mob_health_bar.add_mob_health_bar(obj)
+			end
+		)
 	end
 end
 
 function activate_x18_flame_boss()
-	local obj = level.object_by_name("dar_m_poltergeist_normal_flame_0000")
+	local obj = level_object("dar_m_poltergeist_normal_flame_0000")
 	if obj then
-		switch_online(obj:id())
+		sa_mob_health_bar.add_mob_health_bar(obj)
 	end
 end
 
 function activate_x16_controller_boss()
-	local obj = level.object_by_name("x16_m_controller_e")
+	local obj = level_object("x16_m_controller_e")
 	if obj then
-		switch_online(obj:id())
+		sa_mob_health_bar.add_mob_health_bar(obj)
 	end
 end
 
 function activate_x10_bloodsucker_boss()
 	local se_obj = server_object("bun_bloodsucker_prim")
 	if se_obj then
-		level.client_spawn_manager():add(se_obj.id, 0, switch_online)
+		level.client_spawn_manager():add(se_obj.id, 0,
+			function(id, obj)
+				sa_mob_health_bar.add_mob_health_bar(obj)
+			end
+		)
 	end
 end
 

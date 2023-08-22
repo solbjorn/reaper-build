@@ -25,7 +25,7 @@ end
 local hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
 ---------------------------------------------------------------------------------------------------
 function reattach_statics()
-	local statics = { "hud_timer", "hud_timer_text", "hud_time", "hud_date", "cs_psy_danger", "cs_radiation_danger", "gun_jammed", "cant_walk", "cant_walk_weight", "car_speedometer_background", "car_speedometer_transmission", "car_speedometer_pointer", "car_fuel_static", "gun_reload" }
+	local statics = { "hud_timer", "hud_timer_text", "hud_time", "hud_date", "cs_psy_danger", "cs_radiation_danger", "gun_jammed", "cant_walk", "cant_walk_weight", "car_speedometer_background", "car_speedometer_transmission", "car_speedometer_pointer", "car_fuel_static", "gun_reload", "static_mob_health" }
 	for i = 1, #statics do
 		hud:RemoveCustomStatic(statics[i])
 	end
@@ -33,6 +33,10 @@ function reattach_statics()
 	hud_interface_mgr.nextupd_1000 = 0
 	hud_interface_mgr.night_vision_active = false
 	ui_rad.remove_static()
+	local mob_health_bar = sa_mob_health_bar.get_mob_health_bar()
+	if mob_health_bar then
+		mob_health_bar.pb_mob_health = nil
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function rect_change()

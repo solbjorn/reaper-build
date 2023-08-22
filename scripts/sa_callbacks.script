@@ -13,9 +13,11 @@ prefetch("sa_utils")
 local pda_contacts_dialog
 local hud_animations_mgr
 local hud_interface_mgr
+local mob_health_bar
+local car_mgr
+---------------------------------------------------------------------------------------------------
 local last_move_time
 local next_500 = 0
-local car_mgr
 ---------------------------------------------------------------------------------------------------
 function actor_update(delta)
 	if car_mgr then
@@ -24,6 +26,9 @@ function actor_update(delta)
 			last_move_time = nil
 		end
 		car_mgr:update()
+	end
+	if mob_health_bar then
+		mob_health_bar:update()
 	end
 	if not hud_animations_mgr then
 		hud_animations_mgr = sa_hud_animations_mgr.get_hud_animations_mgr()
@@ -38,6 +43,10 @@ function actor_update(delta)
 	end
 	sa_main.scope_zoom_mode_callback()
 	reap.update()
+end
+---------------------------------------------------------------------------------------------------
+function switch_mob_health_bar(obj)
+	mob_health_bar = obj
 end
 ---------------------------------------------------------------------------------------------------
 function actor_net_spawn()
@@ -235,10 +244,12 @@ function new_game()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_save(packet)
+	sa_mob_health_bar.save(packet)
 	reap.actor_save(packet)
 end
 ---------------------------------------------------------------------------------------------------
 function actor_load(reader)
+	sa_mob_health_bar.load(reader)
 	reap.actor_load(reader)
 end
 --[[-----------------------------------------------------------------------------------------------
