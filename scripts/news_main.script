@@ -125,7 +125,7 @@ function on_spawn_group(community, level, position, count, o_type)
 				if (count == 1) then
 					m_str = format_template_spawn(level, position, get_monster_name_by_string(mon, 4))
 				else
-					m_str = format_template_spawn_group(level, position, get_monster_name_by_string(mon, 6), count)
+					m_str = format_template_spawn_group(level, position, get_monster_name_by_string(mon, 6), count, o_type)
 				end
 				do_news(m_str, s_author, math_random(timer_spawn, timer_spawn*5), 15, "gen_info", author.id)
 			end
@@ -147,7 +147,7 @@ function on_spawn_group(community, level, position, count, o_type)
 				if (count == 1) then
 					m_str = format_template_spawn(level, position, m_who)
 				else
-					m_str = format_template_spawn_group(level, position, m_who, count)
+					m_str = format_template_spawn_group(level, position, m_who, count, o_type)
 				end
 				do_news(m_str, s_author, math_random(timer_spawn, timer_spawn*5), 15, "gen_info", author.id)
 			end
@@ -189,7 +189,7 @@ end
 
 function on_death(victim, killer)
 	if (victim ~= nil) then
-		if victim:is_stalker() then
+		if victim:is_stalker() or victim:is_trader() then
 			local m_obj
 			if (isGameObject(victim)) then
 				m_obj = victim
@@ -1310,7 +1310,7 @@ function format_template_spawn(level_, position, class)
 	return m_s
 end
 
-function format_template_spawn_group(level_, position, class, count)
+function format_template_spawn_group(level_, position, class, count, o_type)
 	local m_s = ""
 	local m_level = ""
 	local m_pos
@@ -1329,9 +1329,10 @@ function format_template_spawn_group(level_, position, class, count)
 			s_count = "группу"
 		elseif(count >= 6 and count < 8) then
 			s_count = "большую группу"
-		else
-			--s_count = "большую группу ("..count..")"
+		elseif o_type == 2 then
 			s_count = "стаю"
+		else
+			s_count = "толпу"
 		end
 
 		local t = {
@@ -1580,7 +1581,7 @@ function check_news()
 end
 
 function add_spawned_object(obj)
-	if (obj and (obj:is_stalker() or obj:is_monster())) then
+	if (obj and (obj:is_stalker() or obj:is_monster() or obj:is_trader())) then
 		if obj.can_switch_online and obj:can_switch_online() == false then return end
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "stranger" or s_comm == "trader" or s_comm == "arena_enemy" or s_comm == "actor_dolg" or s_comm == "actor_freedom" or s_comm == "ecolog" or s_comm == "green") then
@@ -1592,7 +1593,7 @@ function add_spawned_object(obj)
 		local pos = get_object_position(obj)
 		local lev = get_object_levelname(obj)
 		local obj_type = 0
-		if obj:is_stalker() then
+		if obj:is_stalker() or obj:is_trader() then
 			obj_type = 1
 		elseif obj:is_monster() then
 			obj_type = 2
@@ -1603,14 +1604,14 @@ function add_spawned_object(obj)
 			s_id = obj.id
 		end
 		-- Проверим, не фильтруется ли он по smart_terrain
-		if (news_data.smart_filters and #news_data.smart_filters>0) then
+		if (news_data.smart_filters[s_comm] and #news_data.smart_filters[s_comm]>0) then
 			local m_obj = nil
 			if (obj.smart_terrain_id) then
 				m_obj = obj
 			else
 				m_obj = AI:object(s_id)
 			end
-			if (m_obj and m_obj.smart_terrain_id and m_obj:smart_terrain_id() and m_obj:smart_terrain_id()~=65535 and news_data.smart_filters[s_comm]) then
+			if (m_obj and m_obj.smart_terrain_id and m_obj:smart_terrain_id() and m_obj:smart_terrain_id()~=65535) then
 				local sm = AI:object(m_obj:smart_terrain_id())
 				if (sm and sm.name and sm:name()) then
 					local sn = sm:name()
@@ -1658,7 +1659,7 @@ function add_spawned_object(obj)
 end
 
 function add_killed_by_actor(obj)
-	if (obj and (obj:is_stalker() or obj:is_monster())) then
+	if (obj and (obj:is_stalker() or obj:is_monster() or obj:is_trader())) then
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "trader" or s_comm == "ecolog" or s_comm == "green") then
 			return -- это сталкер
@@ -1673,7 +1674,7 @@ function add_killed_by_actor(obj)
 		end
 		local b_added = false
 		local obj_type = 0
-		if obj:is_stalker() then
+		if obj:is_stalker() or obj:is_trader() then
 			obj_type = 1
 		elseif obj:is_monster() then
 			obj_type = 2
@@ -2443,7 +2444,7 @@ function on_news()
 					amk.oau_reason="cn on_news check author obj"
 					if (obj) then
 						amk.oau_reason="cn on_news author obj exists"
-						if obj:is_stalker() then
+						if obj:is_stalker() or obj:is_trader() then
 							amk.oau_reason="cn on_news author obj is NPC"
 							if IsNpcStalker(obj) then
 								amk.oau_reason="cn on_news check author alive"
@@ -2495,7 +2496,7 @@ end
 -- Кого-то грохнули в оффлайн.
 function on_offline_death(victim, killer, weapon)
 	if (victim and killer) then
-		if victim:is_stalker() then
+		if victim:is_stalker() or victim:is_trader() then
 			if (IsNpcStalker(victim)) then
 				on_offline_stalker_death(victim, killer, weapon)
 			else
