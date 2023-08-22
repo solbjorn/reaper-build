@@ -170,6 +170,9 @@ function pseudodog_psy_effect(self)
 				p = math.random() > 0.5 and p + PDOG_PSY_EFFECT_TURN_ANGLE or p - PDOG_PSY_EFFECT_TURN_ANGLE
 				Actor:set_camera_direction(xyz(h, math.clamp(p, -1.5, 1.5), 0))
 			end
+			if math.random() < (level.get_game_difficulty() + 1) / 40 then
+				reap.drop_weapon()
+			end
 			-- camera effector
 			level.add_cam_effector3(1.0, -30.0, 4.0, 2.0)
 			level.add_pp_effector("attack_effects\\monsters\\special\\pseudodog_psy.ppe", effector_ids.psy_effect, false)
