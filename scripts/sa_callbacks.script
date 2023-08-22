@@ -279,3 +279,7 @@ function physic_object_net_spawn(obj)
 		obj:set_tip_text("mounted_weapon_use")
 	end
 end
+---------------------------------------------------------------------------------------------------
+function physic_object_hit(obj, amount, local_direction, who)
+	sa_main.light_death_callback(obj, who)
+end

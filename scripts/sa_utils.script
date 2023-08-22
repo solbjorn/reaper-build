@@ -26,6 +26,14 @@ function _G.change_car_fuel(obj, fuel)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * Light
+--]]-----------------------------------------------------------------------------------------------
+function _G.is_light_alive(obj)
+	if obj and obj:is_hanging_lamp() then
+		return get_light_data(obj, "health") > 0
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Object data
 --]]-----------------------------------------------------------------------------------------------
 function _G.get_weapon_data(obj, param)
@@ -91,6 +99,14 @@ function _G.set_actor_data(param, value)
 	if param and value then
 		if param == "camera_type" then
 			Actor:set_actor_int(1328, value)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.get_light_data(obj, param)
+	if obj and param then
+		if param == "health" then
+			return obj:get_go_float(484)
 		end
 	end
 end

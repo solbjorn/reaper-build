@@ -122,6 +122,21 @@ function scope_zoom_mode_callback()
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
+ * Light death callback
+--]]-----------------------------------------------------------------------------------------------
+function light_death_callback(obj, who)
+	if obj:is_hanging_lamp() and not xr_logic.pstor_retrieve(obj, "death_light") then
+		level.parked_call(
+			function()
+				if not is_light_alive(obj) then
+					obj:binded_object():death_callback(obj, who)
+					xr_logic.pstor_store(obj, "death_light", true)
+				end
+			end,
+		2)
+	end
+end
+--[[-----------------------------------------------------------------------------------------------
  * Dead body sounds
 --]]-----------------------------------------------------------------------------------------------
 function dead_body_sounds(info_id)
@@ -222,16 +237,14 @@ function restore_torch(victim)
 		if torch and torch:is_torch_enabled() then
 			victim:transfer_item(torch, victim)
 			local id = torch:id()
-			local x = 2
-			level.add_call(
-				function() x = x - 1 return x == 0 end,
+			level.parked_call(
 				function()
 					torch = level.object_by_id(id)
 					victim:move_to_slot(torch)
 					torch:enable_attachable_item(true)
 					torch:switch_torch(true)
-				end
-			)
+				end,
+			2)
 		end
 	end
 end

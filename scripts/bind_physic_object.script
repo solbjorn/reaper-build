@@ -225,7 +225,10 @@ function generic_physics_binder:hit_callback(obj, amount, local_direction, who, 
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
 
-	if not self.car then return end
+	if not self.car then
+		sa_callbacks.physic_object_hit(obj, amount, local_direction, who)
+		return
+	end
 
 	local who_id = reap.hit_by_actor(who)
 	if who_id ~= -1 then
