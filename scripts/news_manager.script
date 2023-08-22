@@ -214,16 +214,6 @@ function send_tip_nosound(news_id, timeout, sender)
 	return news[news_id]
 end
 
-local randtask = {
-	eliminate_lager	= true,
-	eliminate_lair	= true,
-	defend_lager	= true,
-	kill_stalker	= true,
-	artefact	= true,
-	monster_part	= true,
-	find_item	= true
-}
-
 function send_task(type, _task, objective)
 	if Actor == nil then return false end
 
@@ -234,64 +224,57 @@ function send_task(type, _task, objective)
 	local text_color = type == "fail" and "%c[255,255,0,0]" or "%c[sender]"
 
 	local task_title = _task:get_title()
-	local news_text
+	local color= (type=="complete") and "%c[green]" or "%c[255,0,255,255]"
+	local news_text = text_color..translate("general_" .. type .. "_task").."\\n"..color..translate(task_title)
 
-	if randtask[task_title] then
-		news_text = text_color..translate("general_" .. type .. "_task").."\\n"..
-		"%c[255,0,255,255]"..translate(task_title)..": %c[task_colour]"..translate(_task:get_objective(1):get_description())..
-		"\\n%c[green]"..translate(_task:get_objective(2):get_description())
-	else
-		local color= (type=="complete") and "%c[green]" or "%c[255,0,255,255]"
-		news_text = text_color..translate("general_" .. type .. "_task").."\\n"..color..translate(task_title)
-		if type ~= "complete" and type ~= "fail" then
-			if type == "new" then
-				local objective_index = objective:get_idx() + 1
-				if _task:get_objectives_cnt() == objective_index then
-					objective_index = objective_index - 1
+	if type ~= "complete" and type ~= "fail" then
+		if type == "new" then
+			local objective_index = objective:get_idx() + 1
+			if _task:get_objectives_cnt() == objective_index then
+				objective_index = objective_index - 1
+			end
+			local obj_desc = _task:get_objective(objective_index):get_description()
+			if obj_desc ~= nil then
+				news_text = news_text.."\\n".."%c[task_colour]"..translate("news_next")..": "..color..translate(obj_desc)
+			end
+		elseif type == "update" then
+			local obj_desc1 = objective:get_description()
+			local c_obj
+			local c_idx=objective:get_idx()+1
+			local finished=false
+			while true do --поищем следующую задачу в процессе
+				c_obj=_task:get_objective(c_idx)
+				if c_obj==nil then --если шагнули совсем куда то далеко
+					c_idx=1 --проверим с самого начала
+				else
+					if c_obj:get_state()==task.fail or c_obj:get_state()==task.completed then --если задача на данном шаге выполнена
+						c_idx=c_idx+1 -- смотрим следующую
+					end
 				end
-				local obj_desc = _task:get_objective(objective_index):get_description()
-				if obj_desc ~= nil then
-					news_text = news_text.."\\n".."%c[task_colour]"..translate("news_next")..": "..color..translate(obj_desc)
-				end
-			elseif type == "update" then
-				local obj_desc1 = objective:get_description()
-				local c_obj
-				local c_idx=objective:get_idx()+1
-				local finished=false
-				while true do --поищем следующую задачу в процессе
-					c_obj=_task:get_objective(c_idx)
-					if c_obj==nil then --если шагнули совсем куда то далеко
+				if c_idx==_task:get_objectives_cnt()-1 then --если подошли к концу заданий и еще не были тут
+					if not finished then
+						finished=true --второй раз сюда уже не попадем
 						c_idx=1 --проверим с самого начала
-					else
-						if c_obj:get_state()==task.fail or c_obj:get_state()==task.completed then --если задача на данном шаге выполнена
-							c_idx=c_idx+1 -- смотрим следующую
-						end
-					end
-					if c_idx==_task:get_objectives_cnt()-1 then --если подошли к концу заданий и еще не были тут
-						if not finished then
-							finished=true --второй раз сюда уже не попадем
-							c_idx=1 --проверим с самого начала
-						else --обошли по кругу
-							c_idx=_task:get_objectives_cnt()-1
-							break
-						end
-					end
-					local toc=_task:get_objective(c_idx)
-					if toc~=nil then
-						if toc:get_state()==task.in_progress then --ну и если еще в прогрессе - подходит для уведомления
-							break
-						end
+					else --обошли по кругу
+						c_idx=_task:get_objectives_cnt()-1
+						break
 					end
 				end
-				if obj_desc1 ~= nil then
-					news_text = news_text.."\\n".."%c[task_colour]"..translate("news_finished")..": "..translate(obj_desc1)
+				local toc=_task:get_objective(c_idx)
+				if toc~=nil then
+					if toc:get_state()==task.in_progress then --ну и если еще в прогрессе - подходит для уведомления
+						break
+					end
 				end
-				c_obj2=_task:get_objective(c_idx)
-				local obj_desc2 = (c_obj2~=nil and c_obj2:get_state()==task.in_progress) and c_obj2:get_description() or nil
-				if obj_desc2 ~= nil then
-					local color=(c_idx==_task:get_objectives_cnt()-1) and "%c[green]" or "%c[task_colour]"
-					news_text = news_text.."\\n".."%c[task_colour]"..translate("news_next")..": "..color..translate(obj_desc2)
-				end
+			end
+			if obj_desc1 ~= nil then
+				news_text = news_text.."\\n".."%c[task_colour]"..translate("news_finished")..": "..translate(obj_desc1)
+			end
+			c_obj2=_task:get_objective(c_idx)
+			local obj_desc2 = (c_obj2~=nil and c_obj2:get_state()==task.in_progress) and c_obj2:get_description() or nil
+			if obj_desc2 ~= nil then
+				local color=(c_idx==_task:get_objectives_cnt()-1) and "%c[green]" or "%c[task_colour]"
+				news_text = news_text.."\\n".."%c[task_colour]"..translate("news_next")..": "..color..translate(obj_desc2)
 			end
 		end
 	end
