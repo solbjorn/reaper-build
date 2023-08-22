@@ -1151,13 +1151,13 @@ function Blowout_pp(phase)
 		blowout_psy_sound("stop")
 		amk_start_timer("blowout",5,5)
 	elseif phase==5 then
-		level.set_weather(amk_load_variable("weather","default"))
+		level.set_weather(amk_load_variable("weather", "default"), true)
 		if bt<1 then
 			local snd_obj = xr_sound.get_safe_sound_object([[anomaly\teleport_work2]])
 			snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
 
 			local sect = "groza_groza_" .. level.get_time_hours() .. get_moon_phase()
-			level.set_weather(dynweather_types[level.name()] .. "_" .. sect)
+			level.set_weather(dynweather_types[level.name()] .. "_" .. sect, true)
 			amk_save_variable("dynw","groza")
 			amk_save_variable("dynlasthour", level.get_time_hours())
 			amk_save_variable("dynweather", sect)
@@ -2563,7 +2563,7 @@ function weather_manager()
 		end
 		local sect = dynw .. "_" .. next_weather .. "_" .. hour .. get_moon_phase()
 		if (amk_load_variable("blowout",0)==0 and blowout_type()<1) then
-			level.set_weather(dynw_type .. "_" .. sect)
+			level.set_weather(dynw_type .. "_" .. sect, true)
 		end
 		news_main.on_weather_change(dynw, next_weather)
 
