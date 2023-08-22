@@ -37,6 +37,7 @@ function actor_update(delta)
 	hud_animations_mgr:update()
 	hud_interface_mgr:update()
 	sa_inventory_items_mgr.repack_ammo()
+	sa_main.overweight_power_fix()
 	if next_500 < time_real_ms then
 		sa_main.bunker_cooling_sound()
 		next_500 = time_real_ms + 500
@@ -209,6 +210,7 @@ function key_press(dik)
 	if hud_animations_mgr then
 		hud_animations_mgr:on_keyboard(dik, key_events.pressed)
 	end
+	sa_main.zoom_effect(dik, key_events.pressed)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
@@ -219,6 +221,7 @@ function key_release(dik)
 	if hud_animations_mgr then
 		hud_animations_mgr:on_keyboard(dik, key_events.released)
 	end
+	sa_main.zoom_effect(dik, key_events.released)
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------

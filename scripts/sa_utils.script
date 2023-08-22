@@ -91,6 +91,18 @@ function _G.get_actor_data(param)
 			return Actor:get_actor_int(nil, 1328)
 		elseif param == "zoom_mode" then
 			return toboolean(bit_and(Actor:get_actor_int(nil, 1480), 1))
+		elseif param == "walk_power" then
+			return Actor:get_actor_condition_float(284)
+		elseif param == "walk_weight_power" then
+			return Actor:get_actor_condition_float(292)
+		elseif param == "overweight_walk_k" then
+			return Actor:get_actor_condition_float(296)
+		elseif param == "sprint_k" then
+			return Actor:get_actor_condition_float(308)
+		elseif param == "accel_k" then
+			return Actor:get_actor_condition_float(304)
+		elseif param == "delta_time" then
+			return Actor:get_actor_condition_float(208)
 		end
 	end
 end
@@ -117,6 +129,16 @@ function _G.get_monster_data(obj, param)
 			return obj:get_custom_monster_float(920)
 		elseif param == "invisible" then
 			return toboolean(obj:get_custom_monster_int(nil, 1713))
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function _G.get_outfit_data(obj, param)
+	if obj and param then
+		if param == "power_loss" then
+			return obj:get_inventory_item_float(696)
+		elseif param == "additional_inventory_weight2" then
+			return obj:get_inventory_item_float(720)
 		end
 	end
 end
