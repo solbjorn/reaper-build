@@ -892,7 +892,7 @@ function CRandomTask:__init()
 		if ini:line_exist(id, "description") then
 			curr_task_info.description	= ini:r_string(id, "description")
 		end
-		curr_task_info.time				= get_field_number(id, "time")
+		curr_task_info.time				= get_field_number(id, "time", 604800)
 
 		curr_task_info.prior		= get_field_number(id, "prior", 0) --' Приоритет квеста, выдаются доступные квесты с наименьшим приоритетом
 
@@ -908,12 +908,8 @@ function CRandomTask:__init()
     curr_task_info.target_dialog = utils.cfg_get_string(ini, id, "target_dialog", nil, false,"")
     ----------------------
 
-		if ini:line_exist(id, "community") then
-			curr_task_info.community = ini:r_string(id, "community")
-		end
-
 		curr_task_info.reward_reputation	= get_field_number(id, "reward_reputation")
-		curr_task_info.reward_relation		= ini:line_exist(id, "reward_relation") and string.key_value_num(ini:r_string(id, "reward_relation"))
+		curr_task_info.reward_relation		= ini:line_exist(id, "reward_relation") and string.key_value_num(ini:r_string(id, "reward_relation")) or nil
 
 		if ini:line_exist(id, "condlist") then
 			curr_task_info.condlist			= xr_logic.parse_condlist(ini:r_string(id, "condlist"))
@@ -926,6 +922,7 @@ function CRandomTask:__init()
 		curr_task_info.yes_phrase_id		= self:gen_phrase_id()
 		curr_task_info.no_phrase_id			= self:gen_phrase_id()
     curr_task_info.completed_phrase_id = self:gen_phrase_id()
+		curr_task_info.never_phrase_id = self:gen_phrase_id()
 
     --' По умолчанию квест доступен для выдачи
 		curr_task_info.enabled				= true
@@ -943,6 +940,7 @@ function CRandomTask:__init()
   self.task_id_by_yes_phrase_id = {}
   self.task_id_by_completed_phrase_id = {}
   self.task_id_by_desc_phrase_id = {}
+	self.task_id_by_never_phrase_id = {}
   self.task_id_by_init_phrase_id = {}
   self.active_task_by_type = {}
 
@@ -968,6 +966,7 @@ function CRandomTask:__init()
     self.task_id_by_yes_phrase_id[tostring(v.yes_phrase_id)] = k
     self.task_id_by_completed_phrase_id[v.completed_phrase_id] = k
     self.task_id_by_desc_phrase_id[v.desc_phrase_id] = k
+		self.task_id_by_never_phrase_id[v.never_phrase_id] = k
     --' По id фразы выдачи квеста.
 		self.task_id_by_init_phrase_id[tostring(v.init_phrase_id)] = k
   end
@@ -1024,11 +1023,21 @@ local num_to_status = table.invert(status_to_num)
 
 -- Будем записывать не id задания а его хеш - семикратная экономия.
 function CRandomTask:save(p)
-	--' Считаем количество записей
-	local n = table.size(self.task_info)
-	p:w_u16(n)
+	local tasks = { }
 
-	for k,v in pairs(self.task_info) do
+	--' Считаем количество записей
+	for id, desc in pairs(self.task_info) do
+		if desc.type ~= "storyline" then
+			tasks[#tasks + 1] = desc
+		end
+	end
+	p:w_u16(#tasks)
+
+	local v, k, n
+	for i = 1, #tasks do
+		v = tasks[i]
+		k = v.name
+
 		if not id_to_hash[k] then
 			abort("[CRandomTask:save] Cannot find hash for id %s!", k)
 			return
@@ -1048,8 +1057,17 @@ function CRandomTask:save(p)
 		if self.active_task_by_type[v.complex_type] == k then
 			n = bit_or(n, 128)
 		end
+		if v.given then n = bit_or(n, 256) end
 
-		p:w_u8(n)
+		if v.since then
+			if v.given or v.since <= time_game_ct then
+				v.since = nil
+			else
+				n = bit_or(n, 512)
+			end
+		end
+
+		p:w_u16(n)
 
 		if v.selected_target then
 			p:w_u16(v.selected_target)		-- id, u16
@@ -1057,13 +1075,8 @@ function CRandomTask:save(p)
 		if v.defend_target then
 			p:w_u32(v.defend_target)		-- story_id, u32
 		end
-
-		if status_to_num[v.status] >= 3 then
-			n = 0
-			if v.given then
-				n = bit_or(n, 1)
-			end
-			p:w_u8(n)
+		if v.since then
+			p:w_CTime(v.since)
 		end
 	end
 end
@@ -1077,7 +1090,7 @@ function CRandomTask:load(p)
 		hash = p:r_u16()
 		id = hash_to_id[hash] or abort("[CRandomTask:load] Cannot find id for hash %d!", hash)
 		local t = self.task_info[id] or abort("[CRandomTask:load] Cannot find task for id %s!", id)
-		n = p:r_u8()
+		n = p:r_u16()
 		t.enabled = bit_and(n, 8)~=0
 		t.enabled_props = bit_and(n, 16)~=0
 
@@ -1094,17 +1107,15 @@ function CRandomTask:load(p)
 			end
 			self.active_task_by_type[t.complex_type] = id
 		end
+		t.given = bit_and(n, 256) ~= 0
 
-		n = bit_and( n, bit_not(8+16+32+64+128) )
+		if bit_and(n, 512) ~= 0 then
+			t.since = p:r_CTime()
+		end
+
+		n = bit_and(n, bit_not(8 + 16 + 32 + 64 + 128 + 256 + 512))
 		t.status = num_to_status[n]
 			or abort("[CRandomTask:load] Error with loading task [%s] status: %s", id, n)
-
-		if n >= 3 then
-			n = p:r_u8()
-			if bit_and(n, 1) ~= 0 then
-				v.given = true
-			end
-		end
 	end
 end
 
@@ -1147,7 +1158,7 @@ function CRandomTask:active_parent_task(actor, npc)
   end
   return false
 end
---' Есть ли игрока завершенные задания (которые осталось только сдать)
+--' Есть ли у игрока завершенные задания (которые осталось только сдать)
 function CRandomTask:have_completed_job(actor, npc)
   local parent = self:get_parent(npc)
   for k,v in pairs(self.active_task_by_type) do
@@ -1259,6 +1270,21 @@ function CRandomTask:action_refuse_task(actor, npc, p1, p2)
       v.enabled = true
     end
   end
+end
+function CRandomTask:action_reject_task(actor, npc, p1, p2)
+	local task_desc = self.task_info[self.task_id_by_never_phrase_id[p2]]
+	if not task_desc then
+		abort("Wrong random task %s %s", tostring(p1), tostring(p2))
+		return
+	end
+
+	task_desc.since = time_game_ct + game.CTime():set_table({ hour = 24 })
+
+	for k,v in pairs(self.task_info) do
+		if v.complex_type == task_desc.complex_type then
+			v.enabled = true
+		end
+	end
 end
 --' Проверяем, не выполнен ли таск
 function CRandomTask:task_complete(p1, p2)
@@ -1456,6 +1482,14 @@ function CRandomTask:check_task_props(task_id)
 		task_desc.enabled_props = false
 		return
 	end
+	if task_desc.since then
+		if task_desc.since > time_game_ct then
+			task_desc.enabled_props = false
+			return
+		else
+			task_desc.since = nil
+		end
+	end
 
   --' проверка по таргету
 	if task_desc.type == "eliminate_lager" or task_desc.type == "eliminate_lair" then
@@ -1598,6 +1632,10 @@ function CRandomTask:init_task_dialog(dlg, parent)
 		phrase_script:AddAction("task_manager.action_give_task")
 
 		phr = dlg:AddPhrase("tm_seek_job_no", tostring(task_desc.no_phrase_id), tostring(task_desc.desc_phrase_id), -10000)
+
+		phr = dlg:AddPhrase("tm_seek_job_never", task_desc.never_phrase_id, task_desc.desc_phrase_id, -10000)
+		phrase_script = phr:GetPhraseScript()
+		phrase_script:AddAction("task_manager.action_reject_task")
 	end
 
 	dlg:AddPhrase("tm_seek_job_abandon","3","1",-10000)
@@ -1790,10 +1828,11 @@ function CRandomTask:register_target(obj, obj_clsid)
 		end
 	elseif obj_clsid == clsid_smart_terrain then
 		--' Возможно регистрируется цель для квеста "вынести лагерь"
+		local name = obj:name()
 		local t
 		for k,v in ipairs(self.task_id_by_type["eliminate_lager"]) do
 			t = self.task_info[v]
-			if obj:name() == t.target then
+			if name == t.target then
 				if t.target_objects == nil then
 					t.target_objects = {}
 				end
@@ -1804,7 +1843,7 @@ function CRandomTask:register_target(obj, obj_clsid)
 		--' Возможно регистрируется цель для квеста "вынести логово"
 		for k,v in ipairs(self.task_id_by_type["eliminate_lair"]) do
 			t = self.task_info[v]
-			if obj:name() == t.target then
+			if name == t.target then
 				if t.target_objects == nil then
 					t.target_objects = {}
 				end
@@ -1815,7 +1854,7 @@ function CRandomTask:register_target(obj, obj_clsid)
 		--' Либо регистрируется цель для квеста "защитить лагерь"
 		for k,v in ipairs(self.task_id_by_type["defend_lager"]) do
 			t = self.task_info[v]
-			if obj:name() == t.target then
+			if name == t.target then
 				--' Проверка что в кастом дате указано от кого защищать
 				local sm_ini = obj:spawn_ini()
 				local defend_target = utils.cfg_get_number(sm_ini, "random_task", "defend_target", nil, true)
@@ -1994,6 +2033,9 @@ function action_task_show(npc, actor)
 end
 function action_give_task(actor, npc, p1, p2)
 	random_task:action_give_task(actor, npc, p1, p2)
+end
+function action_reject_task(actor, npc, p1, p2)
+	random_task:action_reject_task(actor, npc, p1, p2)
 end
 function action_refuse_task(npc, actor, p1, p2)
 	random_task:action_refuse_task(npc, actor, p1, p2)
