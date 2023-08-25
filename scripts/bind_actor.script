@@ -410,19 +410,19 @@ function actor_binder:update(delta)
 				self.object:iterate_inventory(
 					function (dummy,item)
 						if item:section()=="bread" and math.random() <= self.object.radiation then
-							need_say = true 
+							need_say = true
 							amk.remove_item(item)
 							amk.spawn_item_in_inv("bread_a")
 						elseif item:section()=="kolbasa" and self.object.radiation>0.6 and math.random() <= (self.object.radiation - 0.2) then
-							need_say = true 
+							need_say = true
 							amk.remove_item(item)
 							amk.spawn_item_in_inv("kolbasa_a")
 						end
 					end
 				)
-				if need_say then 
-					amk.send_tip ("В рюкзаке еда испортилась...",nil,nil,5)    
-				end 
+				if need_say then
+					amk.send_tip("st_rad_food", nil, nil, 5)
+				end
 			end
 
 			self.in_rad_zone = true
