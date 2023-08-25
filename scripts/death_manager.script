@@ -3,8 +3,7 @@ local string_find = string.find
 --' Ключем является группировка персонажа. Значением является таблица, содержашая имена секций предметов.
 local item_by_community = {}
 
---' Зависимости в спауне предметов. Предмет спауниться только если есть хотя бы один из зависимых.
-local item_dependence = {}
+---' Зависимости в спауне предметов. Предмет спауниться только если есть хотя бы один из зависимых.
 local ammo_types = {}
 
 --' Множители и минимаксы для выпадения вещей в зависимости от уровня
@@ -376,17 +375,13 @@ function init_drop_settings()
 			item_by_community[k][id] = 1000 * vvv
 		end)
 	end
+end
 
-	--' Заполняем таблицу зависимостей
-	death_ini:iterate_lines("item_dependence", function(result, id, value)
-		item_dependence[id] = {}
-		vvv = string.parse_names(value)
-		for k,v in pairs(vvv) do
-			item_dependence[id][v] = true
-			if ammo_types[v] == nil then ammo_types[v] = {} end
-			ammo_types[v][id] = true
-		end
-	end)
+function cache_ammo_types(sect)
+	local res = config:r_list(sect, "ammo_class") or { }
+	ammo_types[sect] = res
+
+	return res
 end
 
 function create_release_item(npc)
@@ -423,8 +418,8 @@ function create_release_item(npc)
 
 		item:set_ammo_elapsed(0)
 
-		for k, v in pairs(ammo_types[section]) do
-			npc_ammo[k] = v
+		for i, ammo in ipairs(ammo_types[section] or cache_ammo_types(section)) do
+			npc_ammo[ammo] = true
 		end
 	end)
 
@@ -445,7 +440,7 @@ function create_release_item(npc)
 	local count, number
 	for k,v in pairs(spawn_items) do
 		--' По каждому объекту необходимо получить зависимости
-		if item_dependence[k] == nil then
+		if not ammo_section[k] then
 			count = count_by_level[k][diff]
 			number = count and math_ceil(math_random(count["min"], count["max"])) or 0
 			--' Необходимо заспавнить нужное количество.
@@ -461,16 +456,7 @@ function create_release_item(npc)
 			number = count and math_ceil(math_random(count["min"], count["max"])) or 0
 			--' Необходимо заспавнить нужное количество.
 			if number > 0 then
-				if ammo_section[k] == true then
-					se_respawn.create_ammo(k, npc_pos, npc_lvid, npc_gvid, npc_id, number)
-				else
-					for i=1,number do
-						--' Проверяем вероятность появить каждый объект в отдельности
-						if math_random(1000) <= v then
-							AI:create(k, npc_pos, npc_lvid, npc_gvid, npc_id)
-						end
-					end
-				end
+				se_respawn.create_ammo(k, npc_pos, npc_lvid, npc_gvid, npc_id, number)
 			end
 		end
 	end
