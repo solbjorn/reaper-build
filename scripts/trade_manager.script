@@ -33,11 +33,16 @@ end
 
 function trade_init_generic()
 	local ini = ini_file(generic_ltx)
+	local section = "trader"
 
 	generic_tt = {
 		config		= ini,
-		buy_condition	= xr_logic.parse_condlist(ini:r_string("trader", "buy_condition")),
-		sell_condition	= xr_logic.parse_condlist(ini:r_string("trader", "sell_condition"))
+		buy_condition	= xr_logic.parse_condlist(ini:r_string(section, "buy_condition")),
+		sell_condition	= xr_logic.parse_condlist(ini:r_string(section, "sell_condition")),
+
+		weap_condition	= ini:r_float(section, "item_condition_weapon"),
+		outf_condition	= ini:r_float(section, "item_condition_outfit"),
+		part_condition	= ini:r_float(section, "item_condition_monster_part")
 	}
 end
 
@@ -75,6 +80,11 @@ function trade_init(npc, cfg)
 		-- список закупки
 		buy_supplies	= ini:r_string(section, "buy_supplies"),
 
+		-- состояние покупаемого
+		weap_condition	= ini:r_float_ex(section, "item_condition_weapon"),
+		outf_condition	= ini:r_float_ex(section, "item_condition_outfit"),
+		part_condition	= ini:r_float_ex(section, "item_condition_monster_part"),
+
 		resupply_time	= ini:r_float_ex(section, "resupply_time", DEF_RESUPPLY_TIME),
 		resupply_rnd	= ini:r_float_ex(section, "resupply_rnd", DEF_RESUPPLY_RND)
 	}
@@ -82,9 +92,7 @@ end
 
 function first_update(npc)
 	npc:enable_trade()
-
 	local tt = trade_manager_tbl[npc:id()] or generic_tt
-	if not tt then return end
 
 	local str = xr_logic_pick_section_from_condlist(npc, tt.buy_condition)
 	if str then
@@ -151,4 +159,16 @@ end
 
 function new_game()
 	timer("trade_manager.check_supplies", 5 * 60 * 1000, true)
+end
+
+function get_item_condition()
+	local npc = Actor:is_talking() and level.get_second_talker() or nil
+	if not npc then return nil end
+
+	local tt = trade_manager_tbl[npc:id()] or generic_tt
+	return {
+		weapon	= tt.weap_condition or generic_tt.weap_condition,
+		outfit	= tt.outf_condition or generic_tt.outf_condition,
+		part	= tt.part_condition or generic_tt.part_condition
+	}
 end

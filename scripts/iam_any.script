@@ -248,8 +248,16 @@ function is_monster(obj)
 	return iAmMonster[obj:clsid()] == true
 end
 
-function is_stalker(obj)
-	return iAmStalker[obj:clsid()] == true
+function is_monster_part(obj)
+	return string.sub(obj.section and obj:section() or obj:section_name(), 1, 7) == "mutant_"
+end
+
+function is_stalker(obj, count_actor)
+	if count_actor == false then
+		return obj:clsid() == clsid_script_stalker
+	else
+		return iAmStalker[obj:clsid()] == true
+	end
 end
 
 function is_trader(obj)

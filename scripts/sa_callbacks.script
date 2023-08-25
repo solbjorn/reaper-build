@@ -7,6 +7,9 @@
  Last edit    : 12.11.2018
 --]]-----------------------------------------------------------------------------------------------
 prefetch("sa_utils")
+set_trade_filtration_on()
+set_manual_grouping_on()
+set_manual_highlight_on()
 --[[-----------------------------------------------------------------------------------------------
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
@@ -77,7 +80,17 @@ function actor_death(victim, who)
 	reap.actor_death(victim, who)
 end
 ---------------------------------------------------------------------------------------------------
+local trade_info = table.tohash({ "ui_inventory", "ui_trade", "ui_car_body" })
+local trade_end_info = { }
+for info, _ in pairs(trade_info) do
+	trade_end_info[info .. "_hide"] = true
+end
+local trade_cond = nil
+---------------------------------------------------------------------------------------------------
 function item_take(obj)
+	if trade_cond then
+		sa_inventory_items_mgr.update_item_tradability_flags(obj, trade_cond)
+	end
 	reap.item_take(obj)
 	if screen.precache_frame == 0 then
 		sa_inventory_items_mgr.artefacts_statistic(obj)
@@ -87,6 +100,9 @@ end
 local belt_obj_by_id = {}
 ---------------------------------------------------------------------------------------------------
 function item_drop(obj)
+	if trade_cond then
+		sa_inventory_items_mgr.update_item_tradability_flags(obj, trade_cond)
+	end
 	reap.item_drop(obj)
 	if belt_obj_by_id[obj:id()] then
 		item_drop_from_belt(obj)
@@ -95,7 +111,7 @@ function item_drop(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_drop_from_belt(obj)
-	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
+	sa_inventory_items_mgr.update_artefacts_lock_from_belt(obj)
 	reap.item_drop_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
@@ -104,7 +120,7 @@ function item_use(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_belt(obj)
-	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
+	sa_inventory_items_mgr.update_artefacts_lock_to_belt(obj)
 	if Actor:belt_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
 	end
@@ -113,6 +129,7 @@ function item_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
 function item_move_from_belt(obj)
+	sa_inventory_items_mgr.update_artefacts_lock_from_belt(obj)
 	reap.item_move_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
@@ -145,6 +162,18 @@ function info(info_id, ui_info)
 		sa_main.pda_tab_callback(info_id)
 		sa_main.dead_body_sounds(info_id)
 		sa_pda.info(info_id)
+		if trade_info[info_id] then
+			if info_id == "ui_trade" then
+				trade_cond = trade_manager.get_item_condition() or true
+			else
+				trade_cond = info_id == "ui_car_body" or nil
+			end
+			sa_inventory_items_mgr.set_items_tradability_flags(trade_cond)
+			Actor:invalidate_inventory()
+			update_inventory_window()
+		elseif trade_cond and trade_end_info[info_id] then
+			trade_cond = nil
+		end
 	end
 	reap.info(info_id, ui_info)
 end

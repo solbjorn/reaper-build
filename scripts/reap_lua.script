@@ -217,6 +217,7 @@ local methods = {
 	"is_helicopter",
 	"is_knife",
 	"is_monster",
+	"is_monster_part",
 	"is_stalker",
 	"is_trader",
 	"is_weapon"
@@ -252,8 +253,15 @@ game_object.modify_netpk = function(obj, ...)
 	return netpacket:modify(server_object(obj), ...)
 end
 
-game_object.is_btr = iam_any.is_btr
-game_object.is_stalker = iam_any.is_stalker
+methods = {
+	"is_btr",
+	"is_monster_part",
+	"is_stalker"
+}
+
+for i = 1, #methods do
+	game_object[methods[i]] = iam_any[methods[i]]
+end
 
 game_object.is_story_object = function(obj)
 	return obj:story_id() < 4294967295

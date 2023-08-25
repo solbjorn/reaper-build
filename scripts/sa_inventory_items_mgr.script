@@ -1,39 +1,134 @@
 --[[-----------------------------------------------------------------------------------------------
  File         : sa_inventory_items_mgr.script
- Description  : Ğàçëè÷íûå íîâîââåäåíèÿ ïî ğàáîòå ñ ïğåäìåòàìè èíâåíòàğÿ
+ Description  : Ğ Ğ°Ğ·Ğ»Ğ¸Ñ‡Ğ½Ñ‹Ğµ Ğ½Ğ¾Ğ²Ğ¾Ğ²Ğ²ĞµĞ´ĞµĞ½Ğ¸Ñ Ğ¿Ğ¾ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ğµ Ñ Ğ¿Ñ€ĞµĞ´Ğ¼ĞµÑ‚Ğ°Ğ¼Ğ¸ Ğ¸Ğ½Ğ²ĞµĞ½Ñ‚Ğ°Ñ€Ñ
  Copyright    : Shadows Addon
  Author       : Ray Twitty aka Shadows
  Date         : 13.02.2014
  Last edit    : 18.02.2019
 ---------------------------------------------------------------------------------------------------
- * Îïèñàíèå íîâîââåäåíèé
- - îãğàíè÷åíèå êîëè÷åñòâà àğòåôàêòîâ íà ïîÿñå
- - ñòàòèñòèêà äîáûòûõ àğòåôàêòîâ
- - ïåğåïàêîâùèê íåïîëíûõ ïà÷åê ïàòğîíîâ (ğşêçàê è ïîÿñ)
+ * ĞĞ¿Ğ¸ÑĞ°Ğ½Ğ¸Ğµ Ğ½Ğ¾Ğ²Ğ¾Ğ²Ğ²ĞµĞ´ĞµĞ½Ğ¸Ğ¹
+ - Ğ¾Ğ³Ñ€Ğ°Ğ½Ğ¸Ñ‡ĞµĞ½Ğ¸Ğµ ĞºĞ¾Ğ»Ğ¸Ñ‡ĞµÑÑ‚Ğ²Ğ° Ğ°Ñ€Ñ‚ĞµÑ„Ğ°ĞºÑ‚Ğ¾Ğ² Ğ½Ğ° Ğ¿Ğ¾ÑÑĞµ
+ - ÑƒĞ¿Ñ€Ğ°Ğ²Ğ»ĞµĞ½Ğ¸Ğµ ÑÑ‡ĞµĞ¹ĞºĞ°Ğ¼Ğ¸ Ğ¸Ğ½Ğ²ĞµĞ½Ñ‚Ğ°Ñ€Ñ
+ - ÑÑ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ° Ğ´Ğ¾Ğ±Ñ‹Ñ‚Ñ‹Ñ… Ğ°Ñ€Ñ‚ĞµÑ„Ğ°ĞºÑ‚Ğ¾Ğ²
+ - Ğ¿ĞµÑ€ĞµĞ¿Ğ°ĞºĞ¾Ğ²Ñ‰Ğ¸Ğº Ğ½ĞµĞ¿Ğ¾Ğ»Ğ½Ñ‹Ñ… Ğ¿Ğ°Ñ‡ĞµĞº Ğ¿Ğ°Ñ‚Ñ€Ğ¾Ğ½Ğ¾Ğ² (Ñ€ÑĞºĞ·Ğ°Ğº Ğ¸ Ğ¿Ğ¾ÑÑ)
 --]]-----------------------------------------------------------------------------------------------
-local max_belt_af = read_line("inventory", "max_belt_af")
+--[[-----------------------------------------------------------------------------------------------
+ * CONSTANTS
+--]]-----------------------------------------------------------------------------------------------
+local max_belt_af = config:r_u32("inventory", "max_belt_af")
+local af_imm_limit = { 98, 82, 66, 50 }
 --[[-----------------------------------------------------------------------------------------------
  * Limit artefacts number on belt
 --]]-----------------------------------------------------------------------------------------------
-function update_artefacts_belt_lock(obj)
-	if obj:is_artefact() then
-		local af_count = 0
-		Actor:iterate_inventory(
-			function(dummy, obj)
-				if obj:is_artefact() and Actor:is_on_belt(obj) then
-					af_count = af_count + 1
-				end
-			end
-		)
-		local lock = af_count >= max_belt_af
-		Actor:iterate_inventory(
-			function(dummy, obj)
-				if obj:is_artefact() and Actor:is_in_ruck(obj) then
-					set_inventory_item_flag(obj, inventory_item_flags.belt, not lock)
-				end
-			end
-		)
+local curr_imms = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+local curr_belt_af = 0
+---------------------------------------------------------------------------------------------------
+function update_artefacts_lock_to_belt(obj)
+	if not obj:is_artefact() then
+		return
 	end
+	curr_belt_af = curr_belt_af + 1
+	local byte = 580
+	for i = 1, #curr_imms do
+		curr_imms[i] = curr_imms[i] + (1 - obj:get_go_float(byte)) * 100
+		byte = byte + 4
+	end
+	Actor:iterate_inventory(
+		function(dummy, obj)
+			if obj:is_artefact() and Actor:is_in_ruck(obj) then
+				update_artefacts_belt_lock(obj)
+			end
+		end
+	)
+end
+---------------------------------------------------------------------------------------------------
+function update_artefacts_lock_from_belt(obj)
+	if not obj:is_artefact() then
+		return
+	end
+	curr_belt_af = curr_belt_af - 1
+	local byte = 580
+	for i = 1, #curr_imms do
+		curr_imms[i] = curr_imms[i] - (1 - obj:get_go_float(byte)) * 100
+		byte = byte + 4
+	end
+	Actor:iterate_inventory(
+		function(dummy, obj)
+			if obj:is_artefact() and Actor:is_in_ruck(obj) then
+				update_artefacts_belt_lock(obj)
+			end
+		end
+	)
+end
+---------------------------------------------------------------------------------------------------
+function update_artefacts_belt_lock(obj)
+	if not obj:is_artefact() then
+		return
+	end
+	if curr_belt_af == max_belt_af then
+		set_inventory_item_flag(obj, inventory_item_flags.belt, false)
+		return
+	end
+	local ceil = af_imm_limit[level.get_game_difficulty() + 1] + 0.5
+	local byte = 580
+	for i = 1, #curr_imms do
+		if curr_imms[i] ~= 0 and curr_imms[i] + (1 - obj:get_go_float(byte)) * 100 > ceil then
+			set_inventory_item_flag(obj, inventory_item_flags.belt, false)
+			return
+		end
+		byte = byte + 4
+	end
+	set_inventory_item_flag(obj, inventory_item_flags.belt, true)
+end
+--[[-----------------------------------------------------------------------------------------------
+ * Control inventory cells
+--]]-----------------------------------------------------------------------------------------------
+function set_items_tradability_flags(cond)
+	Actor:iterate_inventory(
+		function(dummy, obj)
+			update_item_tradability_flags(obj, cond)
+		end
+	)
+end
+---------------------------------------------------------------------------------------------------
+function update_item_tradability_flags(obj, cond)
+	if not cond then
+		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
+		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, false)
+		set_inventory_item_flag(obj, inventory_item_flags.ungroupable, false)
+		set_inventory_item_flag(obj, inventory_item_flags.highlighting, false)
+	elseif cond ~= true and not is_item_tradable(obj, cond) then
+		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
+		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, true)
+		set_inventory_item_flag(obj, inventory_item_flags.ungroupable, true)
+	else
+		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
+		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, false)
+		if Actor:is_on_belt(obj) or (Actor:is_in_slot(obj) and not obj:is_grenade()) then
+			set_inventory_item_flag(obj, inventory_item_flags.ungroupable, true)
+			set_inventory_item_flag(obj, inventory_item_flags.highlighting, true)
+			set_item_tradability_highlight_color(obj, tradability_highlight_colors.green)
+		else
+			set_inventory_item_flag(obj, inventory_item_flags.ungroupable, false)
+			set_inventory_item_flag(obj, inventory_item_flags.highlighting, false)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------
+function is_item_tradable(obj, cond)
+	if quest_section[obj:section()] then
+		return false
+	end
+	if obj:is_weapon() then
+		return obj:condition() >= cond.weapon
+	end
+	if obj:is_outfit() then
+		return obj:condition() >= cond.outfit
+	end
+	if obj:is_monster_part() then
+		return obj:condition() >= cond.part
+	end
+	return true
 end
 --[[-----------------------------------------------------------------------------------------------
  * Artefacts statistic
