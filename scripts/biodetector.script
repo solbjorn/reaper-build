@@ -48,20 +48,20 @@ local parts = {
 	[clsid.fracture_s]	= "mutant_fracture_hand"
 }
 
-local max_dist = 46 -- макс расстояние до цели
-local screen_max_dist = 85 -- макс расстояние в пикселях радара
-local biomap_width = 256 -- пиксельная ширина биорадара
-local biomap_sweep_width = 238 --ширина статика волны
+local max_dist = 50 -- макс расстояние до цели
+local screen_max_dist = 84 -- макс расстояние в пикселях радара
+local biomap_width = 210 -- пиксельная ширина биорадара
+local biomap_sweep_width = 222 --ширина статика волны
 local step_angle = 3/180 -- шаг за апдейт (скорость поворота)
 -------------------------------------
 local dot_size = 3
 local dots = {}
 local creatures = {}
-local d = 128
-local x_add = refactor < 1 and 50 or 24
-local x_add_d = refactor < 1 and 32 or 0
+local d = 104
+local x_add = refactor < 1 and 28 or 2
+local y_add = -5
+local x_add_d = refactor < 1 and 26 or 0
 local a,s,c,b,xa = 0,0,1,0,0
-local level_object_by_id = level.object_by_id
 local ms, mc, math_atan2 = math.sin, math.cos, math.atan2
 local math_fmod = math.fmod
 local math_pi = math.pi
@@ -88,7 +88,7 @@ end
 
 -- вызывается из update биндера актора
 -- обновление положения точек и/или волны
-function update()
+function update(delta)
 	if not enabled or level.main_input_receiver() then
 		if biomap then bioradar_hide() end
 		return
@@ -96,23 +96,24 @@ function update()
 
 	if not biomap then
 		biomap = hud:AddCustomStatic("biomap"):wnd()
-		biomap:SetWndPos(1024 + x_add - biomap_width,1 - 24)
-		biomap:SetWidth(biomap_width)
+		biomap:Init(1024 + x_add - biomap_width, y_add, biomap_width, biomap_width)
 
 		if biomap_sweep_enabled then
 			biomap_sweep = hud:AddCustomStatic("biomap_sweep"):wnd()
 			biomap_sweep:SetColor(GetARGB(100,68,255,96)) -- устанавливаем цвет
-			biomap_sweep:Init(1024 + x_add - (biomap_width + biomap_sweep_width)/2,2 - 24 + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width,biomap_sweep_width)
+			biomap_sweep:Init(1024 + x_add - (biomap_width + biomap_sweep_width)/2 + 1, y_add + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width,biomap_sweep_width)
 		end
 	end
 
 	local actor_pos = Actor:position()
-	local sdir = device().cam_dir
+	local sdir = screen.cam_dir
 	a = math_atan2(-sdir.x,sdir.z)
 	s,c = ms(a),mc(a)
 
+	local tick
 	if biomap_sweep_enabled or fading then
-		angle = angle - step_angle
+		tick = delta * 60 / 1000
+		angle = angle - step_angle * tick
 		if angle < -lim_angle then angle = angle + lim_angle end
 	end
 
@@ -127,11 +128,11 @@ function update()
 	for id,is_stalker in pairs(creatures) do
 		local so = AI:object(id)
 		if so then
-			local o = level_object_by_id(id)
+			local o = level_object(id)
 			if o then
 				local d = dots[id] or dot(o,is_stalker)
 				if d.need_show then
-					d:draw(o:position():sub(actor_pos),o:alive())
+					d:draw(o:position():sub(actor_pos),o:alive(), tick)
 				else
 					d:hide()
 				end
@@ -174,12 +175,12 @@ function dot:__init(o,is_stalker)
 	hud:GetCustomStatic("biomap"):wnd():AttachChild(self.st)
 	self.st:SetAutoDelete(true)
 	self.cnt = 0
-	self.st:SetWndPos(x_add_d + d * refactor - 1,d)
+	self.st:SetWndPos(x_add_d + d * refactor, d)
 	self.st:SetColor(GetARGB(self.a,self.color[1],self.color[2],self.color[3]))
 end
 
 -- нарисовать точку
-function dot:draw(dir,obj_alive)
+function dot:draw(dir,obj_alive, tick)
 	if self.cnt > 0 then
 		self.cnt = self.cnt - 1
 		return
@@ -197,7 +198,7 @@ function dot:draw(dir,obj_alive)
 		end
 		local vx,vz = dir.x/max_dist * screen_max_dist , -dir.z/max_dist * screen_max_dist
 		local x,y = vx * c - vz * s , vx * s + vz * c
-		self.st:SetWndPos(x_add_d + (x + d)*refactor - 1, y + d)
+		self.st:SetWndPos(x_add_d + (x + d)*refactor, y + d)
 		if self.o_id == 0 then self.cnt = 100000 return end
 		-------- угасание точек -------
 		if fading then
@@ -205,7 +206,7 @@ function dot:draw(dir,obj_alive)
 			if (xa > u and xa-u or u-xa) < 1.5 then
 				self.a = 255
 			elseif self.a > 2 then
-				self.a = self.a - 1
+				self.a = self.a - tick
 			end
 			self.st:SetColor(GetARGB(self.a,self.color[1],self.color[2],self.color[3]))
 		end
