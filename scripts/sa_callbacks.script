@@ -63,15 +63,18 @@ function actor_net_destroy()
 	hud_animations_mgr:clear_scope_texture()
 end
 ---------------------------------------------------------------------------------------------------
+local last_mob_type
 local last_health
 ---------------------------------------------------------------------------------------------------
 function actor_hit(obj, amount, local_direction, who, bone_index)
-	if not last_health then
-		return
+	if last_mob_type then
+		sa_main.hit_effectors(last_mob_type, who)
+		last_mob_type = nil
 	end
-	reap.hit_effectors(last_health - Actor.health)
-	sa_main.hit_effectors(who)
-	last_health = nil
+	if last_health then
+		reap.hit_effectors(last_health - Actor.health)
+		last_health = nil
+	end
 end
 ---------------------------------------------------------------------------------------------------
 function actor_death(victim, who)
@@ -198,6 +201,10 @@ function select_pda_contact(id)
 	if pda_contacts_dialog then
 		pda_contacts_dialog:choice_pda_contact(id)
 	end
+end
+---------------------------------------------------------------------------------------------------
+function hit_effector(mob_type)
+	last_mob_type = mob_type
 end
 ---------------------------------------------------------------------------------------------------
 function actor_before_hit()

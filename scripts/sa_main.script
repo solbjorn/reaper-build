@@ -9,8 +9,8 @@
 --[[-----------------------------------------------------------------------------------------------
  * Hit effectors
 --]]-----------------------------------------------------------------------------------------------
-function hit_effectors(obj)
-	if obj:is_stalker() or obj:is_monster() or obj:is_trader() then
+function hit_effectors(mob_type, obj)
+	if mob_type == 0 or mob_type == 1 then
 		local attack_effector = config:r_string_cache(obj:section(), "attack_effector")
 		if attack_effector then
 			local ce_time = config:r_float_cache(attack_effector, "ce_time")
