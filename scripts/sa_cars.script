@@ -491,20 +491,6 @@ function CCarMgr:on_keyboard(dik, keyboard_action)
 				else
 					add_message("gun_jammed", "car_cant_be_repaired")
 				end
-			-- use medicine
-			elseif dik == bind_to_dik(key_bindings.kUSE_BANDAGE) or dik == bind_to_dik(key_bindings.kUSE_MEDKIT) then
-				local medicine_item
-				if dik == bind_to_dik(key_bindings.kUSE_BANDAGE) then
-					medicine_item = Actor:object("bandage")
-				else
-					medicine_item = Actor:object("medkit") or Actor:object("medkit_army") or Actor:object("medkit_scientic")
-				end
-				if medicine_item then
-					local st_item_used = hud:AddCustomStatic("item_used", true)
-					st_item_used:wnd():SetText(translate("st_item_used")..": "..get_inventory_item_data(medicine_item, "inv_name"))
-					st_item_used.m_endTime = time_real_ms / 1000 + 3
-					Actor:eat(medicine_item)
-				end
 			-- call use_callback in CCarDoorMgr
 			elseif dik == bind_to_dik(key_bindings.kUSE) then
 				local door_mgr = car_door_mgrs[self.object:id()]

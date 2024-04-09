@@ -51,9 +51,7 @@ local maps={
 	--"l12u_sarcofag"
 }
 
-local smart_filters = {
-	"esc_bridge", "esc_blokpost", "amk_embankment"
-}
+local smart_filters = table.tohash({ "esc_bridge", "esc_blokpost", "amk_embankment" })
 
 local rel_enemy,rel_friend
 
@@ -2243,27 +2241,19 @@ function sobj_is_far(obj, distance)
 end
 
 function box_is_protected(v)
-	return level.map_has_object_spot(v.id, "treasure") ~= 0
+	return has_map_spot(v.id, "treasure") ~= 0
 end
 
 function npc_smart_is_peaceful(sobj)
-	local result = false
-	if (sobj and smart_filters and #smart_filters>0) then
-		if (sobj.smart_terrain_id and sobj:smart_terrain_id() and sobj:smart_terrain_id()~=65535) then
-			local sm = AI:object(sobj:smart_terrain_id())
-			if (sm and sm.name and sm:name()) then
-				local sn = sm:name()
-				for ks, vs in ipairs(smart_filters) do
-					if (vs == sn) then
-						-- јга, он у нас мирный.
-						result = true
-						break
-					end
-				end
-			end
-		end
-	end
-	return result
+	if not sobj then return false end
+
+	local smid = sobj:smart_terrain_id()
+	if smid == 65535 then return false end
+
+	sobj = server_object(smid)
+	if not sobj then return false end
+
+	return smart_filters[sobj:name()] == true
 end
 
 function on_death(npc_id)

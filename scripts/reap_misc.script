@@ -62,6 +62,56 @@ function cached_condlist:pick_section_from_condlist(npc)
 end
 
 --[[---------------------------------------------------------------------------
+ * naXac
+--]]---------------------------------------------------------------------------
+
+local level2vertexes = {
+	l01_escape		= { _min = 0,    _max = 251,  lvl = 595499 },
+	l02_garbage		= { _min = 252,  _max = 415,  lvl = 382663 },
+	l03_agroprom		= { _min = 416,  _max = 702,  lvl = 437421 },
+	l03u_agr_underground	= { _min = 703,  _max = 810,  lvl = 4932,  indoor = true },
+	l04_darkvalley		= { _min = 811,  _max = 1108, lvl = 390125 },
+	l04u_labx18		= { _min = 1109, _max = 1167, lvl = 7581,  indoor = true },
+	l05_bar			= { _min = 1168, _max = 1307, lvl = 99539  },
+	l06_rostok		= { _min = 1308, _max = 1437, lvl = 67713  },
+	l08_yantar		= { _min = 1438, _max = 1528, lvl = 141471 },
+	l08u_brainlab		= { _min = 1529, _max = 1544, lvl = 8008,  indoor = true },
+	l07_military		= { _min = 1545, _max = 1861, lvl = 418268 },
+	l10_radar		= { _min = 1862, _max = 2116, lvl = 227189 },
+	l11_pripyat		= { _min = 2117, _max = 2272, lvl = 261219 },
+	l12_stancia		= { _min = 2273, _max = 2401, lvl = 477923 },
+	l12u_sarcofag		= { _min = 2402, _max = 2466, lvl = 10672, indoor = true },
+	l12u_control_monolith	= { _min = 2467, _max = 2516, lvl = 3982,  indoor = true },
+	l12_stancia_2		= { _min = 2517, _max = 2660, lvl = 264577 }
+}
+
+local current_vertexes
+
+function init_vertexes()
+	current_vertexes = level2vertexes[curr_level]
+end
+
+function get_max_level_vertex()
+	return current_vertexes.lvl
+end
+
+function get_nearest_gv(pos)
+	local min_dist = math.huge
+	local gv = 0
+	local dist
+
+	for a = current_vertexes._min, current_vertexes._max do
+		dist = graph:vertex(a):level_point():distance_to(pos)
+		if dist < min_dist then
+			min_dist = dist
+			gv = a
+		end
+	end
+
+	return gv
+end
+
+--[[---------------------------------------------------------------------------
  * SkyLoader
 --]]---------------------------------------------------------------------------
 
@@ -122,6 +172,8 @@ function net_spawn()
 	   curr_level ~= "l03u_agr_underground" then
 		give_info("agr_find_gunslinger_cache_final")
 	end
+
+	init_vertexes()
 end
 
 function kill_online_controllers()
@@ -135,71 +187,71 @@ end
 -- Mr. Fusion's spot remover code
 local sticky_mapspots = {
 	["esc_flash_task"] = {
-		["2"] = {sid = 9, type = "green_location"},	-- Wolf's scouts
-		["3"] = {sid = 17, type = "green_location"},	-- Bandits at factory (kill)
-		["4"] = {sid = 4, type = "green_location"}	-- Nimble
+		["2"] = { sid = 9 },				-- Wolf's scouts
+		["3"] = { sid = 17 },				-- Bandits at factory (kill)
+		["4"] = { sid = 4 }				-- Nimble
 	},
 	["agroprom_find_gunslinger_cache"] = {
-		["3"] = {sid = 307, type = "green_location"}	-- "preferred" underground exit
+		["3"] = { sid = 307 }				-- "preferred" underground exit
 	},
 	["val_captive_help"] = {
-		["2"] = {sid = 400, type = "green_location"}	-- Dutyer to rescue in ambush
+		["2"] = { sid = 400, type = "green_location" }	-- Dutyer to rescue in ambush
 	},
 	["yan_find_scientist"] = {
-		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+		["3"] = { sid = 902 }				-- Sakharov (return to bunker)
 	},
 	["yan_find_scientist_semenov"] = {
-		["3"] = {sid = 902, type = "green_location"}	-- Sakharov (return to bunker)
+		["3"] = { sid = 902 }				-- Sakharov (return to bunker)
 	},
 	["yan_find_vasilyev_task"] = {
-		["2"] = {sid = 907, type = "green_location"}	-- lab entrance
+		["2"] = { sid = 907 }				-- lab entrance
 	},
 	["yan_kill_brain_task_2"] = {
-		["2"] = {sid = 921, type = "green_location"}	-- secret tunnel exit
+		["2"] = { sid = 921 }				-- secret tunnel exit
 	},
 	["mil_kill_sniper"] = {
-		["2"] = {sid = 708, type = "blue_location"}	-- Skull (reward)
+		["2"] = { sid = 708, type = "blue_location" }	-- Skull (reward)
 	},
 	["mil_kill_lukash"] = {
-		["4"] = {sid = 707, type = "green_location"},	-- Lukash (kill)
-		["5"] = {sid = 774, type = "blue_location"}	-- Duty farmstead (reward)
+		["4"] = { sid = 707, type = "green_location" },	-- Lukash (kill)
+		["5"] = { sid = 774, type = "blue_location" }	-- Duty farmstead (reward)
 	},
 	["mil_mad_job"] = {
-		["2"] = {sid = 702, type = "blue_location"}	-- Max (reward)
+		["2"] = { sid = 702, type = "blue_location" }	-- Max (reward)
 	},
 	["mil_lukash_job"] = {
-		["2"] = {sid = 708, type = "crlc_mdl"},		-- Skull (kill)
-		["3"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+		["2"] = { sid = 708, type = "crlc_mdl" },	-- Skull (kill)
+		["3"] = { sid = 707, type = "reward_location" }	-- Lukash (reward)
 	},
 	["mil_courier_job"] = {
-		["2"] = {sid = 710, type = "crlc_big"},		-- Pavlik (wait)
-		["3"] = {sid = 710, type = "green_location"},	-- Pavlik (kill)
-		["4"] = {sid = 719, type = "green_location"},	-- Pavlik's contact (kill)
-		["5"] = {sid = 707, type = "reward_location"}	-- Lukash (reward)
+		["2"] = { sid = 710, type = "crlc_big" },	-- Pavlik (wait)
+		["3"] = { sid = 710, type = "green_location" },	-- Pavlik (kill)
+		["4"] = { sid = 719, type = "green_location" },	-- Pavlik's contact (kill)
+		["5"] = { sid = 707, type = "reward_location" }	-- Lukash (reward)
 	},
 	["mil_blockpost_job"] = {
-		["2"] = {sid = 770, type = "crlc_big"}		-- Cap's barrier
+		["2"] = { sid = 770, type = "crlc_big" }	-- Cap's barrier
 	},
 	["mil_freedom_rg6_task"] = {
-		["2"] = {sid = 728, type = "green_location"},	-- Cook
-		["3"] = {sid = 706, type = "green_location"}	-- Bulldog 6 in village
+		["2"] = { sid = 728, type = "green_location" },	-- Cook
+		["3"] = { sid = 706, type = "green_location" }	-- Bulldog 6 in village
 	},
 	["bar_radar_deactivate"] = {
-		["2"] = {sid = 1005, type = "green_location"},	-- bunker entrance
-		["3"] = {sid = 1006, type = "green_location"}	-- radar switch
+		["2"] = { sid = 1005 },				-- bunker entrance
+		["3"] = { sid = 1006 }				-- radar switch
 	},
 	["cit_doctor_task"] = {
-		["2"] = {sid = 822, type = "green_location"}	-- hotel room with decoder
+		["2"] = { sid = 822 }				-- hotel room with decoder
 	},
 	["rad_get_to_aes"] = {
-		["3"] = {sid = 830, type = "green_location"},	-- Stadium entrance
-		["4"] = {sid = 1102, type = "green_location"}	-- Sarcophagus entrance
+		["3"] = { sid = 830 },				-- Stadium entrance
+		["4"] = { sid = 1102 }				-- Sarcophagus entrance
 	},
 	["sar_monolith"] = {
-		["2"] = {sid = 1300, type = "green_location"}	-- Monolith
+		["2"] = { sid = 1300 }				-- Monolith
 	},
 	["sar_secret_lab"] = {
-		["2"] = {sid = 1303, type = "green_location"}	-- C-Con lab door
+		["2"] = { sid = 1303 }				-- C-Con lab door
 	}
 }
 
@@ -211,6 +263,6 @@ function task_mapspot_cleanup(task_id, objective)
 	if not obj then return end
 
 	level.parked_call(function()
-		level_tasks.remove_location_safe(obj.sid, obj.type)
+		level_tasks.remove_location_safe(obj.sid, obj.type or "storyline_location")
 	end)
 end

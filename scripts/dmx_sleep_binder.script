@@ -86,6 +86,9 @@ local sleep_places = {
 	{ 254.96, 0.15, 74.44, 428649, 498 },
 	{ 257.46, 0.15, 73.50, 429416, 498 },
 
+	-- Матрас около Адреналина
+	{ 42.121, 7.499, -17.377, 279888, 664, false, true },
+
 	-- Подземелья Агропрома:
 
 	-- Матрас в тайнике Стрелка
@@ -138,12 +141,52 @@ local sleep_places = {
 	{ 99.587, 4.333, 131.124, 210226, 2171 }
 }
 
+local spots_info = {
+	l01_escape_level_info			= { start = 1,  _end = 5  },
+	l02_garbage_level_info			= { start = 6,  _end = 8  },
+	l03_agroprom_level_info			= { start = 9,  _end = 11 },
+	agr_find_gunslinger_cache_found		= { start = 12, _end = 12 },
+	l04_darkvalley_level_info		= { start = 13, _end = 16 },
+	l05_bar_level_info			= { start = 17, _end = 20 },
+	yantar_scientists_talk			= { start = 21, _end = 22 },
+	mil_dolg_dialog_already			= { start = 23, _end = 26 },
+	rad_antennas_reached			= { start = 27, _end = 27 },
+	pri_actor_in_hiding_place		= { start = 28, _end = 28 }
+}
+
+local sleep_sect = table.tohash({ "place_of_sleep", "place_of_sleep_vid" })
+
 -- Спавн мест для сна
-function place_of_sleep_spawn()
+function place_of_sleep_spawn(info_id)
+	if info_id and not spots_info[info_id] then return end
+
+	local sobj
+	for i = 1, 65534 do
+		sobj = server_object(i)
+		if sobj and sleep_sect[sobj.section_name] then
+			if has_map_spot(sobj.id, "sleep_place") > 0 then
+				del_map_spot(sobj.id, "sleep_place")
+			end
+			release(sobj)
+		end
+	end
+
+	for info, range in pairs(spots_info) do
+		if has_info(info) then
+			for i = range.start, range._end do
+				sleep_places[i][6] = true
+			end
+		end
+	end
+
 	local place
 	for i = 1, #sleep_places do
 		place = sleep_places[i]
-		create("place_of_sleep", xyz(place[1], place[2], place[3]), place[4], place[5])
+		sobj = create(place[7] and "place_of_sleep_vid" or "place_of_sleep",
+			      xyz(place[1], place[2], place[3]), place[4], place[5])
+		if place[6] then
+			map_spot(sobj.id, "sleep_place", "st_sleep_spot")
+		end
 	end
 end
 

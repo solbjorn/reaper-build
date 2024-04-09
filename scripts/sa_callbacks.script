@@ -61,6 +61,7 @@ end
 ---------------------------------------------------------------------------------------------------
 function actor_net_destroy()
 	hud_animations_mgr:clear_scope_texture()
+	reap.net_destroy()
 end
 ---------------------------------------------------------------------------------------------------
 local last_mob_type
@@ -230,6 +231,10 @@ function detach_vehicle(car)
 	end
 end
 ---------------------------------------------------------------------------------------------------
+function before_use_item(obj)
+	reap.before_use_item(obj)
+end
+---------------------------------------------------------------------------------------------------
 function key_press(dik)
 	if pda_contacts_dialog then
 		local pda_talk_dialog = sa_pda.get_pda_talk_dialog()
@@ -247,6 +252,7 @@ function key_press(dik)
 		hud_animations_mgr:on_keyboard(dik, key_events.pressed)
 	end
 	sa_main.zoom_effect(dik, key_events.pressed)
+	reap.key_press(dik)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------

@@ -16,6 +16,10 @@ function net_spawn()
 	reap_misc.net_spawn()
 end
 
+function net_destroy()
+	ui_scroll_indicators.destroy_indicators()
+end
+
 function actor_death(victim, who)
 	Dream:stopper()
 
@@ -29,6 +33,7 @@ function update()
 	if start then
 		level_tasks.check_lchanger_location()
 		load_slot_hide()
+		ui_scroll_indicators.first_update()
 
 		start = false
 	end
@@ -40,6 +45,7 @@ function update()
 	end
 
 	update_timers()
+	medkit_use.show_med()
 
 	if next_update_200 <= time_real_ms then
 		safe_place()
@@ -49,6 +55,7 @@ function update()
 
 	if next_update_1000 <= time_real_ms then
 		update_fires()
+		check_spots()
 
 		next_update_1000 = time_real_ms + 1000
 	end
@@ -135,8 +142,21 @@ function item_slot(obj)
 	grenade_belt.on_item_slot(obj)
 end
 
+function before_use_item(obj)
+	medkit_use.before_use_item(obj)
+end
+
 function item_use(obj)
 	amk.item_use(obj)
+	medkit_use.used_med(obj)
+
+	local sound = config:r_string_cache(obj:section(), "use_sound")
+	if sound then
+		wpn_hide_disable()
+		timer("reap.wpn_show_enable", level.get_game_difficulty() * 2000, true)
+
+		say(sound)
+	end
 end
 
 function take_item_from_box(box, item)
@@ -166,12 +186,37 @@ function info(info_id, ui_info)
 		process_ui_info(info_id)
 	elseif smart_info[info_id] then
 		smart_terrain.init_level_groups()
+	else
+		mark_npc(info_id)
+		dmx_sleep_binder.place_of_sleep_spawn(info_id)
 	end
 end
 
 function attach_vehicle(obj)
 	if has_map_spot(obj:id(), "green_location") > 0 then
 		del_map_spot(obj:id(), "green_location")
+	end
+end
+
+function key_press(dik)
+	if not actor_flags.alive then return end
+
+	if dik == bind_to_dik(key_bindings.kQUICK_SAVE) and not level.main_input_receiver() then
+		level.send_event_key_press(bind_to_dik(key_bindings.kPAUSE))
+		console:execute("save " .. user_name() .. "_quicksave")
+		level.send_event_key_press(bind_to_dik(key_bindings.kPAUSE))
+	elseif dik == bind_to_dik(key_bindings.kUSE_BANDAGE) or
+	       dik == bind_to_dik(key_bindings.kUSE_MEDKIT) then
+		local item
+		if dik == bind_to_dik(key_bindings.kUSE_BANDAGE) then
+			item = Actor:object("bandage")
+		else
+			item = Actor:object("medkit") or Actor:object("medkit_army") or
+			       Actor:object("medkit_scientic")
+		end
+		if item then
+			Actor:eat(item)
+		end
 	end
 end
 
@@ -211,6 +256,7 @@ end
 * Active slot management
 --]]---------------------------------------------------------------------------
 
+local vars = container:get("reap", { })
 local load_slot_item
 
 function load_slot_hide()
@@ -231,11 +277,15 @@ function load_slot_hide()
 end
 
 function load_slot_restore()
+	if vars.wpn_refcnt then
+		Actor:hide_weapon()
+	end
+
 	if not load_slot_item then return end
 	load_slot_item = level_object(load_slot_item)
 	if not load_slot_item then return end
 
-	if load_slot_act then
+	if load_slot_act and not vars.wpn_refcnt then
 		Actor:move_to_slot_and_activate(load_slot_item)
 	else
 		Actor:move_to_slot(load_slot_item)
@@ -245,30 +295,40 @@ function load_slot_restore()
 end
 
 function drop_weapon(punch)
-	local actor = Actor
-	local active_item = actor:active_item()
+	local active_item = Actor:active_item()
 	if active_item then
 		local active_sect = active_item:section()
 		if active_sect == "wpn_knife" then
 			if punch == true then
-				actor:activate_slot(-1)
+				Actor:activate_slot(-1)
 			else
-				actor:drop_item(active_item)
+				Actor:drop_item(active_item)
 			end
 		elseif active_sect == "bolt" then
 			bolt_ending.drop_bolt()
 		else
-			actor:drop_item(active_item)
+			Actor:drop_item(active_item)
 		end
 	end
 end
 
 function wpn_show_enable(info_id)
-	ammo_belt.on_info(info_id)
-	grenade_belt.on_info(info_id)
+	if info_id then
+		ammo_belt.on_info(info_id)
+		grenade_belt.on_info(info_id)
+	end
 
+	if not vars.wpn_refcnt then return end
+	vars.wpn_refcnt = vars.wpn_refcnt - 1
+	if vars.wpn_refcnt ~= 0 then return end
+
+	vars.wpn_refcnt = nil
 	Actor:restore_weapon()
-	local act = get_value("last_slot", 10, true)
+
+	local act = vars.last_slot
+	if not act then return end
+	vars.last_slot = nil
+
 	if act < 10 then
 		level.parked_call(function()
 			Actor:activate_slot(act)
@@ -277,22 +337,28 @@ function wpn_show_enable(info_id)
 end
 
 function wpn_hide_disable(info_id)
-	local act = Actor:active_slot()
-	if act < 10 then
-		local item = (act == 1 or act == 2) and Actor:active_item()
-		if item and item:get_ammo_in_magazine() == 0 then
-			level.parked_call(function()
+	vars.wpn_refcnt = (vars.wpn_refcnt or 0) + 1
+	if vars.wpn_refcnt == 1 then
+		local act = Actor:active_slot()
+		if act < 10 then
+			local item = (act == 1 or act == 2) and Actor:active_item()
+			if item and item:get_ammo_in_magazine() == 0 then
+				level.parked_call(function()
+					Actor:activate_slot(-1)
+				end)
+			else
 				Actor:activate_slot(-1)
-			end)
-		else
-			Actor:activate_slot(-1)
+			end
+			vars.last_slot = act
 		end
-		set_value("last_slot", act)
-	end
-	Actor:hide_weapon()
 
-	ammo_belt.on_info(info_id)
-	grenade_belt.on_info(info_id)
+		Actor:hide_weapon()
+	end
+
+	if info_id then
+		ammo_belt.on_info(info_id)
+		grenade_belt.on_info(info_id)
+	end
 end
 
 local info_fn = {
@@ -318,7 +384,7 @@ local info_fn = {
 			ammo_belt.on_info(info_id)
 			grenade_belt.on_info(info_id)
 		else
-			wpn_hide_disable()
+			wpn_hide_disable(info_id)
 		end
 	end,
 	ui_trade_hide = function(info_id)
@@ -326,7 +392,7 @@ local info_fn = {
 			ammo_belt.on_info(info_id)
 			grenade_belt.on_info(info_id)
 		else
-			wpn_show_enable()
+			wpn_show_enable(info_id)
 		end
 	end
 }
@@ -344,12 +410,21 @@ end
  * HUD
 --]]---------------------------------------------------------------------------
 
-local sleep_cs = nil
+local sleep_cs, hide
 
 hit_effectors = reap_misc.hit_effectors
 
 function safe_place()
-	local need_hit, khit = amk_mod.blowout_khit()
+	local need_hit, khit
+
+	if hide == nil then
+		hide = amk_hideouts.hide[curr_level] and true or false
+	end
+	if hide == true then
+		need_hit, khit = amk_mod.blowout_khit()
+	else
+		need_hit, khit = false, 1
+	end
 
 	if khit < 0.5 then
 		if not sleep_cs then
@@ -669,6 +744,11 @@ function dynamic_fire:update(delta)
 			end
 		end
 
+		if not self.flame then
+			release(self.object)
+			return
+		end
+
 		self.flame:disable_anomaly()
 		if self.light then
 			self.light:get_hanging_lamp():turn_off()
@@ -790,6 +870,118 @@ function update_fires()
 			if v.time + 120000 <= time_real_ms then
 				v.prtcl:stop()
 				transitions[name] = nil
+			end
+		end
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Map spots for important NPCs
+--]]---------------------------------------------------------------------------
+
+local npc_spots_id = {
+	[1]					= "trader_npc_mapspot",
+	[2]					= "boss_npc_mapspot",
+	[3]					= "repair_npc_mapspot"
+}
+
+local npc_spots_hints = {
+	[1]					= "hint_trader",
+	[2]					= "hint_commander",
+	[3]					= "hint_repair"
+}
+
+local npc_spots = {
+	l01_escape_level_info = {
+		[3]				= 1,
+		[6]				= 2,
+		[32]				= 2,
+		["esc_blokpost_commander"]	= 2,
+		[9622]				= 1
+	},
+	l02_garbage_level_info = {
+		[100]				= 2,
+		[107]				= 2,
+		[115]				= 2
+	},
+	l03_agroprom_level_info = {
+		[302]				= 2,
+		["agr_nii_commander"]		= 2,
+		[9506]				= 2
+	},
+	agr_krot_band_done = {
+		[9509]				= 1,
+		[9510]				= 1
+	},
+	l04_darkvalley_level_info = {
+		[425]				= 2,
+		[9507]				= 1
+	},
+	svoboda_sidor_news_done = {
+		[481532]			= 1
+	},
+	l05_bar_level_info = {
+		[500]				= 1,
+		[505]				= 2,
+		[506]				= 1,
+		[507]				= 2,
+		[9504]				= 3,
+		[9613]				= 2
+	},
+	bar_dolg_community_leader_done = {
+		[481520]			= 1
+	},
+	bar_ecolog_crush_heli_start = {
+		[509]				= 2
+	},
+	yantar_scientists_talk = {
+		[902]				= 1
+	},
+	mil_dolg_dialog_already = {
+		[702]				= 2,
+		[707]				= 2,
+		[708]				= 2,
+		[724]				= 2,
+		[734]				= 1,
+		[777]				= 3
+	},
+	rad_start_svoboda_vs_dolg = {
+		[9501]				= 1
+	},
+	doktor_alife = {
+		[9502]				= 1
+	},
+	aes_get_soldier_map = {
+		["aes_Soldier_commander"]	= 2
+	}
+}
+
+function mark_npc(info_id)
+	local info = npc_spots[info_id]
+	if not info then return end
+
+	level.parked_call(function()
+		local obj
+		for id, _type in pairs(info) do
+			obj = type(id) == "number" and story_object(id) or server_object(id)
+			if obj and obj:is_stalker() and obj:alive() and
+			   has_map_spot(obj.id, npc_spots_id[_type]) == 0 then
+				map_spot(obj.id, npc_spots_id[_type], obj:get_netpk("character_name"))
+			end
+		end
+	end, 2)
+end
+
+function check_spots()
+	local obj
+	for info_id, info in pairs(npc_spots) do
+		if has_info(info_id) then
+			for id, _type in pairs(info) do
+				obj = type(id) == "number" and story_object(id) or server_object(id)
+				if obj and obj:is_stalker() and not obj:alive() and
+				   has_map_spot(obj.id, npc_spots_id[_type]) > 0 then
+					del_map_spot(obj.id, npc_spots_id[_type])
+				end
 			end
 		end
 	end

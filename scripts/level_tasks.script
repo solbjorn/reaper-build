@@ -353,7 +353,7 @@ function add_lchanger_location()
 		end
 
 		if obj and not (data.indoor or data.keep) then
-			spot = "lchanger_" .. data.dir .. "_location"
+			spot = "level_changer_" .. data.dir
 			map_spot(obj.id, spot, "to_" .. obj:get_netpk("dest_level_name"))
 			lc_location[id] = nil
 		end
@@ -368,7 +368,7 @@ function check_lchanger_location()
 	end
 
 	if not level.indoor() then return end
-	local spot, obj = "lchanger_location"
+	local spot, obj = "level_changer"
 
 	for id, data in pairs(lc_location) do
 		if data.indoor then
@@ -398,11 +398,9 @@ function proceed_lchanger_location(info_id)
 		if obj then
 			data = lc_location[id]
 			if data.dir then
-				spot = "lchanger_" .. data.dir .. "_location"
-			elseif data.indoor then
-				spot = "lchanger_indoor_location"
+				spot = "level_changer_" .. data.dir
 			else
-				spot = "lchanger_location"
+				spot = "level_changer"
 			end
 			if has_map_spot(obj.id, spot) == 0 then
 				to = obj:get_netpk("dest_level_name")

@@ -24,20 +24,28 @@ function evaluator_need_trade:__init(storage, name) super (nil, name)
 end
 
 function evaluator_need_trade:is_vip()
-	return (self.object:character_community()=="stalker" and self.object:relation(Actor) == game_object.friend) or (self.object:is_story_object() and self.object:story_id() ~= 424)
+	local story = self.object:is_story_object()
+	if story then
+		return self.object:story_id() ~= 424
+	else
+		return self.object:relation(Actor) == game_object.friend
+	end
 end
 
 function evaluator_need_trade:evaluate()
 	if not self.object:is_talk_enabled() or xr_sleeper.is_npc_asleep(self.object) then return false end
 	local whom = Actor
 	local dist = self.object:position():distance_to(whom:position())
-	if dist > min_check_dist then
-		npc_traded[self.object:id()] = nil
-		return false
-	elseif npc_traded[self.object:id()] then
+
+	if npc_traded[self.object:id()] then
+		if dist > min_check_dist and not whom:see(self.object) and not self.object:see(whom) then
+			npc_traded[self.object:id()] = nil
+		end
+
 		return false
 	end
-	return dist > neer_trade_dist and whom:see(self.object) and self.object:see(whom) and self:is_vip()
+
+	return dist <= min_check_dist and dist > neer_trade_dist and whom:see(self.object) and self.object:see(whom) and self:is_vip()
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -138,7 +146,7 @@ function action_trade_activity:initialize()
 	action_base.initialize(self)
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	self.tt=time_global()+20000
+	self.tt = time_real_ms + 10000
 end
 
 function action_trade_activity:execute()
@@ -153,6 +161,7 @@ function action_trade_activity:execute()
 		state_mgr.set_state(self.object, "wait_trade", nil, nil, { look_object = whom }, {animation = true})
 	else
 		state_mgr.set_state(self.object, "hello", nil, nil, { look_object = whom }, {animation = true})
+		xr_sound.set_sound(self.object, "hail")
 	end
 end
 

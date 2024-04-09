@@ -1,0 +1,220 @@
+--Vergas использование аптечек и остального
+--здоровье восстанавливается постепенно
+--Оптимизация и доработка Sarcus
+
+------------------------------------------------------
+
+local sounds = {
+	voice([[inventory\inv_medik_1]]),
+	voice([[inventory\inv_medik_2]])
+}
+
+local med_data = {
+	mr_time			= 0,
+	mr_affect		= 0,
+
+	eat_health		= 220,
+	eat_power		= 224,
+	eat_satiety		= 228,
+	eat_radiation		= 232,
+	eat_alcohol		= 0,
+	wounds_heal_perc	= 240
+}
+
+local medkit_table = table.tohash({
+	"medkit", "medkit_army", "medkit_scientic",
+	"bandage", "energy_drink", "antirad"
+})
+
+------------------------------------------------------
+
+local vars = container:get("reap", { })
+local delta
+
+local rem = 4 * base_time_factor
+local time_sec_old		--секунды, при предыдущем обращении к функции show_time_med()
+local snd = true
+local sound_t
+local delta_t
+local schek_snd
+local af_set			-- для эффекта лечения
+local last_alc
+
+function init_med_data(sect)
+	local data = { }
+	medkit_table[sect] = data
+
+	local val
+	for line, _ in pairs(med_data) do
+		val = config:r_float_ex(sect, line)
+		if val and val ~= 0 then
+			data[line] = val
+		end
+	end
+
+	return data
+end
+
+function before_use_item(obj)
+	local sect = obj:section()
+	local data = medkit_table[sect]
+
+	if not data then return end
+	if data == true then
+		data = init_med_data(sect)
+	end
+
+	for line, _ in pairs(data) do
+		if med_data[line] > 0 then
+			obj:set_inventory_item_float(nil, 0, med_data[line])
+		end
+	end
+
+	if sect == "energy_drink" then
+		last_alc = Actor.alcohol
+	end
+end
+
+function used_med(obj)
+	local section = obj:section()
+	if not medkit_table[section] then return end
+
+	if sect == "energy_drink" then
+		Actor.alcohol = last_alc - Actor.alcohol
+	end
+
+	--Проверяю, не запущен ли процесс лечения?
+	if vars.med_sect then
+		-- Препарат использовали, а лечение уже идет! Ложим препарат обратно в инвентарь
+		create(section, xyz(), 0, 0, 0)
+		return
+	end
+
+	-- процесс лечения не запущен
+
+	if not level.main_input_receiver() then
+		local st_item_used = hud:AddCustomStatic("item_used", true)
+		st_item_used:wnd():SetText(translate("st_item_used") .. ": " ..
+					   get_inventory_item_data(obj, "inv_name"))
+		st_item_used.m_endTime = time_real_ms / 1000 + 3
+	end
+
+	--запускаю процесс лечения
+	vars.med_sect = section
+end
+
+function init_deltas()
+	--определяю порции лечения
+	local data = medkit_table[vars.med_sect]
+	if data == true then
+		data = init_med_data(vars.med_sect)
+	end
+
+	local mr_time, eat_power
+
+	-- время действия в минутах
+	mr_time = (data.mr_time or 1) * 60
+
+	delta = {
+		-- общая прибавка здоровья
+		health = (data.eat_health or 0) / mr_time,
+		-- общее снижение радиации
+		radiation = (data.eat_radiation or 0) / mr_time,
+		bleeding = (data.wounds_heal_perc or 0) / mr_time
+	}
+	-- общая потеря энергии
+	if data.eat_power and data.eat_power > 0 then
+		delta.power = data.eat_power / mr_time
+	else
+		eat_power = data.eat_power or 0
+		delta.power = 0
+	end
+	-- эффект применения
+	delta_affect = data.mr_affect or 0
+
+	delta_t = 10		-- интервал в секундах между звуковыми сигналами
+	sound_t = 0
+	schek_snd = 1
+
+	time_sec_old = time_game_ct:get_table()["sec"]
+
+	if not vars.med_delta then
+		vars.med_delta = mr_time
+		--эффект применения
+		af_set = 0
+
+		Actor.alcohol = data.eat_alcohol or 0
+		Actor.satiety = data.eat_satiety or 0
+		if eat_power then
+			Actor.power = eat_power
+		end
+	else
+		af_set = 2
+	end
+
+	for param, val in pairs(delta) do
+		if val ~= 0 then
+			ui_scroll_indicators.add_restore_indicator(param)
+		end
+	end
+end
+
+function show_med()
+-- вызывается из sak.script
+
+	if not vars.med_sect then return end
+	if not delta then init_deltas() end
+
+	-- эффект применения
+	if af_set == 0 then
+		Actor.health = delta_affect
+		af_set = 1
+	elseif af_set == 1 then
+		Actor.health = -delta_affect
+		af_set = 2
+	end
+
+	if vars.med_delta <= rem then
+		for param, val in pairs(delta) do
+			if val ~= 0 then
+				ui_scroll_indicators.flashing_indicator(param)
+			end
+		end
+	end
+
+	local time_sec = time_game_ct:get_table()["sec"]
+	if time_sec_old == time_sec then return end
+	time_sec_old = time_sec
+
+	-- здоровье
+	Actor.health = delta.health
+	-- энергия
+	Actor.power = delta.power
+	-- радиация
+	Actor.radiation = delta.radiation
+
+	Actor:heal_wounds(delta.bleeding)
+
+	-- управляю звуком
+	if snd then
+		sound_t = sound_t+1
+		if sound_t == delta_t then
+			sound_t = 0
+			say(sounds[schek_snd], 0.5)
+			schek_snd = schek_snd == 1 and 2 or 1
+		end
+	end
+
+	vars.med_delta = vars.med_delta - 1
+	if vars.med_delta == 0 then
+		for param, val in pairs(delta) do
+			if val ~= 0 then
+				ui_scroll_indicators.remove_restore_indicator(param)
+			end
+		end
+
+		vars.med_sect = nil
+		vars.med_delta = nil
+		delta = nil
+	end
+end
