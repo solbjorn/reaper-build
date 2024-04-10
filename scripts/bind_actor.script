@@ -8,6 +8,82 @@ local object_binder_update = object_binder.update
 local string_sub = string.sub
 local xr_sound_update_actor = xr_sound.update_actor
 
+function init_cbs_tbl(self)
+	self.hit_callback = sa_callbacks.actor_hit
+	self.death_callback = sa_callbacks.actor_death
+	self.on_key_press = sa_callbacks.key_press
+	self.on_key_release = sa_callbacks.key_release
+	self.on_mouse_wheel = sa_callbacks.mouse_wheel
+	self.on_mouse_move = sa_callbacks.mouse_move
+	self.on_item_belt = sa_callbacks.item_belt
+	self.on_item_ruck = sa_callbacks.item_ruck
+	self.on_item_slot = sa_callbacks.item_slot
+	self.select_pda_contact = sa_callbacks.select_pda_contact
+	self.hit_effector_callback = sa_callbacks.hit_effector
+	self.attach_vehicle = sa_callbacks.attach_vehicle
+	self.detach_vehicle = sa_callbacks.detach_vehicle
+	self.before_hit_callback = sa_callbacks.actor_before_hit
+
+	self.on_item_use = reap.item_use
+	self.on_before_use_item = reap.before_use_item
+
+	local obj = self.object
+	local set_cb = obj.set_callback
+
+	for id, fn in pairs({
+		[callback.inventory_info]		= self.info_callback,
+		[callback.article_info]			= self.article_callback,
+		[callback.on_item_take]			= self.on_item_take,
+		[callback.on_item_drop]			= self.on_item_drop,
+		[callback.task_state]			= self.task_callback,
+		[callback.level_border_enter]		= self.level_border_enter,
+		[callback.level_border_exit]		= self.level_border_exit,
+		[callback.take_item_from_box]		= self.take_item_from_box,
+
+		[callback.hit]				= self.hit_callback,
+		[callback.death]			= self.death_callback,
+		[callback.on_key_press]			= self.on_key_press,
+		[callback.on_key_release]		= self.on_key_release,
+		[callback.on_mouse_wheel]		= self.on_mouse_wheel,
+		[callback.on_mouse_move]		= self.on_mouse_move,
+		[callback.on_belt]			= self.on_item_belt,
+		[callback.on_ruck]			= self.on_item_ruck,
+		[callback.on_slot]			= self.on_item_slot,
+		[callback.pda_contact]			= self.select_pda_contact,
+		[callback.on_mob_hit_to_actor]		= self.hit_effector_callback,
+		[callback.on_attach_vehicle]		= self.attach_vehicle,
+		[callback.on_detach_vehicle]		= self.detach_vehicle,
+		[callback.entity_alive_before_hit]	= self.before_hit_callback,
+
+		[callback.use_object]			= self.on_item_use,
+		[callback.on_before_use_item]		= self.on_before_use_item
+	}) do
+		set_cb(obj, id, fn, self)
+	end
+end
+
+function deinit_cbs_tbl(self)
+	local cbs = {
+		callback.inventory_info, callback.article_info, callback.on_item_take,
+		callback.on_item_drop, callback.task_state, callback.level_border_enter,
+		callback.level_border_exit, callback.take_item_from_box,
+
+		callback.hit, callback.death, callback.on_key_press, callback.on_key_release,
+		callback.on_mouse_wheel, callback.on_mouse_move, callback.on_belt,
+		callback.on_ruck, callback.on_slot, callback.pda_contact,
+		callback.on_mob_hit_to_actor, callback.on_attach_vehicle,
+		callback.on_detach_vehicle, callback.entity_alive_before_hit,
+
+		callback.use_object, callback.on_before_use_item
+	}
+	local obj = self.object
+	local set_cb = obj.set_callback
+
+	for i = 1, #cbs do
+		set_cb(obj, cbs[i], nil)
+	end
+end
+
 function init(npc)
 	npc:bind_object(actor_binder(npc))
 end
@@ -97,30 +173,7 @@ function actor_binder:net_destroy()
 
     sr_light.clean_up ()
 
-  self.object:set_callback(callback.inventory_info, nil)
-  self.object:set_callback(callback.article_info, nil)
-  self.object:set_callback(callback.on_item_take, nil)
-  self.object:set_callback(callback.on_item_drop, nil)
-  self.object:set_callback(callback.task_state, nil)
-  self.object:set_callback(callback.level_border_enter, nil)
-  self.object:set_callback(callback.level_border_exit, nil)
-  self.object:set_callback(callback.take_item_from_box, nil)
-	self.object:set_callback(callback.use_object, nil)
-	self.object:set_callback(callback.hit, nil)
-	self.object:set_callback(callback.death, nil)
-	self.object:set_callback(callback.on_key_press, nil)
-	self.object:set_callback(callback.on_key_release, nil)
-	self.object:set_callback(callback.on_mouse_wheel, nil)
-	self.object:set_callback(callback.on_mouse_move, nil)
-	self.object:set_callback(callback.on_belt, nil)
-	self.object:set_callback(callback.on_ruck, nil)
-	self.object:set_callback(callback.on_slot, nil)
-	self.object:set_callback(callback.pda_contact, nil)
-	self.object:set_callback(callback.on_mob_hit_to_actor, nil)
-	self.object:set_callback(callback.on_attach_vehicle, nil)
-	self.object:set_callback(callback.on_detach_vehicle, nil)
-	self.object:set_callback(callback.on_before_use_item, nil)
-	self.object:set_callback(callback.entity_alive_before_hit, nil)
+	deinit_cbs_tbl(self)
 
   if sr_psy_antenna.psy_antenna then
     sr_psy_antenna.psy_antenna:destroy()
@@ -142,31 +195,7 @@ function actor_binder:reinit()
 	db.storage[0] = self.st
 	self.st.pstor = nil
 
-  self.object:set_callback(callback.inventory_info, self.info_callback, self)
-  self.object:set_callback(callback.article_info, self.article_callback, self)
-  self.object:set_callback(callback.on_item_take, self.on_item_take, self)
-  self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
-  self.object:set_callback(callback.task_state, self.task_callback, self)
-  self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
-  self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
-  self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
-	self.object:set_callback(callback.use_object, self.on_item_use, self)
-	self.object:set_callback(callback.hit, self.hit_callback, self)
-	self.object:set_callback(callback.death, self.death_callback, self)
-	self.object:set_callback(callback.on_key_press, self.on_key_press, self)
-	self.object:set_callback(callback.on_key_release, self.on_key_release, self)
-	self.object:set_callback(callback.on_mouse_wheel, self.on_mouse_wheel, self)
-	self.object:set_callback(callback.on_mouse_move, self.on_mouse_move, self)
-	self.object:set_callback(callback.on_belt, self.on_item_belt, self)
-	self.object:set_callback(callback.on_ruck, self.on_item_ruck, self)
-	self.object:set_callback(callback.on_slot, self.on_item_slot, self)
-	self.object:set_callback(callback.pda_contact, self.select_pda_contact, self)
-	self.object:set_callback(callback.on_mob_hit_to_actor, self.hit_effector_callback, self)
-	self.object:set_callback(callback.on_attach_vehicle, self.attach_vehicle, self)
-	self.object:set_callback(callback.on_detach_vehicle, self.detach_vehicle, self)
-	self.object:set_callback(callback.on_before_use_item, self.on_before_use_item, self)
-	self.object:set_callback(callback.entity_alive_before_hit, self.before_hit_callback, self)
-
+	init_cbs_tbl(self)
 	actor_flags.alive = self.object:alive()
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -261,73 +290,6 @@ function actor_binder:on_item_drop (obj)
   sak.check_droped_item(obj)
 
 	sa_callbacks.item_drop(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_use(obj)
-	sa_callbacks.item_use(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:hit_callback(obj, amount, local_direction, who, bone_index)
-	sa_callbacks.actor_hit(obj, amount, local_direction, who, bone_index)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:death_callback(victim, who)
-	actor_flags.alive = false
-	sa_callbacks.actor_death(victim, who)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_key_press(dik)
-	sa_callbacks.key_press(dik)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_key_release(dik)
-	sa_callbacks.key_release(dik)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_mouse_wheel(vol)
-	sa_callbacks.mouse_wheel(vol)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_mouse_move()
-	sa_callbacks.mouse_move()
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_belt(obj)
-	sa_callbacks.item_belt(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_ruck(obj)
-	sa_callbacks.item_ruck(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_slot(obj)
-	sa_callbacks.item_slot(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:select_pda_contact(id)
-	sa_callbacks.select_pda_contact(id)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:hit_effector_callback(mob_type)
-	sa_callbacks.hit_effector(mob_type)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:attach_vehicle(car)
-	sa_callbacks.attach_vehicle(car)
-	actor_flags.in_car = true
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:detach_vehicle(car)
-	actor_flags.in_car = false
-	sa_callbacks.detach_vehicle(car)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_before_use_item(obj)
-	sa_callbacks.before_use_item(obj)
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:before_hit_callback()
-	sa_callbacks.actor_before_hit()
 end
 ----------------------------------------------------------------------------------------------------------------------
 

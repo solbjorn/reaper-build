@@ -67,7 +67,7 @@ end
 local last_mob_type
 local last_health
 ---------------------------------------------------------------------------------------------------
-function actor_hit(obj, amount, local_direction, who, bone_index)
+function actor_hit(binded, obj, amount, local_direction, who, bone_index)
 	if last_mob_type then
 		sa_main.hit_effectors(last_mob_type, who)
 		last_mob_type = nil
@@ -78,7 +78,8 @@ function actor_hit(obj, amount, local_direction, who, bone_index)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function actor_death(victim, who)
+function actor_death(binded, victim, who)
+	actor_flags.alive = false
 	hud_interface_mgr:actor_death()
 	sa_main.restore_torch(victim)
 	reap.actor_death(victim, who)
@@ -119,11 +120,7 @@ function item_drop_from_belt(obj)
 	reap.item_drop_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
-function item_use(obj)
-	reap.item_use(obj)
-end
----------------------------------------------------------------------------------------------------
-function item_belt(obj)
+function item_belt(binded, obj)
 	sa_inventory_items_mgr.update_artefacts_lock_to_belt(obj)
 	if Actor:belt_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
@@ -137,7 +134,7 @@ function item_move_from_belt(obj)
 	reap.item_move_from_belt(obj)
 end
 ---------------------------------------------------------------------------------------------------
-function item_ruck(obj)
+function item_ruck(binded, obj)
 	sa_inventory_items_mgr.update_artefacts_belt_lock(obj)
 	if Actor:ruck_count() > 1 then
 		sa_inventory_items_mgr.check_ammo(obj)
@@ -149,7 +146,7 @@ function item_ruck(obj)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function item_slot(obj)
+function item_slot(binded, obj)
 	reap.item_slot(obj)
 	if belt_obj_by_id[obj:id()] then
 		item_move_from_belt(obj)
@@ -198,13 +195,13 @@ function scope_zoom_mode(mode_on)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function select_pda_contact(id)
+function select_pda_contact(binded, id)
 	if pda_contacts_dialog then
 		pda_contacts_dialog:choice_pda_contact(id)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function hit_effector(mob_type)
+function hit_effector(binded, mob_type)
 	last_mob_type = mob_type
 end
 ---------------------------------------------------------------------------------------------------
@@ -214,16 +211,18 @@ function actor_before_hit()
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function attach_vehicle(car)
+function attach_vehicle(binded, car)
 	local binder = car:binded_object()
 	if binder then
 		binder:attach_holder()
 		car_mgr = sa_cars.get_car_mgr()
 	end
 	reap.attach_vehicle(car)
+	actor_flags.in_car = true
 end
 ---------------------------------------------------------------------------------------------------
-function detach_vehicle(car)
+function detach_vehicle(binded, car)
+	actor_flags.in_car = false
 	local binder = car:binded_object()
 	if binder then
 		binder:detach_holder()
@@ -231,11 +230,7 @@ function detach_vehicle(car)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function before_use_item(obj)
-	reap.before_use_item(obj)
-end
----------------------------------------------------------------------------------------------------
-function key_press(dik)
+function key_press(binded, dik)
 	if pda_contacts_dialog then
 		local pda_talk_dialog = sa_pda.get_pda_talk_dialog()
 		if pda_talk_dialog then
@@ -256,7 +251,7 @@ function key_press(dik)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
-function key_release(dik)
+function key_release(binded, dik)
 	if car_mgr then
 		car_mgr:on_keyboard(dik, key_events.released)
 	end
@@ -267,7 +262,7 @@ function key_release(dik)
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------
-function mouse_wheel(vol)
+function mouse_wheel(binded, vol)
 	if car_mgr then
 		car_mgr:zoom_factor(vol)
 	end
