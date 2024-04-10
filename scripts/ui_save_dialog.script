@@ -215,7 +215,13 @@ function save_dialog:OnButton_cancel_clicked()
 end
 
 function save_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
-   ui_base_dialog.base_dialog.OnKeyboard(self,dik,keyboard_action)
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+
+	if dik_to_bind(dik) == key_bindings.kQUIT then
+		self:GetHolder():start_stop_menu(self.owner, true)
+		self:GetHolder():start_stop_menu(self, true)
+		self.owner:Show(true)
+	end
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_DELETE then

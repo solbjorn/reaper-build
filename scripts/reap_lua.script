@@ -275,20 +275,20 @@ methods = nil
 --]]---------------------------------------------------------------------------
 
 game.CTime.get_table = function(var)
-	local Y, M, D, h, m, s, ms = var:get(Y, M, D, h, m, s, ms)
+	local Y, M, D, hr, m, s, ms = var:get(Y, M, D, hr, m, s, ms)
 	return {
 		year	= Y,
 		month	= M,
 		day	= D,
-		hour	= h,
+		hour	= hr,
 		["min"]	= m,
 		sec	= s,
 		msec	= ms
 	}
 end
 
-game.CTime.init = function(var, Y, M, D, h, m, s, ms)
-	var:set(Y or 1, M or 1, D or 1, h or 0, m or 0, s or 0, ms or 0)
+game.CTime.init = function(var, Y, M, D, hr, m, s, ms)
+	var:set(Y or 1, M or 1, D or 1, hr or 0, m or 0, s or 0, ms or 0)
 	return var
 end
 

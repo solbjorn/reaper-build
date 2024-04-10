@@ -1,77 +1,86 @@
 prefetch("_G")
 
+local classes = {
+	{ "ce_smart_zone",	"smart_terrain.se_smart_terrain",	"SMRTTRRN",	"smart_terrain" },
+	{ "ce_smart_zone",	"se_respawn.se_respawn",		"RE_SPAWN",	"respawn" },
+
+	{ "CAI_Stalker",	"se_stalker.se_stalker",		"AI_STL_S",	"script_stalker" },
+	{ "CAI_Trader",		"se_stalker.se_trader",			"AI_TRD_S",	"script_trader" },
+	{ "CHelicopter",	"se_car.se_heli",			"C_HLCP_S",	"script_heli" },
+
+	{ "CSpaceRestrictor",	"se_zones.se_restrictor",		"SPC_RS_S",	"script_restr" },
+	{ "CPhysicObject",	"se_item.se_physic",			"O_PHYS_S",	"script_phys" },
+	{ "CElectricBall",	"se_artefact.se_artefact",		"SCRPTART",	"artefact_s" },
+	{ "CCar",		"se_car.se_car",			"SCRPTCAR",	"car_s" },
+
+	{ "CAI_Bloodsucker",	"se_monster.se_monster",		"SM_BLOOD",	"bloodsucker_s" },
+	{ "CAI_Boar",		"se_monster.se_monster",		"SM_BOARW",	"boar_s" },
+	{ "CAI_Dog",		"se_monster.se_monster",		"SM_DOG_S",	"dog_s" },
+	{ "CAI_Flesh",		"se_monster.se_monster",		"SM_FLESH",	"flesh_s" },
+	{ "CAI_PseudoDog",	"se_monster.se_monster",		"SM_P_DOG",	"pseudodog_s" },
+	{ "CBurer",		"se_monster.se_monster",		"SM_BURER",	"burer_s" },
+	{ "CCat",		"se_monster.se_monster",		"SM_CAT_S",	"cat_s" },
+	{ "CChimera",		"se_monster.se_monster",		"SM_CHIMS",	"chimera_s" },
+	{ "CController",	"se_monster.se_monster",		"SM_CONTR",	"controller_s" },
+	{ "CFracture",		"se_monster.se_monster",		"SM_IZLOM",	"fracture_s" },
+	{ "CPoltergeist",	"se_monster.se_monster",		"SM_POLTR",	"poltergeist_s" },
+	{ "CPseudoGigant",	"se_monster.se_monster",		"SM_GIANT",	"gigant_s" },
+	{ "CZombie",		"se_monster.se_monster",		"SM_ZOMBI",	"zombie_s" },
+	{ "CSnork",		"se_monster.se_monster",		"SM_SNORK",	"snork_s" },
+	{ "CTushkano",		"se_monster.se_monster",		"SM_TUSHK",	"tushkano_s" },
+	{ "CPsyDog",		"se_monster.se_monster",		"SM_DOG_P",	"psy_dog_s" },
+	{ "CPsyDogPhantom", 	"se_monster.se_monster",		"SM_DOG_F",	"psy_dog_phantom_s" },
+
+	{ "CTorch",		"se_item.se_item_torch",		"TORCH_S",	"device_torch_s" },
+	{ "CStalkerOutfit",	"se_item.se_outfit",			"E_STLK",	"equ_stalker_s" },
+	{ "CScope",		"se_item.se_item",			"WP_SCOPE",	"wpn_scope_s" },
+
+	{ "CWeaponAK74",	"se_item.se_weapon_magazined_w_gl",	"WP_AK74",	"wpn_ak74_s" },
+	{ "CWeaponLR300",	"se_item.se_weapon_magazined",		"WP_LR300",	"wpn_lr300_s" },
+	{ "CWeaponBinoculars",	"se_item.se_weapon_magazined",		"WP_BINOC",	"wpn_binocular_s" },
+	{ "CWeaponBM16",	"se_item.se_weapon_shotgun",		"WP_BM16",	"wpn_bm16_s" },
+	{ "CWeaponGroza",	"se_item.se_weapon_magazined_w_gl",	"WP_GROZA",	"wpn_groza_s" },
+	{ "CWeaponSVD",		"se_item.se_weapon_magazined",		"WP_SVD",	"wpn_svd_s" },
+	{ "CWeaponHPSA",	"se_item.se_weapon_magazined",		"WP_HPSA",	"wpn_hpsa_s" },
+	{ "CWeaponKnife",	"se_item.se_weapon",			"WP_KNIFE",	"wpn_knife_s" },
+	{ "CWeaponPM",		"se_item.se_weapon_magazined",		"WP_PM",	"wpn_pm_s" },
+	{ "CWeaponRG6",		"se_item.se_weapon_shotgun",		"WP_RG6",	"wpn_rg6_s" },
+	{ "CWeaponRPG7",	"se_item.se_weapon_magazined",		"WP_RPG7",	"wpn_rpg7_s" },
+	{ "CWeaponShotgun",	"se_item.se_weapon_shotgun",		"WP_SHOTG",	"wpn_shotgun_s" },
+	{ "CWeaponSVU",		"se_item.se_weapon_magazined",		"WP_SVU",	"wpn_svu_s" },
+	{ "CWeaponUSP45",	"se_item.se_weapon_magazined",		"WP_USP45",	"wpn_usp45_s" },
+	{ "CWeaponVal",		"se_item.se_weapon_magazined",		"WP_VAL",	"wpn_val_s" },
+	{ "CWeaponVintorez",	"se_item.se_weapon_magazined",		"WP_VINT",	"wpn_vintorez_s" },
+	{ "CWeaponWalther",	"se_item.se_weapon_magazined",		"WP_WALTH",	"wpn_walther_s" },
+
+	{ "CHairsZone",		"se_zones.se_zone_visual",		"ZS_BFUZZ",	"zone_bfuzz_s" },
+	{ "CMosquitoBald",	"se_zones.se_zone_anom",		"ZS_MBALD",	"zone_mbald_s" },
+	{ "CMincer",		"se_zones.se_zone_anom",		"ZS_GALAN",	"zone_galant_s" },
+	{ "CMincer",		"se_zones.se_zone_anom",		"ZS_MINCE",	"zone_mincer_s" },
+
+	-- NLC
+	{ "CMosquitoBald",	"se_zones.se_zone_anom",		"ZS_ZHARK",	"zone_zharka_s" },
+	{ "CMosquitoBald",	"se_zones.se_zone_anom",		"ZS_ELECT",	"zone_electra_s" },
+	{ "CMosquitoBald",	"se_zones.se_zone_anom",		"ZS_BUZZ",	"zone_buzz_s" },
+	{ "CMosquitoBald",	"se_zones.se_zone_anom",		"ZS_ICE",	"zone_ice_s" },
+
+	-- AEM
+	{ "hanging_lamp",	"aem_lights.se_lamp",			"AEM_LAMP",	"aem_lamp" },
+
+	-- ReapeR
+	{ "CTushkano",		"se_monster.se_monster",		"SM_RAT",	"rat_s" }
+}
+
 function register(factory)
-	factory:register("ui_main_menu.main_menu", "MAIN_MNU", "main_menu")
+	local reg = factory.register
 
-	factory:register("ce_smart_zone", "smart_terrain.se_smart_terrain",		"SMRTTRRN",	"smart_terrain")
-	factory:register("ce_smart_zone", "se_respawn.se_respawn",				"RE_SPAWN", "respawn")
-	factory:register("ce_switcher.ce_switcher",	"se_switcher.cse_switcher",	"O_SWITCH",	"switcher")
+	reg(factory, "ui_main_menu.main_menu", "MAIN_MNU", "main_menu")
 
-	factory:register("CAI_Stalker", "se_stalker.se_stalker",				"AI_STL_S", "script_stalker")
-	factory:register("CAI_Trader", "se_stalker.se_trader",					"AI_TRD_S", "script_trader")
-	factory:register("CHelicopter", "se_car.se_heli",						"C_HLCP_S", "script_heli")
+	local iter
+	for i = 1, #classes do
+		iter = classes[i]
+		reg(factory, iter[1], iter[2], iter[3], iter[4])
+	end
 
-	factory:register("CSpaceRestrictor", "se_zones.se_restrictor",			"SPC_RS_S", "script_restr")
-	factory:register("CPhysicObject", "se_item.se_physic",					"O_PHYS_S", "script_phys")
-
-	factory:register("CElectricBall",   "se_artefact.se_artefact",  "SCRPTART", "artefact_s")
-
-	factory:register("CCar",            "se_car.se_car",            "SCRPTCAR",	"car_s")
-
-	factory:register("CAI_Bloodsucker", "se_monster.se_monster",	"SM_BLOOD",	"bloodsucker_s")
-	factory:register("CAI_Boar",        "se_monster.se_monster",	"SM_BOARW",	"boar_s")
-	factory:register("CAI_Dog",         "se_monster.se_monster",	"SM_DOG_S",	"dog_s")
-	factory:register("CAI_Flesh",       "se_monster.se_monster",	"SM_FLESH",	"flesh_s")
-	factory:register("CAI_PseudoDog",   "se_monster.se_monster",	"SM_P_DOG",	"pseudodog_s")
-	factory:register("CBurer",          "se_monster.se_monster",	"SM_BURER",	"burer_s")
-	factory:register("CCat",            "se_monster.se_monster",	"SM_CAT_S",	"cat_s")
-	factory:register("CChimera",        "se_monster.se_monster",	"SM_CHIMS",	"chimera_s")
-	factory:register("CController",     "se_monster.se_monster",	"SM_CONTR",	"controller_s")
-	factory:register("CFracture",       "se_monster.se_monster",	"SM_IZLOM",	"fracture_s")
-	factory:register("CPoltergeist",    "se_monster.se_monster",	"SM_POLTR",	"poltergeist_s")
-	factory:register("CPseudoGigant",   "se_monster.se_monster",	"SM_GIANT",	"gigant_s")
-	factory:register("CZombie",         "se_monster.se_monster",	"SM_ZOMBI",	"zombie_s")
-	factory:register("CSnork",          "se_monster.se_monster",	"SM_SNORK",	"snork_s")
-	factory:register("CTushkano",       "se_monster.se_monster",	"SM_TUSHK",	"tushkano_s")
-	factory:register("CPsyDog",         "se_monster.se_monster",	"SM_DOG_P",	"psy_dog_s")
-	factory:register("CPsyDogPhantom",  "se_monster.se_monster",	"SM_DOG_F",	"psy_dog_phantom_s")
-
-	factory:register("CTorch",          "se_item.se_item_torch",	"TORCH_S",	"device_torch_s")
-	factory:register("CStalkerOutfit",	"se_item.se_outfit",		"E_STLK",	"equ_stalker_s")
-	factory:register("CScope",			"se_item.se_item",			"WP_SCOPE",	"wpn_scope_s")
-
-	factory:register("CWeaponAK74",		"se_item.se_weapon_magazined_w_gl",		"WP_AK74",	"wpn_ak74_s")
-	factory:register("CWeaponLR300",	"se_item.se_weapon_magazined",		"WP_LR300",	"wpn_lr300_s")
-	factory:register("CWeaponBinoculars","se_item.se_weapon_magazined",		"WP_BINOC",	"wpn_binocular_s")
-	factory:register("CWeaponBM16",		"se_item.se_weapon_shotgun",	"WP_BM16",	"wpn_bm16_s")
-	factory:register("CWeaponGroza",	"se_item.se_weapon_magazined_w_gl",		"WP_GROZA",	"wpn_groza_s")
-	factory:register("CWeaponSVD",		"se_item.se_weapon_magazined",		"WP_SVD",	"wpn_svd_s")
-	factory:register("CWeaponHPSA",		"se_item.se_weapon_magazined",		"WP_HPSA",	"wpn_hpsa_s")
-	factory:register("CWeaponKnife",	"se_item.se_weapon",		"WP_KNIFE",	"wpn_knife_s")
-	factory:register("CWeaponPM",		"se_item.se_weapon_magazined",		"WP_PM",	"wpn_pm_s")
-	factory:register("CWeaponRG6",		"se_item.se_weapon_shotgun","WP_RG6",	"wpn_rg6_s")
-
-	factory:register("CWeaponRPG7",		"se_item.se_weapon_magazined",		"WP_RPG7",	"wpn_rpg7_s")
-
-	factory:register("CWeaponShotgun",	"se_item.se_weapon_shotgun",	"WP_SHOTG",	"wpn_shotgun_s")
-
---	factory:register("CWeaponMagazined","se_item.se_weapon_magazined",	"WP_MAGAZ",	"wpn_magazined_s")
-
-	factory:register("CWeaponSVU",		"se_item.se_weapon_magazined",		"WP_SVU",	"wpn_svu_s")
-	factory:register("CWeaponUSP45",	"se_item.se_weapon_magazined",		"WP_USP45",	"wpn_usp45_s")
-	factory:register("CWeaponVal",		"se_item.se_weapon_magazined",		"WP_VAL",	"wpn_val_s")
-	factory:register("CWeaponVintorez",	"se_item.se_weapon_magazined",		"WP_VINT",	"wpn_vintorez_s")
-	factory:register("CWeaponWalther",	"se_item.se_weapon_magazined",		"WP_WALTH",	"wpn_walther_s")
-
-	factory:register("CHairsZone",		"se_zones.se_zone_visual",	"ZS_BFUZZ",	"zone_bfuzz_s") --168
-	factory:register("CMosquitoBald",	"se_zones.se_zone_anom",	"ZS_MBALD",	"zone_mbald_s") --zone_mbald_s = 170
-	factory:register("CMincer",			"se_zones.se_zone_anom",	"ZS_GALAN",	"zone_galant_s") --zone_galant_s = 169
-	factory:register("CMincer",			"se_zones.se_zone_anom",	"ZS_MINCE",	"zone_mincer_s") --zone_mincer_s = 171
-	factory:register("CMosquitoBald",    "se_zones.se_zone_anom",  "ZS_ZHARK",    "zone_zharka_s") --zone_zharka_s = 188
-	factory:register("CMosquitoBald",    "se_zones.se_zone_anom",  "ZS_ELECT",    "zone_electra_s")
-	factory:register("CMosquitoBald", "se_zones.se_zone_anom", "ZS_BUZZ", "zone_buzz_s")
-	factory:register("CMosquitoBald",			"se_zones.se_zone_anom",	"ZS_ICE",	"zone_ice_s")
-	factory:register("hanging_lamp", "aem_lights.se_lamp", "AEM_LAMP", "aem_lamp")
-
-	factory:register("CTushkano", "se_monster.se_monster", "SM_RAT", "rat_s")
+	classes = nil
 end
