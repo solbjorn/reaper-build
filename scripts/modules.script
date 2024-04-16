@@ -9,76 +9,89 @@ stype_restrictor = 4
 -- Загрузка схем:
 ----------------------------------------------------------------------
 
+local toload = {
 ----------------------------------------------------------------------
 -- Загрузка модулей сталкеров:
 ----------------------------------------------------------------------
-load_scheme("watcher_act",    "watcher_act",      stype_stalker)
-load_scheme("blowout_scheme",    "blowout_scheme",      stype_stalker)
-load_scheme("xr_danger",    "danger",      stype_stalker)
-load_scheme("xr_abuse",     "abuse",       stype_stalker)
-load_scheme("xr_walker",      "walker",      stype_stalker)
-load_scheme("xr_remark",      "remark",      stype_stalker)
-load_scheme("xr_sleeper",     "sleeper",     stype_stalker)
-load_scheme("xr_kamp",        "kamp",        stype_stalker)
-load_scheme("xr_camper",      "camper",      stype_stalker)
-load_scheme("xr_meet",      "meet",        stype_stalker)
-load_scheme("xr_heli_hunter", "heli_hunter", stype_stalker)
-load_scheme("xr_attendant",   "follower",    stype_stalker)
-load_scheme("xr_combat",      "combat",      stype_stalker)
-load_scheme("xr_death",       "death",       stype_stalker)
-load_scheme("xr_use",       "use",         stype_stalker)
-load_scheme("xr_hit",       "hit",         stype_stalker)
-load_scheme("xr_wounded",     "wounded",     stype_stalker)
-load_scheme("xr_combat_ignore", "combat_ignore", stype_stalker)
-load_scheme("xr_patrol",      "patrol",      stype_stalker)
-xrs_ai.load_schemes()
+
+	-- AMK
+	{ "watcher_act", "watcher_act", stype_stalker, "xr_", "" },
+	{ "blowout_scheme", "blowout_scheme" },
+
+	-- Vanilla
+	"danger", "abuse", "walker", "remark", "sleeper", "kamp", "camper",
+	"meet", "heli_hunter",
+
+	{ "xr_attendant", "follower" },
+
+	"combat", "death", "use", "hit", "wounded", "combat_ignore", "patrol",
+
+	-- AI Pack
+	{ "xrs_grenade", "grenadier" },
+	{ "xrs_medic", "medic" },
+	{ "xrs_armor", "pick_armor" },
 
 ----------------------------------------------------------------------
 -- Загрузка модулей монстров:
 ----------------------------------------------------------------------
-load_scheme("mob_walker",       "mob_walker",   stype_mobile)
-load_scheme("mob_combat",       "mob_combat",   stype_mobile)
-load_scheme("mob_death",        "mob_death",    stype_mobile)
-load_scheme("mob_trade",        "mob_trade",    stype_mobile)
-load_scheme("mob_jump",       "mob_jump",     stype_mobile)
-load_scheme("mob_camp",       "mob_camp",     stype_mobile)
-load_scheme("mob_home",       "mob_home",     stype_mobile)
-load_scheme("mob_trader",   "mob_trader",   stype_mobile)
+
+	{ "mob_walker", "mob_walker", stype_mobile, "mob_" },
+
+	"combat", "death", "trade", "jump", "camp", "home", "trader",
 
 ----------------------------------------------------------------------
 -- Загрузка модулей физических объектов:
 ----------------------------------------------------------------------
-load_scheme("ph_door",        "ph_door",     stype_item)
-load_scheme("ph_gate",        "ph_gate",     stype_item)
-load_scheme("ph_idle",        "ph_idle",     stype_item)
-load_scheme("ph_on_hit",      "ph_on_hit",   stype_item)
-load_scheme("ph_car",         "ph_car",      stype_item)
-load_scheme("ph_button",      "ph_button",   stype_item)
-load_scheme("ph_code",      "ph_code",     stype_item)
-load_scheme("ph_sound",       "ph_sound",    stype_item)
-load_scheme("ph_appforce",    "ph_force",    stype_item)
-load_scheme("ph_death",       "ph_on_death", stype_item)
-load_scheme("ph_oscillate",   "ph_oscillate",stype_item)
+
+	{ "ph_door", "ph_door", stype_item, "ph_" },
+
+	"gate", "idle", "on_hit", "car", "button", "code", "sound",
+
+	{ "ph_appforce", "ph_force" },
+	{ "ph_death", "ph_on_death" },
+
+	"oscillate",
 
 ----------------------------------------------------------------------
 -- Загрузка модулей вертолёта:
 ----------------------------------------------------------------------
-load_scheme("heli_move",      "heli_move",   stype_heli)
+
+	{ "heli_move", "heli_move", stype_heli },
 
 ----------------------------------------------------------------------
 -- Загрузка модулей рестрикторов:
 ----------------------------------------------------------------------
-load_scheme("sr_tip",         "sr_tip",         stype_restrictor)
-load_scheme("sr_teleport",    "sr_teleport",    stype_restrictor)
-load_scheme("sr_sound",       "sr_sound",       stype_restrictor)
-load_scheme("sr_idle",        "sr_idle",        stype_restrictor)
-load_scheme("sr_territory",   "sr_territory",   stype_restrictor)
-load_scheme("sr_danger",    "sr_danger",      stype_restrictor)
-load_scheme("sr_light",       "sr_light",       stype_restrictor)
-load_scheme("sr_particle",    "sr_particle",    stype_restrictor)
-load_scheme("sr_sound2d",     "sr_sound_act",   stype_restrictor)
-load_scheme("sr_timer",       "sr_timer",       stype_restrictor)
-load_scheme("sr_psy_antenna", "sr_psy_antenna", stype_restrictor)
-load_scheme("sr_aes_deadzone","sr_aes_deadzone",stype_restrictor)
-load_scheme("sr_cutscene",    "sr_cutscene",    stype_restrictor)
-load_scheme("ogsm_effector", "ogsm_effector", stype_restrictor)
+
+	-- Vanilla
+	{ "sr_tip", "sr_tip", stype_restrictor, "sr_" },
+
+	"teleport", "sound", "idle", "territory", "danger", "light", "particle",
+
+	{ "sr_sound2d", "sr_sound_act" },
+
+	"timer", "psy_antenna", "aes_deadzone", "cutscene",
+
+	-- OGSM
+	{ "ogsm_effector", "ogsm_effector" }
+}
+
+local file, scheme, stype, file_pfx, scheme_pfx
+for _, iter in ipairs(toload) do
+	if type(iter) == "table" then
+		file = iter[1]
+		scheme = iter[2]
+
+		if iter[3] then
+			stype = iter[3]
+			file_pfx = iter[4]
+			scheme_pfx = iter[5] or file_pfx
+		end
+	else
+		file = file_pfx .. iter
+		scheme = scheme_pfx .. iter
+	end
+
+	load_scheme(file, scheme, stype)
+end
+
+toload, file, scheme, stype, file_pfx, scheme_pfx = nil, nil, nil, nil, nil, nil

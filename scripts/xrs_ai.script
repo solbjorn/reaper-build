@@ -9,21 +9,6 @@ xrs_utils
 ]]
 
 --[[
-file: modules.script
-after: <<<END
-load_scheme("xr_patrol",      "patrol",      stype_stalker)
-END;
-code: <<<END
-if xrs_ai then xrs_ai.load_schemes() end
-END;
-]]
-function load_schemes()
-	load_scheme("xrs_grenade", "grenadier", stype_stalker)
-	load_scheme("xrs_medic", "medic", stype_stalker)
-	load_scheme("xrs_armor", "pick_armor", stype_stalker)
-end
-
---[[
 file: xr_logic.script
 function: disable_generic_schemes(npc, stype)
 after: <<<END
@@ -34,9 +19,9 @@ code: <<<END
 END;
 ]]
 function disable_schemes(npc, stype)
-        if xrs_grenade then xrs_grenade.disable_scheme(npc, "grenadier") end
-        if xrs_medic  then  xrs_medic.disable_scheme(npc, "medic") end
-        if xrs_armor  then  xrs_armor.disable_scheme(npc, "pick_armor") end
+	xrs_grenade.disable_scheme(npc, "grenadier")
+	xrs_medic.disable_scheme(npc, "medic")
+	xrs_armor.disable_scheme(npc, "pick_armor")
 end
 
 --[[
