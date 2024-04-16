@@ -2,6 +2,7 @@
 
 local iam_any_clsid_monster = iam_any.clsid_monster
 local game_milliseconds = game.milliseconds
+local string_find = string.find
 local string_format = string.format
 local table_concat = table.concat
 local table_sort = table.sort
@@ -306,47 +307,28 @@ function gulag:job_exists_in_state_0( job )
 	return false
 end
 
-function gulag_cfg_get_condlist(ini, section, field)
-  local str = ini:r_string(section, field)
-  if not str then
-    return nil
-  end
-
-  local par = utils_parse_params(str)
-  if not par[1] then
-    return nil
-  end
-
-	local t = {
-		name		= field,
-		condlist	= xr_logic.parse_condlist(par[1])
-	}
-
-  return t
-end
-
 -- получить имя пути места работы
 function gulag:get_job_path_name( job )
 	local section = job.section
-	local active_section
 
-	if self.ltx:line_exist( section, "active" ) then
-		active_section = self.ltx:r_string( section, "active" )
-	elseif self.ltx:line_exist( section, "selective" ) then
-		local active_section_cond = gulag_cfg_get_condlist(self.ltx, section, "selective")
-		if not active_section_cond then
-			abort("xr_gulag: job '%s': unable to find section(s) for 'selective'",section)
+	if not self.ltx:line_exist( section, "active" ) then
+		abort( "gulag: ltx=%s  no 'active' in section %s", self.ltx_name, section )
+		return nil
+	end
+
+	local active_section = self.ltx:r_string( section, "active" )
+	if string_find(active_section, ",", 1, true) then
+		active_section = xr_logic.parse_condlist(active_section)
+		if not active_section then
+			abort("xr_gulag: job '%s': can't parse condlist for 'active'", section)
 			return nil
 		else
-			active_section = xr_logic.pick_section_from_condlist(npc, active_section_cond.condlist)
+			active_section = xr_logic.pick_section_from_condlist(npc, active_section)
 			if not active_section then
-				abort("xr_gulag: job section '%s': section 'selective' has no conditionless else clause", section)
+				abort("xr_gulag: job section '%s': can't pick active section in section logic", section)
 				return nil
 			end
 		end
-	else
-		abort( "gulag: ltx=%s  no 'active' or 'selective' in section %s", self.ltx_name, section )
-		return nil
 	end
 
 	local path_field
