@@ -12,6 +12,10 @@ local next_update_200 = 0
 local next_update_1000 = 0
 
 function net_spawn()
+	if pause_menu_init then
+		give_info("paused_on_load")
+	end
+
 	bolt_ending.net_spawn()
 	reap_misc.net_spawn()
 end
@@ -231,8 +235,6 @@ function new_game()
 
 	news_main.new_game()
 	trade_manager.new_game()
-
-	reap_misc.wake_up()
 end
 
 function actor_save(packet)

@@ -28,14 +28,6 @@ function hit_effectors(amount)
 	end
 end
 
-function wake_up()
-	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
-	level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
-	level.add_pp_effector("total_recall.ppe", 2008, false)
-	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
-	level.add_cam_effector("camera_effects\\fatigue.anm", 27, false, "")
-end
-
 --[[---------------------------------------------------------------------------
  * dsh
 --]]---------------------------------------------------------------------------
@@ -109,6 +101,34 @@ function get_nearest_gv(pos)
 	end
 
 	return gv
+end
+
+function intro_dream()
+	if has_info("intro_dream_done") then return end
+	give_info("intro_dream_done")
+
+	xr_effects.disable_ui()
+
+	level.add_pp_effector("deadcity_wake_old.ppe", 2001, false)
+	game.start_tutorial("intro_dream")
+end
+
+function intro_dream_stop()
+	level.disable_input()
+	say("ambient\\random\\rnd_respawn")
+
+	timer(function()
+		level.remove_pp_effector(2001)
+		level.add_pp_effector("deadcity_wake_old.ppe", 2001, false)
+
+		timer(level.add_cam_effector, 3000, true, "camera_effects\\fatigue.anm",
+		      3001, false, "reap_misc.intro_dream_end")
+	end, 3500, true)
+end
+
+function intro_dream_end()
+	level.enable_input()
+	xr_effects.enable_ui()
 end
 
 --[[---------------------------------------------------------------------------

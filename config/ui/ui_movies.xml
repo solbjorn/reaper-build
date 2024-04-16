@@ -62,6 +62,23 @@
 
 	<intro_game>
 		<play_each_item>1</play_each_item>
+		<global_wnd x="-10" y="-10" width="1" height="1">
+		</global_wnd>
+
+		<item type="image">
+			<length_sec>0</length_sec>
+			<pause_state>off</pause_state>
+			<main_wnd>
+				<auto_static>
+					<window_name>w1</window_name>
+					<texture>intro\intro_back</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+	</intro_game>
+
+	<intro_dream>
+		<play_each_item>1</play_each_item>
 		<global_wnd x="0" y="0" width="1024" height="768">
 			<auto_static x="0" y="0" width="1024" height="768" stretch="1">
 				<window_name>back</window_name>
@@ -72,11 +89,13 @@
 		<item type="video">
 			<sound>characters_voice\scenario\video\intro_stalker</sound>
 			<pause_state>on</pause_state>
+			<can_be_stopped>on</can_be_stopped>
+			<function_on_stop>reap_misc.intro_dream_stop</function_on_stop>
 			<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
 				<texture x="0" y="1" width="512" height="286">intro\intro_stalker</texture>
 			</video_wnd>
 		</item>
-	</intro_game>
+	</intro_dream>
 
 	<x18_dream>
 		<play_each_item>1</play_each_item>

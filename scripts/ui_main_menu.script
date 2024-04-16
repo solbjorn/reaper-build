@@ -258,6 +258,9 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 				self.load_window = nil
 				console:execute("snd_volume_music "..self.sound_volume_music)
 				console:execute("main_menu off")
+
+				reap_misc.intro_dream()
+				disable_info("paused_on_load")
 				pause_menu_init = false
 			end
 		end
