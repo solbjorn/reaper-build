@@ -1,21 +1,22 @@
 [logic]
-active = walker@one
-
-[walker@one]
-on_info = {+helping_fox} walker@two
-path_walk = doktor1_walk_way
-path_look = doktor1_way_look
-meet = meet
+active = walker
 danger = danger_ignore
-
-[walker@two]
-path_walk = doktor2_walk_way
-path_look = doktor2_way_look
 meet = meet
-danger = danger_ignore
 
-[danger_ignore]
-ignore_distance = 0
+[walker]
+path_walk = doktor1_walk
+path_look = doktor1_look
+on_info = {+kordon_doctor_dialog_start} walker2
+
+[walker2]
+path_walk = doktor1_2_walk
+path_look = doktor1_2_look
+on_info = {+lis_doctor_dialog_start} kamp
+
+[kamp]
+center_point  = doktor1_camp_center
+path_walk = doktor1_camp_center_task
+radius = 2.2
 
 [meet]
 use = true
@@ -23,3 +24,6 @@ use_wpn = true
 meet_talk_enabled = true
 meet_state = 3|ward@doktor_hello|2|ward
 meet_state_wpn = 3|ward@doktor_hello|3|ward
+
+[danger_ignore]
+ignore_distance = 0

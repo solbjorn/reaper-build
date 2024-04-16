@@ -2,153 +2,130 @@
 ;*************** ESCAPE GREEN *******************
 ;**************************************************
 
-[logic@sniper_esc_respawn_1]
-active = walker@sniper_esc_respawn_1
+[logic@esc_fabrika_sniper_man1]
+active = walker@esc_fabrika_sniper_man1
 
-[walker@sniper_esc_respawn_1]
-path_walk = sniper_esc_respawn_1_walk
-path_look = sniper_esc_respawn_1_look
+[walker@esc_fabrika_sniper_man1]
+path_walk = man1_walk
+path_look = man1_look
 
-[logic@sniper_esc_respawn_2]
-active = walker@sniper_esc_respawn_2
+[logic@esc_fabrika_sniper_man2]
+active = walker@esc_fabrika_sniper_man2
 
-[walker@sniper_esc_respawn_2]
-path_walk = sniper_esc_respawn_2_walk
-path_look = sniper_esc_respawn_2_look
+[walker@esc_fabrika_sniper_man2]
+path_walk = man2_walk
+path_look = man2_look
 
-[logic@sniper_esc_respawn_3]
-active = walker@sniper_esc_respawn_3
+[logic@esc_fabrika_sniper_man3]
+active = walker@esc_fabrika_sniper_man3
 
-[walker@sniper_esc_respawn_3]
-path_walk = sniper_esc_respawn_3_walk
-path_look = sniper_esc_respawn_3_look
+[walker@esc_fabrika_sniper_man3]
+path_walk = man3_walk
+path_look = man3_look
 
-[logic@sniper_esc_respawn_4]
-active = walker@sniper_esc_respawn_4
+[logic@esc_fabrika_sniper_man4]
+active = walker@esc_fabrika_sniper_man4
 
-[walker@sniper_esc_respawn_4]
-path_walk = sniper_esc_respawn_4_walk
-path_look = sniper_esc_respawn_4_look
+[walker@esc_fabrika_sniper_man4]
+path_walk = man4_walk
+path_look = man4_look
 
-[logic@sniper_esc_respawn_5]
-active = kamp@sniper_esc_respawn_5
+[logic@esc_fabrika_sniper_man5]
+active = walker@esc_fabrika_sniper_man5
+danger = danger_ignore@esc_fabrika_sniper_man5
 
-[kamp@sniper_esc_respawn_5]
-center_point = centr_sniper_esc_respawn_4
+[walker@esc_fabrika_sniper_man5]
+path_walk = man5_walk
+path_look = man5_look
 
-[logic@sniper_esc_respawn_6]
-active = kamp@sniper_esc_respawn_6
-
-[kamp@sniper_esc_respawn_6]
-center_point = centr_sniper_esc_respawn_4
-
-[logic@sniper_esc_respawn_7]
-active = kamp@sniper_esc_respawn_7
-
-[kamp@sniper_esc_respawn_7]
-center_point = centr_sniper_esc_respawn_4
+[danger_ignore@esc_fabrika_sniper_man5]
+ignore_distance = 10
 
 ;**************************************************
 ;*************** BAR GREEN *******************
 ;**************************************************
 
-[logic@dal_green1]
-active = walker@dal_green1
+[logic@dal_green_chel1]
+active = walker@dal_green_chel1
 
-[walker@dal_green1]
-path_walk = dal_green1_walk
-path_look = dal_green1_look
+[walker@dal_green_chel1]
+path_walk = chel1_walk
+path_look = chel1_look
 
-[logic@dal_green2]
-active = walker@dal_green2
+[logic@dal_green_chel2]
+active = walker@dal_green_chel2
 
-[walker@dal_green2]
-path_walk = dal_green2_walk
-path_look = dal_green2_look
+[walker@dal_green_chel2]
+path_walk = chel2_walk
+path_look = chel2_look
 
-[logic@esc_dan]
-active = walker@esc_dan
-trade = misc\new_trader\trade_zahar.ltx
+[logic@dal_green_chel3]
+active = walker@dal_green_chel3
+danger = danger_ignore@dal_green_chel3
 
-[walker@esc_dan]
-path_walk = dal_green3_walk
-path_look = dal_green3_look
+[walker@dal_green_chel3]
+path_walk = chel3_walk
+path_look = chel3_look
+meet = meet@dal_green_chel3
 
-[logic@dal_green4]
-active = walker@dal_green4
+[danger_ignore@dal_green_chel3]
+ignore_distance = 10
 
-[walker@dal_green4]
-path_walk = dal_green4_walk
-path_look = dal_green4_look
+[meet@dal_green_chel3]
+meet_state = 3| {+npc_greet} wait, wait@ {+npc_greet} talk_bye %-npc_greet% |2| {-npc_greet} wait, wait@ {-npc_greet} talk_hello %+npc_greet%
+meet_state_wpn = 3| {+npc_greet} wait, wait@ {+npc_greet} talk_bye %-npc_greet% |2| {-npc_greet} wait, wait@ {-npc_greet} talk_hello %+npc_greet%
+victim = 3|actor
+victim_wpn = 3|actor
+use = true
+use_wpn = true
+meet_talk_enabled = true
+precond = visibility
 
-[logic@dal_green5]
-active = kamp@dal_green5
+[logic@dal_green_chel4]
+active = walker@dal_green_chel4
 
-[kamp@dal_green5]
-center_point = centr_dal_green
-
-[logic@dal_green6]
-active = kamp@dal_green6
-
-[kamp@dal_green6]
-center_point = centr_dal_green
-
-[logic@dal_green7]
-active = kamp@dal_green7
-
-[kamp@dal_green7]
-center_point = centr_dal_green
+[walker@dal_green_chel4]
+path_walk = chel4_walk
+path_look = chel4_look
 
 ;**************************************************
 ;*************** ROSTOK GREEN *******************
 ;**************************************************
 
-[logic@rost_green1]
-active = walker@rost_green1
+[logic@rost_green_man1]
+active = walker@rost_green_man1
 
-[walker@rost_green1]
-path_walk = rost_green1_walk
-path_look = rost_green1_look
+[walker@rost_green_man1]
+path_walk = man1_walk
+path_look = man1_look
 
-[logic@rost_green2]
-active = walker@rost_green2
+[logic@rost_green_man2]
+active = walker@rost_green_man2
 
-[walker@rost_green2]
-path_walk = rost_green2_walk
-path_look = rost_green2_look
+[walker@rost_green_man2]
+path_walk = man2_walk
+path_look = man2_look
 
-[logic@rost_green3]
-active = walker@rost_green3
+[logic@rost_green_man3]
+active = walker@rost_green_man3
 
-[walker@rost_green3]
-path_walk = rost_green3_walk
-path_look = rost_green3_look
+[walker@rost_green_man3]
+path_walk =_man3_walk
+path_look = man3_look
 
-[logic@rost_green4]
-active = walker@rost_green4
+[logic@rost_green_man4]
+active = walker@rost_green_man4
 
-[walker@rost_green4]
-path_walk = rost_green4_walk
-path_look = rost_green4_look
+[walker@rost_green_man4]
+path_walk = man4_walk
+path_look = man4_look
 
-[logic@rost_green5]
-active = walker@rost_green5
+[logic@rost_green_man5]
+active = walker@rost_green_man5
 
-[walker@rost_green5]
-path_walk = rost_green5_walk
-path_look = rost_green5_look
-
-[logic@rost_green6]
-active = kamp@rost_green6
-
-[kamp@rost_green6]
-center_point = centr_rost_green
-
-[logic@rost_green7]
-active = kamp@rost_green7
-
-[kamp@rost_green7]
-center_point = centr_rost_green
+[walker@rost_green_man5]
+path_walk = man5_walk
+path_look = man5_look
 
 ;**************************************************
 ;*************** GARBAGE KILLER *******************

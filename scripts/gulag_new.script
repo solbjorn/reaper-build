@@ -7,28 +7,26 @@ local gulags = {
 	["esc_fabrika_sniper"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_1",
+				section = "logic@esc_fabrika_sniper_man1",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_2",
+				section = "logic@esc_fabrika_sniper_man2",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_3"
+				section = "logic@esc_fabrika_sniper_man3"
 			}
 			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_4",
+				section = "logic@esc_fabrika_sniper_man4",
 				prior = 15
 			}
 			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_5"
-			}
-			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_6"
-			}
-			sj[#sj + 1] = {
-				section = "logic@sniper_esc_respawn_7"
+				section = "logic@esc_fabrika_sniper_man5",
+				prior = 15,
+				predicate = function(obj_info)
+					return obj_info.profile_name == "esc_dan"
+				end
 			}
 		end,
 		check = check_green
@@ -37,29 +35,23 @@ local gulags = {
 	["dal_green"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
-				section = "logic@dal_green1",
+				section = "logic@dal_green_chel1",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@dal_green2",
+				section = "logic@dal_green_chel2",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@esc_dan",
+				section = "logic@dal_green_chel3",
+				prior = 10,
+				predicate = function(obj_info)
+					return obj_info.profile_name == "stalker_green_zahar"
+				end
+			}
+			sj[#sj + 1] = {
+				section = "logic@dal_green_chel4",
 				prior = 10
-			}
-			sj[#sj + 1] = {
-				section = "logic@dal_green4",
-				prior = 10
-			}
-			sj[#sj + 1] = {
-				section = "logic@dal_green5"
-			}
-			sj[#sj + 1] = {
-				section = "logic@dal_green6"
-			}
-			sj[#sj + 1] = {
-				section = "logic@dal_green7"
 			}
 		end,
 		check = check_green
@@ -68,30 +60,24 @@ local gulags = {
 	["rost_green"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
-				section = "logic@rost_green1",
+				section = "logic@rost_green_man1",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@rost_green2",
+				section = "logic@rost_green_man2",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@rost_green3",
+				section = "logic@rost_green_man3",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@rost_green4",
+				section = "logic@rost_green_man4",
 				prior = 10
 			}
 			sj[#sj + 1] = {
-				section = "logic@rost_green5",
+				section = "logic@rost_green_man5",
 				idle = 10
-			}
-			sj[#sj + 1] = {
-				section = "logic@rost_green6"
-			}
-			sj[#sj + 1] = {
-				section = "logic@rost_green7"
 			}
 		end,
 		check = check_green
