@@ -7,23 +7,23 @@ local DEF_RESUPPLY_RND = 20
 
 local trade_manager_tbl = {}
 
-local generic_ltx = "misc\\trade_generic.ltx"
+local generic_ltx = "trade\\trade_generic.ltx"
 local generic_tt
 
 local traders = {
-	['amk_vitek_voron']        = { val = "voron_enough",    cnt = 5 }, -- Витёк Ворон
-	['mil_freedom_member0018'] = { val = "maks_enough",     cnt = 4 }, -- Макс
-	['escape_trader']          = { val = "sidor_enough",    cnt = 3 }, -- Сидорович
-	['bar_barman']             = { val = "barman_enough",   cnt = 5 }, -- Бармен
-	['bar_dolg_petrenko']      = { val = "petrenko_enough", cnt = 4 }, -- Петренко
-	['mil_freedom_member0021'] = { val = "skraga_enough",   cnt = 3 }, -- Скряга
-	['yantar_ecolog_general']  = { val = "sakharov_enough", cnt = 5 }, -- Сахаров
-	['Sak']                    = { val = "sak_enough",      cnt = 5 }, -- Сяк
-	['doktor']                 = { val = "doktor_enough",   cnt = 4 }, -- Доктор в Припяти
-	['sak_military_stalker']   = { val = "sherstyk_enough", cnt = 3 }, -- Шерстюк
-	['val_bandit_trader']      = { val = "jlob_enough",     cnt = 3 }, -- Жила
-	['esc_bridge_soldier5']    = { val = "kuznezov_enough", cnt = 4 }, -- Кузнецов
-	['esc_dan']                = { val = "dan_enough",      cnt = 5 }  -- Дэн
+	['amk_vitek_voron']        = { val = "voron_enough",    cnt = 5 }, -- Р’РёС‚С‘Рє Р’РѕСЂРѕРЅ
+	['mil_freedom_member0018'] = { val = "maks_enough",     cnt = 4 }, -- РњР°РєСЃ
+	['escape_trader']          = { val = "sidor_enough",    cnt = 3 }, -- РЎРёРґРѕСЂРѕРІРёС‡
+	['bar_barman']             = { val = "barman_enough",   cnt = 5 }, -- Р‘Р°СЂРјРµРЅ
+	['bar_dolg_petrenko']      = { val = "petrenko_enough", cnt = 4 }, -- РџРµС‚СЂРµРЅРєРѕ
+	['mil_freedom_member0021'] = { val = "skraga_enough",   cnt = 3 }, -- РЎРєСЂСЏРіР°
+	['yantar_ecolog_general']  = { val = "sakharov_enough", cnt = 5 }, -- РЎР°С…Р°СЂРѕРІ
+	['Sak']                    = { val = "sak_enough",      cnt = 5 }, -- РЎСЏРє
+	['doktor']                 = { val = "doktor_enough",   cnt = 4 }, -- Р”РѕРєС‚РѕСЂ РІ РџСЂРёРїСЏС‚Рё
+	['sak_military_stalker']   = { val = "sherstyk_enough", cnt = 3 }, -- РЁРµСЂСЃС‚СЋРє
+	['val_bandit_trader']      = { val = "jlob_enough",     cnt = 3 }, -- Р–РёР»Р°
+	['esc_bridge_soldier5']    = { val = "kuznezov_enough", cnt = 4 }, -- РљСѓР·РЅРµС†РѕРІ
+	['esc_dan']                = { val = "dan_enough",      cnt = 5 }  -- Р”СЌРЅ
 }
 
 local checklist = { "amk_mini_bar_kulinar", "ecolog_linspiro", "trader_banderos" }
@@ -73,14 +73,14 @@ function trade_init(npc, cfg)
 	trade_manager_tbl[npc:id()] = {
 		config		= ini,
 
-		-- коэфициенты покупки
+		-- РєРѕСЌС„РёС†РёРµРЅС‚С‹ РїРѕРєСѓРїРєРё
 		buy_condition	= xr_logic.parse_condlist(ini:r_string(section, "buy_condition")),
-		-- коэфициенты продажи
+		-- РєРѕСЌС„РёС†РёРµРЅС‚С‹ РїСЂРѕРґР°Р¶Рё
 		sell_condition	= xr_logic.parse_condlist(ini:r_string(section, "sell_condition")),
-		-- список закупки
+		-- СЃРїРёСЃРѕРє Р·Р°РєСѓРїРєРё
 		buy_supplies	= ini:r_string(section, "buy_supplies"),
 
-		-- состояние покупаемого
+		-- СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕРєСѓРїР°РµРјРѕРіРѕ
 		weap_condition	= ini:r_float_ex(section, "item_condition_weapon"),
 		outf_condition	= ini:r_float_ex(section, "item_condition_outfit"),
 		part_condition	= ini:r_float_ex(section, "item_condition_monster_part"),

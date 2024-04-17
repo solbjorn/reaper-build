@@ -1,5 +1,5 @@
 --*************************************************************
---                               ÒÎĞÃÎÂËß ÒÀÉÍÈÊÀÌÈ
+--                               Ğ¢ĞĞ Ğ“ĞĞ’Ğ›Ğ¯ Ğ¢ĞĞ™ĞĞ˜ĞšĞĞœĞ˜
 --*************************************************************
 function npc_relacion(npc,actor)
 	local actor_, npc_
@@ -101,7 +101,7 @@ function give_money_2()
 end
 
 --*************************************************************
---              ÏÅÒĞÅÍÊÎ ÓÑÒĞÀÈÂÀÅÒ ÂÀÌ ÈÑÏÛÒÀÍÈß
+--              ĞŸĞ•Ğ¢Ğ Ğ•ĞĞšĞ Ğ£Ğ¡Ğ¢Ğ ĞĞ˜Ğ’ĞĞ•Ğ¢ Ğ’ĞĞœ Ğ˜Ğ¡ĞŸĞ«Ğ¢ĞĞĞ˜Ğ¯
 --*************************************************************
 function rank_get(npc, actor)
 	local actor_, npc_
@@ -148,7 +148,7 @@ function out_item(first_speaker, second_speaker)
 	lost("mutant_burer_hand", 3)
 	lost("mutant_psevdodog_tail", 3)
 end
---Âîğîíèí
+--Ğ’Ğ¾Ñ€Ğ¾Ğ½Ğ¸Ğ½
 function enter_to_dolg(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -163,21 +163,21 @@ function enter_to_dolg(first_speaker, second_speaker)
 	got("ammo_9x39_ap", 10)
 end
 function spawn_bar()
-	--Ñíàéïåğ äîëãîâåö íà âûøêå
+	--Ğ¡Ğ½Ğ°Ğ¹Ğ¿ĞµÑ€ Ğ´Ğ¾Ğ»Ğ³Ğ¾Ğ²ĞµÑ† Ğ½Ğ° Ğ²Ñ‹ÑˆĞºĞµ
 	local obj = AI:create("bar_dolg_respawn_3",vector():set(184.15, 8.37, 96.34),45473,1186)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\npath_walk = bar_linspiro_sniper_camper1_path\npath_look = bar_linspiro_sniper_camper1_look1"
 	params.sid=48519
 	amk.write_stalker_params(params,obj)
-	--Ó÷åííûé ó ïåòğåíêà â õàëóïå
+	--Ğ£Ñ‡ĞµĞ½Ğ½Ñ‹Ğ¹ Ñƒ Ğ¿ĞµÑ‚Ñ€ĞµĞ½ĞºĞ° Ğ² Ñ…Ğ°Ğ»ÑƒĞ¿Ğµ
 	local obj = AI:create("ecolog_linspiro",vector():set(208.84, 0.43, 64.94),50694,1203)
 	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=walker\ntrade=misc\\trade_professor.ltx\n[walker]\npath_walk = bar_linspiro_nayk_walk1\npath_look = bar_linspiro_nayk_look1\ncombat_ignore_cond=always"
+	params.custom="[logic]\nactive=walker\ntrade=trade\\trade_professor.ltx\n[walker]\npath_walk = bar_linspiro_nayk_walk1\npath_look = bar_linspiro_nayk_look1\ncombat_ignore_cond=always"
 	params.sid = story_ids.bar_linspiro_ecolog
 	amk.write_stalker_params(params,obj)
 end
 --*************************************************************
---                             ÎÒÍÎØÅÍÈÅ Ê ÑÂÎÁÎÄÅ
+--                             ĞĞ¢ĞĞĞ¨Ğ•ĞĞ˜Ğ• Ğš Ğ¡Ğ’ĞĞ‘ĞĞ”Ğ•
 --*************************************************************
 local mods = {
 	af_spirit_2	= true,
@@ -225,9 +225,9 @@ function out_mod(first_speaker, second_speaker)
 	relation_registry.set_community_goodwill ("freedom", actor, 1250)
 end
 --*************************************************************
---              ×ËÅÍ ÃĞÓÏÏÈĞÎÂÊÈ ÄÎËÃ ÏĞÈ ÈÑÏÎËÍÅÍÈÈ
+--              Ğ§Ğ›Ğ•Ğ Ğ“Ğ Ğ£ĞŸĞŸĞ˜Ğ ĞĞ’ĞšĞ˜ Ğ”ĞĞ›Ğ“ ĞŸĞ Ğ˜ Ğ˜Ğ¡ĞŸĞĞ›ĞĞ•ĞĞ˜Ğ˜
 --*************************************************************
--- Ïåòğåíêî
+-- ĞŸĞµÑ‚Ñ€ĞµĞ½ĞºĞ¾
 local nagrad = {
   level_1 = {
   "af_spirit_4",
@@ -258,7 +258,7 @@ local nagrad = {
   "ammo_7.62x54_7h14"
  }
 }
---ÊĞÎÂÎÑÎÑ
+--ĞšĞ ĞĞ’ĞĞ¡ĞĞ¡
 function krovosos(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -285,7 +285,7 @@ function out_krovosos(first_speaker, second_speaker)
 	lost("mutant_krovosos_jaw", 3)
     dialogs.relocate_item_section(second_speaker, item , "in")
 end
---ÁŞĞÅĞ
+--Ğ‘Ğ®Ğ Ğ•Ğ 
 function burer(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -312,7 +312,7 @@ function out_burer(first_speaker, second_speaker)
 	lost("mutant_burer_hand", 3)
     dialogs.relocate_item_section(actor, item , "in")
 end
---ÏÑÅÂÄÎÑÎÁÀÊÈ
+--ĞŸĞ¡Ğ•Ğ’Ğ”ĞĞ¡ĞĞ‘ĞĞšĞ˜
 function psevdodog(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -339,7 +339,7 @@ function out_psevdodog(first_speaker, second_speaker)
 	lost("mutant_psevdodog_tail", 3)
     dialogs.relocate_item_section(actor, item , "in")
 end
---ÇÎÌÁÈ
+--Ğ—ĞĞœĞ‘Ğ˜
 function zombie(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -366,7 +366,7 @@ function out_zombie(first_speaker, second_speaker)
 	lost("mutant_zombie_hand", 3)
     dialogs.relocate_item_section(actor, item , "in")
 end
---ÑÍÎĞÊÈ
+--Ğ¡ĞĞĞ ĞšĞ˜
 function snork(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -393,7 +393,7 @@ function out_snork(first_speaker, second_speaker)
 	lost("mutant_snork_leg", 3)
     dialogs.relocate_item_section(actor, item , "in")
 end
---ÑÎÁÀÊÈ
+--Ğ¡ĞĞ‘ĞĞšĞ˜
 function dog(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -421,7 +421,7 @@ function out_dog(first_speaker, second_speaker)
 	lost("mutant_dog_tail", 3)
 	got(item, count)
 end
---ÏËÎÒÈ
+--ĞŸĞ›ĞĞ¢Ğ˜
 function flesh(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
@@ -449,7 +449,7 @@ function out_flesh(first_speaker, second_speaker)
 	lost("mutant_flesh_eye", 3)
 	got(item, count)
 end
---ÊÀÁÀÍÛ
+--ĞšĞĞ‘ĞĞĞ«
 function boar(first_speaker, second_speaker)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then

@@ -1,20 +1,20 @@
 function spawn_banderos()
-	--свободный торговец
+	--СЃРІРѕР±РѕРґРЅС‹Р№ С‚РѕСЂРіРѕРІРµС†
 	local obj = AI:create("trader_banderos",vector():set(109.98,4.22,-11.57),306355,987)
 	local params=amk.read_stalker_params(obj)
-	params.custom="[logic]\nactive=walker\ntrade=misc\\trade_banderos.ltx\n[walker]\npath_walk = trader_banderos_walk1\npath_look = trader_banderos_look1\ncombat_ignore_cond=always\n[smart_terrains]\nnone = true"
+	params.custom="[logic]\nactive=walker\ntrade=trade\\trade_banderos.ltx\n[walker]\npath_walk = trader_banderos_walk1\npath_look = trader_banderos_look1\ncombat_ignore_cond=always\n[smart_terrains]\nnone = true"
 	params.sid = story_ids.val_horyn
-	amk.add_spot_on_map(obj.id,'blue_location','Горын - торговец')
+	amk.add_spot_on_map(obj.id,'blue_location','Р“РѕСЂС‹РЅ - С‚РѕСЂРіРѕРІРµС†')
 	amk.write_stalker_params(params,obj)
 
-	--первый телохранитель
+	--РїРµСЂРІС‹Р№ С‚РµР»РѕС…СЂР°РЅРёС‚РµР»СЊ
 	local obj = AI:create("banderos_bodyguard_one",vector():set(101.13,4.22,-2.72),296439,986)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_bodyguard_walk1\npath_look = val_banderos_bodyguard_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
 	params.sid=481525
 	amk.write_stalker_params(params,obj)
 
-	--второй телохранитель
+	--РІС‚РѕСЂРѕР№ С‚РµР»РѕС…СЂР°РЅРёС‚РµР»СЊ
 	local obj = AI:create("banderos_bodyguard_two",vector():set(106.81,0.70,-12.57),303256,982)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_bodyguard2_walk1\npath_look = val_banderos_bodyguard2_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
@@ -22,7 +22,7 @@ function spawn_banderos()
 	amk.write_stalker_params(params,obj)
 end
 
----квестовые--предметы--
+---РєРІРµСЃС‚РѕРІС‹Рµ--РїСЂРµРґРјРµС‚С‹--
 function spawn_banderos_art()
 	AI:create("banderos_art", vector():set(-3.19,-3.05,-31.46), 160313, 1022)
 	AI:create("banderos_art", vector():set(48.07,-2.49,-26.02), 235691, 1093)
@@ -30,7 +30,7 @@ function spawn_banderos_art()
 end
 
 function spawn_advokat()
-	--Адвокат
+	--РђРґРІРѕРєР°С‚
 	local obj = AI:create("banderos_advokat",vector():set(42.52,4.54,-84.59),228078,1100)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = val_banderos_advokat_walk1\npath_look = val_banderos_advokat_look1\ncombat_ignore_cond={=check_fighting(710)} false\n[smart_terrains]\nnone = true"
@@ -39,13 +39,13 @@ function spawn_advokat()
 end
 
 function spawn_tiran()
-	--Тиран
+	--РўРёСЂР°РЅ
 	local obj = AI:create("banderos_killer_tiran",vector():set(-239.93,4.56,60.80),13909,1389)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=walker\n[walker]\npath_walk = killer_tiran_walk1\npath_look = killer_tiran_look1\ncombat_ignore_cond={=check_fighting(710)} false"
 	params.sid=481533
 	amk.write_stalker_params(params,obj)
-	--снайпер наёмников
+	--СЃРЅР°Р№РїРµСЂ РЅР°С‘РјРЅРёРєРѕРІ
 	local obj = AI:create("banderos_sniper_tiran",vector():set(-239.48,4.56,61.22),14248,1389)
 	local params=amk.read_stalker_params(obj)
 	params.custom="[logic]\nactive=camper\n[camper]\nsniper = true\ndef_state_campering = threat_na\nradius = 5\npath_walk = banderos_sniper_tiran_walk1\npath_look = banderos_sniper_tiran_look1"
@@ -69,7 +69,7 @@ function trup_otprav_sms()
 		not has_alife_info("find_corpse_military_x16_done")
 	then
 		Actor:give_info_portion("find_corpse_military_x16_done")
-		amk.send_tip("Получены данные на КПК",nil,nil,20,"military")
+		amk.send_tip("РџРѕР»СѓС‡РµРЅС‹ РґР°РЅРЅС‹Рµ РЅР° РљРџРљ",nil,nil,20,"military")
 		AI:create("banderos_documents", vector():set(7.07,-7.85,-13.68), 7641, 2693)
 	end
-    end
+end
