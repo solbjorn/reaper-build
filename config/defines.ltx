@@ -54,6 +54,18 @@ cform           		= skeleton
 ; Ненужные значения, которые читаются, но в подавляющем большинстве не используются
 inv_name_short			= UNUSED	; Это используется только на худе, и нужно прописывать только для патронов, ножей и гранат
 
+[eatable] ; Eatable_item, все возможные параметры здесь, нулевые значения везде убраны
+eat_health		= 0
+eat_satiety		= 0
+eat_power		= 0
+eat_radiation		= 0
+eat_alcohol		= 0
+wounds_heal_perc	= 0
+eat_portions_num	= 1
+
+[attachable] ; Attachable item
+auto_attach			= false
+
 ; Аномалии
 [anomaly]
 GroupControlSection	= spawn_group_zone
@@ -63,6 +75,7 @@ attenuation     	= 1
 period				= 1
 idle_particles_dont_stop = false
 
+; спавн артефаков из аномалии отключен, поэтому это все здесь
 artefacts			=			; Список артов, которые спавнить: секция, удельная вероятность: af_dummy_spring, 0.41, af_dummy_dummy, 0.36 ...
 BirthProbability 	= 0.0
 min_artefact_count	= 0
@@ -70,6 +83,39 @@ max_artefact_count	= 0
 artefact_spawn_idle	= 24  		; Насколько часто спавнить артефакты в офлайне, в часах
 artefact_spawn_rnd	= 50  		; Вероятность заспавнить артефакт в процентах.
 spawn_blowout_artefacts = off	; Рождение артефактов во время срабатывания в online
+
+; Артефакты
+[ARTEFACT]:base, immunities
+class				= SCRPTART
+animation_slot		= 11
+allow_inertion		= true
+attach_angle_offset	= 0,0,0
+attach_position_offset = -0.1,-0.1,0
+attach_bone_name	= bip01_root
+inv_grid_width		= 1
+inv_grid_height		= 1
+belt				= true
+af_actor_properties	= on
+actor_properties	= on
+health_restore_speed	= 0.0	; скорость восстановления здоровья (+100% при + на 0.0001)
+radiation_restore_speed = 0.0	; скорость накопления радиации (+1 при + на 0.0001)
+satiety_restore_speed	= 0.0	; скорость появления голода (+200% при + на 0.00001)
+power_restore_speed		= 0.0	; скорость восстановления выносливости (+9 при + на 0.0005)
+bleeding_restore_speed	= 0.0	; скорость кровотечения (+33.5% при + на 0.001)
+inventory_radiation		= 0.0	; количество накапливаемой/выводимой радиации (+1 при + на 0.0001)
+hit_absorbation_sect	= default_immunities
+
+hud						= artefact_hud
+
+[artefact_hud]
+orientation         = 0, 0, 0
+position            = 0, 0, 0
+visual              = weapons\artefact\wpn_artefact_hud.ogf
+anim_idle			= idle
+anim_idle_sprint	= idle_sprint
+anim_hide			= holster
+anim_show			= draw
+anim_activate		= activate
 
 ; Остальное
 [O_INVBOX]:base
@@ -81,6 +127,9 @@ radius 				= 1
 
 [II_DOC]:base, immunities
 class				= II_DOC
+
+[II_FOOD]:base, immunities, eatable, attachable
+class				= II_FOOD
 
 ; Патроны
 [AMMO]:base, immunities

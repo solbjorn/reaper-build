@@ -15,20 +15,28 @@ function init_diaries()
 end
 
 function monster_killed(obj)
-	check_info(obj)
+	local tube = string.find(obj:section(), "tubeman")
 
-	for i = 1, math.random(0, 2) do
+	check_info(obj, tube)
+
+	local n = 2
+	if tube and math.random(100) <= 50 then
+		amk.spawn_item_in_inv("bezoar", obj)
+		n = 1
+	end
+
+	for i = 1, math.random(0, n) do
 		amk.spawn_item_in_inv(table.random(items), obj)
 	end
 end
 
-function check_info(obj)
+function check_info(obj, tube)
 	if not diaries then
 		init_diaries()
 	end
 
 	local n
-	if curr_level == "l03u_agr_underground" and diaries[17] then
+	if tube and diaries[17] then
 		diaries[17] = nil
 		n = 17
 	elseif math.random(100) < 20 then

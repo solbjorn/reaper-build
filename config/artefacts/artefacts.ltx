@@ -57,29 +57,7 @@ flying						=	2.0,		anomaly\electra_idle1,	1.0, 1.0, 1.0,  	5.0,			"anomaly2\art
 idle_before_spawning		=	0.0,		"",	                	1.0, 1.0, 2.5,  	0,		    	"",	"idle"
 spawning					=	2,		    "anomaly\pux_blast",	1.0, 1.0, 1.5,  	5.0,			"anomaly2\artefact_electra_blast_finished",		"idle"
 
-[af_base]:identity_immunities
-hud							= artefact_hud
-animation_slot				= 11
-allow_inertion				= true
-;slot						= 10
-attach_angle_offset			= 0,0,0
-attach_position_offset		= -0.1,-0.1,0
-attach_bone_name			= bip01_root
-inv_grid_width				= 1
-inv_grid_height				= 1
-belt						= true
-af_actor_properties			= on
-actor_properties			= on
-
-[artefact_hud]
-orientation             	= 0, 0, 0
-position                	= 0, 0, 0
-visual                  	= weapons\artefact\wpn_artefact_hud.ogf
-anim_idle					= idle
-anim_idle_sprint			= idle_sprint
-anim_hide					= holster
-anim_show					= draw
-anim_activate				= activate
+[af_base]:ARTEFACT
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;       MMMMM1      0MMMM&    MMMMM@   MMMMMM0"  MMMM0
@@ -1698,6 +1676,34 @@ telepatic_immunity = 1.0
 chemical_burn_immunity = 1.0
 explosion_immunity = 1.0
 fire_wound_immunity  = 1.0
+
+; "Гусеница"
+[af_caterpillar]:ARTEFACT
+visual				= artefacts\caterpillar.ogf
+description			= enc_zone_artifact_af-caterpillar
+inv_name			= af-caterpillar
+inv_weight			= 0.5
+inv_grid_x			= 8
+inv_grid_y			= 35
+cost				= 15000
+jump_height			= .4
+particles			= anomaly2\artefact\artefact_ameba
+lights_enabled 			= false
+
+radiation_restore_speed		= -0.0015
+bleeding_restore_speed		= 0.005
+hit_absorbation_sect		= af_caterpillar_absorbation
+
+[af_caterpillar_absorbation]
+burn_immunity			= 0.8
+strike_immunity			= 1.0
+shock_immunity			= 1.0
+wound_immunity			= 0.7
+radiation_immunity		= 1.0
+telepatic_immunity		= 1.0
+chemical_burn_immunity		= 1.0
+explosion_immunity		= 1.0
+fire_wound_immunity 		= 0.98
 
 #include "amk_mod_arts.ltx"
 #include "artefacts_amkzp.ltx"
