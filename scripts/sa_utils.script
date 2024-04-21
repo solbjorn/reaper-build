@@ -435,7 +435,7 @@ function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 		local sinfo = news_manager.sender_info_byname(sender, header)
 		header = sinfo[3] or header or translate("st_tip")
 		if not showtime then showtime = 5 end
-		if sound then sound_object("device\\pda\\"..sound):play(Actor, 0, sound_object.s2d) end
+		sound_object("device\\pda\\" .. (sound or "pda_tip")):play(Actor, 0, sound_object.s2d)
 		Actor:give_game_news("%c[255,160,160,160]"..header.."\\n%c[default]"..news_text, "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47), 0, showtime * 1000)
 	end
 end
