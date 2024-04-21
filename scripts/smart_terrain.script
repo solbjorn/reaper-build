@@ -343,6 +343,8 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 		end
 
 		local community, is_stalker = self:get_obj_community( obj )
+		if not community then return false end
+
     if self.accepted_communities and not self.accepted_communities[community] then
       return false
     end

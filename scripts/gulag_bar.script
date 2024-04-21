@@ -6,6 +6,8 @@ function check_killer(npc_community)
 	return npc_community == "killer"
 end
 
+local neutral = table.tohash({ "dolg", "ecolog", "green", "stalker", "stranger" })
+
 local gulags = {
 	-- Посетители Долга
 	["bar_visitors"] = {
@@ -166,7 +168,7 @@ local gulags = {
 			return 0
 		end,
 		check = function(npc_community, se_obj)
-			return se_obj ~= nil
+			return se_obj and neutral[npc_community]
 		end
 	},
 	-- Гулаг ламеров Долга внутри базы Долга

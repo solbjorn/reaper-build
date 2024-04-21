@@ -17,6 +17,19 @@ function check_freedom(npc_community)
 	return npc_community == "freedom"
 end
 
+function predicate_mil_sniper(info, sid)
+	if not info.is_sniper then return false end
+
+	if sid then
+		local se_npc = story_object(sid)
+		if se_npc and se_npc:alive() then
+			return info.story_id == sid
+		end
+	end
+
+	return string.find(info.profile_name, "Svoboda_sniper") ~= nil
+end
+
 local gulags = {
 	["mil_freedom"] = {
 		-------------------------------------------------------------------------------------------
@@ -55,10 +68,10 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper" and info.story_id == 704
-					    end
-				}
+				predicate = function(info)
+					return predicate_mil_sniper(info, story_ids.Mil_Sniper)
+				end
+			}
 
 		    -- Снайпер №2
 		    sj[#sj + 1] = {
@@ -67,10 +80,10 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper" and info.story_id == 731
-					    end
-				}
+				predicate = function(info)
+					return predicate_mil_sniper(info, story_ids.Mil_Sniper2)
+				end
+			}
 
 		    -- Снайпер №3
 		    sj[#sj + 1] = {
@@ -79,10 +92,10 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper" and info.story_id == 730
-					    end
-				}
+				predicate = function(info)
+					return predicate_mil_sniper(info, story_ids.Mil_Sniper1)
+				end
+			}
 
 		    -- Снайпер №4
 		    sj[#sj + 1] = {
@@ -91,10 +104,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 
 		    -- Снайпер №5
 		    sj[#sj + 1] = {
@@ -103,10 +114,10 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper" and info.story_id == 732
-					    end
-				}
+				predicate = function(info)
+					return predicate_mil_sniper(info, story_ids.Mil_Sniper3)
+				end
+			}
 
 		    -- Скряга
 		    sj[#sj + 1] = {
@@ -510,10 +521,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 
 		    -- Снайпер №2
 		    sj[#sj + 1] = {
@@ -522,10 +531,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 
 		    -- Снайпер №3
 		    sj[#sj + 1] = {
@@ -534,10 +541,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 
 		    -- Снайпер №4
 		    sj[#sj + 1] = {
@@ -546,10 +551,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 
 		    -- Снайпер №5
 		    sj[#sj + 1] = {
@@ -558,10 +561,8 @@ local gulags = {
 				squad = squad, group = groups[0],
 				in_rest = "mil_freedom_wall_restrictor",
 				position_threshold = 600,
-				predicate = function (info)
-						     return info.profile_name == "mil_Svoboda_sniper"
-					    end
-				}
+				predicate = predicate_mil_sniper
+			}
 		end,
 		-------------------------------------------------------------------------------------------
 		-- Проверка состояния гулага Свободы
