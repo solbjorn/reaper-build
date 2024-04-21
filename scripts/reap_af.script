@@ -1,0 +1,706 @@
+--[[---------------------------------------------------------------------------
+ * Artefact transformation
+--]]---------------------------------------------------------------------------
+
+local trans_anom = {
+	zone_buzz_s = {
+		-- AMK
+		{
+			info	= "info_amk_recipt_almaz_kolobok",
+			comp	= { "af_kol_2" },
+			target	= "af_kol_3",
+			rate	= 78,
+			unrate	= 17,
+			rank	= 4,
+			ctime	= 8 * 60
+		},
+		{
+			info	= "info_amk_recipt_dummy",
+			comp	= { "af_pudd_3" },
+			target	= "af_pudd_4",
+			rate	= 80,
+			unrate	= 10,
+			rank	= 5,
+			ctime	= 12 * 60
+		},
+		{
+			info	= "info_amk_recipt_pancir",
+			comp	= { "af_armor_2" },
+			target	= "af_armor_3",
+			rate	= 65,
+			unrate	= 25,
+			rank	= 4,
+			ctime	= 2 * 60
+		},
+		{
+			info	= "info_amk_recipt_pra_grandmother_glassbeards",
+			comp	= { "af_babka_1" },
+			target	= "af_babka_2",
+			rate	= 72,
+			unrate	= 12,
+			ctime	= 3 * 60
+		},
+		{
+			info	= "info_amk_recipt_simbion",
+			comp	= { "af_blood", "af_drops", "af_medusa", "af_rusty_thorn" },
+			target	= "af_simbion",
+			rate	= 75,
+			unrate	= 25,
+			rank	= 2,
+			ctime	= 5 * 60
+		},
+		{
+			info	= "info_amk_recipt_sopl_dikoobraz",
+			comp	= { "af_dik_2" },
+			target	= "af_dik_3",
+			rate	= 74,
+			unrate	= 10,
+			rank	= 4,
+			ctime	= 2 * 60
+		},
+		{
+			info	= "info_amk_recipt_tears_chimaera",
+			comp	= { "af_cry_2" },
+			target	= "af_cry_3",
+			rate	= 55,
+			unrate	= 25,
+			rank	= 4,
+			ctime	= 2 * 60
+		},
+
+		-- NLC
+		{
+			info	= "info_artmod_cristall_buzz",
+			comp	= { "af_cristall_flower", "af_fireball", "af_medusa", "mutant_krovosos_jaw" },
+			target	= "af_cristall"
+		},
+		{
+			info	= "info_artmod_fireball_buzz",
+			comp	= { "af_rusty_thorn", "af_vyvert", "bread", "mutant_snork_leg" },
+			target	= "af_fireball",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_fuzz_kolobok_buzz",
+			comp	= { "af_electra_moonlight", "af_night_star", "af_rusty_sea-urchin", "af_soul" },
+			target	= "af_fuzz_kolobok",
+			rank	= 4
+		},
+		{
+			info	= "info_artmod_night_star_buzz",
+			comp	= { "af_blood", "af_electra_flash", "af_gravi", "mutant_psevdodog_tail" },
+			target	= "af_gold_fish"
+		},
+		{
+			info	= "info_artmod_rusty_kristall_buzz",
+			comp	= { "af_drops", "af_electra_sparkler", "af_medusa", "bread" },
+			target	= "af_rusty_kristall",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_rusty_thorn_buzz",
+			comp	= { "af_blood", "bandage", "bread", "mutant_dog_tail" },
+			target	= "af_rusty_thorn",
+			rank	= 1
+		},
+		{
+			info	= "info_artmod_vyvert_buzz",
+			comp	= { "bandage", "conserva", "mutant_dog_tail", "mutant_face_tushkano" },
+			target	= "af_vyvert",
+			rank	= 1
+		}
+	},
+	zone_electra_s = {
+		-- AMK
+		{
+			info	= "info_amk_recipt_dummy",
+			comp	= { "af_dummy_dummy" },
+			target	= "af_pudd_1",
+			rate	= 70,
+			unrate	= 25,
+			ctime	= 3 * 60
+		},
+		{
+			info	= "info_amk_recipt_dummy",
+			comp	= { "af_pudd_1" },
+			target	= "af_pudd_2",
+			rate	= 59,
+			unrate	= 20,
+			ctime	= 6 * 60
+		},
+		{
+			info	= "info_amk_recipt_dummy",
+			comp	= { "af_pudd_2" },
+			target	= "af_pudd_3",
+			rate	= 50,
+			unrate	= 35,
+			rank	= 4,
+			ctime	= 8 * 60
+		},
+		{
+			info	= "info_amk_recipt_electra_dikoobraz",
+			comp	= { "af_dik_1" },
+			target	= "af_dik_2",
+			rate	= 72,
+			unrate	= 25,
+			ctime	= 5 * 60
+		},
+		{
+			info	= "info_amk_recipt_grandmother_glassbeards",
+			comp	= { "af_dummy_glassbeads" },
+			target	= "af_babka_1",
+			rate	= 85,
+			unrate	= 10,
+			rank	= 2,
+			ctime	= 5 * 60
+		},
+		{
+			info	= "info_amk_recipt_souls",
+			comp	= { "af_spirit_3" },
+			target	= "af_spirit_4",
+			rate	= 50,
+			unrate	= 30,
+			rank	= 5,
+			ctime	= 1 * 60
+		},
+		{
+			info	= "info_amk_recipt_tears_electra",
+			comp	= { "af_drops" },
+			target	= "af_cry_1",
+			rate	= 75,
+			unrate	= 10,
+			rank	= 2,
+			ctime	= 5 * 60
+		},
+
+		-- NLC
+		{
+			info	= "info_artmod_ameba_mica_galant",
+			comp	= { "af_ameba_slime", "af_drops", "af_medusa", "kolbasa" },
+			target	= "af_ameba_mica"
+		},
+		{
+			info	= "info_artmod_cristall_flower_galant",
+			comp	= { "af_drops", "af_vyvert", "conserva", "mutant_dog_tail" },
+			target	= "af_cristall_flower",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_dummy_spring_galant",
+			comp	= { "af_cristall", "af_cristall_flower", "conserva", "mutant_psevdodog_tail" },
+			target	= "af_dummy_spring"
+		},
+		{
+			info	= "info_artmod_electra_moonlight_galant",
+			comp	= { "af_blood", "af_fireball", "af_gravi", "mutant_psevdodog_tail" },
+			target	= "af_soul"
+		},
+		{
+			info	= "info_artmod_fireball_galant",
+			comp	= { "af_blood", "af_medusa", "mutant_dog_tail", "vodka" },
+			target	= "af_fireball",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_gold_fish_galant",
+			comp	= { "af_cristall_flower", "af_medusa", "af_rusty_thorn", "mutant_flesh_eye" },
+			target	= "af_gold_fish"
+		},
+		{
+			info	= "info_artmod_medusa_galant",
+			comp	= { "bandage", "conserva", "mutant_dog_tail", "mutant_face_tushkano" },
+			target	= "af_medusa",
+			rank	= 1
+		},
+		{
+			info	= "info_red_battery",
+			comp	= { "af_dummy_battery_red" },
+			remove	= true
+		}
+	},
+	zone_galant_s = {
+		-- NLC
+		{
+			info	= "info_artmod_ameba_slug_gravi_zone",
+			comp	= { "af_medusa", "af_vyvert", "kolbasa", "mutant_dog_tail" },
+			target	= "af_ameba_slug",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_ameba_slime_gravi_zone",
+			comp	= { "af_medusa", "bandage", "conserva", "mutant_dog_tail" },
+			target	= "af_ameba_slime",
+			rank	= 1
+		},
+		{
+			info	= "info_artmod_electra_flash_gravi_zone",
+			comp	= { "af_blood", "af_vyvert", "mutant_dog_tail", "vodka" },
+			target	= "af_electra_flash"
+		},
+		{
+			info	= "info_artmod_night_star_gravi_zone",
+			comp	= { "af_medusa", "af_rusty_kristall", "af_rusty_thorn", "mutant_psevdodog_tail" },
+			target	= "af_night_star"
+		},
+		{
+			info	= "info_artmod_soul_gravi_zone",
+			comp	= { "af_ameba_slug", "af_cristall_flower", "af_electra_flash", "mutant_snork_leg" },
+			target	= "af_soul"
+		},
+		{
+			info	= "info_artmod_dummy_pellicle_gravi_zone",
+			comp	= { "af_ameba_mica", "af_cristall", "af_gold_fish", "af_soul" },
+			target	= "af_dummy_pellicle",
+			rank	= 4
+		},
+		{
+			info	= "info_red_battery",
+			comp	= { "af_dummy_battery_red" },
+			remove	= true
+		}
+	},
+	zone_ice_s = {
+		-- NLC
+		{
+			info	= "info_red_battery",
+			comp	= { "af_dummy_battery" },
+			target	= "af_dummy_battery_red",
+			rank	= 4
+		},
+		{
+			info	= "info_red_pellicle",
+			comp	= { "af_dummy_pellicle" },
+			target	= "af_dummy_pellicle_red",
+			rank	= 4
+		},
+		{
+			info	= "info_red_spring",
+			comp	= { "af_dummy_spring" },
+			target	= "af_dummy_spring_red",
+			rank	= 4
+		},
+		{
+			info	= "life_heart_final",
+			comp	= { "af_dummy_dummy", "af_gold_fish", "af_night_star", "af_rusty_sea-urchin" },
+			target	= "af_life_heart",
+			rank	= 6
+		}
+	},
+	zone_mbald_s = {
+		-- AMK
+		{
+			info	= "info_amk_recipt_stone_dikoobraz",
+			comp	= { "af_dik_3" },
+			target	= "af_dik_4",
+			rate	= 50,
+			unrate	= 28,
+			rank	= 5,
+			ctime	= 9 * 60
+		},
+		{
+			info	= "info_amk_recipt_steel_kolobok",
+			comp	= { "af_fuzz_kolobok" },
+			target	= "af_kol_1",
+			rate	= 70,
+			unrate	= 25,
+			rank	= 2,
+			ctime	= 2 * 60
+		},
+		{
+			info	= "info_amk_recipt_cheshya",
+			comp	= { "af_armor_1" },
+			target	= "af_armor_2",
+			rate	= 80,
+			unrate	= 10,
+			ctime	= 5 * 60
+		},
+
+		-- NLC
+		{
+			info	= "info_artmod_ameba_slug_mosquito_bald",
+			comp	= { "af_drops", "af_medusa", "bandage", "vodka" },
+			target	= "af_ameba_slug",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_cristall_mosquito_bald",
+			comp	= { "af_fireball", "af_mincer_meat", "af_vyvert", "mutant_flesh_eye" },
+			target	= "af_cristall"
+		},
+		{
+			info	= "info_artmod_dummy_dummy_mosquito_bald",
+			comp	= { "af_ameba_mica", "af_cristall", "af_mincer_meat", "af_night_star" },
+			target	= "af_dummy_dummy"
+		},
+		{
+			info	= "info_artmod_electra_sparkler_mosquito_bald",
+			comp	= { "af_drops", "bandage", "kolbasa", "mutant_dog_tail" },
+			target	= "af_electra_sparkler",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_mincer_meat_mosquito_bald",
+			comp	= { "af_blood", "af_vyvert", "mutant_dog_tail", "vodka" },
+			target	= "af_mincer_meat",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_rusty_sea-urchin_mosquito_bald",
+			comp	= { "af_ameba_slime", "af_blood", "af_rusty_kristall", "mutant_krovosos_jaw" },
+			target	= "af_rusty_sea-urchin"
+		},
+		{
+			info	= "info_red_pellicle",
+			comp	= { "af_dummy_pellicle_red" },
+			remove	= true
+		}
+	},
+	zone_mincer_s = {
+		-- AMK
+		{
+			info	= "info_amk_recipt_burer_grandmother_glassbeards",
+			comp	= { "af_babka_2" },
+			target	= "af_babka_3",
+			rate	= 85,
+			unrate	= 10,
+			rank	= 4,
+			ctime	= 1 * 60
+		},
+		{
+			info	= "info_amk_recipt_cheshya",
+			comp	= { "af_armor_1" },
+			target	= "af_armor_2",
+			rate	= 80,
+			unrate	= 10,
+			ctime	= 5 * 60
+		},
+		{
+			info	= "info_amk_recipt_titan_kolobok",
+			comp	= { "af_kol_1" },
+			target	= "af_kol_2",
+			rate	= 55,
+			unrate	= 35,
+			ctime	= 5 * 60
+		},
+
+		-- NLC
+		{
+			info	= "info_artmod_ameba_slug_mincer",
+			comp	= { "af_electra_flash", "af_fireball", "af_vyvert", "mutant_psevdodog_tail" },
+			target	= "af_ameba_mica"
+		},
+		{
+			info	= "info_artmod_cristall_flower_mincer",
+			comp	= { "af_blood", "af_medusa", "bandage", "conserva" },
+			target	= "af_cristall_flower",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_drops_mincer",
+			comp	= { "af_vyvert", "bandage", "mutant_dog_tail", "vodka" },
+			target	= "af_drops",
+			rank	= 1
+		},
+		{
+			info	= "info_artmod_dummy_glassbeads_mincer",
+			comp	= { "af_ameba_mica", "af_gold_fish", "af_night_star", "af_rusty_sea-urchin" },
+			target	= "af_dummy_glassbeads",
+			rank	= 4
+		},
+		{
+			info	= "info_artmod_electra_moonlight_mincer",
+			comp	= { "af_ameba_slug", "af_blood", "af_fireball", "mutant_krovosos_jaw" },
+			target	= "af_electra_moonlight"
+		},
+		{
+			info	= "info_artmod_rusty_kristall_mincer",
+			comp	= { "af_electra_sparkler", "af_medusa", "conserva", "mutant_dog_tail" },
+			target	= "af_rusty_kristall",
+			rank	= 2
+		},
+		{
+			info	= "info_red_spring",
+			comp	= { "af_dummy_spring_red" },
+			remove	= true
+		}
+	},
+	zone_zharka_s = {
+		-- AMK
+		{
+			info	= "info_amk_recipt_souls",
+			comp	= { "af_soul" },
+			target	= "af_spirit_1",
+			rate	= 70,
+			unrate	= 25,
+			ctime	= 4 * 60
+		},
+		{
+			info	= "info_amk_recipt_souls",
+			comp	= { "af_spirit_1" },
+			target	= "af_spirit_2",
+			rate	= 60,
+			unrate	= 20,
+			rank	= 4,
+			ctime	= 6 * 60
+		},
+		{
+			info	= "info_amk_recipt_souls",
+			comp	= { "af_spirit_2" },
+			target	= "af_spirit_3",
+			rate	= 50,
+			unrate	= 35,
+			rank	= 5,
+			ctime	= 10 * 60
+		},
+		{
+			info	= "info_amk_recipt_tears_fire",
+			comp	= { "af_cry_1" },
+			target	= "af_cry_2",
+			rate	= 65,
+			unrate	= 20,
+			ctime	= 5 * 60
+		},
+		{
+			info	= "info_amk_recipt_dikoobraz",
+			comp	= { "af_rusty_sea-urchin" },
+			target	= "af_dik_1",
+			rate	= 65,
+			unrate	= 20,
+			rank	= 2,
+			ctime	= 3 * 60
+		},
+		{
+			info	= "info_amk_recipt_giant_small_brother",
+			comp	= { "af_kol_3" },
+			target	= "af_kol_4",
+			rate	= 49,
+			unrate	= 30,
+			rank	= 5,
+			ctime	= 3 * 60
+		},
+		{
+			info	= "info_amk_recipt_controller_skalp",
+			comp	= { "af_armor_3" },
+			target	= "af_armor_4",
+			rate	= 40,
+			unrate	= 25,
+			rank	= 5,
+			ctime	= 6 * 60
+		},
+
+		-- NLC
+		{
+			info	= "info_artmod_electra_flash_zharka",
+			comp	= { "af_medusa", "af_rusty_thorn", "af_vyvert", "vodka" },
+			target	= "af_electra_flash"
+		},
+		{
+			info	= "info_artmod_ameba_slime_zharka",
+			comp	= { "af_blood", "af_medusa", "kolbasa", "mutant_dog_tail" },
+			target	= "af_ameba_slime",
+			rank	= 1
+		},
+		{
+			info	= "info_artmod_gravi_zharka",
+			comp	= { "af_blood", "af_medusa", "bandage", "conserva" },
+			target	= "af_gravi",
+			rank	= 2
+		},
+		{
+			info	= "info_artmod_night_star_zharka",
+			comp	= { "af_electra_flash", "af_rusty_kristall", "af_vyvert", "mutant_snork_leg" },
+			target	= "af_night_star"
+		},
+		{
+			info	= "info_artmod_electra_moonlight_zharka",
+			comp	= { "af_electra_flash", "af_gravi", "af_medusa", "mutant_krovosos_jaw" },
+			target	= "af_electra_moonlight"
+		},
+		{
+			info	= "info_artmod_dummy_battery_zharka",
+			comp	= { "af_ameba_mica", "af_electra_flash", "mutant_dog_tail", "vodka" },
+			target	= "af_dummy_battery",
+			rank	= 4
+		}
+	}
+}
+
+local trans_defs = {
+	rate		= 80,
+	unrate 		= 17,
+	rank		= 3,
+	ctime		= 5,
+}
+
+local trans_names = {
+	zone_buzz_s	= "Ameba",
+	zone_electra_s	= "Electra",
+	zone_galant_s	= "Gravi",
+	zone_ice_s	= "enc_zone_ice",
+	zone_mbald_s	= "Bald",
+	zone_mincer_s	= "Meat",
+	zone_zharka_s	= "Zharka"
+}
+
+local trans_comp = { }
+local trans_act
+
+function trans_conv(t, k)
+	return clsid[k]
+end
+
+function trans_init()
+	table.clear(trans_anom, trans_conv)
+	table.clear(trans_names, trans_conv)
+
+	for _, list in pairs(trans_anom) do
+		for _, params in ipairs(list) do
+			for i = 1, #params.comp do
+				trans_comp[params.comp[i]] = true
+			end
+		end
+	end
+end
+
+function item_drop(obj)
+	if not trans_comp[obj:section()] then return end
+
+	local id, pos, radius, dist = amk_anoms.get_nearest_anomaly(obj)
+	if id and radius - dist > -2 then
+		timer("reap_af.trans_start", 200, true, obj:id(), id)
+	end
+end
+
+function trans_start(id, anom_id)
+	local obj = server_object(id)
+	if not obj or obj.parent_id ~= 65535 then return end
+
+	obj = level_object(id)
+	local anom = level_object(anom_id)
+	if not obj or not anom then return end
+
+	local list = anom:clsid()
+	if list == clsid.zone_buzz_s and string.find(anom:section(), "sakbuzz") then return end
+	list = trans_anom[cls]
+	if not list then return end
+
+	local sect = obj:section()
+	local avail = { }
+	for _, params in ipairs(list) do
+		if has_info(params.info) and trans_rank(params.rank or trans_defs.rank) then
+			for i = 1, #params.comp do
+				if sect == params.comp[i] then
+					avail[#avail + 1] = params
+				end
+			end
+		end
+	end
+	if #avail == 0 then return end
+
+	local gv = anom:game_vertex_id()
+	if gv == 65535 then gv = obj:game_vertex_id() end
+	if gv == 65535 then gv = Actor:game_vertex_id() end
+	if gv == 65535 then return end
+
+	if not trans_act then
+		trans_act = container:get("af_trans", { })
+	end
+	local act = trans_act[anom_id]
+	if not act then
+		act = { sect }
+		trans_act[anom_id] = act
+	else
+		act[#act + 1] = sect
+	end
+
+	level.add_pp_effector("teleport.ppe", effector_ids.teleport, false)
+	release(obj)
+
+	table.sort(avail, function(a, b)
+		return #a.comp > #b.comp
+	end)
+
+	local params, cmp
+	local n = #act
+	for i = 1, #avail do
+		params = avail[i]
+		if #params.comp <= n then
+			cmp = { }
+			table.list_add(cmp, params.comp)
+			table.list_sub(cmp, act)
+
+			if table.size(cmp) == 0 then
+				trans_act[anom_id] = nil
+				if params.remove then
+					return release(anom)
+				else
+					return trans_do(anom, params, gv)
+				end
+			end
+		end
+	end
+end
+
+function trans_rank(rank)
+	if rank == 0 then return true end
+	if not rank then rank = 1 end
+
+	local res = has_info("ecolog_freeplay_reward_task_" .. rank .. "_start")
+	if not res then
+		send_tip(translate("ecolog_freeplay_transformation_" .. rank))
+	end
+
+	return res
+end
+
+function trans_res(rate, unrate, fail, target, add)
+	if rate >= 100 then rate = 99 end
+
+	local rank_mod = (40 + (add or 0) + freeplay_stats:get_found_artefacts_ranks()) / 100
+	local real_rate = rate * rank_mod
+	if real_rate > 97 then real_rate = 97 end
+
+	local real_unrate = ((100 - real_rate) / (100 - rate)) * unrate
+	local rand = math.random(100)
+
+	if rand <= real_rate then
+		return target
+	elseif rand <= real_rate + real_unrate then
+		return "af_buliz"
+	else
+		return fail
+	end
+end
+
+function trans_do(anom, params, gv)
+	local fail = params.fail or (#params.comp > 1 and "af_buliz" or params.comp[1])
+	local target = trans_res(params.rate or trans_defs.rate,
+				 params.unrate or trans_defs.unrate,
+				 fail, params.target)
+	local ctime = (params.ctime or trans_defs.ctime) * 60
+	ctime = math.random(ctime * 0.8, ctime * 1.2) * 1000
+
+	timer("reap_af.trans_end", ctime, false, target, anom:position(),
+	      anom:level_vertex_id(), gv, anom:clsid())
+end
+
+function trans_end(target, pos, lv, gv, cls)
+	if Actor:position():distance_to(pos) < 15 then
+		level.add_pp_effector("teleport.ppe", effector_ids.teleport, false)
+	end
+
+	local obj = create(target, pos, lv, gv)
+	local anom = translate(trans_names[cls])
+
+	map_spot(obj.id, "red_location", string.format(translate("trans_finished_tip"), anom))
+	send_tip(string.format(translate("trans_finished_msg"), anom, reap.translate_level(obj)))
+end
+
+function trans_clear()
+	if not trans_act then
+		trans_act = container:get("af_trans")
+	end
+	if trans_act then
+		table.clear(trans_act)
+	end
+end

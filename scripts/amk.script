@@ -114,7 +114,6 @@ local legacy_acts = {
 	["show_news"]			= "amk_mod.show_news",
 	["gg_need_sleep"]		= "amk_mod.test_for_need_sleep",
 	["block_sleep_menu"]		= "amk.block_sleep_menu_handler",
-	["af_transform"]		= "amk_mod.af_transform_end",
 	["amk_freeplay"]		= "amk.amk_freeplay_handler",
 	["blowout"]			= "amk_mod.Blowout_pp",
 	["blowout_ss"]			= "amk_mod.blowout_scary_sounds",
@@ -362,7 +361,6 @@ end
 --колбэк на потерю предмета из инвентаря ГГ
 function on_item_drop(obj)
 gps_habar.on_item_drop(obj) --idler++--
-	amk_mod.check_for_af_drop(obj)
 	amk_mod.check_beacon_drop(obj)
 
 	flamethrower.on_item()

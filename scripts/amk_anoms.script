@@ -515,7 +515,9 @@ function get_anomaly_status(sobj)
 end
 
 -- Включенные аномалии помечаются на удаление. На всех уровнях.
-function turn_off_all()
+function pre_blow_off()
+	reap_af.trans_clear()
+
 	local sobj
 
 	for i=0,65534 do
@@ -534,10 +536,6 @@ function turn_off_all()
 	end
 
 	ogsm_psyzones.remove_all()
-end
-
-function pre_blow_off()
-	turn_off_all()
 end
 
 -- Выключенные аномалии включаются. На всех уровнях.

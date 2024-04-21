@@ -16,6 +16,8 @@ function net_spawn()
 		give_info("paused_on_load")
 	end
 
+	reap_af.trans_init()
+
 	bolt_ending.net_spawn()
 	reap_misc.net_spawn()
 end
@@ -85,8 +87,11 @@ end
 
 function item_drop(obj)
 	Inventory:on_item_drop(obj)
+
 	bolt_ending.on_item_drop(obj)
 	grenade_belt.on_item_drop(obj)
+
+	reap_af.item_drop(obj)
 end
 
 local detectors = table.tohash({
