@@ -4,6 +4,8 @@
 
 local game_get_game_time = game.get_game_time
 local math_floor = math.floor
+local table_add = table.add
+local table_sub = table.sub
 
 --[[---------------------------------------------------------------------------
  * Constants
@@ -13,6 +15,44 @@ effector_ids.snd_shock = 3015
 
 actor_flags.alive = false
 actor_flags.in_car = false
+
+--[[---------------------------------------------------------------------------
+ * Table
+--]]---------------------------------------------------------------------------
+
+table.clear = function(t, keep)
+	local new = { }
+	local j
+
+	for k, v in pairs(t) do
+		j = keep and keep(t, k)
+		if j then
+			new[j] = v
+		end
+
+		t[k] = nil
+	end
+
+	if keep then
+		for k, v in pairs(new) do
+			t[k] = v
+		end
+	end
+
+	return t
+end
+
+table.list_add = function(hash, list)
+	for i = 1, #list do
+		table_add(hash, list[i])
+	end
+end
+
+table.list_sub = function(hash, list)
+	for i = 1, #list do
+		table_sub(hash, list[i])
+	end
+end
 
 --[[---------------------------------------------------------------------------
  * Ini
