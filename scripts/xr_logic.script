@@ -1272,8 +1272,10 @@ function initialize_obj(obj, st, loaded, stype)
 				if ini_filename == "<customdata>" then
 					ini = obj:spawn_ini() or dummy_ini_file
 				elseif string_find( ini_filename, "*" ) == 1 then
-					local p = string_find( ini_filename, "*", 2 )
-					ini = gulag_tasks.loadLtx( string_sub(ini_filename, 2, p-1), string_sub(ini_filename, p+1) )
+					local p = string_find(ini_filename, "*", 2)
+					ini = xr_gulag.get_ltx(string_sub(ini_filename, 2, p - 1),
+							       string_sub(ini_filename, p + 1),
+							       string_sub(ini_filename, 2, 4))
 				else
 					ini = ini_cache[ini_filename]
 					if not ini then
