@@ -32,9 +32,8 @@ function restriction_of_stock(ItemObj,Fix)
 	local sect = ItemObj:section()
 	local size = overrides[sect]
 	if not size then
-		local w = config:r_u32_cache(sect, "inv_grid_width")
-		local h = config:r_u32_cache(sect, "inv_grid_height")
-		size = w * h
+		local t = get_icon_info(sect)
+		size = t.w * t.h
 	end
 
 	if Fix == 0 then

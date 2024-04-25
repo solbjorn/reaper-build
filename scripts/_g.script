@@ -492,6 +492,17 @@ function get_texture_info(id_name, id_default)
   return task_info:get_file_name(), r
 end
 
+function get_icon_info(sect, real)
+	local mul = real and 50 or 1
+
+	return {
+		x	= config:r_u32_cache(sect, "inv_grid_x") * mul,
+		y	= config:r_u32_cache(sect, "inv_grid_y") * mul,
+		w	= config:r_u32_cache(sect, "inv_grid_width") * mul,
+		h	= config:r_u32_cache(sect, "inv_grid_height") * mul
+	}
+end
+
 ammo_section = ini_file("misc\\death_generic.ltx"):key_true("ammo_sections")
 quest_section = ini_file("misc\\death_generic.ltx"):key_true("keep_items")
 news_manager.prepare_data()

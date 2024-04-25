@@ -538,25 +538,19 @@ function belt_redraw()
 
 	local path = "ui\\ui_icon_equipment"
 	local item, static
-	local x, y, w, h
 	local cur_x = 25
-	local sta_w
+	local t, sta_w
 
 	for i = 1, #belt_tbl do
 		item = belt_tbl[i]
-		w = item.width or config:r_u32_cache(item.sect, "inv_grid_width")
-		sta_w = 25 * w * refactor
+		t = get_icon_info(item.sect, true)
+		sta_w = t.w * refactor / 2
 
 		static = CUIStatic()
 		static:Init(path, cur_x, 640, sta_w, 25)
 		cur_x = cur_x + sta_w + 1
 
-		x = config:r_u32_cache(item.sect, "inv_grid_x") * 50
-		y = config:r_u32_cache(item.sect, "inv_grid_y") * 50
-		w = w * 50
-		h = config:r_u32_cache(item.sect, "inv_grid_height") * 50
-
-		static:SetOriginalRect(x, y, w, h)
+		static:SetOriginalRect(t.x, t.y, t.w, t.h)
 		static:SetStretchTexture(true)
 		hud:AddDialogToRender(static)
 

@@ -45,9 +45,14 @@ function register_container(cont_id, cont_section, cont_arts)
     local ini = system_ini()
 
     if ini:section_exist(cont_section) then
-      local tmp = {}
+			local t = get_icon_info(cont_section)
+			local tmp = {
+				section	= cont_section,
+				tx	= t.x,
+				ty	= t.y,
+				weight	= config:r_float(cont_section, "inv_weight")
+			}
 
-      tmp.section = cont_section
       if ini:line_exist(cont_section, "container_slots") then
         tmp.slots = ini:r_u32(cont_section, "container_slots")
       else
@@ -55,10 +60,6 @@ function register_container(cont_id, cont_section, cont_arts)
       end
 
       -- TODO: добавить настройки меню
-
-      tmp.tx = ini:r_u32(cont_section, "inv_grid_x")
-      tmp.ty = ini:r_u32(cont_section, "inv_grid_y")
-      tmp.weight = ini:r_float(cont_section, "inv_weight")
 
       table.insert(cfg_containers, tmp)
       f = table.getn(cfg_containers)
