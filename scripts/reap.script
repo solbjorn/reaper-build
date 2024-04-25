@@ -155,11 +155,22 @@ function before_use_item(binded, obj)
 	medkit_use.before_use_item(obj)
 end
 
-function item_use(binded, obj)
-	amk.item_use(obj)
-	medkit_use.used_med(obj)
+local use_fn = {
+	["amk_transmutator"]	= transmutator.amkEnableDevice
+}
 
-	local sound = config:r_string_cache(obj:section(), "use_sound")
+function item_use(binded, obj)
+	local sect = obj:section()
+	local fn = use_fn[sect]
+
+	if fn then
+		fn(obj)
+	else
+		amk.item_use(obj)
+		medkit_use.used_med(obj)
+	end
+
+	local sound = config:r_string_cache(sect, "use_sound")
 	if sound then
 		wpn_hide_disable()
 		timer("reap.wpn_show_enable", level.get_game_difficulty() * 2000, true)

@@ -28,14 +28,15 @@ table.add = function(tbl, key,count)
 end
 
 -- Удаление из таблицы вида {[key] = count} подсчитываемого предмета
-table.sub = function(tbl, key)
+table.sub = function(tbl, key, count)
 	if not tbl[key] then
 		return
 	end
-	if tbl[key] == 1 then
+	if not count then count = 1 end
+
+	tbl[key] = tbl[key] - count
+	if tbl[key] <= 0 then
 		tbl[key] = nil
-	else
-		tbl[key] = tbl[key]-1
 	end
 end
 
@@ -75,6 +76,18 @@ table.size = function(tbl)
 	end
 	return count
 end
+
+local table_copy
+table.copy = function(src, dst)
+	if not dst then dst = { } end
+
+	for k, v in pairs(src) do
+		dst[k] = type(v) == "table" and table_copy(v) or v
+	end
+
+	return dst
+end
+table_copy = table.copy
 
 -- string
 

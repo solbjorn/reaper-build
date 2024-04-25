@@ -591,7 +591,7 @@ function trans_start(id, anom_id)
 
 	local list = anom:clsid()
 	if list == clsid.zone_buzz_s and string.find(anom:section(), "sakbuzz") then return end
-	list = trans_anom[cls]
+	list = trans_anom[list]
 	if not list then return end
 
 	local sect = obj:section()
@@ -641,14 +641,49 @@ function trans_start(id, anom_id)
 
 			if table.size(cmp) == 0 then
 				trans_act[anom_id] = nil
-				if params.remove then
+
+				if params.target then
+					return trans_do(params, anom:position(),
+							anom:level_vertex_id(), gv,
+							translate(trans_names[anom:clsid()]))
+				elseif params.remove then
 					return release(anom)
-				else
-					return trans_do(anom, params, gv)
 				end
 			end
 		end
 	end
+end
+
+function trans_info()
+	local id, pos, radius, dist = amk_anoms.get_nearest_anomaly(Actor)
+	if not (id and radius - dist > -2) then return nil, nil, trans_comp end
+
+	local anom = level_object(id)
+	if not anom then return nil, nil, trans_comp end
+
+	local cls = anom:clsid()
+	if cls == clsid.zone_buzz_s and string.find(anom:section(), "sakbuzz") then
+		return nil, nil, trans_comp
+	end
+
+	local list = trans_anom[cls]
+	if not list then return nil, nil, trans_comp end
+
+	local name = translate(trans_names[cls])
+	local avail = { }
+
+	for _, params in ipairs(list) do
+		if params.target and has_info(params.info) and
+		   trans_rank(params.rank or trans_defs.rank) then
+			avail[#avail + 1] = params
+		end
+	end
+
+	table.sort(avail, function(a, b)
+		return #a.comp > #b.comp
+	end)
+
+	return name, avail, trans_comp
 end
 
 function trans_rank(rank)
@@ -682,28 +717,27 @@ function trans_res(rate, unrate, fail, target, add)
 	end
 end
 
-function trans_do(anom, params, gv)
+function trans_do(params, pos, lv, gv, name, add)
 	local fail = params.fail or (#params.comp > 1 and "af_buliz" or params.comp[1])
 	local target = trans_res(params.rate or trans_defs.rate,
 				 params.unrate or trans_defs.unrate,
-				 fail, params.target)
+				 fail, params.target, add)
 	local ctime = (params.ctime or trans_defs.ctime) * 60
 	ctime = math.random(ctime * 0.8, ctime * 1.2) * 1000
 
-	timer("reap_af.trans_end", ctime, false, target, anom:position(),
-	      anom:level_vertex_id(), gv, anom:clsid())
+	timer("reap_af.trans_end", ctime, false, target, pos, lv, gv, name)
 end
 
-function trans_end(target, pos, lv, gv, cls)
+function trans_end(target, pos, lv, gv, name)
 	if Actor:position():distance_to(pos) < 15 then
 		level.add_pp_effector("teleport.ppe", effector_ids.teleport, false)
 	end
 
 	local obj = create(target, pos, lv, gv)
-	local anom = translate(trans_names[cls])
+	if not obj then return end
 
-	map_spot(obj.id, "red_location", string.format(translate("trans_finished_tip"), anom))
-	send_tip(string.format(translate("trans_finished_msg"), anom, reap.translate_level(obj)))
+	map_spot(obj.id, "red_location", string.format(translate("trans_finished_tip"), name))
+	send_tip(string.format(translate("trans_finished_msg"), name, reap.translate_level(obj)))
 end
 
 function trans_clear()

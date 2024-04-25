@@ -244,9 +244,8 @@ function new_comp()
 	AI:create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
 end
 
-function release_actor_items()
-    -- вещи исключения
-    local items = {
+-- вещи исключения
+local items = {
         ["af_blood_tutorial"] = true,
         ["new_book"] = true,
         ["diplomat"] = true,
@@ -336,7 +335,11 @@ function release_actor_items()
 		["nauch_flash"] = true,
 		["wpn_knife"] = true,
 		["device_torch"] = true,
-		["wpn_flame"] = true}
+		["wpn_flame"] = true,
+	["amk_transmutator"]		= true
+}
+
+function release_actor_items()
     local obj
     local actor = Actor
     -- перебор вещей инвентаря

@@ -1414,24 +1414,11 @@ function CRandomTask:action_task_show(npc, actor)
 		local task_desc = self.task_info[v]
 		if self:task_avail(actor, npc, nil, nil, task_desc.init_phrase_id, false) then
 			local task_texture, task_rect = get_texture_info(icon_task_by_type[task_desc.type])
-			Actor:give_talk_message(translate(task_desc.name).."\\n"..translate("st_task_time").." "..self:transform_number_to_date(task_desc.time), task_texture, task_rect,"iconed_answer_item")
+			Actor:give_talk_message(translate(task_desc.name).."\\n"..translate("st_task_time").." "..transform_number_to_date(task_desc.time), task_texture, task_rect,"iconed_answer_item")
     end
   end
 end
---' Ray Twitty aka Shadows: преобразование числа в дату сдачи таска
-function CRandomTask:transform_number_to_date(time)
-	if time ~= nil then
-		local d, h, m = time / 86400, time / 3600, time / 60
-		if d >= 1 then
-			return math.ceil(d).." "..game.translate_string("ui_st_days")
-		elseif h >= 1 then
-			return math.ceil(h).." "..game.translate_string("ui_st_hours")
-		else
-			return math.ceil(m).." "..game.translate_string("ui_st_mins")
-		end
-	end
-	return game.translate_string("ui_st_indefinitely")
-end
+
 --' ѕроверка доступен ли текущий таск дл€ выдачи
 function CRandomTask:task_avail(actor, npc, p1, p2, p3, calculate)
   local task_desc = self.task_info[self.task_id_by_init_phrase_id[p3]]

@@ -1,0 +1,714 @@
+-- Developed by AMK-Team
+-- File:  amkii_transmutator.script
+-- Copyright:  ©  AMK-Team 2009
+-- Author: Refresh
+-- Since: 14.01.2009 1:04
+
+local table_remove = table.remove
+local table_sub = table.sub
+
+local ui_tex = "ui\\amk_transmutator"
+local icon_tex = "ui\\ui_icon_equipment"
+
+local oDevice = nil
+local aArtsInfo = nil		-- table данные артов в инвентаре
+local aArtsInventory = nil  -- table список объектов артов в инвентаре
+local aInterval = nil		-- integer кол-во ячеек в инв. скролле
+local aRecInterval = nil	-- integer кол-во ячеек в рецептном скролле
+local aAnomaly = nil		-- string секция аномалии вблизи
+local anomaly_name = nil	-- string название аномалии
+local txtNotkomp = ""		-- string название недостающих компонентов
+local txtVremya = ""		-- string время варки
+local aReciptsHave = nil	-- table имеющиеся у ГГ рецепты для аномалии
+local aRecsInfo = nil		-- table данные результатов варки для рецептного скролла
+local aAnomId = nil			-- integer id аномалии вблизи
+local iInfo = nil			-- string название инфопоршня рецепта
+local trans_comp
+local ncmp = 0
+
+--	Инфа для кнопок на скроллбаре
+local aScrollBar = {
+	{x =  73, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 128, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 183, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 238, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 293, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 348, y = 155,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil}
+}
+
+--	Инфа для кнопок на панели артефактов
+local aCmpnSlots = {
+	{x =  73, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 128, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 183, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 238, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 293, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 348, y = 58,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil}
+}
+
+--	Инфа для кнопок на рецептбаре
+local aRecBar = {
+    {x =  92,  y = 235,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+    {x = 171,  y = 235,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+    {x = 251,  y = 235,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil},
+	{x = 329,  y = 235,  wt = 50, hg = 50, oSlot = nil, iSectIndex = nil}
+}
+
+local coords = { 3, 420, 30, 406, 189, 24, 404, 430, 69, 128 }
+
+if refactor < 1 then
+	aScrollBar[1].x = 54.5
+	aScrollBar[2].x = 95.5
+	aScrollBar[3].x = 136.5
+	aScrollBar[4].x = 177.5
+	aScrollBar[5].x = 218.5
+	aScrollBar[6].x = 259.5
+
+	aCmpnSlots[1].x = 54.5
+	aCmpnSlots[2].x = 95.5
+	aCmpnSlots[3].x = 136.5
+	aCmpnSlots[4].x = 177.5
+	aCmpnSlots[5].x = 218.5
+	aCmpnSlots[6].x = 259.5
+
+	aRecBar[1].x = 69.5
+	aRecBar[2].x = 128.5
+	aRecBar[3].x = 187.5
+	aRecBar[4].x = 246.5
+
+	coords = { 2.25, 315, 22.5, 305, 141.75, 18, 306, 322.5, 52, 96 }
+end
+
+local oRes = nil
+local oNotkomp = nil
+
+local icon_overrides = {
+	vodka = {
+		t	= ui_tex,
+		x	= 0,
+		y	= 450,
+		w	= 50,
+		h	= 50
+	}
+}
+
+function get_icon_info_or_override(sect)
+	local ret = icon_overrides[sect]
+	if ret then
+		return table.copy(ret)
+	end
+
+	ret = get_icon_info(sect, true)
+	ret.t = icon_tex
+
+	return ret
+end
+
+--	Включить девайс
+function amkEnableDevice()
+	if oDevice or not actor_flags.alive then return end
+	create("amk_transmutator", xyz(), 0, 0, 0)
+
+	aArtsInfo = {}
+	aRecsInfo = {}
+	aArtsInventory = {}
+	aInterval = {1,6}
+	aRecInterval = {1,4}
+
+	anomaly_name, aReciptsHave, trans_comp = reap_af.trans_info()
+	if not aReciptsHave then aReciptsHave = { } end
+
+	CAmkMergerArtefact()
+	oDevice = CAmkDeviceTransmutator()
+	level.start_stop_menu(oDevice, true)
+end
+
+--	Выключить девайс
+function amkDisableDevice()
+	if oRes then oDevice:DetachChild(oRes) end
+	if oNotkomp then oDevice:DetachChild(oNotkomp) end
+	oDevice = nil
+	aArtsInfo  = nil
+	aRecsInfo = nil
+	aArtsInventory 	= nil
+	aInterval = nil
+	aRecInterval = nil
+	aAnomaly = nil
+	aAnomId = nil
+	iInfo = nil
+	aReciptsHave = nil
+	oRes = nil
+	oNotkomp = nil
+	for k,tbl in pairs(aScrollBar) do
+		tbl.oSlot = nil
+		tbl.iSectIndex = nil
+	end
+	for k,tbl in pairs(aCmpnSlots) do
+		tbl.oSlot = nil
+		tbl.iSectIndex = nil
+	end
+	for k,tbl in pairs(aRecBar) do
+		tbl.oSlot = nil
+		tbl.iSectIndex = nil
+	end
+end
+
+class "CAmkMergerArtefact"
+
+function CAmkMergerArtefact:__init()
+	self:IterateInventory()
+	if #aArtsInventory > 0 then
+		self:SaveInfo("Inv")
+	end
+	if #aReciptsHave > 0 then
+		self:SaveInfo("Rec")
+	end
+end
+
+--	Итерация по инвентарю актора и поиск в нем артов
+function CAmkMergerArtefact:IterateInventory()
+	Actor:iterate_inventory(function(npc, item)
+		if trans_comp[item:section()] then
+			aArtsInventory[#aArtsInventory + 1] = item
+		end
+	end)
+end
+
+--	Собираем и сохраняем в нужном нам виде информацию об артах и рецептах
+--	@param	string	iBarName		Тип скролла для сохранения (инвентарный - "Inv" / рецептный - "Rec")
+function CAmkMergerArtefact:SaveInfo(iBarName)
+	local aTmpTbl = {}
+	local searchTbl, fillTbl
+	if iBarName == "Inv" then
+		searchTbl = aArtsInventory
+		fillTbl = aArtsInfo
+	else
+		searchTbl = aReciptsHave
+		fillTbl = aRecsInfo
+	end
+	for iKey, oArt in pairs(searchTbl) do
+		local sSection = nil
+		if iBarName == "Inv" then
+			sSection = oArt:section()
+		else
+			sSection = oArt.target
+		end
+		if config:section_exist(sSection) then
+			if not aTmpTbl[sSection] then
+				aTbl = get_icon_info_or_override(sSection)
+				aTbl.iKey = iKey
+				aTbl.iCount = 1
+				aTbl.sSection = sSection
+				aTbl.aArts = {}
+				table.insert(aTbl.aArts, oArt)
+				aTmpTbl[sSection] = aTbl
+			elseif iBarName == "Inv" then
+				aTbl = aTmpTbl[sSection]
+				aTbl.iCount = aTbl.iCount + 1
+				table.insert(aTbl.aArts, oArt)
+			end
+		end
+	end
+	for sKey, aValue in pairs(aTmpTbl) do
+		table.insert(fillTbl, aValue)
+	end
+end
+
+class "CAmkDeviceTransmutator" (CUIScriptWnd)
+
+function CAmkDeviceTransmutator:__init() super()
+	self:InitInterface()
+	self:UpdScrollBar(aInterval[1], aInterval[2], "Inv")
+	self:UpdScrollBar(aRecInterval[1], aRecInterval[2], "Rec")
+end
+
+--	Инициализация окна и статических элементов управления
+function CAmkDeviceTransmutator:InitInterface()
+	self:Init(50, 50, 531 * refactor, 359)
+	--	Прикрепляем статический элемент 'фон'
+	self.oBackGround = CUIStatic()
+	self.oBackGround:SetWindowName("oBackGround")
+	self.oBackGround:SetAutoDelete(true)
+	self.oBackGround:InitTexture(ui_tex)
+	self.oBackGround:SetOriginalRect(3,7,531,359)
+	self.oBackGround:SetStretchTexture(true)
+	self.oBackGround:Init(coords[1], 7, 531 * refactor, 359)
+	self:AttachChild(self.oBackGround)
+
+	--	Прикрепляем кнопку очистки панели компонентов для варки
+	self.oButtonClear = CUIButton()
+	self.oButtonClear:SetWindowName("oButtonClear")
+	self.oButtonClear:SetAutoDelete(true)
+	self.oButtonClear:InitTexture(ui_tex)
+	self.oButtonClear:SetOriginalRect(248,365,23,39)
+	self.oButtonClear:SetStretchTexture(true)
+	self.oButtonClear:Init(coords[2], 62, 23 * refactor, 39)
+	self:AttachChild(self.oButtonClear)
+	self:AddCallbackEx("oButtonClear", ui_events.BUTTON_CLICKED, self.ClearSlots)
+
+	--	Прикрепляем текстовый индикатор аномалии
+	self.oaAnomaly = CUIStatic()
+	self.oaAnomaly:SetWindowName("oaAnomaly")
+	self.oaAnomaly:SetAutoDelete(true)
+	self.oaAnomaly:SetText(anomaly_name or translate("ui_trans_unknown"))
+	self.oaAnomaly:SetTextColor(255,238,153,26)
+	self.oaAnomaly:SetFont(GetFontGraffiti22Russian())
+	self.oaAnomaly:Init(coords[3], 306, 1200 * refactor, 25)
+	self:AttachChild(self.oaAnomaly)
+
+	--	Прикрепляем кнопку завершения работы 'выход'
+	self.oButtonQuit = CUIButton()
+	self.oButtonQuit:SetWindowName("oButtonQuit")
+	self.oButtonQuit:SetAutoDelete(true)
+	self.oButtonQuit:InitTexture(ui_tex)
+	self.oButtonQuit:SetOriginalRect(124,393,92,25)
+	self.oButtonQuit:SetText(translate("ui_inv_exit"))
+	self.oButtonQuit:SetTextColor(255,238,153,26)
+	self.oButtonQuit:SetFont(GetFontGraffiti19Russian())
+	self.oButtonQuit:SetStretchTexture(true)
+	self.oButtonQuit:Init(coords[4], 302, 92 * refactor, 25)
+	self:AttachChild(self.oButtonQuit)
+	self:AddCallbackEx("oButtonQuit", ui_events.BUTTON_CLICKED, self.Quit)
+
+	--	Прикрепляем кнопку на старт трансмутации 'старт'
+	self.oButtonStart = CUIButton()
+	self.oButtonStart:SetWindowName("oButtonStart")
+	self.oButtonStart:SetAutoDelete(true)
+	self.oButtonStart:InitTexture(ui_tex)
+	self.oButtonStart:SetOriginalRect(124,393,92,25)
+	self.oButtonStart:SetText(translate("ui_trans_start"))
+	self.oButtonStart:SetTextColor(255,238,153,26)
+	self.oButtonStart:SetFont(GetFontGraffiti19Russian())
+	self.oButtonStart:SetStretchTexture(true)
+	self.oButtonStart:Init(coords[5], 302, 92 * refactor, 25)
+	self:AttachChild(self.oButtonStart)
+	self:AddCallbackEx("oButtonStart", ui_events.BUTTON_CLICKED, self.Start)
+
+	--	Прикрепляем кнопку управления СкроллБаром 'налево'
+	self.oButtonPrevLeft = CUIButton()
+	self.oButtonPrevLeft:SetWindowName("oButtonPrevLeft")
+	self.oButtonPrevLeft:SetAutoDelete(true)
+	self.oButtonPrevLeft:InitTexture(ui_tex)
+	self.oButtonPrevLeft:SetOriginalRect(9,393,39,23)
+	self.oButtonPrevLeft:SetStretchTexture(true)
+	self.oButtonPrevLeft:Init(coords[6], 167, 39 * refactor, 23)
+	self:AttachChild(self.oButtonPrevLeft)
+	self:AddCallbackEx("oButtonPrevLeft", ui_events.BUTTON_CLICKED, self.PreviewScrollLeft)
+
+	--	Прикрепляем кнопку управления СкроллБаром 'направо'
+	self.oButtonPrevRight = CUIButton()
+	self.oButtonPrevRight:SetWindowName("oButtonPrevRight")
+	self.oButtonPrevRight:SetAutoDelete(true)
+	self.oButtonPrevRight:InitTexture(ui_tex)
+	self.oButtonPrevRight:SetOriginalRect(52,393,39,23)
+	self.oButtonPrevRight:SetStretchTexture(true)
+	self.oButtonPrevRight:Init(coords[7], 167, 39 * refactor, 23)
+	self:AttachChild(self.oButtonPrevRight)
+	self:AddCallbackEx("oButtonPrevRight", ui_events.BUTTON_CLICKED, self.PreviewScrollRight)
+
+	--	Прикрепляем кнопку управления РецептБаром 'налево'
+	self.oButtonRecLeft = CUIButton()
+	self.oButtonRecLeft:SetWindowName("oButtonRecLeft")
+	self.oButtonRecLeft:SetAutoDelete(true)
+	self.oButtonRecLeft:InitTexture(ui_tex)
+	self.oButtonRecLeft:SetOriginalRect(9,393,39,23)
+	self.oButtonRecLeft:SetStretchTexture(true)
+	self.oButtonRecLeft:Init(coords[6], 246, 39 * refactor, 23)
+	self:AttachChild(self.oButtonRecLeft)
+	self:AddCallbackEx("oButtonRecLeft", ui_events.BUTTON_CLICKED, self.ReceptScrollLeft)
+
+	--	Прикрепляем кнопку управления РецептБаром 'направо'
+	self.oButtonRecRight = CUIButton()
+	self.oButtonRecRight:SetWindowName("oButtonRecRight")
+	self.oButtonRecRight:SetAutoDelete(true)
+	self.oButtonRecRight:InitTexture(ui_tex)
+	self.oButtonRecRight:SetOriginalRect(52,393,39,23)
+	self.oButtonRecRight:SetStretchTexture(true)
+	self.oButtonRecRight:Init(coords[7], 246, 39 * refactor, 23)
+	self:AttachChild(self.oButtonRecRight)
+	self:AddCallbackEx("oButtonRecRight", ui_events.BUTTON_CLICKED, self.ReceptScrollRight)
+end
+
+--	Инициализируем элементы нашего псевдо СкроллБара.
+--	@param	integer	iStartIndex	Стартовый индекс для таблицы артефактов.
+--	@param	integer	iFinalIndex	Финальный индекс для таблицы артефактов.
+--	@param	string	iBarName		Тип скролла для апдейта (инвентарный - "Inv" / рецептный - "Rec").
+function CAmkDeviceTransmutator:UpdScrollBar(iStartIndex, iFinalIndex, iBarName)
+	local iCurrentButton = 0
+	for iSectIndex = iStartIndex, iFinalIndex do
+		local aButton, aSectInfo
+		iCurrentButton = iCurrentButton + 1
+		if iBarName == "Inv" then
+			aButton = aScrollBar[iCurrentButton]
+			aSectInfo = aArtsInfo[iSectIndex]
+		elseif iBarName == "Rec" then
+			aButton = aRecBar[iCurrentButton]
+			aSectInfo = aRecsInfo[iSectIndex]
+		end
+
+		--	Очищаем обьект кнопки из таблицы видимых элементов
+		if aButton.oSlot then
+			self:DetachChild(aButton.oSlot)
+			aButton.oSlot = nil
+		end
+
+		--	Завершаем апдейт скролла если уже нет элементов для инициализации
+		if not aSectInfo then
+			return
+		end
+
+		--	Создаем псевдо слот для арта
+		local oScrollButton = CUIButton()
+		oScrollButton:SetWindowName("oScrollButton"..iSectIndex..iBarName)
+		oScrollButton:SetAutoDelete(true)
+		if aSectInfo.iCount ~= 0 then
+			oScrollButton:InitTexture(aSectInfo.t)
+			oScrollButton:SetOriginalRect(aSectInfo.x, aSectInfo.y, aSectInfo.w, aSectInfo.h)
+			oScrollButton:SetStretchTexture(true)
+		end
+		if aSectInfo.iCount > 1 then
+			oScrollButton:SetText(tostring(aSectInfo.iCount))
+			oScrollButton:SetTextColor(255,238,153,26)
+			oScrollButton:SetFont(GetFontGraffiti19Russian())
+		end
+		oScrollButton:Init(aButton.x, aButton.y, aButton.wt * refactor, aButton.hg)
+		self:AttachChild(oScrollButton)
+		self:AddCallbackEx("oScrollButton"..iSectIndex..iBarName, ui_events.BUTTON_CLICKED, self.AddArtefact, iSectIndex, iBarName)
+		aButton.oSlot = oScrollButton
+	end
+end
+
+--	Полистать СкроллБар влево
+function CAmkDeviceTransmutator:PreviewScrollLeft()
+	if aArtsInfo[aInterval[1] - 1] and aArtsInfo[aInterval[2] - 1] then
+		aInterval = {aInterval[1] - 1, aInterval[2] - 1}
+		self:UpdScrollBar(aInterval[1], aInterval[2], "Inv") -- inventory scrollbar
+	end
+end
+
+--	Полистать СкроллБар вправо
+function CAmkDeviceTransmutator:PreviewScrollRight()
+	if aArtsInfo[aInterval[1] + 1] and aArtsInfo[aInterval[2] + 1] then
+		aInterval = {aInterval[1] + 1, aInterval[2] + 1}
+		self:UpdScrollBar(aInterval[1], aInterval[2], "Inv") -- inventory scrollbar
+	end
+end
+
+--	Полистать РецептБар влево
+function CAmkDeviceTransmutator:ReceptScrollLeft()
+	if aRecsInfo[aRecInterval[1] - 1] and aRecsInfo[aRecInterval[2] - 1] then
+		aRecInterval = {aRecInterval[1] - 1, aRecInterval[2] - 1}
+		self:UpdScrollBar(aRecInterval[1], aRecInterval[2], "Rec") -- recipts bar
+	end
+end
+
+--	Полистать РецептБар вправо
+function CAmkDeviceTransmutator:ReceptScrollRight()
+	if aRecsInfo[aRecInterval[1] + 1] and aRecsInfo[aRecInterval[2] + 1] then
+		aRecInterval = {aRecInterval[1] + 1, aRecInterval[2] + 1}
+		self:UpdScrollBar(aRecInterval[1], aRecInterval[2], "Rec") -- recipts bar
+	end
+end
+
+--	Виндим клавиши для управления
+function CAmkDeviceTransmutator:OnKeyboard(DIK, KeyboardAction)
+	CUIScriptWnd.OnKeyboard(self, DIK, KeyboardAction)
+	if KeyboardAction == ui_events.WINDOW_KEY_PRESSED then
+		if DIK == DIK_keys.DIK_ESCAPE then
+			self:Quit()
+		end
+	end
+	return true
+end
+
+--	Инициализация слота для результата трансмутации.
+--	@param	string	sArtSection	Секция артефакта, результата трансмутации.
+function CAmkDeviceTransmutator:InitResultButton(sArtSection)
+	if config:section_exist(sArtSection) then
+		--	Получаем координаты для иконки
+		local t = get_icon_info_or_override(sArtSection)
+
+		--	Инициализация слота
+		oRes = CUIButton()
+		oRes:SetWindowName("oButtonResult")
+		oRes:SetAutoDelete(true)
+		oRes:InitTexture(t.t)
+		oRes:SetOriginalRect(t.x, t.y, t.w, t.h)
+		oRes:SetStretchTexture(true)
+		oRes:Init(coords[8], 69, 50 * refactor, 50)
+		self:AttachChild(oRes)
+		self:AddCallbackEx("oButtonResult", ui_events.BUTTON_CLICKED, self.UpdateDevice)
+	end
+end
+
+function CAmkDeviceTransmutator:UpdateDevice()
+	aArtsInfo		= {}
+	aArtsInventory 	= {}
+	aRecsInfo		= {}
+	aInterval		= {1,6}
+	aRecInterval	= {1,4}
+	CAmkMergerArtefact()
+
+	self:DetachChild(oRes)
+	oRes = nil
+	self:DetachChild(oNotkomp)
+	oNotkomp = nil
+
+	for k,tbl in pairs(aScrollBar) do
+		if tbl.oSlot then
+			self:DetachChild(tbl.oSlot)
+			tbl.oSlot = nil
+		end
+		tbl.iSectIndex = nil
+	end
+	for k,tbl in pairs(aCmpnSlots) do
+		if tbl.oSlot then
+			self:DetachChild(tbl.oSlot)
+			tbl.oSlot = nil
+		end
+		tbl.iSectIndex = nil
+	end
+	for k,tbl in pairs(aRecBar) do
+		if tbl.oSlot then
+			self:DetachChild(tbl.oSlot)
+			tbl.oSlot = nil
+		end
+		tbl.iSectIndex = nil
+	end
+	self:UpdScrollBar(aInterval[1], aInterval[2], "Inv")
+	self:UpdScrollBar(aRecInterval[1], aRecInterval[2], "Rec")
+end
+
+--	Добавить артефакт на панель активных компонентов
+--	@param	integer	iSectIndex	Индекс секции артефакта который нужно добавить в слот.
+--	@param	string	iBarName		Тип скролла для апдейта (инвентарный - "Inv" / рецептный - "Rec").
+function CAmkDeviceTransmutator:AddArtefact(iSectIndex, iBarName)
+	if oRes ~= nil then
+		self:UpdateDevice()
+		return
+	end
+	local aSectInfo
+	if iBarName == "Inv" then
+		aSectInfo = aArtsInfo[iSectIndex]
+	else -- "Rec"
+		oDevice:ClearSlots()
+		txtNotkomp = nil
+		txtVremya  = nil
+		if oNotkomp then oDevice:DetachChild(oNotkomp) end
+		oNotkomp = nil
+		aSectInfo = aRecsInfo[iSectIndex]
+	end
+	if aSectInfo.iCount == 0 then
+		return
+	end
+
+	--	Итерируем по панели компонентов и ищем свободный слот
+	if iBarName == "Inv" then
+		for iKey, aButton in pairs(aCmpnSlots) do
+			if aButton.oSlot == nil then
+				aSectInfo.iCount = aSectInfo.iCount - 1
+
+				--	Инициализируем псевдо слот (кнопку)
+				local oCmpnSlot = CUIButton()
+				oCmpnSlot:SetWindowName("oCmpnSlot"..iKey)
+				oCmpnSlot:SetAutoDelete(true)
+				oCmpnSlot:InitTexture(aSectInfo.t)
+				oCmpnSlot:SetOriginalRect(aSectInfo.x, aSectInfo.y, aSectInfo.w, aSectInfo.h)
+				oCmpnSlot:SetStretchTexture(true)
+				oCmpnSlot:Init(aButton.x, aButton.y, aButton.wt * refactor, aButton.hg)
+				self:AttachChild(oCmpnSlot)
+				self:AddCallbackEx("oCmpnSlot"..iKey, ui_events.BUTTON_CLICKED, self.DelArtefact, iKey)
+
+				--	Сохраняем данные
+				aButton.oSlot = oCmpnSlot
+				aButton.iSectIndex = iSectIndex
+
+				--	Апдейтим СкроллБар
+				self:UpdScrollBar(aInterval[1], aInterval[2], "Inv")
+				ncmp = ncmp + 1
+				break
+			end
+		end
+	else
+		local params = aReciptsHave[aSectInfo.iKey]
+		local cmp = table.list_add({}, params.comp)
+		local n
+
+		for i, item in ipairs(aArtsInfo) do
+			n = cmp[item.sSection]
+			if n then
+				if n > item.iCount then n = item.iCount end
+
+				for j = 1, n do
+					self:AddArtefact(i, "Inv")
+				end
+				table_sub(cmp, item.sSection, n)
+			end
+		end
+		if table.size(cmp) > 0 then
+			local tblNotKomp = { }
+			for sect, count in pairs(cmp) do
+				for i = 1, count do
+					tblNotKomp[#tblNotKomp + 1] = get_inv_name(sect)
+				end
+			end
+
+			txtNotkomp = table.concat(tblNotKomp, ", ")
+		else
+			txtVremya = transform_number_to_date(params.ctime * 60)
+		end
+
+		if txtNotkomp then
+			-- показываем строку недостающих компонентов
+			oNotkomp = CUIStatic()
+			oNotkomp:SetWindowName("oNotkomp")
+			oNotkomp:SetAutoDelete(true)
+			oNotkomp:SetText(translate("ui_trans_no_ing") .. ": " .. txtNotkomp)
+			oNotkomp:SetTextComplexMode(true)
+			oNotkomp:SetTextColor(255,255,0,0)
+			oNotkomp:SetFont(GetFontGraffiti19Russian())
+			oNotkomp:Init(coords[9], 122, 470 * refactor, 20)
+			self:AttachChild(oNotkomp)
+
+		elseif txtVremya then
+			-- показываем строку времени варки по рецепту
+			oNotkomp = CUIStatic()
+			oNotkomp:SetWindowName("oNotkomp")
+			oNotkomp:SetAutoDelete(true)
+			oNotkomp:SetText(translate("ui_trans_cook_time") .. ": " .. txtVremya)
+			oNotkomp:SetTextColor(255,238,153,26)
+			oNotkomp:SetFont(GetFontGraffiti19Russian())
+			oNotkomp:Init(coords[10], 122, 470 * refactor, 20)
+			self:AttachChild(oNotkomp)
+		end
+	end
+end
+
+--	Очистка панели компонентов для варки
+function CAmkDeviceTransmutator:ClearSlots()
+	for iKey, aButton in pairs(aCmpnSlots) do
+		if aCmpnSlots[iKey] ~=nil then
+			oDevice:DelArtefact(iKey)
+		end
+	end
+end
+
+--	Удалить артефакт из панели компонентов.
+--	@param	integer	iCmpnSlotIndex	Индекс слота панели компонентов.
+function CAmkDeviceTransmutator:DelArtefact(iCmpnSlotIndex)
+	aButton = aCmpnSlots[iCmpnSlotIndex]
+	aSectInfo = aArtsInfo[aButton.iSectIndex]
+
+	--	Если слот активный, то отключаем его
+	if aButton.oSlot then
+		self:DetachChild(aButton.oSlot)
+		aSectInfo.iCount = aSectInfo.iCount + 1
+		aButton.iSectIndex = nil
+		aButton.oSlot = nil
+		self:UpdScrollBar(aInterval[1], aInterval[2], "Inv")
+		ncmp = ncmp - 1
+	end
+	if oNotkomp then
+		self:DetachChild(oNotkomp)
+		oNotkomp = nil
+		txtNotkomp = nil
+		txtVremya  = nil
+	end
+end
+
+--	Выход
+function CAmkDeviceTransmutator:Quit()
+	amkDisableDevice()
+	self:ClearCallbacks()
+	self:GetHolder():start_stop_menu(self, true)
+end
+
+--	Старт трансмутации
+function CAmkDeviceTransmutator:Start()
+	-- с пустыми слотами компонентов и вне аномалии не стартуем
+	if not anomaly_name or ncmp == 0 then return end
+
+	--	Попытаться трансмутировать артефакты
+	CAmkTransmutation()
+end
+
+class "CAmkTransmutation"
+
+function CAmkTransmutation:__init()
+	self.sTransmutants = self:SearchSchemes()
+	if self.sTransmutants ~= nil then
+		self:CreateArtefact()
+	else
+		self:Shooting()
+	end
+end
+
+--	Поиск подходящей схемы трансмутации
+function CAmkTransmutation:SearchSchemes()
+	local act = { }
+	for _, slot in ipairs(aCmpnSlots) do
+		if slot.iSectIndex then
+			act[#act + 1] = aArtsInfo[slot.iSectIndex].sSection
+		end
+	end
+
+	local params, cmp
+	for i = 1, #aReciptsHave do
+		params = aReciptsHave[i]
+		if #params.comp == ncmp then
+			cmp = { }
+			table.list_add(cmp, params.comp)
+			table.list_sub(cmp, act)
+
+			if table.size(cmp) == 0 then
+				return params
+			end
+		end
+	end
+
+	return nil
+end
+
+--	Создание артефакта трансмутанта
+function CAmkTransmutation:CreateArtefact()
+	-- собираем табличку подготовленных для варки компонентов
+
+	local aButton, aArtInfo, oObject
+	for i = 1, #aCmpnSlots do
+		aButton = aCmpnSlots[i]
+		if aButton.iSectIndex then
+			aArtInfo = aArtsInfo[aButton.iSectIndex]
+			--	Вытащить артефакт из базы компонентов.
+			oObject = table_remove(aArtInfo.aArts, #aArtInfo.aArts)
+			--	Удалить артефакт и очистить слот.
+			release(oObject)
+			oDevice:DetachChild(aButton.oSlot)
+			aCmpnSlots[i].iSectIndex = nil
+			aCmpnSlots[i].oSlot = nil
+			ncmp = ncmp - 1
+		end
+	end
+
+	level.add_pp_effector("teleport.ppe", effector_ids.teleport, false)
+
+	return reap_af.trans_do(self.sTransmutants, Actor:position(),
+				Actor:level_vertex_id(), Actor:game_vertex_id(),
+				anomaly_name, 10)
+end
+
+--	Долбонуть актора из-за того что пихает в девайс все, что попало
+function CAmkTransmutation:Shooting()
+	oDevice:Quit()
+	level.add_pp_effector("blink.ppe", 234, false)
+	local posActor = Actor:position()
+	particles_object("anomaly2\\electra2_blast"):play_at_pos(posActor)
+	sound_object("anomaly\\electra_blast1"):play_at_pos(Actor, posActor)
+	local h = hit()
+	h.impulse = 0
+	h.draftsman = Actor
+	h.direction = vector():set(0,0,0)
+	h:bone("bip01_spine")
+	h.power = 0.3
+	h.type = hit.shock
+	Actor:hit(h)
+end

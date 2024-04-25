@@ -426,6 +426,22 @@ function _G.check_time_interval(hours_from, minutes_from, hours_to, minutes_to)
 	return cur_time >= time_from and cur_time < time_to
 end
 ---------------------------------------------------------------------------------------------------
+function _G.transform_number_to_date(_time)
+	if not _time then
+		return translate("ui_st_indefinitely")
+	end
+	local d = _time / 86400
+	if d >= 1 then
+		return math.ceil(d) .. " " .. translate("ui_st_days")
+	end
+	d = _time / 3600
+	if d >= 1 then
+		return math.ceil(d) .. " " .. translate("ui_st_hours")
+	end
+	d = _time / 60
+	return math.ceil(d) .. " " .. translate("ui_st_mins")
+end
+---------------------------------------------------------------------------------------------------
 function _G.send_tip(news_text, header, timeout, showtime, sender, sound)
 	if news_text then
 		if timeout ~= nil and timeout > 0 then
