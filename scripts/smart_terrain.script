@@ -12,8 +12,6 @@ check_period:setHMSms( 0, 0, 0, 50000 )
 
 local CTime_0 = game.CTime()
 
-local monster_classes
-
 local disagreed, agreed, agreed_exclusive = 0, 1, 2
 
 local smart_section = "smart_terrains"
@@ -40,10 +38,6 @@ class "se_smart_terrain" ( cse_alife_smart_zone )
 function se_smart_terrain:__init( section ) super( section )
   self.initialized = false
   self.registred = false
-
-	if not monster_classes then
-		self:fill_monster_classes()
-	end
 end
 
 -- сохранение
@@ -164,7 +158,7 @@ function se_smart_terrain:fill_npc_info( obj, npc_info )
   npc_info.class_id     = obj:clsid()
   npc_info.name         = obj:name()
   npc_info.story_id     = obj.m_story_id
-  npc_info.community    = self:get_obj_community( obj )
+  npc_info.community    = (self:get_obj_community(obj))
   npc_info.profile_name = obj.profile_name and obj:profile_name()
 
   if npc_info.profile_name then
@@ -183,18 +177,12 @@ end
 -- возвращает:
 -- а) если сталкер: группировку сталкера и true
 -- б) если монстр:  вид монстра и false
-function se_smart_terrain:get_obj_community( obj )
-	local cls = obj:clsid()
-	local is_stalker = cls == clsid_script_stalker
-
-	cls = is_stalker and obj:community() or monster_classes[cls]
-	if not cls then
-		abort("smart_terrain: failed to get community for %s %s",
-		      is_stalker and "stalker" or "monster", obj:name())
-		return nil, nil
+function se_smart_terrain:get_obj_community(obj)
+	if obj:clsid() == clsid_script_stalker then
+		return obj:community(), true
+	else
+		return config:r_string_cache(obj:section_name(), "community"), false
 	end
-
-	return cls, is_stalker
 end
 
 -- инициализация.
@@ -604,31 +592,6 @@ function se_smart_terrain:remove_gulag( disable )
   self.gulag_working = false
 
   self.gulag.capacity_non_exclusive = self.gulag.capacity_non_exclusive - self.exclusives
-end
-
--- заполняет таблицу monster_classes
-function se_smart_terrain:fill_monster_classes()
-  if not monster_classes then
-    monster_classes = {
-      [clsid.bloodsucker_s ] = "bloodsucker",
-      [clsid.boar_s        ] = "boar",
-      [clsid.burer_s       ] = "burer",
-      [clsid.cat_s         ] = "cat",
-      [clsid.chimera_s     ] = "chimera",
-      [clsid.controller_s  ] = "controller",
-      [clsid.pseudodog_s   ] = "pseudodog",
-      [clsid.psy_dog_s     ] = "psy_dog",
-      [clsid.dog_s         ] = "dog",
-      [clsid.flesh_s       ] = "flesh",
-      [clsid.fracture_s    ] = "fracture",
-      [clsid.poltergeist_s ] = "poltergeist",
-      [clsid.gigant_s      ] = "pseudo_gigant",
-      [clsid.snork_s       ] = "snork",
-      [clsid.tushkano_s    ] = "tushkano",
-      [clsid.zombie_s      ] = "zombie",
-      [clsid.rat_s         ] = "rat"
-    }
-  end
 end
 
 -- регистрация объекта в симуляторе.
