@@ -1,3 +1,21 @@
+--' спавним сумку Сахара на чаэс-1
+function sahar_sumka_start()
+	got("af_pudd_1")
+	create("sumka_arhara", xyz(274.54000854492, 0.91153953075409, -216.47441101074),
+	       114326, 2350)
+end
+
+--' проверим наличие сумки для Сахара
+function sahar_sumka_have()
+	return has("sumka_arhara")
+end
+
+--' отдадим сумку Сахару
+function sahar_sumka_done(first_speaker, second_speaker)
+	lost("sumka_arhara")
+	second_speaker:set_relation(game_object.friend, first_speaker)
+end
+
 --' проверим наличие финансов на рецепт гусеницы
 function sahar_have_money_50000()
 	return has_money(reap.with_discount(50000))
