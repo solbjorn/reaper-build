@@ -20,7 +20,10 @@ function monster_killed(obj)
 	check_info(obj, tube)
 
 	local n = 2
-	if tube and math.random(100) <= 50 then
+	if curr_level == "l12_stancia_2" and math.random() <= 1 / (level.get_game_difficulty() + 1) then
+		amk.spawn_item_in_inv("mozg", obj)
+		n = 1
+	elseif tube and math.random(100) <= 50 then
 		amk.spawn_item_in_inv("bezoar", obj)
 		n = 1
 	end

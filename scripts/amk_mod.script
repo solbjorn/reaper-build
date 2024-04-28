@@ -1001,9 +1001,6 @@ function check_usable_item(obj)
 		info="info_amk_recipt_dummy"
 		amk.drop_item(Actor,obj)
 		amk.remove_item(obj)
-	else
-		local recipes = get_value("amk_body_recipe", { })
-		info=recipes[obj:id()]
 	end
 	if Actor==nil or info==nil or Actor:has_info(info) then
 		return
@@ -1016,29 +1013,16 @@ function generate_recipe(obj)
 		return
 	end
 	local info=nil
-	local prop=100
-  if level.name()=="l07_military" and obj.character_community and
-          obj:character_community()=="killer" then
-		info="info_amk_recipt_titan_kolobok"
-		prob=30
-  elseif level.name()=="l10_radar" and obj.character_community and
+	local prob = 100
+	if curr_level == "l10_radar" and obj.character_community and
           obj:character_community()=="monolith" then
 		info="info_amk_recipt_controller_skalp"
 		prob=10
 	end
-	if not info then return end
-	local recipes = get_value("amk_body_recipe", { })
-	-- Проверим не генерился ли уже этот рецепт
-	for k,v in pairs(recipes) do
-		if v==info then
-			return
-		end
-	end
+	if not info or has_info(info) or math_random(100) > prob then return end
+
 	-- Сгенерим рецепт
-	if math_random(100)<=prob then
-		recipes[obj:id()]=info
-		set_value("amk_body_recipe", recipes)
-	end
+	give_info(info)
 end
 
 --'*******************************************************************************

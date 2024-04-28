@@ -50,3 +50,58 @@ end
 function otdat_vzyt_ak()
 	lost("wpn_ak74_m1")
 end
+
+--' заспавним листок Стрелка и телепорт в Саркофаге
+function sp_listok()
+	create("arhara_obman5", xyz(37.765, 56.252, 32.024), 6321, 2417)
+end
+
+-- МОЗГ КОНТРОЛЁРА
+
+local anarh_mozg_pos = {
+	{ 236.03979492188, -0.001921147108078, 177.44297790527, 84290, 2577 },
+	{ 297.41760253906, -9.8288059234619e-005, 91.820762634277, 103252, 2593 },
+	{ 402.53814697266, -0.00085476040840149, 123.65032958984, 136893, 2596 },
+	{ 463.08901977539, -0.011636286973953, 174.29406738281, 150821, 2632 },
+	{ 589.619140625, -0.088530570268631, 280.01898193359, 179238, 2618 },
+	{ 853.28405761719, -0.09967228770256, 202.32867431641, 219806, 2638 },
+	{ 954.4169921875, 0.016261160373688, 358.79223632813, 254001, 2651 },
+	{ 881.1181640625, -0.10497552156448, 395.1279296875, 230304, 2652 },
+	{ 794.82708740234, -0.00094565749168396, 367.05541992188, 205852, 2655 },
+	{ 635.68005371094, -0.00069108605384827, 338.8203125, 188625, 2619 },
+	{ 578.91680908203, -0.001433938741684, 202.63926696777, 174479, 2622 }
+}
+
+local anarh_mozg_sect = {
+	"m_controller_normal", "m_controller_normal_fat", "m_controller_old",
+	"m_controller_old_fat", "controller_tubeman", "controller_tubeman_old"
+}
+
+function anarh_mozg_start()
+	local num = (level.get_game_difficulty() + 1) * 2
+	local pos
+
+	for i = 1, num do
+		pos = table.random(anarh_mozg_pos)
+		create(table.random(anarh_mozg_sect), xyz(pos[1], pos[2], pos[3]), pos[4], pos[5])
+	end
+
+	anarh_mozg_pos = nil
+	anarh_mozg_sect = nil
+end
+
+function anarh_mozg_have()
+	return has("mozg", 2)
+end
+
+function anarh_mozg_done(first_speaker, second_speaker)
+	lost("mozg", 2)
+	lost_money(reap.with_discount(300000))
+
+	got("af_kol_4")
+	second_speaker:set_relation(game_object.friend, first_speaker)
+
+	for i = 1, 5 do
+		create("arhara_tele", xyz(37.431274414063, 56.184043884277, 32.08748626709), 4591, 2417)
+	end
+end

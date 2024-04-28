@@ -486,18 +486,19 @@ function actor_binder:save(packet)
 	packet:w_u8(flags)
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:load(reader)
-	local game_difficulty_by_num = {
-		[0] = "gd_novice",
-		[1] = "gd_stalker",
-		[2] = "gd_veteran",
-		[3] = "gd_master"
-	}
+local game_difficulty_by_num = {
+	[0]	= "gd_novice",
+	[1]	= "gd_stalker",
+	[2]	= "gd_veteran",
+	[3]	= "gd_master"
+}
 
+function actor_binder:load(reader)
 	object_binder.load(self, reader)
 
 	--' Загружаем уровень сложности
 	console:execute("g_game_difficulty " .. game_difficulty_by_num[reader:r_u8()])
+	game_difficulty_by_num = nil
 
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT")

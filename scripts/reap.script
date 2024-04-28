@@ -173,7 +173,7 @@ function item_use(binded, obj)
 	local sound = config:r_string_cache(sect, "use_sound")
 	if sound then
 		wpn_hide_disable()
-		timer("reap.wpn_show_enable", level.get_game_difficulty() * 2000, true)
+		timer("reap.wpn_show_enable", (level.get_game_difficulty() + 1) * 2000, true)
 
 		say(sound)
 	end
