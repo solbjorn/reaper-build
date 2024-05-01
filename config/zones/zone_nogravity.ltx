@@ -1,27 +1,14 @@
-[zone_no_gravity]
-GroupControlSection	= spawn_group_zone
-$spawn 			= "zones\nogravity"
+[zone_no_gravity]:anomaly
 class			= Z_NOGRAV
-
 ef_anomaly_type			= 7
 ef_weapon_type			= 19
-
 hit_impulse_scale	= 0.5
 effective_radius	= 0.75 ;размер радиуса в процентах от оригинального, где действует зона
 sound			= zone_mosquito_bald
 postprocess		= postprocess_new
 
-artefacts		=
-BirthProbability = 0.0
-
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.99
 max_start_power		= 1.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-
 hit_type		= shock
 
 disable_time		= -1	;время игнорирования неживого объекта в зоне (-1 если не нужно)
@@ -42,7 +29,3 @@ idle_light			= off
 visible_by_detector = on
 
 blowout_wind		= off
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;рождение артефактов во время срабатывания
-spawn_blowout_artefacts = off

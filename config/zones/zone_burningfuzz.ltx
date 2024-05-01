@@ -1,27 +1,14 @@
-[zone_burning_fuzz]
-GroupControlSection	= spawn_group_zone
-$spawn 			= "zones\burning fuzz"
-;$prefetch 		= 16
+[zone_burning_fuzz]:anomaly
 class			= ZS_BFUZZ
 hit_impulse_scale	= 0
 effective_radius	= 0.75 ;размер радиуса в процентах от оригинального, где действует зона
 sound			= zone_mosquito_bald
 postprocess		= postprocess_fuzz
-
 ef_anomaly_type			= 1
 ef_weapon_type			= 13
 
-artefacts		=
-BirthProbability = 0.0
-
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.99
 max_start_power		= 1.0
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-
 hit_type		= chemical_burn
 hit_effect		= anomaly2\hit_metal_02
 
@@ -62,36 +49,19 @@ visible_by_detector = off
 
 blowout_wind		= off
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;рождение артефактов во время срабатывания
-spawn_blowout_artefacts = off
-
-[zone_burning_fuzz1]
-GroupControlSection	= spawn_group_zone
-$spawn 			= "zones\burning fuzz1"
-;$prefetch 		= 16
+[zone_burning_fuzz1]:anomaly
 class			= ZS_BFUZZ
 visual			= physics\anomaly\topolinypuh
 min_speed_to_react = 7.01
 ef_anomaly_type			= 6
 ef_weapon_type			= 18
-
 hit_impulse_scale	= 0.0
 effective_radius	= 0.75 ;размер радиуса в процентах от оригинального, где действует зона
 sound			= zone_mosquito_bald
 postprocess		= postprocess_fuzz
 
-artefacts		=
-BirthProbability = 0.0
-
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.14
 max_start_power		= 0.15
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-
 hit_type		= chemical_burn
 hit_effect		= anomaly2\hit_metal_02
 
@@ -132,96 +102,28 @@ visible_by_detector = on
 
 blowout_wind		= off
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;рождение артефактов во время срабатывания
-spawn_blowout_artefacts = off
-
 [zone_burning_fuzz_weak]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz weak"
-
 min_speed_to_react = 4.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.59
 max_start_power		= 0.60
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-
 [zone_burning_fuzz_average]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz average"
-
 min_speed_to_react = 3.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.99
 max_start_power		= 1.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-
 [zone_burning_fuzz_strong]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz strong"
-
 min_speed_to_react = 1.50  ;   1.00 < 2.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 1.99
 max_start_power		= 2.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
 
 [zone_burning_fuzz_bottom_weak]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz bottom weak"
-
-artefacts		= af_rusty_thorn,0.8, af_rusty_kristall, 0.2, af_rusty_sea-urchin, 0.0
-BirthProbability = 0.2
-
 min_speed_to_react = 4.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.59
 max_start_power		= 0.60
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 1
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 50  ;вероятность заспавнить артефакт в процентах.
-
 [zone_burning_fuzz_bottom_average]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz bottom average"
-
-artefacts		= af_rusty_thorn,0.6, af_rusty_kristall, 0.4, af_rusty_sea-urchin, 0.0
-BirthProbability = 0.2
-
 min_speed_to_react = 3.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.99
 max_start_power		= 1.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 1
-max_artefact_count	= 1
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 70  ;вероятность заспавнить артефакт в процентах.
-
 [zone_burning_fuzz_bottom_strong]:zone_burning_fuzz1
-$spawn 			= "zones\burning fuzz bottom strong"
-
-artefacts		= af_rusty_thorn,0.2, af_rusty_kristall, 0.6, af_rusty_sea-urchin, 0.2
-BirthProbability = 0.2
-
 min_speed_to_react = 1.50  ;   1.00 < 2.00
-;----------- Anomaly settings -----------------------
 min_start_power		= 1.99
 max_start_power		= 2.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 1
-max_artefact_count	= 2
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 90  ;вероятность заспавнить артефакт в процентах.

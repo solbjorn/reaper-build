@@ -1,27 +1,14 @@
-[zone_mincer]
-GroupControlSection			= spawn_group_zone
-$spawn 						= "zones\mincer zone"
-$prefetch 					= 16
+[zone_mincer]:anomaly
 class						= ZS_MINCE
 script_binding = amk_anoms.bind
-
 ef_anomaly_type				= 2
 ef_weapon_type				= 14
-
 sound						= zone_mosquito_bald
 ;postprocess          = postprocess_gravi
 hit_effect					= explosions\expl_02_sparks
 
-artefacts					= af_blood,0.7, af_mincer_meat, 0.25,af_soul, 0.05
-BirthProbability			= 0.1
-
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.99
 max_start_power		= 1.00
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 0
 
 tearing_particles			=anomaly2\body_tear_00
 torn_particles				=anomaly2\gravi_anomaly_shield_00
@@ -89,27 +76,13 @@ tele_pause						= 4000							;пауза перед тем как снова п�
 
 visible_by_detector			= on
 
-;; ветер
 blowout_wind				= on
-
 blowout_wind_time_start     = 0
 blowout_wind_time_peak      = 5900
 blowout_wind_time_end		= 10000;9999
 blowout_wind_power			= 0.5								;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;рождение артефактов во время срабатывания
-spawn_blowout_artefacts		= on
-
-artefact_spawn_probability	= 0.09								;вероятность, что во время срабатывания аномалии будет рожден артефакт
-artefact_spawn_particles	= anomaly2\gravi_anomaly_shield_00	;партиклы, которые отыграются на месте рождения артефакта (опционально)
-artefact_born_sound			= anomaly\pux_blast					;звук, который отыграются на месте рождения артефакта (опционально)
-throw_out_power				= 15								;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
-artefact_spawn_height		= 10								;(м) высота на центром зоны где будет рожден артефакт
-
 [zone_mincer_weak]:zone_mincer
-$spawn 						= "zones\mincer_zone_weak"
-
 hit_impulse_scale			= 0.1
 effective_radius			= 0.75
 
@@ -120,21 +93,10 @@ throw_in_atten					= 1.2   ;коэфф. затягивания (чем мень�
 blowout_radius_percent			= 0.6;							;радиус (в процентах от всего радиуса) непосредственно выброса
 actor_blowout_radius_percent	= 0.6;
 
-;; ветер
 blowout_wind_power			= 0.2
 
-;----------- Anomaly settings -----------------------
 min_start_power		= 0.49
 max_start_power		= 0.50
-attenuation			= 1
-period				= 1
-min_artefact_count	= 0
-max_artefact_count	= 1
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 50  ;вероятность заспавнить артефакт в процентах.
-
-artefacts					= af_blood,0.8, af_mincer_meat, 0.2,af_soul, 0.0
-BirthProbability			= 0.1
 
 awaking_time				= 50
 blowout_time				= 10000
@@ -142,14 +104,8 @@ accamulate_time				= 4000
 
 ; Не производящая артефактов слабая аномалия
 [zone_mincer_weak_noart]:zone_mincer_weak
-$spawn 						= "zones\mincer_zone_weak_noart"
-spawn_blowout_artefacts		= off
-min_artefact_count	= 0
-max_artefact_count	= 0
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
 
 [zone_mincer_average]:zone_mincer
-$spawn 						= "zones\mincer zone_average"
 hit_impulse_scale			= 0.1
 effective_radius			= 0.8
 
@@ -160,27 +116,16 @@ throw_in_atten					= 1.2	;3;коэфф. затягивания (чем мень�
 blowout_radius_percent			= 0.6							;радиус (в процентах от всего радиуса) непосредственно выброса
 actor_blowout_radius_percent	= 0.6
 
-;; ветер
 blowout_wind_power			= 0.5
-artefacts					= af_blood,0.6, af_mincer_meat, 0.4,af_soul, 0.0
-BirthProbability			= 0.1
 
 awaking_time				= 50
 blowout_time				= 10000
 accamulate_time				= 4000
 
-;----------- Anomaly settings -----------------------
 min_start_power		= 1.19
 max_start_power		= 1.20
-attenuation			= 1
-period				= 1
-min_artefact_count	= 1
-max_artefact_count	= 1
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 70  ;вероятность заспавнить артефакт в процентах.
 
 [zone_mincer_strong]:zone_mincer
-$spawn 						= "zones\mincer zone_strong"
 hit_impulse_scale			= 1
 effective_radius      = 0.85
 
@@ -191,56 +136,20 @@ throw_in_atten					= 1.2	;3;коэфф. затягивания (чем мень�
 blowout_radius_percent			= 0.6							;радиус (в процентах от всего радиуса) непосредственно выброса
 actor_blowout_radius_percent	= 0.6
 
-;; ветер
 blowout_wind_power			= 1
-artefacts					= af_blood,0.2, af_mincer_meat, 0.6,af_soul, 0.2
-BirthProbability			= 0.1
 
 awaking_time				= 25
 blowout_time				= 10000
 accamulate_time				= 1000
 
-;----------- Anomaly settings -----------------------
 min_start_power		= 2.49
 max_start_power		= 2.50
-attenuation			= 1
-period				= 1
-min_artefact_count	= 1
-max_artefact_count	= 2
-artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
-artefact_spawn_rnd	= 90  ;вероятность заспавнить артефакт в процентах.
 
 [amk_zone_mincer]:zone_mincer
-$spawn            = "zones\amk_mincer_zone"
-spawn_blowout_artefacts   = off
-min_artefact_count  = 0
-max_artefact_count  = 0
-artefact_spawn_idle = 24
-
 [amk_zone_mincer_weak]:zone_mincer_weak
-$spawn            = "zones\amk_mincer_zone_weak"
-spawn_blowout_artefacts   = off
-min_artefact_count  = 0
-max_artefact_count  = 0
-artefact_spawn_idle = 24
-
 [amk_zone_mincer_weak_noart]:zone_mincer_weak_noart
-$spawn            = "zones\amk_mincer_zone_weak_noart"
-spawn_blowout_artefacts   = off
-min_artefact_count  = 0
-max_artefact_count  = 0
-artefact_spawn_idle = 24
-
 [amk_zone_mincer_average]:zone_mincer_average
-$spawn            = "amk_zones\mincer zone_average"
-spawn_blowout_artefacts   = off
-min_artefact_count  = 0
-max_artefact_count  = 0
-artefact_spawn_idle = 24
-
 [amk_zone_mincer_strong]:zone_mincer_strong
-$spawn            = "amk_zones\mincer zone_strong"
-spawn_blowout_artefacts   = off
-min_artefact_count  = 0
-max_artefact_count  = 0
-artefact_spawn_idle = 24
+
+[caps_mincer_average]:zone_mincer_average
+caps			= true

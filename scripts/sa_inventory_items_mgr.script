@@ -78,7 +78,7 @@ function update_artefacts_belt_lock(obj)
 		end
 		byte = byte + 4
 	end
-	set_inventory_item_flag(obj, inventory_item_flags.belt, true)
+	set_inventory_item_flag(obj, inventory_item_flags.belt, not obj:is_capsule())
 end
 --[[-----------------------------------------------------------------------------------------------
  * Control inventory cells
@@ -134,7 +134,7 @@ end
  * Artefacts statistic
 --]]-----------------------------------------------------------------------------------------------
 function artefacts_statistic(obj)
-	if obj:is_artefact() then
+	if obj:is_artefact() and not obj:is_capsule() then
 		local se_obj = AI:object(obj:id())
 		if not se_obj.already_taken then
 			actor_stats.add_points("artefacts", get_inventory_item_data(obj, "inv_name"), 1, 1)

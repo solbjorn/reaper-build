@@ -1,27 +1,14 @@
-[zone_ice]
-GroupControlSection     = spawn_group_zone
-$spawn            = "zones\mincer zone"
-$prefetch           = 16
+[zone_ice]:anomaly
 class           = ZS_ICE
 script_binding = amk_anoms.bind
-
 ef_anomaly_type       = 2
 ef_weapon_type        = 14
-
 sound           = zone_mosquito_bald
 ;postprocess          = postprocess_gravi
 hit_effect          = amk\ice_hit
 
-artefacts         = af_blood,0.7, af_mincer_meat, 0.25,af_soul, 0.05
-BirthProbability      = 0.1
-
-;----------- Anomaly settings -----------------------
 min_start_power   = 0.99
 max_start_power   = 1.00
-attenuation     = 1
-period        = 1
-min_artefact_count  = 0
-max_artefact_count  = 0
 
 tearing_particles     =amk\blow_body
 torn_particles        =anomaly2\gravi_anomaly_shield_00
@@ -89,20 +76,11 @@ tele_pause            = 4000              ;пауза перед тем как �
 
 visible_by_detector     = on
 
-;; ветер
 blowout_wind        = on
-
 blowout_wind_time_start     = 0
 blowout_wind_time_peak      = 5900
 blowout_wind_time_end   = 10000;9999
 blowout_wind_power      = 0.5               ;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;рождение артефактов во время срабатывания
-spawn_blowout_artefacts   = on
-
-artefact_spawn_probability  = 0.09                ;вероятность, что во время срабатывания аномалии будет рожден артефакт
-artefact_spawn_particles  = anomaly2\gravi_anomaly_shield_00  ;партиклы, которые отыграются на месте рождения артефакта (опционально)
-artefact_born_sound     = anomaly\pux_blast         ;звук, который отыграются на месте рождения артефакта (опционально)
-throw_out_power       = 15                ;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
-artefact_spawn_height   = 10                ;(м) высота на центром зоны где будет рожден артефакт
+[caps_ice_average]:zone_ice
+caps			= true

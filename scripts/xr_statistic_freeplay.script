@@ -330,7 +330,8 @@ function freeplay_statistic:check_found_item(obj)
 	return
   end
 
-  if obj:is_artefact() and found_artefact_sections[sect] ~= true then
+	if obj:is_artefact() and not obj:is_capsule() and
+	   found_artefact_sections[sect] ~= true then
       self:check_found_artefact_count(obj:cost())
       found_artefact_sections[sect] = true
   end

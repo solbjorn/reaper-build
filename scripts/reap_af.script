@@ -590,7 +590,11 @@ function trans_start(id, anom_id)
 	if not obj or not anom then return end
 
 	local list = anom:clsid()
-	if list == clsid.zone_buzz_s and string.find(anom:section(), "sakbuzz") then return end
+	if (list == clsid.zone_buzz_s and string.find(anom:section(), "sakbuzz")) or
+	   anom:is_capsule() then
+		return
+	end
+
 	list = trans_anom[list]
 	if not list then return end
 
@@ -670,6 +674,11 @@ function trans_info()
 	if not list then return nil, nil, trans_comp end
 
 	local name = translate(trans_names[cls])
+	if anom:is_capsule() then
+		name = translate("ui_trans_caps") .. " " .. name
+		return name, nil, trans_comp
+	end
+
 	local avail = { }
 
 	for _, params in ipairs(list) do

@@ -1,0 +1,184 @@
+;Артефакты, которые при активизации создают аномальные зоны
+[artefact_spawn_zones]
+; Формат: {секция_артефакта} = {секция_зоны},Radius,Power
+caps_ameba		= caps_buzz_average, 		  			2.0, 	1.0
+caps_electra		= caps_witches_galantine_average, 3.0, 	1.0
+caps_gravi		= caps_gravi_zone_average,	  3.0, 	1.0
+caps_ice		= caps_ice_average, 		  			2.0, 	1.0
+caps_mincer		= caps_mincer_average,		  2.0, 	1.0
+caps_mosquito_bald	= caps_mosquito_bald_average, 	  2.0, 	1.0
+caps_zharka		= caps_zharka_static_average,	  		2.0, 	1.5
+
+; Активационные последовательности
+; Формат:		time(sec),	sound_name, light_R,G,B,  light_range,  particle_name,	af_animation_name
+[af_activation_ameba]
+starting		= 5.0, 	anomaly\gravi_idle00, 	  0.8, 1.5, 0.9,  5.0, "anomaly2\artefact_bold_blast_start", 	   "idle"
+flying			= 2.0, 	anomaly\gravi_idle01, 	  0.8, 0.9, 0.8,  2.0, "anomaly2\artefact\artefact_zharka", 	   "idle"
+idle_before_spawning	= 2.0, 	anomaly\gravity_entrance, 1.0, 1.1, 1.0,  0.0, "anomaly2\artefact_bold_blast_finished",    "idle"
+spawning		= 0.5, 	anomaly\pux_blast, 	  1.0, 1.0, 0.5,  5.0, "anomaly2\gravi_anomaly_00", 		   "idle"
+
+[af_activation_bold]
+starting		= 5.0,		anomaly\gravi_idle00,	0.8, 1.5, 0.9,  	5.0,			"anomaly2\artefact_bold_blast_start",	"idle"
+flying			= 2.0,		anomaly\gravi_idle01,	0.8, 0.9, 0.8,  	2.0,			"anomaly2\artefact\artefact_zharka",				"idle"
+idle_before_spawning	= 2.0,		anomaly\gravity_entrance,1.0, 1.1, 1.0,  	0.0,			"anomaly2\artefact_bold_blast_finished",	"idle"
+spawning		= 0.5,		anomaly\pux_blast,  	1.0, 1.0, 0.5,  	5.0,			"anomaly2\gravi_anomaly_00",		"idle"
+
+[af_activation_electra]
+starting		= 5.0, anomaly\bfuzz_blowout, 	  0.8, 1.0, 1.5,  5.0, "anomaly2\artefact_electra_blast_start",    "idle"
+flying			= 2.0, anomaly\electra_idle1, 	  1.0, 1.0, 1.0,  5.0, "anomaly2\artefact\artefact_electra", 	   "idle"
+idle_before_spawning	= 0.0, "", 			  1.0, 1.0, 2.5,  0,   "", 					   "idle"
+spawning		= 2,   "anomaly\pux_blast", 	  1.0, 1.0, 1.5,  5.0, "anomaly2\artefact_electra_blast_finished", "idle"
+
+[af_activation_gravi]
+starting		= 5.0, anomaly\gravi_idle00,		0.5, 1.0, 1.5, 	5.0,	  "anomaly2\artefact_gravi_blast_start",	"idle"
+flying			= 2.0, anomaly\gravi_idle01,		0.8, 1.0, 1.2, 	3.0,	  "anomaly2\artefact\artefact_gravi",		"idle"
+idle_before_spawning	= 5.0, anomaly\gravi_blowout5,	1.0, 1.0, 1,    0.0,	  "anomaly2\artefact_gravi_blast_finished",	"idle"
+spawning		= 1,   anomaly\gravity_entrance,	0.9, 1.1, 1.01, 0.0,	  "",										"idle"
+
+[af_activation_mincer]
+starting		= 5.0,		anomaly\gravi_idle00,	0.5, 1.0, 1.5,  	5.0,			"anomaly2\artefact_gravi_blast_start",	"idle"
+flying			= 2.0,		anomaly\gravi_idle01,	0.8, 1.0, 1.2,  	3.0,			"anomaly2\artefact\artefact_mincer",				"idle"
+idle_before_spawning	= 5.0,		anomaly\gravi_blowout2,	1.0, 1.0, 1.0,  	0.0,			"anomaly2\artefact_gravi_blast_finished",	"idle"
+spawning		= 0.0,		"",						1.0, 1.0, 0.5,  	0.0,			"",		"idle"
+
+[af_activation_zharka]
+starting		= 5.0, 	anomaly\gravi_idle00, 	  1.8, 0.5, 0.5,  5.0, "anomaly2\group_items\gravi_vivert_04", 	   "idle"
+flying			= 2.0, 	anomaly\gravi_idle01, 	  0.8, 0.9, 0.8,  2.0, "monsters\polter_idle_00", 	   	   "idle"
+idle_before_spawning	= 2.0, 	anomaly\gravity_entrance, 1.0, 1.1, 1.0,  0.0, "monsters\group\polter_spark_00",	   "idle"
+spawning		= 2.5, 	"", 	  		  1.0, 1.0, 0.5,  5.0, "monsters\polter_yadro", 		   "idle"
+
+; Капсулы аномалий
+[caps_anom]:ARTEFACT
+inv_weight		= 1
+slot			= 1
+belt			= false
+lights_enabled 		= true
+caps			= true
+
+[artefact_capsule_hud]
+orientation		= 0, 0, 0
+position		= 0, 0, 0
+visual			= weapons\artefact\wpn_artefact_hud.ogf
+anim_idle		= idle
+anim_idle_sprint	= idle_sprint
+anim_hide		= holster
+anim_show		= draw
+anim_activate		= activate
+
+[caps_ameba]:caps_anom
+visual			= artefacts\capsule_ameba.ogf
+description		= enc_zone_artifact_caps_ameba
+inv_name		= st_caps_ameba
+inv_grid_x		= 22
+inv_grid_y		= 5
+cost			= 8000
+jump_height		= .1
+particles		= anomaly2\artefact\artefact_ameba
+trail_light_color	= 0.6, 0.9, 0.6
+trail_light_range	= 1
+artefact_activation_seq	= af_activation_ameba
+hud			= caps_ameba_hud
+
+[caps_ameba_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_ameba_hud.ogf
+
+[caps_electra]:caps_anom
+visual			= artefacts\capsule_electra.ogf
+description		= enc_zone_artifact_caps_electra
+inv_name		= st_caps_electra
+inv_grid_x		= 22
+inv_grid_y		= 6
+cost			= 10000
+jump_height		= .1
+particles		= anomaly2\artefact\artefact_electra
+trail_light_color	= 0.6, 0.7, 0.9
+trail_light_range	= 1.0
+artefact_activation_seq	= af_activation_electra
+hud			= caps_electra_hud
+
+[caps_electra_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_electra_hud.ogf
+
+[caps_gravi]:caps_anom
+visual			= artefacts\capsule_gravi.ogf
+description		= enc_zone_artifact_caps_gravi
+inv_name		= st_caps_gravi
+inv_grid_x		= 21
+inv_grid_y		= 7
+cost			= 8500
+jump_height		= .3
+particles		= anomaly2\artefact\artefact_gravi
+trail_light_color	= 0.6, 0.7, 0.5
+trail_light_range	= 0.5
+artefact_activation_seq	= af_activation_gravi
+hud			= caps_gravi_hud
+
+[caps_gravi_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_gravi_hud.ogf
+
+[caps_ice]:caps_anom
+visual			= artefacts\capsule_ice.ogf
+description		= enc_zone_artifact_caps_ice
+inv_name		= st_caps_ice
+inv_grid_x		= 22
+inv_grid_y		= 7
+cost			= 10000
+jump_height		= .1
+particles		= anomaly2\artefact\artefact_electra
+trail_light_color	= 0.6, 0.7, 0.9
+trail_light_range	= 1.0
+artefact_activation_seq	= af_activation_electra
+hud			= caps_ice_hud
+
+[caps_ice_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_ice_hud.ogf
+
+[caps_mincer]:caps_anom
+visual			= artefacts\capsule_mincer.ogf
+description		= enc_zone_artifact_caps_mincer
+inv_name		= st_caps_mincer
+inv_grid_x		= 23
+inv_grid_y		= 5
+cost			= 9200
+jump_height		= .1
+particles		= anomaly2\artefact\artefact_mincer
+trail_light_color	= 0.9, 0.7, 0.5
+trail_light_range	= 1.0
+artefact_activation_seq	= af_activation_mincer
+hud			= caps_mincer_hud
+
+[caps_mincer_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_mincer_hud.ogf
+
+[caps_mosquito_bald]:caps_anom
+visual			= artefacts\capsule_bald.ogf
+description		= enc_zone_caps_mosquito_bald
+inv_name		= st_caps_mosquito_bald
+inv_grid_x		= 20
+inv_grid_y		= 7
+cost			= 9000
+jump_height		= .5
+particles		= anomaly2\artefact\artefact_gravi
+trail_light_color	= 0.9, 0.7, 0.5
+trail_light_range	= 1.0
+artefact_activation_seq	= af_activation_bold
+hud			= caps_mosquito_bald_hud
+
+[caps_mosquito_bald_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_bald_hud.ogf
+
+[caps_zharka]:caps_anom
+visual			= artefacts\capsule_zharka.ogf
+description		= enc_zone_artifact_caps_zharka
+inv_name		= st_caps_zharka
+inv_grid_x		= 23
+inv_grid_y		= 6
+cost			= 8700
+particles		= anomaly2\artefact\artefact_zharka
+trail_light_color	= 0.9, 0.5, 0.5
+trail_light_range	= 3.0
+artefact_activation_seq	= af_activation_zharka
+hud			= caps_zharka_hud
+
+[caps_zharka_hud]:artefact_capsule_hud
+visual			= weapons\artefact\capsule_zharka_hud.ogf

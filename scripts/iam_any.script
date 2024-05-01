@@ -228,6 +228,10 @@ function is_btr(obj)
 	return (vis and string.find(vis, "btr")) ~= nil
 end
 
+function is_capsule(obj)
+	return config:r_bool_cache(obj.section and obj:section() or obj:section_name(), "caps") == true
+end
+
 function is_car(obj)
 	return obj:clsid() == clsid_car_s
 end
