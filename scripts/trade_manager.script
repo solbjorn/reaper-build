@@ -11,22 +11,22 @@ local generic_ltx = "trade\\trade_generic.ltx"
 local generic_tt
 
 local traders = {
-	['amk_vitek_voron']        = { val = "voron_enough",    cnt = 5 }, -- Витёк Ворон
-	['mil_freedom_member0018'] = { val = "maks_enough",     cnt = 4 }, -- Макс
-	['escape_trader']          = { val = "sidor_enough",    cnt = 3 }, -- Сидорович
-	['bar_barman']             = { val = "barman_enough",   cnt = 5 }, -- Бармен
-	['bar_dolg_petrenko']      = { val = "petrenko_enough", cnt = 4 }, -- Петренко
-	['mil_freedom_member0021'] = { val = "skraga_enough",   cnt = 3 }, -- Скряга
-	['yantar_ecolog_general']  = { val = "sakharov_enough", cnt = 5 }, -- Сахаров
-	['Sak']                    = { val = "sak_enough",      cnt = 5 }, -- Сяк
-	['doktor']                 = { val = "doktor_enough",   cnt = 4 }, -- Доктор в Припяти
-	['sak_military_stalker']   = { val = "sherstyk_enough", cnt = 3 }, -- Шерстюк
-	['val_bandit_trader']      = { val = "jlob_enough",     cnt = 3 }, -- Жила
-	['esc_bridge_soldier5']    = { val = "kuznezov_enough", cnt = 4 }, -- Кузнецов
-	['esc_dan']                = { val = "dan_enough",      cnt = 5 }  -- Дэн
+	[story_ids.gar_voron]			= { val = "voron_enough",	cnt = 5 }, -- Витёк Ворон
+	[story_ids.Mil_Master_Max]		= { val = "maks_enough",	cnt = 4 }, -- Макс
+	[story_ids.Escape_Trader]		= { val = "sidor_enough",	cnt = 3 }, -- Сидорович
+	[story_ids.bar_Barman]			= { val = "barman_enough",	cnt = 5 }, -- Бармен
+	[story_ids.bar_dolg_polkovnik_petrenko]	= { val = "petrenko_enough",	cnt = 4 }, -- Петренко
+	[story_ids.Mil_Miser]			= { val = "skraga_enough",	cnt = 3 }, -- Скряга
+	[story_ids.yan_general_ecolog]		= { val = "sakharov_enough",	cnt = 5 }, -- Сахаров
+	[story_ids.Sak]				= { val = "sak_enough",		cnt = 5 }, -- Сяк
+	[story_ids.Doktor]			= { val = "doktor_enough",	cnt = 4 }, -- Доктор в Припяти
+	[story_ids.Sherstuk]			= { val = "sherstyk_enough",	cnt = 3 }, -- Шерстюк
+	[story_ids.val_bandit_trader]		= { val = "jlob_enough",	cnt = 3 }, -- Жила
+	[story_ids.esc_kuznetsov]		= { val = "kuznezov_enough",	cnt = 4 }, -- Кузнецов
+	[story_ids.esc_dan]			= { val = "dan_enough",		cnt = 5 }  -- Дэн
 }
 
-local checklist = { "amk_mini_bar_kulinar", "ecolog_linspiro", "trader_banderos" }
+local checklist = { story_ids.gar_kulinar, story_ids.bar_linspiro_ecolog, story_ids.val_horyn }
 for name, _ in pairs(traders) do
 	checklist[#checklist + 1] = name
 end
@@ -104,7 +104,7 @@ function first_update(npc)
 		npc:sell_condition(tt.config, str)
 	end
 
-	if tt.buy_supplies or traders[npc:name()] then
+	if tt.buy_supplies or traders[npc.m_story_id or npc:story_id()] then
 		resupply(npc)
 	end
 end
@@ -123,7 +123,7 @@ function resupply(npc)
 		end
 	end
 
-	local lim = traders[npc:name()]
+	local lim = traders[npc.m_story_id or npc:story_id()]
 	if lim then
 		del_value(lim.val)
 	end
@@ -140,7 +140,7 @@ end
 function check_supplies()
 	local sobj, obj
 	for i = 1, #checklist do
-		sobj = server_object(checklist[i])
+		sobj = story_object(checklist[i])
 		if sobj and sobj.resupply_time ~= 0 and sobj.resupply_time <= time_game_hours and
 		   sobj:alive() then
 			obj = level_object(sobj.id)
@@ -171,4 +171,16 @@ function get_item_condition()
 		outfit	= tt.outf_condition or generic_tt.outf_condition,
 		part	= tt.part_condition or generic_tt.part_condition
 	}
+end
+
+function trader_enough(id)
+	local lim = traders[id]
+
+	return get_value(lim.val, 0) >= lim.cnt
+end
+
+function trader_count(id)
+	local lim = traders[id]
+
+	set_value(lim.val, get_value(lim.val, 0) + 1)
 end

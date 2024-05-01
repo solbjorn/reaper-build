@@ -32,13 +32,13 @@ function get_money_then_leave(first_speaker, second_speaker)
 end
 
 function is_wounded(first_speaker, second_speaker)
-    if db.storage[first_speaker:id()].wounded ~= nil and
-       db.storage[first_speaker:id()].wounded.wound_manager.can_use_medkit == true
-    then
-        return false
-    end
+	local npc = (first_speaker:id() == 0) and second_speaker or first_speaker
+	local wounded = db.storage[npc:id()].wounded
+	if wounded and wounded.wound_manager.can_use_medkit == true then
+		return false
+	end
 
-	return xr_wounded.is_wounded(first_speaker)
+	return xr_wounded.is_wounded(npc)
 end
 
 function is_opp_wounded(first_speaker, second_speaker, dialog_id)
@@ -53,7 +53,9 @@ end
 function is_not_wounded(first_speaker, second_speaker)
 	return not is_wounded(first_speaker, second_speaker)
 end
-
+function is_not_opp_wounded(first_speaker, second_speaker)
+	return not is_opp_wounded(first_speaker, second_speaker)
+end
 function actor_have_medkit(first_speaker, second_speaker)
 	return first_speaker:object("medkit") ~= nil or
 		   first_speaker:object("medkit_army") ~= nil or
