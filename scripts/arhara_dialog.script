@@ -53,6 +53,7 @@ end
 
 --' заспавним листок Стрелка и телепорт в Саркофаге
 function sp_listok()
+	create("arhara_listok", xyz(37.540, 56.258, 31.288), 6321, 2417)
 	create("arhara_obman5", xyz(37.765, 56.252, 32.024), 6321, 2417)
 end
 
@@ -104,4 +105,32 @@ function anarh_mozg_done(first_speaker, second_speaker)
 	for i = 1, 5 do
 		create("arhara_tele", xyz(37.431274414063, 56.184043884277, 32.08748626709), 4591, 2417)
 	end
+end
+
+--' спавним телепорт в тайник на Агре
+local norm_pos = vector():set(-39.155300140381, 0.77279758453369, 39.892715454102)
+
+function spawn_teleport_agro_norm_taynik(obj)
+	if curr_level ~= "l03_agroprom" then return end
+
+	if not has_info("arhara_listok_have") or not has_info("info_artmod_gusenica") then return end
+	if obj:position():distance_to_sqr(norm_pos) > 2.5 then return end
+
+	timer("arhara_dialog.spawn_teleport_agro_norm_taynik_2", 200, true, obj:id())
+end
+
+function spawn_teleport_agro_norm_taynik_2(id)
+	local sobj = server_object(id)
+	if not sobj or sobj.parent_id ~= 65535 then return end
+
+	create_teleport("m_teleport_agro_norm_taynik", norm_pos, 203745, 700)
+	release(sobj)
+end
+
+--' спавним блок включения переходов на агре
+function spawn_strelok_pda()
+	if has_info("arhara_listok_have") then return end
+
+	create("strelok_pda", xyz(-37.030, -3.887, 46.352), 203086, 672)
+	give_info("arhara_listok_have")
 end

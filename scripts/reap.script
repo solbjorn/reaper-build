@@ -22,19 +22,6 @@ function net_spawn()
 	reap_misc.net_spawn()
 end
 
-function net_destroy()
-	ui_scroll_indicators.destroy_indicators()
-end
-
-function actor_death(victim, who)
-	Dream:stopper()
-
-	reap_misc.actor_killed()
-	reap_misc.kill_online_controllers()
-
-	news_main.on_death(victim, who)
-end
-
 function update()
 	if start then
 		level_tasks.check_lchanger_location()
@@ -65,33 +52,6 @@ function update()
 
 		next_update_1000 = time_real_ms + 1000
 	end
-end
-
-function item_take(obj)
-	local sect = obj:section()
-	if screen.precache_frame <= 1 and not Actor:is_in_ruck(obj) and
-	   config:r_bool_cache(sect, "default_to_ruck", true) then
-		Actor:move_to_ruck(obj)
-	end
-
-	Inventory:on_item_take(obj)
-	bolt_ending.on_item_take(obj)
-
-	if obj:is_artefact() then
-		art_hit.hit_by_art(obj)
-	end
-	if sect == "val_zapis_1" and not has_info("coll_tele1_on") then
-		valerich_treasures.spawn_next(1)
-	end
-end
-
-function item_drop(obj)
-	Inventory:on_item_drop(obj)
-
-	bolt_ending.on_item_drop(obj)
-	grenade_belt.on_item_drop(obj)
-
-	reap_af.item_drop(obj)
 end
 
 local detectors = table.tohash({
@@ -176,23 +136,6 @@ function item_use(binded, obj)
 		timer("reap.wpn_show_enable", (level.get_game_difficulty() + 1) * 2000, true)
 
 		say(sound)
-	end
-end
-
-function take_item_from_box(box, item)
-	if box:section() == "m_inventory_box" and box:is_inv_box_empty() then
-		level.start_stop_menu(level.main_input_receiver(), true)
-		AI:create("treasure_item", box:position(), Actor:level_vertex_id(),
-			  Actor:game_vertex_id())
-		AI:release(AI:object(box:id()))
-	end
-
-	local sect = item:section()
-	if string.sub(sect, 1, 10) == "val_zapis_" then
-		local name, id = string.match(sect, "(val_zapis_)(%d+)")
-		if name and id then
-			valerich_treasures.spawn_next(tonumber(id))
-		end
 	end
 end
 

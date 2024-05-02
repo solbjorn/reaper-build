@@ -244,23 +244,37 @@ function generate_anoms(status)
 end
 
 -- аномалии, которые не исчезнут при НИ, да и вообще
+local exclusion_part = {
+	"_mincer",
+	"esc_zone_witches",
+	"pri_zone_witches",
+	"rostok_zone_witches",
+	"rostok_zone_zharka_static",
+	"teleport",
+	"tutorial"
+}
+local exclusion_clsid
+
 function check_exclusion(obj, map)
 	local obj_section = obj:section_name()
-	if string_find(obj_section, "amk_") then return false end
-
-	if not level_anoms[map] then
-		return true
+	if obj_section == "zone_ice" or string_find(obj_section, "amk_") or
+	   obj:is_capsule() then
+		return false
 	end
 
-	local obj_name = obj:name()
-	return string_find(obj_section, "radioactive")							-- радиоактивные зоны из all.spawn
-		or string_find(obj_name, "esc_zone_witches")					-- перемещающаяся электра (Кордон)
-		or string_find(obj_name, "pri_zone_witches")						-- электра на колесе обозрения (ЦП)
-		or string_find(obj_section, "burning_fuzz")						-- тополиный пух
-		or string_find(obj_name, "rostok_zone_witches")					-- электры везде (Росток)
-		or string_find(obj_name, "rostok_zone_zharka_static")			-- жарки в тоннеле (Росток)
-		or string_find(obj_name, "tutorial")								-- эпичная смерть псевдоплоти (Кордон)
-		or string_find(obj_name, "_mincer")
+	if not level_anoms[map] then return true end
+
+	if not exclusion_clsid then
+		exclusion_clsid = table.tohash({ clsid.zone_bfuzz_s, clsid.zone_radioactive })
+	end
+	if exclusion_clsid[obj:clsid()] then return true end
+
+	local name = obj:name()
+	for i = 1, #exclusion_part do
+		if string_find(name, exclusion_part[i]) then return true end
+	end
+
+	return false
 end
 
 function check_coordinates(pos, lname)

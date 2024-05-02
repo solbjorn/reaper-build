@@ -1,0 +1,89 @@
+--[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local string_sub = string.sub
+
+--[[---------------------------------------------------------------------------
+ * Callbacks
+--]]---------------------------------------------------------------------------
+
+local item_take_fn = {
+	arhara_listok		= arhara_dialog.spawn_strelok_pda,
+	val_zapis_1 = function()
+		if not has_info("coll_tele1_on") then
+			valerich_treasures.spawn_next(1)
+		end
+	end
+}
+
+function item_take(obj)
+	local sect = obj:section()
+	if screen.precache_frame <= 1 and not Actor:is_in_ruck(obj) and
+	   config:r_bool_cache(sect, "default_to_ruck", true) then
+		Actor:move_to_ruck(obj)
+	end
+
+	Inventory:on_item_take(obj)
+	bolt_ending.on_item_take(obj)
+
+	if obj:is_artefact() then
+		art_hit.hit_by_art(obj)
+	end
+
+	local fn = item_take_fn[sect]
+	if not fn then return end
+
+	if type(fn) == "string" then
+		give_info(fn)
+	else
+		fn(obj)
+	end
+end
+
+function take_item_from_box(box, item)
+	if box:section() == "m_inventory_box" and box:is_inv_box_empty() then
+		level.start_stop_menu(level.main_input_receiver(), true)
+		create("treasure_item", xyz(), 0, 0, 0)
+		release(box)
+	end
+
+	local sect = item:section()
+	if string_sub(sect, 1, 10) == "val_zapis_" then
+		local name, id = string.match(sect, "(val_zapis_)(%d+)")
+		if name and id then
+			valerich_treasures.spawn_next(tonumber(id))
+		end
+	end
+end
+
+local item_drop_fn = {
+	af_caterpillar		= arhara_dialog.spawn_teleport_agro_norm_taynik
+}
+
+function item_drop(obj)
+	Inventory:on_item_drop(obj)
+
+	bolt_ending.on_item_drop(obj)
+	grenade_belt.on_item_drop(obj)
+
+	reap_af.item_drop(obj)
+
+	local fn = item_drop_fn[obj:section()]
+	if fn then
+		fn(obj)
+	end
+end
+
+function actor_death(victim, who)
+	Dream:stopper()
+
+	reap_misc.actor_killed()
+	reap_misc.kill_online_controllers()
+
+	news_main.on_death(victim, who)
+end
+
+function net_destroy()
+	ui_scroll_indicators.destroy_indicators()
+end
