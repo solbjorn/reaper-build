@@ -129,9 +129,9 @@ function el_chimera_hit(self)
            else --dist
                 if math.random()<0.3 then
                    if math.random()>0.5 then
-                      hit_sound="Внимание! Электрохимера! Близко не приближаться! На помощь! Поддержи огнем! zz" --75 знаков
+                      hit_sound = translate("tag_el_1")
                    else
-                      hit_sound="Внимание!Напоролись на электрохимеру,несем потери,требуется помощь!Координаты "
+                      hit_sound = translate("tag_el_2")
                    end
                    t1 = math.random(1,20)
                    h_t1 = string.sub(hit_sound,t1, t1+math.random(4,25-t1)).."."
@@ -146,7 +146,7 @@ function el_chimera_hit(self)
                    else
                       hit_txt = h_t1..h_t2..h_t3
                    end
-                   amk.send_tip (hit_txt.."...(обрыв связи)",news_main.get_npc_name(hitobj),nil,7)
+                   amk.send_tip(hit_txt .. translate("tag_el_3"), news_main.get_npc_name(hitobj),nil,7)
                 end --random для сообщений send_tip
            end --dist
            n = n+1
