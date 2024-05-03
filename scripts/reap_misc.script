@@ -8,10 +8,8 @@ local clsid_controller_s = clsid.controller_s
  * AMK
 --]]---------------------------------------------------------------------------
 
-local gg_kick = config:r_u32_ex("gg_kick", "enabled", 0) > 0
-
 function hit_effectors(amount)
-	if not gg_kick or amount <= 0.05 or not actor_flags.alive then
+	if amount <= 0.05 or not actor_flags.alive then
 		return
 	end
 
