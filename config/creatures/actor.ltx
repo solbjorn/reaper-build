@@ -1,13 +1,9 @@
 [actor_terrain]
 	255,255,000,255
 
-[actor]:common_ph_friction_params_on_npc_death
-GroupControlSection		= spawn_group
-$spawn 					= "actor"
+[actor]:base, friction
 $ed_icon				= ed\ed_actor
 $player 				= on
-$prefetch 				= 16
-cform                   = skeleton
 class                   = O_ACTOR
 money					= 0
 rank					= 0
@@ -21,8 +17,8 @@ max_item_mass			= 50.0
 jump_speed              = 6.0
 crouch_coef 			= 0.45
 climb_coef				= 0.7
-run_coef                = 2.1
-sprint_koef				= 2.6
+run_coef                = 1.8
+sprint_koef				= 2.2
 run_back_coef			= 1.8
 walk_back_coef			= 0.8
 air_control_param		= 0.1
@@ -82,7 +78,7 @@ heavy_breath_snd	= actor\breath_1		;звук тяжелого дыхания при усталости
 heavy_blood_snd		= affects\heartbeat; heart\8
 
 material						= creatures\actor
-camera_height_factor			= 0.94
+camera_height_factor			= 0.95
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-----(AMK SNIPER ADDON v1.0)-----
 ;дисперсия стрельбы с учетом ходьбы и бега
@@ -169,7 +165,7 @@ explosion_immunity 			= 1.0
 fire_wound_immunity  		= 1.0
 
 [actor_condition]
-satiety_v					= 0.000025				;скорость уменьшения сытости со временем
+satiety_v					= 0.00003				;скорость уменьшения сытости со временем
 radiation_v					= 0.0001				;скорость уменьшения радиации
 satiety_power_v				= 0.000055				;увеличение силы при уменьшении сытости
 satiety_health_v			= 0.0001				;увеличение здоровья при уменьшении сытости
@@ -177,14 +173,14 @@ satiety_critical			= 0.3					;критическое значения сытости (в процентах от 0..1)
 radiation_health_v			= 0.004					;уменьшение здоровья при воздействии радиации
 morale_v					= 0.0001				;скорость восстановления морали
 psy_health_v				= 0.001					;скорость восстановления psy-здоровья
-alcohol_v					= -0.0005
+alcohol_v					= -0.0003
 health_hit_part				= 1.0					;процент хита, уходящий на отнимание здоровья
 power_hit_part				= 0.1					;процент хита, уходящий на отнимание силы
 max_power_leak_speed		= 0.0					;накопление усталости (макс граница, до которой восстанавливается сила) в секунду игрового времени
 max_walk_weight				= 60					;максимальный вес, который можно нести
 
 bleeding_v					= 0.001			 		;потеря крови при номинальной ране в секунду
-wound_incarnation_v			= 0.003		 			;скорость заживления раны
+wound_incarnation_v			= 0.002		 			;скорость заживления раны
 min_wound_size				= 0.0256				;минимальный размер раны, после которого она считается зажившей
 
 ;--when actor in sleep
@@ -217,10 +213,10 @@ accel_k					=	3;5					;коэффициент на бег (умножается walk_power, walk_weight_po
 sprint_k				=	75;150;185;180;200;	;коэффициент на "sprint" бег (умножается walk_power, walk_weight_power)
 
 ; хромота
-limping_health_begin =	0.1		;порог здоровья меньше которого актер начинает хромать
-limping_health_end   =	0.2		;порог здоровья больше которого актер перестает хромать
-limping_power_begin  =	0.1		;порог силы меньше которого актер начинает хромать
-limping_power_end	 =	0.2		;порог силы больше которого актер перестает хромать
+limping_health_begin =	0.15		;порог здоровья меньше которого актер начинает хромать
+limping_health_end   =	0.25		;порог здоровья больше которого актер перестает хромать
+limping_power_begin  =	0.15		;порог силы меньше которого актер начинает хромать
+limping_power_end	 =	0.25		;порог силы больше которого актер перестает хромать
 use_limping_state	 = on
 
 cant_walk_power_begin =	0.01	;порог силы меньше которого актер не может двигаться
@@ -305,3 +301,4 @@ chemical_burn	=actor\pain1,actor\pain2,actor\pain3;  ,actor\hurt4
 explosion		=affects\tinnitus3a
 wound_2			=actor\hurt1,actor\hurt2,actor\hurt3,actor\hurt4
 physic_strike	=actor\pain1,actor\pain2,actor\pain3; ,actor\hurt4
+fire				= affects\tinnitus3a
