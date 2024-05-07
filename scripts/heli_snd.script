@@ -3,38 +3,38 @@
 
 local snd = {
 	snd_see_enemy = {
-		voice( [[helicopter\see_enemy_1]] ),
-		voice( [[helicopter\see_enemy_2]] ),
-		voice( [[helicopter\see_enemy_3]] ),
-		voice( [[helicopter\see_enemy_4]] ),
-		voice( [[helicopter\see_enemy_5]] ),
-		voice( [[helicopter\see_enemy_6]] ),
-		voice( [[helicopter\see_enemy_7]] )
+		"see_enemy_1",
+		"see_enemy_2",
+		"see_enemy_3",
+		"see_enemy_4",
+		"see_enemy_5",
+		"see_enemy_6",
+		"see_enemy_7"
 	},
 	snd_hit = {
-		voice( [[helicopter\hit_1]] ),
-		voice( [[helicopter\hit_2]] ),
-		voice( [[helicopter\hit_3]] ),
-		voice( [[helicopter\hit_4]] ),
-		voice( [[helicopter\hit_5]] ),
-		voice( [[helicopter\hit_6]] ),
-		voice( [[helicopter\hit_7]] ),
-		voice( [[helicopter\hit_8]] ),
-		voice( [[helicopter\hit_9]] )
+		"hit_1",
+		"hit_2",
+		"hit_3",
+		"hit_4",
+		"hit_5",
+		"hit_6",
+		"hit_7",
+		"hit_8",
+		"hit_9"
 	},
 	snd_damaged = {
-		voice( [[helicopter\damage_1]] ),
-		voice( [[helicopter\damage_2]] ),
-		voice( [[helicopter\damage_3]] ),
-		voice( [[helicopter\damage_4]] )
+		"damage_1",
+		"damage_2",
+		"damage_3",
+		"damage_4"
 	},
 	snd_down = {
-		voice( [[helicopter\death_1]] ),
-		voice( [[helicopter\death_2]] ),
-		voice( [[helicopter\death_3]] ),
-		voice( [[helicopter\death_4]] ),
-		voice( [[helicopter\death_5]] ),
-		voice( [[helicopter\death_6]] )
+		"death_1",
+		"death_2",
+		"death_3",
+		"death_4",
+		"death_5",
+		"death_6"
 	}
 }
 
@@ -48,7 +48,7 @@ function play_snd( st, snd_set, priority )
 	then
 		stop_snd( st )
 
-		st.snd_obj = table.random(snd[snd_set])
+		st.snd_obj = voice([[helicopter\]] .. table.random(snd[snd_set]))
 		st.snd_obj:play( Actor, 0, sound_object.s2d )
 
 		st.snd_priority = priority
