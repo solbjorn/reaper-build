@@ -998,48 +998,12 @@ function with_discount(num)
 	return math.floor(num * freeplay_stats:get_found_pda_discount())
 end
 
-local level_names = {
-	[1]		= "Escape",
-	[2]		= "Garbage",
-	[3]		= "Agroprom",
-	[4]		= "enc_zone_l03u_agr_underground",
-	[5]		= "Darkdolina",
-	[6]		= "enc_zone_l04u_labx18",
-	[7]		= "Bar",
-	[8]		= "Rostok",
-	[9]		= "Yantar",
-	[10]		= "enc_zone_l08u_brainlab",
-	[11]		= "Military-loc",
-	[13]		= "Radar",
-	[14]		= "Pripiat",
-	[15]		= "enc_zone_l12_stancia",
-	[16]		= "enc_zone_l12u_sarcofag",
-	[17]		= "enc_zone_l12u_control_monolith",
-	[19]		= "enc_zone_l12_stancia_2",
-	[20]		= "enc_zone_l10u_bunker"
-}
-
-level_names.l01_escape = level_names[1]
-level_names.l02_garbage = level_names[2]
-level_names.l03_agroprom = level_names[3]
-level_names.l03u_agr_underground = level_names[4]
-level_names.l04_darkvalley = level_names[5]
-level_names.l04u_labx18 = level_names[6]
-level_names.l05_bar = level_names[7]
-level_names.l06_rostok = level_names[8]
-level_names.l07_military = level_names[11]
-level_names.l08_yantar = level_names[9]
-level_names.l08u_brainlab = level_names[10]
-level_names.l10_radar = level_names[13]
-level_names.l10u_bunker = level_names[20]
-level_names.l11_pripyat = level_names[14]
-level_names.l12_stancia = level_names[15]
-level_names.l12_stancia_2 = level_names[19]
-level_names.l12u_control_monolith = level_names[17]
-level_names.l12u_sarcofag = level_names[16]
-
 function translate_level(lvl)
-	if type(lvl) == "userdata" then lvl = object_level(lvl) end
+	if type(lvl) == "userdata" then
+		lvl = object_level_name(lvl)
+	elseif type(lvl) == "number" then
+		lvl = AI:level_name(lvl)
+	end
 
-	return translate(level_names[lvl])
+	return translate(lvl)
 end
