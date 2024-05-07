@@ -190,8 +190,7 @@ function play_particle_on_path(actor, npc, p)
     local count = path:count()
     for a = 0,count-1,1 do
         if math_random(100) <= point_prob then
-            local particle = particles_object(name)
-            particle:play_at_pos(path:point(a))
+            particles_object(name):play_at_pos(path:point(a))
         end
     end
 end
@@ -491,11 +490,11 @@ function gar_dm_bandits_fight(actor, npc)
 	}
 	for i, sid in ipairs(bandits) do
 		local bandit = level_story_object(sid)
-		if bandit and bandit:alive() then
-			bandit:set_character_community("bandit", 0, 0)
+		if bandit then
 			novice:set_relation(game_object.enemy, bandit)
 			if not ignore_actor then
 				bandit:set_relation(game_object.enemy, Actor)
+				bandit:set_character_community("bandit", 0, 0)
 			end
 			bandit:set_relation(game_object.enemy, novice)
 		end
@@ -884,6 +883,11 @@ function bar_actor_is_enemy(actor, npc)
       xr_gulag.setGulagEnemy("bar_dolg_veterans", Actor)
       xr_gulag.setGulagEnemy("bar_dolg_bunker", Actor)
       xr_gulag.setGulagEnemy("bar_visitors", Actor)
+
+	local obj = level_story_object(story_ids.bar_dolg_polkovnik_petrenko)
+	if obj then
+		obj:set_relation(game_object.enemy, Actor)
+	end
 end
 
 function bar_actor_enemy_set (actor, npc)
@@ -1102,12 +1106,7 @@ function mil_actor_enemy_reset (actor, npc)
 end
 
 function mil_bomb_explode (actor, npc)
-    local source = nil
-       local se_obj = AI:story_object (723)
-       if se_obj then
-          source = level.object_by_id(se_obj.id)
-       end
-
+	local source = level_story_object(story_ids.Mil_Bomb)
     if source == nil then
        return
     end
@@ -1131,8 +1130,8 @@ function mil_set_alarm (actor, npc)
        return
     end
 
-    this.set_stalker_enemy (702, skull)     -- hit to Lukash
-    this.set_stalker_enemy (707, skull)     -- hit to Max
+    this.set_stalker_enemy (702, skull)     -- hit to Max
+    this.set_stalker_enemy (707, skull)     -- hit to Lukash
     this.set_stalker_enemy (730, skull)     -- hit to Sniper1
     this.set_stalker_enemy (731, skull)     -- hit to Sniper2
     this.set_stalker_enemy (732, skull)     -- hit to Sniper3

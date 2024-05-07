@@ -496,22 +496,17 @@ function issue_event(npc, st, event_fn, ...)
 end
 
 function pick_section_from_condlist(npc, condlist)
-	local rval = nil
-
 	local infop_conditions_met, cond, infop
 	for n = 1, #condlist do
 		cond = condlist[n]
 		infop_conditions_met = true -- изначально считаем, что все услови€ переключени€ удовлетворены
 		for inum = 1, #cond.infop_check do
 			infop = cond.infop_check[inum]
-      if infop.prob then
-        if not rval then
-          rval = math_random(100)
-        end
-        if infop.prob < rval then
-          infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-          break
-        end
+			if infop.prob then
+				if infop.prob < math_random(100) then
+					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					break
+				end
 			elseif infop.func then
 				if infop.func(Actor, npc, infop.params) then
 					if not infop.expected then
@@ -539,24 +534,17 @@ function pick_section_from_condlist(npc, condlist)
     if infop_conditions_met then
       -- ”слови€ выполнены. Ќезависимо от того, задана ли секци€, нужно проставить требуемые
       -- infoportions:
-			local num_infop_set = #cond.infop_set
-			if num_infop_set > 0 then
-				if Actor == nil then
-					abort("TRYING TO SET INFOS WHEN ACTOR IS NIL")
-					return nil
-				end
-				for inum = 1, num_infop_set do
-					infop = cond.infop_set[inum]
-					if infop.func then
-						infop.func(Actor, npc, infop.params)
-					elseif infop.required then
-						if not has_info(infop.name) then
-							give_info(infop.name)
-						end
-					else
-						if has_info(infop.name) then
-							disable_info(infop.name)
-						end
+			for inum = 1, #cond.infop_set do
+				infop = cond.infop_set[inum]
+				if infop.func then
+					infop.func(Actor, npc, infop.params)
+				elseif infop.required then
+					if not has_info(infop.name) then
+						give_info(infop.name)
+					end
+				else
+					if has_info(infop.name) then
+						disable_info(infop.name)
 					end
 				end
 			end
@@ -697,6 +685,8 @@ function parse_infop_func(str, check)
 	return func
 end
 
+local empty = { }
+
 function parse_infop(rslt, str, check)
 	local infop_name, sign
 	local infop_n = 1
@@ -730,7 +720,7 @@ function parse_infop(rslt, str, check)
 			rslt[infop_n] = {
 				func		= parse_infop_func(infop_name, check),
 				expected	= true,
-				params		= params or {}
+				params		= params or empty
 			}
 		elseif sign == "-" then
 			rslt[infop_n] = {
@@ -741,7 +731,7 @@ function parse_infop(rslt, str, check)
 			rslt[infop_n] = {
 				func		= parse_infop_func(infop_name, check),
 				expected	= false,
-				params		= params or {}
+				params		= params or empty
 			}
 		elseif sign == "~" then
 			rslt[infop_n] = {
