@@ -14,13 +14,18 @@ local main
 function save(packet)
 	local data = data_dumper.DataDumper(main or { }, nil, true)
 	local crc = crc32.crc32(data)
-	data = deflate.compress_deflate(data)
 
+	data = deflate.compress_deflate(data)
 	local size = string.len(data)
+	if size > 4096 then
+		abort("reap_stor.save: compressed storage size (" .. size .. ") exceeds the limit")
+		return
+	end
 	packet:w_u16(size)
-	local i, t = 1, { }
+
+	local i, t = 1
 	while i <= size - 7 do
-		t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8] = string_byte(data, i, i + 7)
+		t = { string_byte(data, i, i + 7) }
 		packet:w_u8(t[1])
 		packet:w_u8(t[2])
 		packet:w_u8(t[3])
