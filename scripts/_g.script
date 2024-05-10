@@ -1,10 +1,27 @@
-if not jit then fail("JIT is nil") end
+local early_modules = {
+	[1]	= { "jit", "sa_init", "xr_extensions" },
+	[2]	= { "lua_ext", "reap_lua" }
+}
+
+function do_early(n)
+	local stage = early_modules[n]
+
+	for _, mod in ipairs(stage) do
+		if not _G[mod] then
+			fail(mod .. " is nil")
+		end
+	end
+
+	early_modules[n] = nil
+	if table.size(early_modules) == 0 then
+		early_modules = nil
+	end
+end
 
 screen = device()
 refactor = 1
 
-prefetch("sa_init")
-prefetch('xr_extensions')
+do_early(1)
 
 math.randomseed(os.time())
 
@@ -51,8 +68,7 @@ time_real_ms = nil
 time_game_ct = nil
 time_game_hours = nil
 
-prefetch("lua_ext")
-prefetch("reap_lua")
+do_early(2)
 
 function init_clsids()
 	clsid_script_stalker = clsid.script_stalker
@@ -69,6 +85,11 @@ function start_game_callback()
 	AI = alife()
 	netpacket = m_netpk.c_net_packet()
 	game.get_start_time()
+
+	local death = ini_file("misc\\death_generic.ltx")
+	ammo_section = death:key_true("ammo_sections")
+	quest_section = death:key_true("keep_items")
+	news_manager.prepare_data()
 
 	xr_sound.clear_all_sound_object()
 	dialog_manager.fill_phrase_table()
@@ -97,7 +118,7 @@ end
 
 -- запущена ли игра
 function game_is_running()
-	return level.present() and Actor and Actor:alive() or false
+	return level.present() and actor_flags.alive
 end
 
 -- Короткие имена для частых функций
@@ -502,7 +523,3 @@ function get_icon_info(sect, real)
 		h	= config:r_u32_cache(sect, "inv_grid_height") * mul
 	}
 end
-
-ammo_section = ini_file("misc\\death_generic.ltx"):key_true("ammo_sections")
-quest_section = ini_file("misc\\death_generic.ltx"):key_true("keep_items")
-news_manager.prepare_data()
