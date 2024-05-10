@@ -508,6 +508,10 @@ function pick_section_from_condlist(npc, condlist)
 					break
 				end
 			elseif infop.func then
+				if not Actor or not npc then
+					abort((Actor and "npc" or "actor") .. " is nil")
+					return nil
+				end
 				if infop.func(Actor, npc, infop.params) then
 					if not infop.expected then
 						infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
@@ -537,6 +541,10 @@ function pick_section_from_condlist(npc, condlist)
 			for inum = 1, #cond.infop_set do
 				infop = cond.infop_set[inum]
 				if infop.func then
+					if not Actor or not npc then
+						abort((Actor and "npc" or "actor") .. " is nil")
+						return nil
+					end
 					infop.func(Actor, npc, infop.params)
 				elseif infop.required then
 					if not has_info(infop.name) then

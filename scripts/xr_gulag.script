@@ -1,6 +1,5 @@
 --' Диденко Руслан (Stohe), Чугай Александр (Chugai)
 
-local iam_any_clsid_monster = iam_any.clsid_monster
 local game_milliseconds = game.milliseconds
 local string_find = string.find
 local string_format = string.format
@@ -13,33 +12,33 @@ local CTime_0 = game.CTime()
 --' в работах поле object хранит id объекта
 
 local level_gulags = {
-	gen = gulag_general,
-	esc = gulag_escape,
-	gar = gulag_garbage,
-	agr = gulag_agroprom,
-	val = gulag_dark_valley,
-	dar = gulag_labx18,
-	bar = gulag_bar,
-	mil = gulag_military,
-	["rad"] = gulag_radar,
-	bun = gulag_radar_u,
-	yan = gulag_yantar,
-	pri = gulag_pripyat,
-	sar = gulag_sarcofag,
-	amk = gulag_amk,
+	gen			= "gulag_general",
+	esc			= "gulag_escape",
+	gar			= "gulag_garbage",
+	agr			= "gulag_agroprom",
+	val			= "gulag_dark_valley",
+	dar			= "gulag_labx18",
+	bar			= "gulag_bar",
+	mil			= "gulag_military",
+	["rad"]			= "gulag_radar",
+	bun			= "gulag_radar_u",
+	yan			= "gulag_yantar",
+	pri			= "gulag_pripyat",
+	sar			= "gulag_sarcofag",
+	amk			= "gulag_amk",
 
-	offline_group		= gulag_dark_valley,
-	freedom_vs_duty		= gulag_radar,
+	offline_group		= "gulag_dark_valley",
+	freedom_vs_duty		= "gulag_radar",
 
-	svalka_lager		= gulag_escape,
-	bar_lager		= gulag_escape,
-	as_lager		= gulag_escape,
-	pripyat_lager		= gulag_escape,
+	svalka_lager		= "gulag_escape",
+	bar_lager		= "gulag_escape",
+	as_lager		= "gulag_escape",
+	pripyat_lager		= "gulag_escape",
 
-	dal_green		= gulag_new,
-	esc_fabrika_sniper	= gulag_new,
-	killer_garbage_larger	= gulag_new,
-	rost_green		= gulag_new
+	dal_green		= "gulag_new",
+	esc_fabrika_sniper	= "gulag_new",
+	killer_garbage_larger	= "gulag_new",
+	rost_green		= "gulag_new"
 }
 
 local level_groups = {
@@ -70,7 +69,7 @@ function get_gulag_ops(gulag_type, type_prefix)
 	local res = gulag_types[gulag_type]
 	if res then return res end
 
-	local file = level_gulags[gulag_type] or level_gulags[type_prefix]
+	local file = _G[level_gulags[gulag_type] or level_gulags[type_prefix]]
 	if not file or not file.get_gulag then
 		abort(gulag_type .. " (pref. " .. type_prefix .. ") has no file!")
 		return nil
@@ -906,12 +905,14 @@ function gulag:get_non_exclusive_population()
 	return self.population_non_exclusive
 end
 
+local mon = iam_any.clsid_monster()
+
 -- получить тип объекта (сталкер/монстр)
 function gulag:get_stype( obj_id )
 	local cls_id = self.npc_info[obj_id].class_id
 	if cls_id == clsid_script_stalker then
 		return modules.stype_stalker
-	elseif iam_any_clsid_monster(cls_id) then
+	elseif mon[cls_id] then
 		return modules.stype_mobile
 	else
 		abort( "[smart_terrain %s] obj=%s clsid=%d: gulag supports stalkers and monsters only!", self.name, self.npc_info[obj_id].name, cls_id )
