@@ -203,15 +203,19 @@ blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 �
 
 ; Базовые секции для сюжетных скриптовых телепортов
 [tele_base]:zone_teleport
-script_binding		= bind_mteleport.bind
+script_binding			= bind_mteleport.bind
 [tele_out_base]:zone_teleport_out
-script_binding		= bind_mteleport.bind
+script_binding			= bind_mteleport.bind
 [tele_1_base]:zone_teleport_1
-script_binding		= bind_mteleport.bind
+script_binding			= bind_mteleport.bind
 [tele_2_base]:zone_teleport_2
-script_binding		= bind_mteleport.bind
+script_binding			= bind_mteleport.bind
 [tele_3_base]:zone_teleport_3
-script_binding		= bind_mteleport.bind
+script_binding			= bind_mteleport.bind
+[tele_nano_base]:zone_teleport_out
+script_binding			= bind_mteleport.bind
+idle_sound			= anomaly\teleport_idle
+idle_particles			= amik\anomaly\zharka\buble_distort
 
 [m_teleport]:tele_base
 radius				= 1
@@ -699,6 +703,133 @@ poz_y				= 0.35692921280861
 poz_z				= -143.65934753418
 rotate				= 1.0
 func				= release_teleport("m_teleport_agro_norm_taynik")
+
+-- Proper70 Strelok
+[s_teleport0_1]:tele_out_base
+radius				= 5
+z_radius			= 5
+poz_x				= -17.462404251099
+poz_y				= 27.088935852051
+poz_z				= -9.4185724258423
+
+[s_teleport1_2]:tele_out_base
+radius				= 2
+z_radius			= 2
+poz_x				= 100.6771697998
+poz_y				= 25.989488601685
+poz_z				= 149.3325958252
+
+[s_teleport1_3_1]:tele_out_base
+radius				= 2
+z_radius			= 2
+poz_x				= 96.721908569336
+poz_y				= 31.408357620239
+poz_z				= 38.06901550293
+
+[s_teleport1_3_2]:tele_out_base
+radius				= 2
+z_radius			= 2
+poz_x				= -18.776836395264
+poz_y				= 18.903581619263
+poz_z				= 11.01621055603
+
+[s_teleport1_4]:tele_out_base
+radius				= 2
+z_radius			= 2
+poz_x				= -74.722549438477
+poz_y				= 18.90358543396
+poz_z				= 33.115394592285
+
+[s_teleport1_5]:tele_out_base
+radius				= 1
+z_radius			= 1
+poz_x				= 100.6771697998
+poz_y				= 25.989488601685
+poz_z				= 149.3325958252
+
+[s_teleport4_1]:tele_out_base
+radius				= 1
+z_radius			= 0.5
+poz_x				= 600.93920898438
+poz_y				= -50.160079956055
+poz_z				= -24.035840988159
+
+; Х-16
+; Наверх мозга
+[s_teleport6_1]:tele_nano_base
+radius				= 0.5
+poz_x				= -45.948
+poz_y				= 27.135
+poz_z				= -7.794
+func				= proper_effects.strelok_taynik_pda6_msg(1)
+
+; Под пол с трубами.
+[s_teleport6_2]:tele_nano_base
+radius				= 0.5
+poz_x				= 9.94
+poz_y				= 3.40
+poz_z				= 12.92
+
+; Из под пола на верхние этажи.
+[s_teleport6_3]:tele_nano_base
+radius				= 0.5
+poz_x				= 152.189
+poz_y				= 41.664
+poz_z				= -17.996
+func				= proper_effects.strelok_taynik_pda6_msg(2)
+
+; С верхних этажей на стену
+[s_teleport6_3_1]:tele_nano_base
+radius				= 0.5
+poz_x				= -57.683
+poz_y				= 5.878
+poz_z				= -30.854
+func				= proper_effects.strelok_taynik_pda6_msg(3)
+
+; Личный.
+[s_teleport6_4]:tele_nano_base
+radius				= 2
+poz_x				= 110.368
+poz_y				= 24.568
+poz_z				= -12.327
+
+; Со стены на другую стену
+[s_teleport6_5]:tele_nano_base
+radius				= 0.5
+poz_x				= -62.033
+poz_y				= 3.489
+poz_z				= 2.402
+
+; Со стены на еще одну стену :D
+[s_teleport6_6]:tele_nano_base
+radius				= 0.5
+poz_x				= -57.630
+poz_y				= 9.858
+poz_z				= -30.819
+
+; Со стены в комнату с контролером
+[s_teleport6_7]:tele_nano_base
+radius				= 0.5
+poz_x				= -96.105
+poz_y				= 25.487
+poz_z				= -37.618
+func				= proper_effects.strelok_taynik_pda6_msg(4)
+
+; Под комнату с контролером
+[s_teleport6_7_1]:tele_nano_base
+radius				= 1.5
+poz_x				= -130.501
+poz_y				= 18.792
+poz_z				= -22.830
+func				= proper_effects.strelok_taynik_pda6_msg(5)
+
+; В мозг
+[s_teleport6_7_2]:tele_nano_base
+radius				= 1.5
+poz_x				= -45.551300048828
+poz_y				= 18.978731155396
+poz_z				= -12.347129821777
+rotate				= 1.0
 
 [val_teleport_1]:tele_out_base
 radius				= 0.5

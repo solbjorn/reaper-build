@@ -1,0 +1,56 @@
+-- Proper70 strelok рестрикторы
+local custom_base = "[logic]\n" ..
+		    "active = sr_idle\n" ..
+		    "[sr_idle]\n" ..
+		    "on_actor_inside = "
+
+function strelok_taynik_sr(x, y, z, lv, gv, radius, logic)
+	local obj = create("space_restrictor", xyz(x, y, z), lv, gv)
+	if obj then
+		obj:modify_netpk("custom_data", custom_base .. logic, "shapes", radius)
+	end
+end
+
+function strelok_taynik_pda1_sr1()
+	strelok_taynik_sr(126.95114135742, 14.443183898926, 102.04573059082, 225170, 2143, 2.0,
+			  "{-strelok_taynik_pda1_found} nil %=proper_effects.strelok_taynik_pda1_found%")
+end
+
+function strelok_taynik_pda1_3_1_sr1()
+	strelok_taynik_sr(116.06755065918, 20.134258270264, 40.431053161621, 225595, 2143, 2.0,
+			  "{+info_restriction} nil %=proper_effects.strelok_taynik_pda1_3_1_sr1_found%")
+end
+
+function strelok_taynik_pda1_3_2_sr1()
+	strelok_taynik_sr(37.798572540283, 28.381662368774, 7.5401439666748, 148468, 2228, 2.0,
+			  "{+info_restriction} nil %=proper_effects.strelok_taynik_pda1_3_2_sr1_found%")
+end
+
+function strelok_taynik_pda1_4_sr1()
+	strelok_taynik_sr(-74.722549438477, 18.90358543396, 33.115394592285, 36059, 2165, 1.0,
+			  "{+info_restriction} nil %=proper_effects.strelok_taynik_pda1_4_sr1_found%")
+end
+
+function strelok_taynik_pda1_5_sr1()
+	strelok_taynik_sr(-3.4237813949585, 11.21129322052, 42.721508026123, 97783, 2247, 1.0,
+			  "{+info_restriction} nil %=proper_effects.strelok_taynik_pda1_5_sr1_found%")
+end
+
+function strelok_taynik_pda4_sr1()
+	strelok_taynik_sr(579.96997070313, -49.379035949707, -24.060033798218, 150287, 2038, 3.0,
+			  "{-strelok_taynik_pda4_found} nil %=proper_effects.strelok_taynik_pda4_found%")
+end
+
+function strelok_taynik_pda7_sr1()
+	strelok_taynik_sr(-19.355253219604, 14.398603439331, 12.36292552948, 4511, 2024, 2.0,
+			  "{-strelok_taynik_pda7_found} nil %=proper_effects.strelok_taynik_pda7_found%")
+end
+
+function strelok_taynik_pda7_sr2()
+	strelok_taynik_sr(-15.653512954712, 14.399493217468, -10.634524345398, 5456, 1962, 2.0,
+			  "{-strelok_taynik_pda7_found} nil %=proper_effects.strelok_taynik_pda7_found%")
+end
+
+function stdt1_sr1()
+	strelok_taynik_sr(30.90, 7.03, -39.75, 210337, 1045, 1.0, "{-stdt1_found} nil %=proper_effects.stdt1_found%")
+end

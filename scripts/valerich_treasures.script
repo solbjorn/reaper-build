@@ -219,73 +219,70 @@ local treasures = {
 }
 
 local effects = {
-	"dead_zone.ppe",
-	"deadcity_wake.ppe",
-	"deadcity_wake1.ppe",
-	"monolith_off.ppe",
-	"radar_psi.ppe",
-	"snd_shock.ppe",
-	"psi.ppe",
-	"vibros.ppe",
-	"vibros_p.ppe"
+	"dead_zone",
+	"deadcity_wake",
+	"deadcity_wake1",
+	"monolith_off",
+	"radar_psi",
+	"snd_shock",
+	"psi",
+	"vibros",
+	"vibros_p"
 }
 
 local sound_spawn = {
-	[[ambient\random\rnd_scr4]],
-	[[ambient\random\rnd_moan5]],
-	[[ambient\random\rnd_scr10]],
-	[[ambient\random\rnd_fallscream]],
-	[[ambient\random\rnd_ratchant]],
-	[[ambient\random\rnd_respawn]],
-	[[ambient\random\rnd_moan1]]
+	"scr4",
+	"moan5",
+	"scr10",
+	"fallscream",
+	"ratchant",
+	"respawn",
+	"moan1"
 }
 
 function spawn_next(n)
+	if get_value("val", 0) >= n then return end
+	set_value("val", n)
+
 	-- удаляем старую записку
-	amk.remove_item(Actor:object("val_zapis_"..tostring(n-1)))
+	release(Actor:object("val_zapis_" .. (n - 1)))
 
 	if n <= #treasures then
 		-- выбираем где спавнить
 		local a = treasures[n]
-		local b = table.random(a)
-		local obj=create("val_taynik_"..n, xyz(b.position.x,b.position.y,b.position.z), b.lv, b.gv)
+		local pos = table.random_key(a)
+		local b = a[pos]
+
+		create("val_taynik_" .. n, xyz(b.position.x, b.position.y, b.position.z), b.lv, b.gv)
 
 		-- Proper72 K телепорт вместо увеличенного прыжка для тайника на Кордоне и другие дополнения
 		if n==1 then
-		  if not has_info("coll_tele1_on") then
-			local se_obj = create("val_teleport_1",xyz(346.98187255859,18.106950759888,-15.256704330444),587878,2)
-			set_value("val_teleport_1", se_obj.id)
-			give_info("coll_tele1_on")
-		  end
-
-		elseif n==2 then
-		  if has_info("coll_tele1_on") then
-			local obj_id = get_value("val_teleport_1", -1, true)
-			local se_obj = server_object(obj_id)
-			if se_obj then
-				release(se_obj, true)
+			if not has_info("coll_tele1_on") then
+				create_teleport("val_teleport_1", xyz(346.98187255859, 18.106950759888, -15.256704330444), 587878, 2)
+				give_info("coll_tele1_on")
 			end
-			disable_info("coll_tele1_on")
-		  end
-
-		elseif n==17 and b==2 then
+		elseif n==2 then
+			if has_info("coll_tele1_on") then
+				release_teleport("val_teleport_1")
+				disable_info("coll_tele1_on")
+			end
+		elseif n == 17 and pos == 2 then
 			create("explosive_mobiltank",xyz(39.229396820068,-0.0083452463150024,150.32916259766),67621,1308)
 		-- Proper72 end
-
 		elseif n==37 then
 			valerich_dialog.spawn_tel()
 		end
 	else
 		-- последняя записка с холмов Радара - удаляем телепорты
 		valerich_dialog.release_tel()
-		local effect=table.random(effects)
-		level.add_pp_effector(effect, 77777776, false)
-		say(table.random(sound_spawn))
+		level.add_pp_effector(table.random(effects) .. ".ppe", 77777776, false)
+		say([[ambient\random\rnd_]] .. table.random(sound_spawn))
 		amk_particle.amk_particle({
 			particle	= "amk\\zomb_explode",
 			pos		= Actor:position()
 		})
 		amk.spawn_skel(Actor)
+		del_value("val")
 		give_info("coll_end")
 	end
 end

@@ -1,0 +1,320 @@
+-- Proper70 Strelok
+
+function take_strelok_taynik_pda1(obj)
+	if has_info("strelok_taynik_pda1_found") then
+		if not has_info("strelok_taynik_stop") then
+			give_info("strelok_taynik_pda1_have")
+			if not has_info("strelok_taynik_pda1_xvatit_spawn") then
+				create("s_inventory_box1_2",xyz(176.28475952148,17.963838577271,40.265209197998),256932,2145)
+				create("m_controller_normal",xyz(87.854019165039,-2.5235424041748,86.012077331543),199525,2143)
+				create("m_controller_normal_fat",xyz(87.854019165039,-2.5235424041748,86.012077331543),199525,2143)
+				create("m_controller_old",xyz(160.51348876953,-2.2140634059906,89.546524047852),249284,2177)
+				create("m_controller_old_fat",xyz(160.51348876953,-2.2140634059906,89.546524047852),249284,2177)
+				kostya_effects.play_zvuk3()
+				give_info("strelok_taynik_pda1_xvatit_spawn")
+			end
+		end
+	else
+		give_info("strelok_taynik_stop")
+	end
+end
+
+function take_strelok_taynik_pda1_2(obj)
+	if not has_info("strelok_taynik_pda1_done") then
+		sms("sms_strelok_strelok_taynik_pda1_2_0", nil, "strelok", 30000)
+		spawn_s_teleport1_2()
+		proper_restrictor.strelok_taynik_pda1_3_1_sr1()
+	end
+	release(obj)
+end
+
+function take_strelok_taynik_pda1_3(obj)
+	if not has_info("strelok_taynik_pda1_done") then
+		sms("sms_strelok_strelok_taynik_pda1_3_0", nil, "strelok", 30000)
+		proper_restrictor.strelok_taynik_pda1_3_2_sr1()
+	end
+	release(obj)
+end
+
+function take_strelok_taynik_pda1_4(obj)
+	if not has_info("strelok_taynik_pda1_done") then
+		sms("sms_strelok_strelok_taynik_pda1_4_0", nil, "strelok", 30000)
+		spawn_s_teleport1_4()
+		proper_restrictor.strelok_taynik_pda1_4_sr1()
+	end
+	release(obj)
+end
+
+function take_strelok_taynik_pda1_5(obj)
+	if not has_info("strelok_taynik_pda1_done") then
+		sms("sms_strelok_strelok_taynik_pda1_5_0", nil, "strelok", 30000)
+		release_teleport("s_teleport1_3_1")
+		release_teleport("s_teleport1_3_2")
+		release_teleport("s_teleport1_4")
+	end
+	release(obj)
+end
+
+function take_strelok_taynik_pda30(obj)
+	if not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda30_have")
+	end
+end
+
+function check_pair_pda_2(pda_section)
+	if has(pda_section) and not has_info("strelok_taynik_stop") and not has_info("strelok_taynik_pda2_have") then
+		give_info("strelok_taynik_pda2_have")
+	end
+end
+
+function take_strelok_taynik_pda2_1(obj)
+	check_pair_pda_2("strelok_taynik_pda2_2")
+end
+
+function take_strelok_taynik_pda2_2(obj)
+	check_pair_pda_2("strelok_taynik_pda2_1")
+end
+
+function check_pair_pda_3(pda_section)
+	if has(pda_section) and not has_info("strelok_taynik_stop") and not has_info("strelok_taynik_pda3_12_have") then
+		create("s_inventory_box3_3",xyz(73.26683807373,1.484278678894,241.13470458984),29207,1244)
+		give_info("strelok_taynik_pda3_12_have")
+	end
+end
+
+function take_strelok_taynik_pda3_1(obj)
+	check_pair_pda_3("strelok_taynik_pda3_2")
+end
+
+function take_strelok_taynik_pda3_2(obj)
+	check_pair_pda_3("strelok_taynik_pda3_1")
+end
+
+function take_strelok_taynik_pda3(obj)
+	if not has_info("strelok_taynik_stop") then
+		if not has_info("strelok_taynik_pda3_have") then
+			create("s_inventory_box3_1", xyz(65.351554870605, 8.6025924682617, 39.333652496338), 301349, 423)
+			create("s_inventory_box3_2", xyz(-183.84883117676, 9.3691387176514, -127.19804382324), 51156, 446)
+			give_info("strelok_taynik_pda3_have")
+		end
+	end
+end
+
+function take_strelok_taynik_pda3_3(obj)
+	if not has_info("strelok_taynik_stop") and not has_info("strelok_taynik_pda3_3_have") then
+		strelok_taynik_pda3_drop()
+		give_info("strelok_taynik_pda3_3_have")
+	end
+end
+
+function take_strelok_taynik_pda4(obj)
+	if has_info("strelok_taynik_pda4_found") then
+		if not has_info("strelok_taynik_stop") and not has_info("strelok_taynik_pda4_have") then
+			delete_s_teleport4_1()
+			give_info("strelok_taynik_pda4_have")
+		end
+	else
+		give_info("strelok_taynik_stop")
+	end
+end
+
+function take_strelok_taynik_pda5(obj)
+	if not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda5_have")
+	end
+end
+
+function take_strelok_taynik_pda6(obj)
+	if not has_info("strelok_taynik_pda6_have") and not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda6_have")
+		disable_info("vol_info")
+		proper_effects.strelok_taynik_pda6_del()
+	end
+end
+
+function take_strelok_taynik_pda7(obj)
+	if has_info("strelok_taynik_pda7_found") then
+		if not has_info("strelok_taynik_stop") then
+			sms(translate("sms_strelok_strelok_taynik_pda7_0") .. translate("ui_mm_stalker") ..
+			    translate("sms_strelok_strelok_taynik_pda7_1") .. translate("ui_mm_stalker") ..
+			    translate("sms_strelok_strelok_taynik_pda7_2") .. translate("ui_mm_stalker") ..
+			    translate("sms_strelok_strelok_taynik_pda7_3"), nil, "strelok", 50000)
+			give_info("strelok_taynik_pda7_done")
+		end
+	else
+		give_info("strelok_taynik_stop")
+	end
+	if has_info("strelok_taynik_pda0_done") then
+		delete_s_teleport0_1()
+	end
+	release(obj)
+end
+
+function take_strelok_taynik_pda0(obj)
+	if not has_info("strelok_taynik_stop") then
+		sms(translate("sms_strelok_strelok_taynik_pda0_0") .. translate("ui_mm_stalker") ..
+		    translate("sms_strelok_strelok_taynik_pda0_1"), nil, "strelok", 30000)
+		spawn_s_teleport0_1()
+		give_info("strelok_taynik_pda0_done")
+		create("amk_kanistra",xyz(30.90,7.33,-39.75),210337,1045)
+		proper_restrictor.stdt1_sr1()
+	end
+	release(obj)
+end
+
+function take_stdt_pda1(obj)
+	sms(translate("sms_strelok_stdt_pda1_0") .. translate("ui_mm_stalker") ..
+	    translate("sms_strelok_stdt_pda1_1"), nil, "strelok", 30000)
+	release(obj)
+end
+
+function s_inventory_box1()
+	create("s_inventory_box1",xyz(126.61811828613,15.248512268066,90.880737304688),225170,2143)
+	proper_restrictor.strelok_taynik_pda1_sr1()
+end
+
+function s_inventory_box2()
+	proper_taynik.s_new_inventory2_1()
+	create("s_inventory_box2_2",xyz(-77.04369354248,-7.4020524024963,-20.482629776001),90914,892)
+end
+
+function s_inventory_box30()
+	create("s_inventory_box30",xyz(73.863845825195,-0.0094784200191498,121.16677093506),29686,1221)
+end
+
+function s_inventory_box3()
+	create("s_inventory_box3",xyz(16.393283843994,37.914726257324,2.0604181289673),6342,2453)
+end
+
+function s_inventory_box4()
+	create("s_inventory_box4",xyz(596.83740234375,-49.984550476074,-24.092365264893),214270,1899)
+	spawn_s_teleport4_1()
+	proper_restrictor.strelok_taynik_pda4_sr1()
+
+	for _, sect in ipairs({ "af_dummy_spring_red", "af_dummy_battery_red", "af_dummy_pellicle_red" }) do
+		create(sect, xyz(664.32122802734, -44.515979766846, -37.01086807251), 227163, 1896)
+	end
+end
+
+function s_inventory_box5()
+	create("s_inventory_box5",xyz(984.81433105469,11.019639015198,245.36875915527),261708,2646)
+end
+
+function s_inventory_box6()
+	create("s_inventory_box6", xyz(-45.551300048828, 19, -12.347129821777), 5742, 1539)
+	proper_effects.strelok_taynik_pda6_sr(nil, nil, { 1 })
+end
+
+function s_inventory_box7()
+	create("s_inventory_box7",xyz(-17.708236694336,17.989824295044,-4.267804145813),5646,2026)
+	proper_restrictor.strelok_taynik_pda7_sr1()
+	proper_restrictor.strelok_taynik_pda7_sr2()
+end
+
+function strelok_taynik_pda1_have()
+	return has_info("strelok_taynik_pda1_found") and has("strelok_taynik_pda1")
+end
+
+function strelok_taynik_pda1_done()
+	lost("strelok_taynik_pda1")
+	delete_s_teleport1_2()
+end
+
+function strelok_taynik_pda2_have()
+	return has("strelok_taynik_pda2_1") and has("strelok_taynik_pda2_2")
+end
+
+function strelok_taynik_pda2_done()
+	lost("strelok_taynik_pda2_1")
+	lost("strelok_taynik_pda2_2")
+end
+
+function strelok_taynik_pda30_have()
+	return has("strelok_taynik_pda30")
+end
+
+function strelok_taynik_pda30_done()
+	lost("strelok_taynik_pda30")
+end
+
+function strelok_taynik_pda3_have()
+	return has("strelok_taynik_pda3")
+end
+
+function strelok_taynik_pda3_done()
+	lost("strelok_taynik_pda3")
+end
+
+function strelok_taynik_pda3_drop()
+	release(Actor:object("strelok_taynik_pda3_1"))
+	release(Actor:object("strelok_taynik_pda3_2"))
+	release(Actor:object("strelok_taynik_pda3_3"))
+end
+
+function strelok_taynik_pda4_have()
+	return has_info("strelok_taynik_pda4_found") and has("strelok_taynik_pda4")
+end
+
+function strelok_taynik_pda4_done()
+	lost("strelok_taynik_pda4")
+end
+
+function strelok_taynik_pda5_have()
+	return has("strelok_taynik_pda5")
+end
+
+function strelok_taynik_pda5_done()
+	lost("strelok_taynik_pda5")
+end
+
+function strelok_taynik_pda6_have()
+	return has_info("strelok_taynik_pda6_found") and has("strelok_taynik_pda6")
+end
+
+function strelok_taynik_pda6_done()
+	lost("strelok_taynik_pda6")
+end
+
+function strelok_taynik_pda7_have()
+	return has_info("strelok_taynik_pda7_found") and has("strelok_taynik_pda7")
+end
+
+function spawn_s_teleport1_2()
+	create_teleport("s_teleport1_2", xyz(207.23626708984, 17.963800430298, 48.94217300415), 260660, 2145)
+end
+
+function delete_s_teleport1_2()
+	release_teleport("s_teleport1_2")
+end
+
+function spawn_s_teleport1_3_1()
+	create_teleport("s_teleport1_3_1", xyz(98.162727355957, 28.547431945801, 38.083969116211), 225595, 2143)
+end
+
+function spawn_s_teleport1_3_2()
+	create_teleport("s_teleport1_3_2", xyz(-17.820304870605, 13.85008430481, 11.088830947876), 81517, 2160)
+end
+
+function spawn_s_teleport1_4()
+	create_teleport("s_teleport1_4", xyz(-90.959411621094, 13.623492240906, 28.934303283691), 7528, 2253)
+end
+
+function spawn_s_teleport1_5()
+	create_teleport("s_teleport1_5", xyz(43.850486755371, 11.828426361084, 37.138198852539), 155631, 2225)
+end
+
+function spawn_s_teleport4_1()
+	create_teleport("s_teleport4_1", xyz(308.16702270508, -37.625602722168, -21.087753295898), 69058, 1930)
+end
+
+function delete_s_teleport4_1(story_id)
+	release_teleport("s_teleport4_1")
+end
+
+function spawn_s_teleport0_1()
+	create_teleport("s_teleport0_1", xyz(-1.5840334892273, 5.1518805027008, -44.498065948486), 10089, 1961)
+end
+
+function delete_s_teleport0_1(story_id)
+	release_teleport("s_teleport0_1")
+end

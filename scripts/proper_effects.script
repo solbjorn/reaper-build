@@ -1,0 +1,99 @@
+-- proper70 strelok
+function strelok_taynik_pda1_found()
+	if not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda1_found")
+	end
+end
+
+function strelok_taynik_pda1_3_1_sr1_found()
+	sms("sms_doctor_strelok_taynik_pda1_3_1_sr1_found_0", nil, "doctor", 30000)
+	proper_dialog.spawn_s_teleport1_3_1()
+	create("s_inventory_box1_3",xyz(52.041854858398,31.642507553101,42.142894744873),163917,2222)
+end
+
+function strelok_taynik_pda1_3_2_sr1_found()
+	sms("sms_doctor_strelok_taynik_pda1_3_2_sr1_found_0", nil, "doctor", 30000)
+	proper_dialog.spawn_s_teleport1_3_2()
+	create("s_inventory_box1_4",xyz(-114.90951538086,13.623062133789,29.111806869507),7528,2253)
+end
+
+function strelok_taynik_pda1_4_sr1_found()
+	sms("sms_strelok_strelok_taynik_pda1_4_sr1_found_0", nil, "strelok", 30000)
+	proper_restrictor.strelok_taynik_pda1_5_sr1()
+	create("s_inventory_box1_5",xyz(43.850688934326,11.827602386475,42.415019989014),155636,2225)
+end
+
+function strelok_taynik_pda1_5_sr1_found()
+	sms("sms_doctor_strelok_taynik_pda1_5_sr1_found_0", nil, "doctor", 30000)
+	proper_dialog.spawn_s_teleport1_5()
+end
+
+function strelok_taynik_pda4_found()
+	if not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda4_found")
+	end
+end
+
+local s_restr6_tbl = {
+	[1]	= { x = 112.040, y = 10.538, z = -20.248, lv = 6992, gv = 1544 },
+	[2]	= { x = -42.523, y = 18.998, z = -17.156, lv = 2591, gv = 1530 },
+	[3]	= { x = 8.139, y = 2.658, z = 16.325, lv = 3085, gv = 1530 },
+	[4]	= { x = -49.737, y = 5.910, z = -34.142, lv = 2171, gv = 1530 },
+	[5]	= { x = -31.868, y = 3.463, z = -30.256, lv = 2522, gv = 1530 },
+	[6]	= { x = -66.287, y = -0.290, z = -10.715, lv = 1942, gv = 1530 },
+	[7]	= { x = -50.362, y = 9.845, z = -34.027, lv = 5740, gv = 1539 }
+}
+
+function strelok_taynik_pda6_sr(a, n, p)
+	local idx = p[1]
+	local res = s_restr6_tbl[idx]
+
+	local obj = create("space_restrictor", xyz(res.x, res.y, res.z), res.lv, res.gv)
+	if not obj then return end
+
+	local custom = "[logic]\ncfg = scripts\\treasure\\x16\\restr_tel_x16_" .. idx .. ".ltx"
+	obj:modify_netpk("custom_data", custom, "shapes", 2)
+end
+
+local s_teleport6_tbl = {
+	[1]	= { s = "1", x = 112.040, y = 10.538, z = -20.248, lv = 6992, gv = 1544 },
+	[2]	= { s = "2", x = -41.857, y = 17.615, z = -15.149, lv = 2591, gv = 1530 },
+	[3]	= { s = "3", x = 0.659, y = 2.650, z = 16.551, lv = 5742, gv = 1539 },
+	[4]	= { s = "3_1", x = 140.871, y = 54.046, z = -9.168, lv = 7434, gv = 1540 },
+	[5]	= { s = "5", x = -24.909, y = 3.480, z = -21.605, lv = 1771, gv = 1530 },
+	[6]	= { s = "6", x = -62.489, y = -0.290, z = -24.464, lv = 2028, gv = 1532 },
+	[7]	= { s = "7_1", x = -121.995, y = 27.948, z = -34.170, lv = 136, gv = 1529 },
+	[8]	= { s = "7_2", x = -120.227, y = 18.852, z = -19.902, lv = 84, gv = 1529 },
+	[9]	= { s = "7", x = -45.939, y = 7.526, z = -34.768, lv = 2226, gv = 1532 },
+	[10]	= { s = "4", x = -63.071, y = 3.466, z = -22.803, lv = 1337, gv = 1535 }
+}
+
+function strelok_taynik_pda6_tp(a, n, p)
+	local tel = s_teleport6_tbl[p[1]]
+
+	create_teleport("s_teleport6_" .. tel.s, xyz(tel.x, tel.y, tel.z), tel.lv, tel.gv)
+end
+
+function strelok_taynik_pda6_del()
+	for _, tel in ipairs(s_teleport6_tbl) do
+		release_teleport("s_teleport6_" .. tel.s)
+	end
+end
+
+function strelok_taynik_pda6_msg(id)
+	sms("sms_strelok_strelok_taynik_pda6_" .. id, nil, "strelok", 30000)
+end
+
+function strelok_taynik_pda7_found()
+	if not has_info("strelok_taynik_stop") then
+		give_info("strelok_taynik_pda7_found")
+		if has_info("strelok_taynik_pda0_start") and not has_info("strelok_taynik_pda0_done") then
+			create("s_inventory_box0",xyz(-7.4699913978577,33.87616333008,-28.289289703369),9159,2027)
+		end
+	end
+end
+
+function stdt1_found()
+	create("y_inventory_box1",xyz(37.365467071533,4.3789763450623,-46.555194854736),220653,1091)
+	give_info("stdt1_found")
+end

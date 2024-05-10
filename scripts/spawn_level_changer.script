@@ -453,6 +453,30 @@ local places = {
 		pos		= { 210.38436889648, 79.390335083008, 120.03535461426 },
 		lvl		= "l12_stancia_2"
 	},
+	ao1 = {
+		lv		= 5172,
+		gv		= 2417,
+		pos		= { 25.456817626953, 54.437591552734, 28.762804031372 },
+		lvl		= "l12u_sarcofag"
+	},
+	ao2 = {
+		lv		= 6306,
+		gv		= 41,
+		pos		= { -259.61, -13.98, -187.48 },
+		lvl		= "l01_escape"
+	},
+	ao3 = {
+		lv		= 72760,
+		gv		= 2030,
+		pos		= { 308.31381225586, -44.890308380127, -24.124353408813 },
+		lvl		= "l10_radar"
+	},
+	ao4 = {
+		lv		= 4444,
+		gv		= 739,
+		pos		= { -44.476081848145, -14.852001190186, -40.71529006958 },
+		lvl		= "l03u_agr_underground"
+	},
 	ao5 = {
 		lv		= 66343,
 		gv		= 1786,
@@ -716,8 +740,29 @@ local teleports = {
 	arhara_tele = {
 		goto_func	= "stancia21"
 	},
+	arhara_obman1 = {
+		keep		= true,
+		pay		= 35000,
+		goto_func	= "ao1"
+	},
+	arhara_obman2 = {
+		keep		= true,
+		pay		= 25000,
+		goto_func	= "ao2"
+	},
+	arhara_obman3 = {
+		keep		= true,
+		pay		= 30000,
+		goto_func	= "ao3"
+	},
+	arhara_obman4 = {
+		keep		= true,
+		pay		= 20000,
+		goto_func	= "ao4"
+	},
 	arhara_obman5 = {
 		keep		= true,
+		pay		= 20000,
 		goto_func	= "ao5"
 	}
 }
@@ -727,23 +772,30 @@ function teleport_start(obj)
 	local teleport = teleports[sect]
 	if not teleport then return end
 
-	-- отбираем арт у ГГ, если нужно отобрать
+	if teleport.pay and not has_money(teleport.pay) then
+		sms(translate("telepot_allowed_2_0") .. teleport.pay .. translate("telepot_allowed_2_1"),
+		    nil, nil, 20000)
+		create(sect, xyz(), 0, 0, 0)
+		return
+	elseif teleport.art and not has(teleport.art) then
+		sms(translate("telepot_allowed_3_0") .. get_inv_name(teleport.art),
+		    nil, nil, 20000)
+		create(sect, xyz(), 0, 0, 0)
+		return
+	end
+
+	if teleport.keep then
+		create(sect, xyz(), 0, 0, 0)
+	end
 	if teleport.art then
-		local art = Actor:object(teleport.art)
-		if art then
-			release(art)
-		else
-			amk.spawn_item_in_inv(sect)
-			return
-		end
+		lost(teleport.art)
+	end
+	if teleport.pay then
+		lost_money(teleport.pay)
 	end
 
 	-- вызываем случайную функцию для данного телепорта
 	jump(type(teleport.goto_func) == "table" and table.random(teleport.goto_func) or teleport.goto_func)
-
-	if teleport.keep then -- вернуть телепорт в рюкзак
-		amk.spawn_item_in_inv(sect)
-	end
 end
 
 function remove_old_teleport()

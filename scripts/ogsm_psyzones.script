@@ -44,13 +44,9 @@ end
 
 function spawn_restrictor(pos, lv, gv, radius)
 	local sobj = create("zone_psy", pos, lv, gv)
-	if not sobj then return nil end
-
-	local pk = sobj:get_netpk()
-	pk.shapes:addSphere(radius)
-	pk.custom_data:setString(cd)
-	sobj:set_netpk(pk, true)
-
+	if sobj then
+		sobj:modify_netpk("custom_data", cd, "shapes", radius)
+	end
 	return sobj
 end
 

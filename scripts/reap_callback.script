@@ -17,6 +17,17 @@ local item_take_fn = {
 	end
 }
 
+for _, item in ipairs({
+	"strelok_taynik_pda1", "strelok_taynik_pda1_2", "strelok_taynik_pda1_3",
+	"strelok_taynik_pda1_4", "strelok_taynik_pda1_5", "strelok_taynik_pda30",
+	"strelok_taynik_pda2_1", "strelok_taynik_pda2_2", "strelok_taynik_pda3_1",
+	"strelok_taynik_pda3_2", "strelok_taynik_pda3", "strelok_taynik_pda3_3",
+	"strelok_taynik_pda4", "strelok_taynik_pda5", "strelok_taynik_pda6",
+	"strelok_taynik_pda7", "strelok_taynik_pda0", "stdt_pda1"
+}) do
+	item_take_fn[item] = proper_dialog["take_" .. item]
+end
+
 function item_take(obj)
 	local sect = obj:section()
 	if screen.precache_frame <= 1 and not Actor:is_in_ruck(obj) and
