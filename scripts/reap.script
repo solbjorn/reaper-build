@@ -10,6 +10,7 @@ load_del_bolt = nil
 
 local next_update_200 = 0
 local next_update_1000 = 0
+local next_update_5000 = 0
 
 function net_spawn()
 	if pause_menu_init then
@@ -40,18 +41,21 @@ function update()
 	update_timers()
 	medkit_use.show_med()
 
-	if next_update_200 <= time_real_ms then
-		safe_place()
+	if next_update_200 > time_real_ms then return end
+	next_update_200 = time_real_ms + 200
 
-		next_update_200 = time_real_ms + 200
-	end
+	safe_place()
 
-	if next_update_1000 <= time_real_ms then
-		update_fires()
-		check_spots()
+	if next_update_1000 > time_real_ms then return end
+	next_update_1000 = time_real_ms + 1000
 
-		next_update_1000 = time_real_ms + 1000
-	end
+	update_fires()
+	check_spots()
+
+	if next_update_5000 > time_real_ms then return end
+	next_update_5000 = time_real_ms + 5000
+
+	math.randomseed(os.time())
 end
 
 local detectors = table.tohash({
