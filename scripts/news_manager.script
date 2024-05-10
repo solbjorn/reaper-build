@@ -141,7 +141,7 @@ function prepare_data()
 		end
 	end
 
-	local t = parse_xml.file("gameplay\\game_tasks.xml", true)
+	local t = parse_xml.file("gameplay\\game_tasks.xml")
 	for i, v in ipairs(t.game_tasks_data.game_task) do
 		task_icons[v.id] = v.objective[1] and v.objective[1].icon or v.objective.icon
 	end

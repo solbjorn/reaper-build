@@ -466,23 +466,18 @@ function getDialog()
 end
 
 function init()
-	local str = config:r_string("profiles","files")
-	local t = string.parse_names(str)
-	for i=1,#t do
-		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
-		addToGlobalPre(tbl)
+	local parse_xml_file = parse_xml.file
+	local t = string.parse_names(config:r_string("profiles", "files"))
+	for i = 1, #t do
+		addToGlobalPre(parse_xml_file("gameplay\\" .. t[i] .. ".xml"))
 	end
-	local str = config:r_string("profiles","specific_characters_files")
-	local t = string.parse_names(str)
-	for i=1,#t do
-		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
-		addToGlobal(tbl)
+	t = string.parse_names(config:r_string("profiles", "specific_characters_files"))
+	for i = 1, #t do
+		addToGlobal(parse_xml_file("gameplay\\" .. t[i] .. ".xml"))
 	end
-	local str = config:r_string("dialogs","files")
-	local t = string.parse_names(str)
-	for i=1,#t do
-		local tbl=parse_xml.file("gameplay\\"..t[i]..".xml")
-		addToGlobalDialog(tbl)
+	t = string.parse_names(config:r_string("dialogs", "files"))
+	for i = 1, #t do
+		addToGlobalDialog(parse_xml_file("gameplay\\" .. t[i] .. ".xml"))
 	end
 end
 

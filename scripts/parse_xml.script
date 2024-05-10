@@ -1,118 +1,162 @@
-local sym_space = '\032'
+local string_char = string.char
+local string_find = string.find
+local string_gsub = string.gsub
+local string_len = string.len
+local string_sub = string.sub
+local table_concat = table.concat
+
+local xml_cache = { }
+local fs = getFS()
+
+function unflatten(res)
+	local len = string_len(res)
+	local start
+
+	start = string_find(res, "<?", 1, true)
+	if start then
+		res = string_sub(res, string_find(res, "?>", start + 2, true) + 2)
+	end
+
+	local new, last = { }, 1
+
+	while true do
+		start = string_find(res, "<!--", last, true)
+		if not start then break end
+
+		if start > last then
+			new[#new + 1] = string_sub(res, last, start - 1)
+		end
+
+		last = string_find(res, "-->", start + 3, true) + 3
+	end
+	if last > 1 then
+		if last < len then
+			new[#new + 1] = string_sub(res, last)
+		end
+		res = table_concat(new)
+	end
+
+	local first, second
+	new, last = { }, 1
+
+	while true do
+		start = string_find(res, "#include", last, true)
+		if not start then break end
+
+		first = string_find(res, '"', start + 8, true)
+		second = string_find(res, '"', first + 1, true)
+
+		if start > last then
+			new[#new + 1] = string_sub(res, last, start - 1)
+		end
+		new[#new + 1] = read_xml(string_sub(res, first + 1, second - 1))
+
+		last = second + 1
+	end
+	if last > 1 then
+		if last < len then
+			new[#new + 1] = string_sub(res, last)
+		end
+		res = table_concat(new)
+	end
+
+	return res
+end
 
 function read_xml(filename)
-	local fs = getFS()
+	local str = xml_cache[filename]
+	if str then return str end
+
 	local path = fs:update_path("$game_config$", filename)
 	local file = io.open(path)
-	local str
 
 	if file then -- файл в распакованном виде на диске
 		str = file:read('*a')
 		file:close()
 	elseif fs:exist(path) then -- файл в архиве
 		file = fs:r_open(path)
-		local chars = {}
-		local index = 1
-		local char = string.char
+		local chars = { }
+		local i, c = 1, 1
 
-		while not file:r_eof() do
-			chars[index] = char(file:r_u8())
-			index = index + 1
+		local size = file:r_elapsed()
+		while i <= size - 7 do
+			chars[c] = string_char(file:r_u8(), file:r_u8(), file:r_u8(), file:r_u8(),
+					       file:r_u8(), file:r_u8(), file:r_u8(), file:r_u8())
+			i = i + 8
+			c = c + 1
+		end
+		while i <= size do
+			chars[c] = string_char(file:r_u8())
+			i = i + 1
+			c = c + 1
 		end
 
-		str = table.concat(chars)
+		str = table_concat(chars)
 	end
 
-	local str_del = str
-	str_del = string.gsub(str_del,'[\013|\010]',"")
-	str_del = string.gsub(str_del,'\009'," ")
-	str_del = remove_xml_comments(str_del)
-	return str_del
+	return unflatten(string_gsub(str, '[\010|\009]', function(x)
+		return x == '\009' and " " or ""
+	end))
 end
 
-function file(filename, recursive)
+local xml_crit = { "dialogs", "drugs", "food", "items" }
+for i = 1, 6 do
+	xml_crit[#xml_crit + 1] = "criticals_" .. i
+end
+for i = 1, #xml_crit do
+	xml_crit["gameplay\\character_" .. xml_crit[i] .. ".xml"] = true
+	xml_crit[i] = nil
+end
+for path, _ in pairs(xml_crit) do
+	xml_cache[path] = read_xml(path)
+end
+xml_crit = nil
+
+function file(filename)
 	local str = read_xml(filename)
 	if not str then
 		return nil
 	end
 	local tab = {}
-	local header,str_wo_head = get_xml_header(str)
 
 	-- первичный поиск тегов
 	local teg_name,teg_type,in_teg,after_teg
-	after_teg = str_wo_head
-	local repeating_tegs = {} -- повторяющиеся теги
-	tab.includes = {}
+	after_teg = str
+	local repeating_tegs, rep = {} -- повторяющиеся теги
 
 	repeat
-		local teg_start, before_teg
-		local included
-
-		repeat
-			teg_start = string.find(after_teg,"<",1,true) or 1
-			before_teg = string.sub(after_teg,1,teg_start)
-			if string.find(before_teg,"#include",1,true) then
-				included = ""
-				local str = before_teg
-				while string.find(str,"#include",1,true) do
-					local inc_start = string.find(str,"#include",1,true)
-					local q1 = string.find(str,'"',inc_start+1,true)
-					local q2 = string.find(str,'"',q1+1,true)
-					local inc_string = string.sub(str,q1+1,q2-1)
-					table.insert(tab.includes,inc_string)
-					str = string.sub(str,q2+1)
-					after_teg = string.sub(after_teg,q2+1)
-					if recursive then
-						included = included .. read_xml(inc_string)
-					end
-				end
-				after_teg = included .. after_teg
-			else
-				included = nil
-			end
-		until included == nil
-
 		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
-		if not repeating_tegs[teg_name] then
-			repeating_tegs[teg_name] = {}
+		rep = repeating_tegs[teg_name]
+		if not rep then
+			rep = { }
+			repeating_tegs[teg_name] = rep
 		end
 		if teg_type == "simple" then
 			in_teg = parse_simple_teg(in_teg,teg_name)
 			tab[teg_name] = in_teg
 		else
-			if string.find(in_teg,">") then
-				in_teg = parse_complex_teg(in_teg,teg_name, recursive)
+			if string_find(in_teg,">") then
+				in_teg = parse_complex_teg(in_teg,teg_name)
 				tab[teg_name] = in_teg
 			else
 				tab[teg_name] = in_teg
 			end
 		end
-		table.insert(repeating_tegs[teg_name],tab[teg_name])
+		rep[#rep + 1] = tab[teg_name]
 
-		if not string.find(after_teg,"<") then
-			if string.find(after_teg,"#include",1,true) then
-				local str = after_teg
-				while string.find(str,"#include",1,true) do
-					local inc_start = string.find(str,"#include",1,true)
-					local q1 = string.find(str,'"',inc_start+1,true)
-					local q2 = string.find(str,'"',q1+1,true)
-					local inc_string = string.sub(str,q1+1,q2-1)
-					table.insert(tab.includes,inc_string)
-					str = string.sub(str,q2+1)
-				end
-			end
+		if not string_find(after_teg,"<") then
 			after_teg = nil
 		end
 	until after_teg == nil
 
 	for name,intab in pairs (repeating_tegs) do
-		if table.getn(intab) > 1 then
+		if #intab > 1 then
 			intab.repeating = true
 			tab[name] = intab
 		end
 	end
 
-	return tab,header
+	return tab
 end
 
 function teg(filename,tegname)
@@ -127,13 +171,13 @@ function teg(filename,tegname)
 	local teg_start_a = '<'..tegname..' '
 	local teg_start_b = '<'..tegname..'>'
 	local teg_start_i,teg_start_o
-	teg_start_i = string.find(str,teg_start_a,1,true) or string.find(str,teg_start_b,1,true)
+	teg_start_i = string_find(str,teg_start_a,1,true) or string_find(str,teg_start_b,1,true)
 	if not teg_start_i then
 		abort("Incorrect request: no teg '"..tegname.."' found in '"..filename.."'")
 		return nil
 	else
-		teg_start_o = teg_start_i+string.len(tegname)+1
-		if string.find(str,teg_start_a,teg_start_o+1,true) or string.find(str,teg_start_b,teg_start_o+1,true) then
+		teg_start_o = teg_start_i+string_len(tegname)+1
+		if string_find(str,teg_start_a,teg_start_o+1,true) or string_find(str,teg_start_b,teg_start_o+1,true) then
 			abort("Incorrect request: multiple tegs '"..tegname.."' found in '"..filename.."'")
 			return nil
 		end
@@ -142,21 +186,21 @@ function teg(filename,tegname)
 	local teg_end_c = '</'..tegname..'>'
 	local teg_end_s = '/>'
 	local teg_type
-	if string.find(str,teg_end_c,teg_start_o+1,true) then
-		teg_end_i,teg_end_o = string.find(str,teg_end_c,teg_start_o+1,true)
+	if string_find(str,teg_end_c,teg_start_o+1,true) then
+		teg_end_i,teg_end_o = string_find(str,teg_end_c,teg_start_o+1,true)
 		teg_type = "complex"
 	else
-		teg_end_i,teg_end_o = string.find(str,teg_end_s,teg_start_o+1,true)
+		teg_end_i,teg_end_o = string_find(str,teg_end_s,teg_start_o+1,true)
 		teg_type = "simple"
 	end
 
 	local tab = {}
-	local in_teg = string.sub(str,teg_start_o+1,teg_end_i-1)
+	local in_teg = string_sub(str,teg_start_o+1,teg_end_i-1)
 	if teg_type == "simple" then
 		in_teg = parse_simple_teg(in_teg,tegname)
 		tab = in_teg
 	else
-		if string.find(in_teg,">") then
+		if string_find(in_teg,">") then
 			in_teg = parse_complex_teg(in_teg,tegname)
 			tab = in_teg
 		else
@@ -166,35 +210,19 @@ function teg(filename,tegname)
 	return tab
 end
 
-function remove_xml_comments(st)
-	local comment_start = "<!--"
-	local comment_end = "-->"
-	local st1 = st
-	local str = ""
-	while string.find(st1,comment_start) do
-		local com_start = string.find(st1,comment_start,1,true)
-		local com_end_i = string.find(st1,comment_end,com_start+3,true)
-		local com_end = com_end_i + 2 or string.len(st1)
-		str = str..string.sub(st1,1,com_start-1)
-		st1 = string.sub(st1,com_end+1)
-	end
-	str = str..st1
-	return str
-end
-
 function parse_simple_teg(st,self_name)
 	local tab = {}
 	local str = st..'"'
-	local equal = string.find(str,'=')
+	local equal = string_find(str,'=')
 	if not equal then -- знак '=' не найден, параметров нет
 		return tab
 	end
-	local len = string.len(str)
+	local len = string_len(str)
 		local not_space = 0
 		local current_var = "k"
 		local k,v = "",""
 		for i = 1,len do
-			local sym = string.sub(st,i,i)
+			local sym = string_sub(st,i,i)
 			if current_var == "k" then
 				if sym ~= " " and sym ~= '"' then
 					if sym == "=" then
@@ -207,11 +235,11 @@ function parse_simple_teg(st,self_name)
 				if sym ~= " " and sym ~= '"' then
 					not_space = 1
 					v = v..sym
-				elseif string.sub(st,i,i+1) == [[""]] then
+				elseif string_sub(st,i,i+1) == [[""]] then
 					not_space = 1
 					v = ""
 					i = i + 1
-				elseif string.sub(st,i,i+2) == [[" "]] then
+				elseif string_sub(st,i,i+2) == [[" "]] then
 					not_space = 1
 					v = " "
 					i = i + 2
@@ -232,12 +260,12 @@ function parse_simple_teg(st,self_name)
 	return tab
 end
 
-function parse_complex_teg(st,self_name, recursive)
+function parse_complex_teg(st,self_name)
 	local str = st
 	local self_close = "</"..self_name..">"
-	local self_teg_close = string.find(str,self_close)
-	local simple_end = string.find(str,">")
-	local inner_teg_start = string.find(str,"<")
+	local self_teg_close = string_find(str,self_close)
+	local simple_end = string_find(str,">")
+	local inner_teg_start = string_find(str,"<")
 	local tab = {}
 	local complex_part = str
 	if simple_end and
@@ -245,88 +273,51 @@ function parse_complex_teg(st,self_name, recursive)
 		not inner_teg_start)
 	then
 		-- есть простая часть
-		local simple_part = string.sub(str,1,simple_end-1)
-		complex_part = string.sub(str,simple_end+1)
+		local simple_part = string_sub(str,1,simple_end-1)
+		complex_part = string_sub(str,simple_end+1)
 		local simple_tab = parse_simple_teg(simple_part,self_name)
 		for k,v in pairs (simple_tab) do
 			tab[k] = v
 		end
 	end
 
-	if not string.find(complex_part,"<") and not string.find(complex_part,">") then
+	if not string_find(complex_part,"<") and not string_find(complex_part,">") then
 		tab[self_name] = complex_part
 		return tab
 	end
 
 	local teg_name,teg_type,in_teg,after_teg
 	after_teg = complex_part or str
-	local repeating_tegs = {} -- повторяющиеся теги
-	tab.includes = {}
+	local repeating_tegs, rep = {} -- повторяющиеся теги
 
 	repeat
-		local teg_start, before_teg
-		local included
-
-		repeat
-			teg_start = string.find(after_teg,"<",1,true) or 1
-			before_teg = string.sub(after_teg,1,teg_start)
-			if string.find(before_teg,"#include",1,true) then
-				included = ""
-				local str = before_teg
-				while string.find(str,"#include",1,true) do
-					local inc_start = string.find(str,"#include",1,true)
-					local q1 = string.find(str,'"',inc_start+1,true)
-					local q2 = string.find(str,'"',q1+1,true)
-					local inc_string = string.sub(str,q1+1,q2-1)
-					table.insert(tab.includes,inc_string)
-					str = string.sub(str,q2+1)
-					after_teg = string.sub(after_teg,q2+1)
-					if recursive then
-						included = included .. read_xml(inc_string)
-					end
-				end
-				after_teg = included .. after_teg
-			else
-				included = nil
-			end
-		until included == nil
-
 		teg_name,teg_type,in_teg,after_teg = find_teg(after_teg)
-		if not repeating_tegs[teg_name] then
-			repeating_tegs[teg_name] = {}
+		rep = repeating_tegs[teg_name]
+		if not rep then
+			rep = { }
+			repeating_tegs[teg_name] = rep
 		end
 
 		if teg_type == "simple" then
 			in_teg = parse_simple_teg(in_teg,teg_name)
 			tab[teg_name] = in_teg
 		else
-			if string.find(in_teg,">") then
+			if string_find(in_teg,">") then
 				in_teg = parse_complex_teg(in_teg,teg_name)
 				tab[teg_name] = in_teg
 			else
 				tab[teg_name] = in_teg
 			end
 		end
-		table.insert(repeating_tegs[teg_name],tab[teg_name])
+		rep[#rep + 1] = tab[teg_name]
 
-		if not string.find(after_teg,"<") then
-			if string.find(after_teg,"#include",1,true) then
-				local str = after_teg
-				while string.find(str,"#include",1,true) do
-					local inc_start = string.find(str,"#include",1,true)
-					local q1 = string.find(str,'"',inc_start+1,true)
-					local q2 = string.find(str,'"',q1+1,true)
-					local inc_string = string.sub(str,q1+1,q2-1)
-					table.insert(tab.includes,inc_string)
-					str = string.sub(str,q2+1)
-				end
-			end
+		if not string_find(after_teg,"<") then
 			after_teg = nil
 		end
 	until after_teg == nil
 
 	for name,intab in pairs (repeating_tegs) do
-		if table.getn(intab) > 1 then
+		if #intab > 1 then
 			intab.repeating = true
 			tab[name] = intab
 		end
@@ -334,30 +325,20 @@ function parse_complex_teg(st,self_name, recursive)
 	return tab
 end
 
-function get_xml_header(str)
-	local h_begin_i = string.find(str,"<?")
-	local h_end_i = string.find(str,"?>")
-	if h_begin_i and h_end_i then
-		return string.sub(str,h_begin_i,h_end_i+1),string.sub(str,h_end_i+2)
-	else
-		return "",str
-	end
-end
-
 function find_teg(st)
 	local str = st
 
-	local open = string.find(str,"<") or 1
-	local len = string.len(str)
-	local declare_close = string.find(str,">",open+1,true) or len
-	local declare_space = string.find(str," ",open+1,true) or len
-	local declare_slash = string.find(str,"/",open+1,true) or len
+	local open = string_find(str,"<") or 1
+	local len = string_len(str)
+	local declare_close = string_find(str,">",open+1,true) or len
+	local declare_space = string_find(str," ",open+1,true) or len
+	local declare_slash = string_find(str,"/",open+1,true) or len
 	local name_end = math.min(declare_close, declare_space, declare_slash) -- ближайший к открытию пробел или ">"
 
-	local teg_name = string.sub(str,open+1,name_end-1)
+	local teg_name = string_sub(str,open+1,name_end-1)
 
 	local teg_close_name = "</"..teg_name..">"
-	local teg_close_i,teg_close_o = string.find(str,teg_close_name,name_end)
+	local teg_close_i,teg_close_o = string_find(str,teg_close_name,name_end)
 
 	local teg_type
 
@@ -368,13 +349,13 @@ function find_teg(st)
 		close_o = teg_close_o
 	else
 		teg_type = "simple"
-		local s_teg_close_i,s_teg_close_o = string.find(str,"/>",name_end)
+		local s_teg_close_i,s_teg_close_o = string_find(str,"/>",name_end)
 		close_i = s_teg_close_i
 		close_o = s_teg_close_o
 	end
 
-	local in_teg = string.sub(str,name_end+1,close_i-1)
-	local after_teg = string.sub(str,close_o+1)
+	local in_teg = string_sub(str,name_end+1,close_i-1)
+	local after_teg = string_sub(str,close_o+1)
 
 	return teg_name,teg_type,in_teg,after_teg
 end
