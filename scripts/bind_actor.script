@@ -8,80 +8,89 @@ local object_binder_update = object_binder.update
 local string_sub = string.sub
 local xr_sound_update_actor = xr_sound.update_actor
 
-function init_cbs_tbl(self)
-	self.hit_callback = sa_callbacks.actor_hit
-	self.death_callback = sa_callbacks.actor_death
-	self.on_key_press = sa_callbacks.key_press
-	self.on_key_release = sa_callbacks.key_release
-	self.on_mouse_wheel = sa_callbacks.mouse_wheel
-	self.on_mouse_move = sa_callbacks.mouse_move
-	self.on_item_belt = sa_callbacks.item_belt
-	self.on_item_ruck = sa_callbacks.item_ruck
-	self.on_item_slot = sa_callbacks.item_slot
-	self.select_pda_contact = sa_callbacks.select_pda_contact
-	self.hit_effector_callback = sa_callbacks.hit_effector
-	self.attach_vehicle = sa_callbacks.attach_vehicle
-	self.detach_vehicle = sa_callbacks.detach_vehicle
-	self.before_hit_callback = sa_callbacks.actor_before_hit
+local cbs = {
+	[callback.inventory_info]		= "info_callback",
+	[callback.article_info]			= "article_callback",
+	[callback.on_item_take]			= "on_item_take",
+	[callback.on_item_drop]			= "on_item_drop",
+	[callback.task_state]			= "task_callback",
+	[callback.level_border_enter]		= "level_border_enter",
+	[callback.level_border_exit]		= "level_border_exit",
+	[callback.take_item_from_box]		= "take_item_from_box",
 
-	self.on_item_use = reap.item_use
-	self.on_before_use_item = reap.before_use_item
+	[callback.hit]				= "hit_callback",
+	[callback.death]			= "death_callback",
+	[callback.on_key_press]			= "on_key_press",
+	[callback.on_key_release]		= "on_key_release",
+	[callback.on_mouse_wheel]		= "on_mouse_wheel",
+	[callback.on_mouse_move]		= "on_mouse_move",
+	[callback.on_belt]			= "on_item_belt",
+	[callback.on_ruck]			= "on_item_ruck",
+	[callback.on_slot]			= "on_item_slot",
+	[callback.pda_contact]			= "select_pda_contact",
+	[callback.on_mob_hit_to_actor]		= "hit_effector_callback",
+	[callback.on_attach_vehicle]		= "attach_vehicle",
+	[callback.on_detach_vehicle]		= "detach_vehicle",
+	[callback.entity_alive_before_hit]	= "before_hit_callback",
+
+	[callback.use_object]			= "on_item_use",
+	[callback.on_before_use_item]		= "on_before_use_item"
+}
+
+local cbs_sa = {
+	hit_callback				= "actor_hit",
+	death_callback				= "actor_death",
+	on_key_press				= "key_press",
+	on_key_release				= "key_release",
+	on_mouse_wheel				= "mouse_wheel",
+	on_mouse_move				= "mouse_move",
+	on_item_belt				= "item_belt",
+	on_item_ruck				= "item_ruck",
+	on_item_slot				= "item_slot",
+	select_pda_contact			= "select_pda_contact",
+	hit_effector_callback			= "hit_effector",
+	attach_vehicle				= "attach_vehicle",
+	detach_vehicle				= "detach_vehicle",
+	before_hit_callback			= "actor_before_hit"
+}
+
+local cbs_reap = {
+	on_item_use				= "item_use",
+	on_before_use_item			= "before_use_item"
+}
+
+function init_cbs_tbl(self)
+	for fn, sa in pairs(cbs_sa) do
+		self[fn] = sa_callbacks[sa]
+	end
+	cbs_sa = nil
+
+	for fn, rp in pairs(cbs_reap) do
+		self[fn] = reap[rp]
+	end
+	cbs_reap = nil
 
 	local obj = self.object
 	local set_cb = obj.set_callback
 
-	for id, fn in pairs({
-		[callback.inventory_info]		= self.info_callback,
-		[callback.article_info]			= self.article_callback,
-		[callback.on_item_take]			= self.on_item_take,
-		[callback.on_item_drop]			= self.on_item_drop,
-		[callback.task_state]			= self.task_callback,
-		[callback.level_border_enter]		= self.level_border_enter,
-		[callback.level_border_exit]		= self.level_border_exit,
-		[callback.take_item_from_box]		= self.take_item_from_box,
-
-		[callback.hit]				= self.hit_callback,
-		[callback.death]			= self.death_callback,
-		[callback.on_key_press]			= self.on_key_press,
-		[callback.on_key_release]		= self.on_key_release,
-		[callback.on_mouse_wheel]		= self.on_mouse_wheel,
-		[callback.on_mouse_move]		= self.on_mouse_move,
-		[callback.on_belt]			= self.on_item_belt,
-		[callback.on_ruck]			= self.on_item_ruck,
-		[callback.on_slot]			= self.on_item_slot,
-		[callback.pda_contact]			= self.select_pda_contact,
-		[callback.on_mob_hit_to_actor]		= self.hit_effector_callback,
-		[callback.on_attach_vehicle]		= self.attach_vehicle,
-		[callback.on_detach_vehicle]		= self.detach_vehicle,
-		[callback.entity_alive_before_hit]	= self.before_hit_callback,
-
-		[callback.use_object]			= self.on_item_use,
-		[callback.on_before_use_item]		= self.on_before_use_item
-	}) do
-		set_cb(obj, id, fn, self)
+	for id, fn in pairs(cbs) do
+		set_cb(obj, id, self[fn], self)
+		cbs[id] = true
 	end
+
+	init_cbs_tbl = nil
 end
 
 function deinit_cbs_tbl(self)
-	local cbs = {
-		callback.inventory_info, callback.article_info, callback.on_item_take,
-		callback.on_item_drop, callback.task_state, callback.level_border_enter,
-		callback.level_border_exit, callback.take_item_from_box,
-
-		callback.hit, callback.death, callback.on_key_press, callback.on_key_release,
-		callback.on_mouse_wheel, callback.on_mouse_move, callback.on_belt,
-		callback.on_ruck, callback.on_slot, callback.pda_contact,
-		callback.on_mob_hit_to_actor, callback.on_attach_vehicle,
-		callback.on_detach_vehicle, callback.entity_alive_before_hit,
-
-		callback.use_object, callback.on_before_use_item
-	}
 	local obj = self.object
 	local set_cb = obj.set_callback
 
-	for i = 1, #cbs do
-		set_cb(obj, cbs[i], nil)
+	for id, fn in pairs(cbs) do
+		set_cb(obj, id, nil)
 	end
+
+	cbs = nil
+	deinit_cbs_tbl = nil
 end
 
 function init(npc)

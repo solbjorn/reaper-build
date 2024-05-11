@@ -15,6 +15,7 @@ function do_early(n)
 	early_modules[n] = nil
 	if table.size(early_modules) == 0 then
 		early_modules = nil
+		do_early = nil
 	end
 end
 
@@ -76,6 +77,8 @@ function init_clsids()
 	clsid_actor = clsid.actor
 	clsid_smart_terrain = clsid.smart_terrain
 	clsid_bloodsucker_s = clsid.bloodsucker_s
+
+	init_clsids = nil
 end
 
 -- Старт игры
