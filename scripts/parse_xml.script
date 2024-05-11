@@ -1,6 +1,5 @@
 local string_char = string.char
 local string_find = string.find
-local string_gsub = string.gsub
 local string_len = string.len
 local string_sub = string.sub
 local table_concat = table.concat
@@ -9,15 +8,57 @@ local xml_cache = { }
 local fs = getFS()
 
 function unflatten(res)
-	local len = string_len(res)
-	local start
+	local len, start = string_len(res)
 
+	-- Tabs to spaces
+	local new, last = { }, 1
+
+	while true do
+		start = string_find(res, '\009', last, true)
+		if not start then break end
+
+		if start > last then
+			new[#new + 1] = string_sub(res, last, start - 1)
+		end
+		new[#new + 1] = ' '
+
+		last = start + 1
+	end
+	if last > 1 then
+		if last < len then
+			new[#new + 1] = string_sub(res, last)
+		end
+		res = table_concat(new)
+	end
+
+	-- Remove LFs
+	new, last = { }, 1
+
+	while true do
+		start = string_find(res, '\010', last, true)
+		if not start then break end
+
+		if start > last then
+			new[#new + 1] = string_sub(res, last, start - 1)
+		end
+
+		last = start + 1
+	end
+	if last > 1 then
+		if last < len then
+			new[#new + 1] = string_sub(res, last)
+		end
+		res = table_concat(new)
+	end
+
+	-- Remove header
 	start = string_find(res, "<?", 1, true)
 	if start then
 		res = string_sub(res, string_find(res, "?>", start + 2, true) + 2)
 	end
 
-	local new, last = { }, 1
+	-- Remove comments
+	new, last = { }, 1
 
 	while true do
 		start = string_find(res, "<!--", last, true)
@@ -36,6 +77,7 @@ function unflatten(res)
 		res = table_concat(new)
 	end
 
+	-- Expand includes
 	local first, second
 	new, last = { }, 1
 
@@ -94,9 +136,7 @@ function read_xml(filename)
 		str = table_concat(chars)
 	end
 
-	return unflatten(string_gsub(str, '[\010|\009]', function(x)
-		return x == '\009' and " " or ""
-	end))
+	return unflatten(str)
 end
 
 local xml_crit = { "dialogs", "drugs", "food", "items" }
