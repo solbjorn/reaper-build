@@ -162,7 +162,7 @@ function se_monster:can_switch_online()
 	if day_night_switch and not is_creature_day(self) then
 		if self.online then
 			local obj = level_object(self.id)
-			if ( obj ~= nil and Actor:see(obj) ) then
+			if obj and actor_flags.alive and Actor:see(obj) then
 				self.state = true
 				return true
 			end

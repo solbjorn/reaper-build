@@ -2,13 +2,6 @@
 
 ------------------------- Copyright 2007-2018 DEXXX ---------------------------
 
-local sounds = {
-	voice([[ambient\random\rnd_the_horror1]]),
-	voice([[ambient\random\rnd_the_horror2]]),
-	voice([[ambient\random\rnd_the_horror3]]),
-	voice([[ambient\random\rnd_the_horror4]])
-}
-
 class "PPEffector" (effector)
 
 function PPEffector:__init(id_number) super(id_number, 10000000)
@@ -36,8 +29,8 @@ function action_postprocess:reset_scheme()
 	self.intensity_base = 1
 	self.intensity_speed = 0.1
 	self.intensity = 0
-	self.sound_obj_right = voice([[ambient\random\rnd_the_horror]])
-	self.sound_obj_left = voice([[ambient\random\rnd_the_horror]])
+	self.sound_obj_right = voice([[ambient\random\rnd_the_horror]] .. math.random(1, 4))
+	self.sound_obj_left = voice([[ambient\random\rnd_the_horror]] .. math.random(1, 4))
 end
 
 function action_postprocess:update(delta, force)
@@ -120,12 +113,12 @@ function action_postprocess:play_sounds()
 	self.sound_obj_left.volume = 0.5
 
 	if not self.sound_obj_left:playing() then
-		self.sound_obj_left = table.random(sounds)
+		self.sound_obj_left = voice([[ambient\random\rnd_the_horror]] .. math.random(1, 4))
 		self.sound_obj_left:play_at_pos(Actor, vector():set(1, 0, 1), 0, sound_object.s2d)
 	end
 
 	if not self.sound_obj_right:playing() then
-		self.sound_obj_right = table.random(sounds)
+		self.sound_obj_right = voice([[ambient\random\rnd_the_horror]] .. math.random(1, 4))
 		self.sound_obj_right:play_at_pos(Actor, vector():set(-1, 0, 1), 0, sound_object.s2d)
 	end
 end
