@@ -330,8 +330,7 @@ end
 -- возвращает vertex_id, в которое отправил персонажа
 function send_to_nearest_accessible_vertex( npc, v_id )
 	if not npc:accessible( v_id ) then
-		local vtemp = vector()
-		v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
+		v_id = npc:accessible_nearest(level.vertex_position(v_id), vector():set(0, 0, 0))
 	end
 
 	npc:set_dest_level_vertex_id( v_id )

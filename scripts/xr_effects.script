@@ -351,7 +351,7 @@ end
 function play_snd(actor, npc, p)
   if p[1] then
     local snd_obj = xr_sound.get_safe_sound_object(p[1])
-    snd_obj:play_no_feedback(Actor, sound_object.s2d, p[2] or 0, vector(), 1.0)
+    snd_obj:play_no_feedback(Actor, sound_object.s2d, p[2] or 0, xyz(), 1.0)
   end
 end
 
@@ -419,7 +419,7 @@ function actor_punch(npc)
 	reap.drop_weapon(true)
 	set_inactivate_input_time(punch_recovery_time)
 	local snd_obj = xr_sound.get_safe_sound_object([[affects\hit_fist]])
-	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+	snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), 1.0)
 
 	local h = hit()
 	h.draftsman = Actor
@@ -1317,7 +1317,7 @@ end
 
 function agr_knockdown ()
   local snd_obj = xr_sound.get_safe_sound_object([[affects\tinnitus3a]])
-  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 end
 
@@ -1469,7 +1469,7 @@ end
 -- постпроцесс и влияние удара в морду
 function aes_earthshake (npc)
   local snd_obj = xr_sound.get_safe_sound_object([[ambient\earthquake]])
-  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+  snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")
 end
 
@@ -1514,7 +1514,7 @@ function x18_gluk (actor, npc)
     local sound_obj_l   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_l]] )
         local sound_obj_r   = xr_sound.get_safe_sound_object( [[affects\psy_blackout_r]] )
         local snd_obj     = xr_sound.get_safe_sound_object( [[affects\tinnitus3a]] )
-    snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
+    snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), 1.0)
     sound_obj_l:play_no_feedback(Actor, sound_object.s2d, 0, vector():set(-1, 0, 1), 1.0)
     sound_obj_r:play_no_feedback(Actor, sound_object.s2d, 0, vector():set( 1, 0, 1), 1.0)
   level.add_cam_effector("camera_effects\\earthquake.anm", 1974, false, "")

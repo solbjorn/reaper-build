@@ -262,7 +262,7 @@ function bunker_cooling_sound()
 		if not has_info("bar_deactivate_radar_done") then
 			if not (cooling_snd and cooling_snd:playing()) then
 				cooling_snd = sound_object("ambient\\cooling_run")
-				cooling_snd:play_at_pos(Actor, vector(), 0, sound_object.s2d + sound_object.looped)
+				cooling_snd:play_at_pos(Actor, vector():set(0, 0, 0), 0, sound_object.s2d + sound_object.looped)
 			end
 		elseif cooling_snd then
 			play_safe_sound_object("ambient\\cooling_stop")

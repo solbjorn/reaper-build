@@ -386,7 +386,7 @@ function activate_by_section(npc, ini, section, loading)
 			-- чтобы избежать дальнейшего движения по пути при установке рестрикторов
 			local lvid = npc:level_vertex_id()
 			if not npc:accessible(lvid) then
-				lvid = npc:accessible_nearest( level.vertex_position(lvid), vector() )
+				lvid = npc:accessible_nearest( level.vertex_position(lvid), vector():set(0, 0, 0))
 			end
 			npc:set_dest_level_vertex_id(lvid)
 

@@ -717,11 +717,7 @@ function blowout_scary_sounds()
 	local blow=amk_load_variable("blowout",-1)
 	if blow>0 and blow<4 then
 		local snd_obj = xr_sound.get_safe_sound_object(amk_hideouts.blowout_sounds[math_random(#amk_hideouts.blowout_sounds)])
-		local a=vector()
-		a.x=math_random(0,10)
-		a.y=math_random(0,10)
-		a.z=math_random(0,10)
-		snd_obj:play_at_pos(Actor, Actor:position():add(a))
+		snd_obj:play_at_pos(Actor, Actor:position():add(vector():set(math_random(0,10), math_random(0,10), math_random(0,10))))
 		amk_start_timer("blowout_ss",math_random(10,30),0)
 	end
 end
