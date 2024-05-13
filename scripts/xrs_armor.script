@@ -1444,7 +1444,7 @@ function npc_update(binder)
 		local npc = binder.object
 		if not npc:alive() or npc:critically_wounded() or npc:wounded() or excluded_npcs[npc:name()] then return end
 		local com = npc:character_community()
-		if suits_to_visuals and suits_to_visuals[com] then
+		if suits_to_visuals[com] then
 			npc:iterate_inventory(check_armor,npc)
 		end
 		binder.armor_check_update=time_global()+1000
@@ -1452,9 +1452,10 @@ function npc_update(binder)
 end
 
 function check_armor(npc, item, just_report)
+	if not item:is_outfit() then return end
+
 	local com = npc:character_community()
-	local section = item:section()
-	local vis = config:section_exist(section) and config:r_string(section, "visual")
+	local vis = config:r_string_cache(item:section(), "visual")
 	if vis then
 		vis = string.explode(vis, "\\")
 		vis = string.explode(vis[2], ".")
@@ -1470,7 +1471,7 @@ function check_armor(npc, item, just_report)
 						npc:position():distance_to(Actor:position())>100) then
 
 						change_vis(npc:id(),"actors\\"..suits_to_visuals[com][vis][math_random(#suits_to_visuals[com][vis])],armor_levels[vis],true)
-						AI:release(AI:object(item:id()))
+						release(item)
 					end
 				end
 			end

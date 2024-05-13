@@ -96,10 +96,8 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 
 		-- Вычитываем настройки секций респавна и кешируем их.
 		if not item_spawn and sectSpawnProps[spawn_section] == nil then
-			local community = config:line_exist(spawn_section, "community") and config:r_string(spawn_section, "community") or "nil"
-			local rank = config:line_exist(spawn_section, "spec_rank") and config:r_string(spawn_section, "spec_rank") or "nil"
 			local check = true
-			local custom_data = config:line_exist(spawn_section, "custom_data") and config:r_string(spawn_section, "custom_data") or nil
+			local custom_data = config:r_string_cache(spawn_section, "custom_data")
 			if custom_data ~= nil then
 				local custom_data_ltx = ini_file(custom_data)
 				if custom_data_ltx:section_exist("smart_terrains") then
@@ -116,7 +114,11 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 				end
 			end
 
-			sectSpawnProps[spawn_section] = {community = community, rank = rank, check = check}
+			sectSpawnProps[spawn_section] = {
+				community	= config:r_string_cache(spawn_section, "community") or "nil",
+				rank		= config:r_string_cache(spawn_section, "spec_rank") or "nil",
+				check		= check
+			}
 		end
 	end
 	return ret_table
