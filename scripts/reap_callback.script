@@ -8,6 +8,10 @@ local string_sub = string.sub
  * Callbacks
 --]]---------------------------------------------------------------------------
 
+function __init(self)
+	self.weather_manager = reap_weather.get_weather_manager()
+end
+
 local item_take_fn = {
 	arhara_listok		= arhara_dialog.spawn_strelok_pda,
 	val_zapis_1 = function()

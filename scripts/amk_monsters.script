@@ -155,12 +155,13 @@ function el_chimera_hit(self)
     end --for
  end --поражаем НПС
 ----
-	if string.find(amk.load_variable("dynweather","?"),"groza") then
-	       self.timer=time_real_ms + 2000
-        else
- 	       self.timer=time_real_ms + (100 * math.random(30,40))
-        end -- next blast
-    end -- "electro_chimera"
+
+		if config:r_string_ex(reap_weather.get_section(), "thunderbolt") then
+			self.timer = time_real_ms + 2000
+		else
+			self.timer = time_real_ms + math.random(3000, 4000)
+		end -- next blast
+	end -- "electro_chimera"
 --TAG : end
 end
 

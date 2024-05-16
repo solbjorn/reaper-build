@@ -1,0 +1,288 @@
+--[[---------------------------------------------------------------------------
+ * Shortcuts
+--]]---------------------------------------------------------------------------
+
+local math_fmod = math.fmod
+
+--[[---------------------------------------------------------------------------
+ * Dynamic weather graph
+--]]---------------------------------------------------------------------------
+
+local dynweathers = {
+	september = {
+		[1] = {
+			[1]		= 50,
+			[2]		= 50
+		},
+		[2] = {
+			[1]		= 45,
+			[2]		= 25,
+			[3]		= 20,
+			[4]		= 10
+		},
+		[3] = {
+			[1]		= 0,
+			[2]		= 65,
+			[3]		= 15,
+			[4]		= 20
+		},
+		[4] = {
+			[1]		= 0,
+			[2]		= 80,
+			[3]		= 20
+		}
+	},
+	october = {
+		[1] = {
+			[1]		= 35,
+			[2]		= 65
+		},
+		[2] = {
+			[1]		= 30,
+			[2]		= 40,
+			[3]		= 20,
+			[4]		= 10
+		},
+		[3] = {
+			[1]		= 0,
+			[2]		= 50,
+			[3]		= 25,
+			[4]		= 25
+		},
+		[4] = {
+			[1]		= 0,
+			[2]		= 70,
+			[3]		= 30
+		}
+	},
+	depressive = {
+		[1] = {
+			[1]		= 15,
+			[2]		= 85
+		},
+		[2] = {
+			[1]		= 20,
+			[2]		= 50,
+			[3]		= 20,
+			[4]		= 10
+		},
+		[3] = {
+			[1]		= 0,
+			[2]		= 45,
+			[3]		= 20,
+			[4]		= 35
+		},
+		[4] = {
+			[1]		= 0,
+			[2]		= 65,
+			[3]		= 20,
+			[4]		= 15
+		}
+	},
+	mist = {
+		[1] = {
+			[1]		= 10,
+			[2]		= 90
+		},
+		[2] = {
+			[1]		= 10,
+			[2]		= 20,
+			[3]		= 35,
+			[4]		= 35
+		},
+		[3] = {
+			[1]		= 0,
+			[2]		= 25,
+			[3]		= 35,
+			[4]		= 40
+		},
+		[4] = {
+			[1]		= 0,
+			[2]		= 25,
+			[3]		= 55,
+			[4]		= 20
+		}
+	}
+}
+
+local idx_dyn = { "clear", "pasmurno", "rain", "groza" }
+local dyn_idx = table.tohash(idx_dyn, function(t, i)
+	return i
+end)
+
+--[[---------------------------------------------------------------------------
+ * Misc routines
+--]]---------------------------------------------------------------------------
+
+function get_hour_string(hr)
+	local str = { }
+
+	hr = hr % 24
+	if hr < 10 then
+		str[1] = '0'
+	end
+	str[#str + 1] = tostring(hr)
+	str[#str + 1] = ":00:00"
+
+	return table.concat(str)
+end
+
+function get_section(hr, wt)
+	local sect = config:r_string("weathers", wt or level.get_weather())
+
+	return config:r_string(sect, get_hour_string(hr or level.get_time_hours()))
+end
+
+local months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+
+function get_moon_phase()
+	local t = game.get_game_time():get_table()
+	if t.hour > 4 and t.hour < 23 then return "" end
+
+	local day = t.day
+	for yy = 1, t.year - 2012 do
+		day = day + ((math_fmod(yy - 1, 4) == 0 and 366) or 365)
+	end
+	for mm = 1, t.month - 1 do
+		day = day + months[mm]
+	end
+	if math_fmod(t.year, 4) == 0 and t.month > 2 then
+		day = day + 1
+	end
+	if t.hour >= 12 then
+		day = day + 1
+	end
+
+	local phase = math_fmod(day, 7)
+	phase = phase * 2 + math_fmod(day - phase, 2) + 1
+	if phase < 10 then
+		return "_ph_0" .. phase
+	else
+		return "_ph_" .. phase
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Singleton class
+--]]---------------------------------------------------------------------------
+
+class "weather_manager"
+
+function weather_manager:__init()
+	self.var = container:get("weather", { })
+	if not self.var.weather then
+		self.var.weather = "pasmurno"
+	end
+
+	local ini = game_ini()
+
+	self.preset = xr_logic.parse_condlist(ini:r_string(curr_level, "preset"))
+	self.var.preset = xr_logic.pick_section_from_condlist(Actor, self.preset)
+
+	self.type = xr_logic.parse_condlist(ini:r_string(curr_level, "weathers"))
+	self.var.type = xr_logic.pick_section_from_condlist(Actor, self.type)
+
+	level.set_weather("amk_for_blow", true)
+	self.bt = amk_mod.blowout_type() == 0
+end
+
+function weather_manager:set_weather(force)
+	local new
+
+	if level.indoor() then
+		new = self.var.type
+	elseif self.var.type ~= "default" then
+		new = self.var.preset .. "_" .. self.var.type .. get_moon_phase()
+	else
+		new = self.var.preset .. "_" .. self.var.weather .. get_moon_phase()
+	end
+
+	level.set_weather(new, force)
+end
+
+function weather_manager:reset()
+	if get_value("blowout", 0) < 1 or not self.bt then
+		self:set_weather(true)
+	else
+		self:pre_blow()
+	end
+end
+
+function weather_manager:update()
+	local preset = xr_logic.pick_section_from_condlist(Actor, self.preset)
+	local _type = xr_logic.pick_section_from_condlist(Actor, self.type)
+	local hour = level.get_time_hours()
+
+	if hour == self.var.hour and preset == self.var.preset and
+	   _type == self.var.type then
+		return
+	end
+
+	self.var.preset = preset
+	self.var.type = _type
+	self.var.hour = hour
+
+	local weather
+	local rnd = math.random(100)
+	for iter, prob in ipairs(dynweathers[self.var.preset][dyn_idx[self.var.weather]]) do
+		if rnd <= prob then
+			weather = idx_dyn[iter]
+			break
+		end
+
+		rnd = rnd - prob
+	end
+
+	news_main.on_weather_change(self.var.weather, weather)
+	self.var.weather = weather
+
+	if get_value("blowout", 0) < 1 or not self.bt then
+		self:set_weather()
+	end
+end
+
+function weather_manager:pre_blow()
+	if not self.bt then return end
+
+	level.set_weather("pre_blow", true)
+
+	local hr = level.get_time_hours()
+	if level.get_time_minutes() >= 30 then
+		hr = hr < 23 and hr + 1 or 0
+	end
+
+	level.set_weather_fx("amk_surge_day_" .. hr)
+end
+
+function weather_manager:post_blow()
+	self.var.preset = xr_logic.pick_section_from_condlist(Actor, self.preset)
+	self.var.type = xr_logic.pick_section_from_condlist(Actor, self.type)
+	self.var.hour = level.get_time_hours()
+	self.var.weather = "groza"
+
+	if self.bt then
+		self:set_weather(true)
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Exports
+--]]---------------------------------------------------------------------------
+
+local wm
+
+function get_weather_manager()
+	if not wm then
+		wm = weather_manager()
+	end
+
+	return wm
+end
+
+function pre_blow()
+	get_weather_manager():pre_blow()
+end
+
+function post_blow()
+	get_weather_manager():post_blow()
+end

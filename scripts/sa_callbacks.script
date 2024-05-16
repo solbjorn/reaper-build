@@ -46,7 +46,6 @@ function actor_update(delta)
 		next_500 = time_real_ms + 500
 	end
 	sa_main.scope_zoom_mode_callback()
-	reap.update()
 end
 ---------------------------------------------------------------------------------------------------
 function switch_mob_health_bar(obj)
@@ -56,12 +55,10 @@ end
 function actor_net_spawn()
 	sa_main.disable_ui_info()
 	pda_talk.init()
-	reap.net_spawn()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_net_destroy()
 	hud_animations_mgr:clear_scope_texture()
-	reap_callback.net_destroy()
 end
 ---------------------------------------------------------------------------------------------------
 local last_mob_type
@@ -172,7 +169,6 @@ function info(info_id, ui_info)
 			trade_cond = nil
 		end
 	end
-	reap.info(info_id, ui_info)
 end
 ---------------------------------------------------------------------------------------------------
 function pda_tab(tab_id)
@@ -281,12 +277,10 @@ end
 ---------------------------------------------------------------------------------------------------
 function actor_save(packet)
 	sa_mob_health_bar.save(packet)
-	reap.actor_save(packet)
 end
 ---------------------------------------------------------------------------------------------------
 function actor_load(reader)
 	sa_mob_health_bar.load(reader)
-	reap.actor_load(reader)
 end
 --[[-----------------------------------------------------------------------------------------------
  * NPC

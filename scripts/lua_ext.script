@@ -234,9 +234,11 @@ config.key_value = ini_file.key_value
 -- Из всех значений секции возвращает список t = {id1, id2 ...}
 ini_file.list = function (ini, section)
 	local t = {}
+	local i = 1
 
 	ini:iterate_lines(section, function(result, id, value)
-		table.insert(t, id)
+		t[i] = id
+		i = i + 1
 	end)
 
 	return t

@@ -23,10 +23,11 @@ function net_spawn()
 	reap_misc.net_spawn()
 end
 
-function update()
+function update(self)
 	if start then
 		level_tasks.check_lchanger_location()
 		load_slot_hide()
+		self.weather_manager:reset()
 		ui_scroll_indicators.first_update()
 
 		start = false
@@ -49,6 +50,7 @@ function update()
 	if next_update_1000 > time_real_ms then return end
 	next_update_1000 = time_real_ms + 1000
 
+	self.weather_manager:update()
 	update_fires()
 	check_spots()
 

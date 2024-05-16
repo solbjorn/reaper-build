@@ -17,53 +17,10 @@ local math_random = math.random
 local string_find = string.find
 local string_sub = string.sub
 
-local gv,lv,w
 in_hide=false
+
 local sound_obj_right,sound_obj_left,snd_volume,snd_obj_eq
 local sync_done=false
-local dynlasthour
-
-local weather_types = {
-	l01_escape		= 0,
-	l02_garbage		= 0,
-	l03_agroprom		= 0,
-	l03u_agr_underground	= 1,
-	l04_darkvalley		= 0,
-	l04u_labx18		= 1,
-	l05_bar			= 0,
-	l06_rostok		= 0,
-	l07_military		= 0,
-	l08_yantar		= 2,
-	l08u_brainlab		= 1,
-	l10_radar		= 0,
-	l10u_bunker		= 1,
-	l11_pripyat		= 0,
-	l12_stancia		= 0,
-	l12_stancia_2		= 0,
-	l12u_control_monolith	= 1,
-	l12u_sarcofag		= 1
-}
-
-local dynweather_types = {
-	l01_escape		= "september",
-	l02_garbage		= "october",
-	l03_agroprom		= "september",
-	l03u_agr_underground	= "september",
-	l04_darkvalley		= "depressive",
-	l04u_labx18		= "depressive",
-	l05_bar			= "october",
-	l06_rostok		= "october",
-	l07_military		= "september",
-	l08_yantar		= "mist",
-	l08u_brainlab		= "mist",
-	l10_radar		= "mist",
-	l10u_bunker		= "mist",
-	l11_pripyat		= "depressive",
-	l12_stancia		= "depressive",
-	l12_stancia_2		= "mist",
-	l12u_control_monolith	= "mist",
-	l12u_sarcofag		= "depressive"
-}
 
 --'*******************************************************************************
 --'   **   **   **   **   **    **   **   **      QUEST_AF_STAR        **   **   **   **    **   **   **   **
@@ -136,25 +93,6 @@ end
 --'   **   **   **   **   **    **   **   **        CHECK_SPAWN          **   **   **   **   **    **   **   **
 --'*******************************************************************************
 
-function get_weather(lname)
-	return amk.cfg_get_string(ini_file("game_maps_single.ltx"), lname, "weathers", "default")
-end
-
-function get_weather_sect(lname)
-	if weather_types[lname] == 1 then
-		return get_weather(lname)
-	elseif weather_types[lname] == 2 then
-		return dynweather_types[lname] .. "_" .. get_weather(lname) .. get_moon_phase()
-	end
-
-	local dynw = amk_load_variable("dynweather", nil)
-	if not dynw then
-		return get_weather(lname)
-	end
-
-	return dynweather_types[lname].."_"..dynw
-end
-
 function check_spawn()
 	amk_anoms.init()
 	spawn_unspawned_respawners()
@@ -212,18 +150,13 @@ function check_spawn()
 		reap_misc.rename_autosave(sname, lname)
 	end
 
-	w = get_weather_sect(lname)
-	if amk_load_variable("blowout",0)>0 then amk_save_variable("weather",level.get_weather()) end
-	level.set_weather("amk_for_blow",true)
 	game.start_tutorial("restore_sun")
 
 	if amk_load_variable("blowout",0)>0 and amk_load_variable("blowout",0)<4 then
-		local bt=blowout_type()
 		level.add_cam_effector("camera_effects\\earthquake.anm", 2002, true, "")
-		if bt<1 then
-			level.set_weather("amk_for_blow",true)
+		blowout_psy_sound("start")
+		if blowout_type() < 1 then
 			level.add_pp_effector("vibros.ppe", 2001, true)
-			blowout_psy_sound("start")
 		end
 	end
 
@@ -243,8 +176,6 @@ function check_spawn()
 end
 
 function restore_sun()
-  if amk_load_variable("blowout",0)==0 then level.set_weather(w,true) end
-
 	local lname = level.name()
 	local sname = amk_load_variable("level_on_save","")
   amk_save_variable("level_on_save",lname)
@@ -801,16 +732,8 @@ function Blowout_pp(phase)
 
 	if phase==0 then
 		amk_anoms.pre_blow_off()
-		if bt<1 then
-			level.set_weather("pre_blow",true)
-
-			local hr = level.get_time_hours()
-			if level.get_time_minutes() >= 30 then
-				hr = hr < 23 and hr + 1 or 0
-			end
-
-			level.set_weather_fx("amk_surge_day_" .. hr)
-		end
+		reap_weather.pre_blow()
+		set_value("blowout", 1)
 		amk_g_start_timer("blowout", 0, 0, math_random(2, 4), 1)
 	elseif phase==1 then
 		local snd_obj = xr_sound.get_safe_sound_object([[ambient\earthquake]])
@@ -855,17 +778,10 @@ function Blowout_pp(phase)
 		blowout_psy_sound("stop")
 		amk_start_timer("blowout",5,5)
 	elseif phase==5 then
-		level.set_weather(amk_load_variable("weather", "default"), true)
 		if bt<1 then
-			local snd_obj = xr_sound.get_safe_sound_object([[anomaly\teleport_work2]])
-			snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, vector(), 1.0)
-
-			local sect = "groza_groza_" .. level.get_time_hours() .. get_moon_phase()
-			level.set_weather(dynweather_types[level.name()] .. "_" .. sect, true)
-			amk_save_variable("dynw","groza")
-			amk_save_variable("dynlasthour", level.get_time_hours())
-			amk_save_variable("dynweather", sect)
+			say([[anomaly\teleport_work2]])
 		end
+		reap_weather.post_blow()
 		del_value("blowout")
 		amk_hideouts.pda_hide_hideouts()
 -- TAG --
@@ -973,10 +889,7 @@ end
 --'*******************************************************************************
 
 function blowout_type()
-	local lname=level.name()
-	local t=amk_hideouts.blowout_types[lname]
-	if t>1 and amk_load_variable("freeplay",0)==2 then t=0 end
-	return t or 0
+	return amk_hideouts.blowout_types[level.name()]
 end
 
 --'*******************************************************************************
@@ -1342,175 +1255,6 @@ function spawn_military_tech_pack(obj, spawn_item)
 	-- считываем скорректированные параметры
 	packet:r_seek(0)
 	obj:STATE_Read(packet, packet:w_tell())
-end
-
---'*******************************************************************************
---'   **   **   **   **   **    **   **   **       DYNWEATHERS       **   **   **   **   **    **   **   **
---'*******************************************************************************
-
-local dynweathers = {
-	september = {
-		clear = {
-			clear		= 50,
-			pasmurno	= 50,
-			rain		= 0,
-			groza		= 0
-		},
-		pasmurno = {
-			clear		= 45,
-			pasmurno	= 25,
-			rain		= 20,
-			groza		= 10
-		},
-		rain = {
-			clear		= 0,
-			pasmurno	= 65,
-			rain		= 15,
-			groza		= 20
-		},
-		groza = {
-			clear		= 0,
-			pasmurno	= 80,
-			rain		= 20,
-			groza		= 0
-		}
-	},
-	october = {
-		clear = {
-			clear		= 35,
-			pasmurno	= 65,
-			rain		= 0,
-			groza		= 0
-		},
-		pasmurno = {
-			clear		= 30,
-			pasmurno	= 40,
-			rain		= 20,
-			groza		= 10
-		},
-		rain = {
-			clear		= 0,
-			pasmurno	= 50,
-			rain		= 25,
-			groza		= 25
-		},
-		groza = {
-			clear		= 0,
-			pasmurno	= 70,
-			rain		= 30,
-			groza		= 0
-		}
-	},
-	depressive = {
-		clear = {
-			clear		= 15,
-			pasmurno	= 85,
-			rain		= 0,
-			groza		= 0
-		},
-		pasmurno = {
-			clear		= 20,
-			pasmurno	= 50,
-			rain		= 20,
-			groza		= 10
-		},
-		rain = {
-			clear		= 0,
-			pasmurno	= 45,
-			rain		= 20,
-			groza		= 35
-		},
-		groza = {
-			clear		= 0,
-			pasmurno	= 65,
-			rain		= 20,
-			groza		= 15
-		}
-	},
-	mist = {
-		clear = {
-			clear		= 10,
-			pasmurno	= 90,
-			rain		= 0,
-			groza		= 0
-		},
-		pasmurno = {
-			clear		= 10,
-			pasmurno	= 20,
-			rain		= 35,
-			groza		= 35
-		},
-		rain = {
-			clear		= 0,
-			pasmurno	= 25,
-			rain		= 35,
-			groza		= 40
-		},
-		groza = {
-			clear		= 0,
-			pasmurno	= 25,
-			rain		= 55,
-			groza		= 20
-		}
-	}
-}
-
-function get_moon_phase()
-	local t = game.get_game_time():get_table()
-	if t.hour > 4 and t.hour < 23 then return "" end
-
-	local months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
-	local math_mod = math.mod
-	local day = t.day
-
-	for yy = 1, t.year - 2012 do
-		day = day + ((math_mod(yy - 1, 4) == 0 and 366) or 365)
-	end
-	for mm = 1, t.month - 1 do
-		day = day + months[mm]
-	end
-	if math_mod(t.year, 4) == 0 and t.month > 2 then
-		day = day + 1
-	end
-	if t.hour >= 12 then
-		day = day + 1
-	end
-
-	local phase = math_mod(day, 7)
-	phase = phase * 2 + math_mod(day - phase, 2) + 1
-	if phase < 10 then
-		return "_ph_0" .. phase
-	else
-		return "_ph_" .. phase
-	end
-end
-
-function weather_manager()
-	if sync_done==false then return end
-	local hour = level.get_time_hours()
-	local dynlasthour = amk_load_variable("dynlasthour",-1)
-	if dynlasthour<hour or (hour==0 and dynlasthour==23) then
-		local next_weather
-		local rnd = math_random(0,100)
-		local dynw = amk_load_variable("dynw", "pasmurno")
-		local dynw_type = dynweather_types[level.name()]
-		for k,v in pairs(dynweathers[dynw_type][dynw]) do
-			if v > 0 and rnd <= v then
-				next_weather=k
-				break
-			end
-			rnd=rnd-v
-		end
-		local sect = dynw .. "_" .. next_weather .. "_" .. hour .. get_moon_phase()
-		if (amk_load_variable("blowout",0)==0 and blowout_type()<1) then
-			level.set_weather(dynw_type .. "_" .. sect, true)
-		end
-		news_main.on_weather_change(dynw, next_weather)
-
-		amk_save_variable("dynw",next_weather)
-		amk_save_variable("dynlasthour",hour)
-		amk_save_variable("dynweather", sect)
-	end
 end
 
 --'*******************************************************************************
