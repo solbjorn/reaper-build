@@ -16,6 +16,7 @@ key_by_id = {}
 group_idle = {}
 
 local math_random = math.random
+local string_sub = string.sub
 
 function get_sound(path, tt, npc)
 	if path == nil then return nil end
@@ -310,61 +311,64 @@ function get_last_IDS(npc, theme)
 end
 
 --' Actor sound player
-local actor_sound = {}
-function set_actor_sound(sound)
-	if actor_sound.theme ~= sound then
-		--' Туточки надобно распарсить имена тем в их id
-		if sound == nil then sound = "" end
-		actor_sound.theme = sound
-		actor_sound.begin = nil
+local actor_sound = {
+	theme	= ""
+}
 
-		set_actor_sound_factor(1)
+function set_actor_sound(sound)
+	if not sound then sound = "" end
+	if actor_sound.theme == sound then return end
+
+	local theme = sound_theme.actor_theme[sound]
+	if theme then
+		if not theme.sounds or #theme.sounds == 0 then theme = nil end
 	end
+
+	actor_sound = {
+		["theme"]	= sound,
+		tbl		= theme
+	}
+
+	set_actor_sound_factor(1)
 end
 
 function set_actor_sound_factor(factor)
-	local theme = sound_theme.actor_theme[actor_sound.theme]
-	if theme ~= nil then
+	local theme = actor_sound.tbl
+	if theme then
 		actor_sound.min_snd = theme.min_snd * factor
 		actor_sound.max_snd = theme.max_snd * factor
 	end
 end
 
 function update_actor()
-	local theme = sound_theme.actor_theme[actor_sound.theme]
-	if theme == nil then return end
+	if not actor_sound.min_snd then return end
+	if actor_sound.next and time_real_ms < actor_sound.next then return end
 
-	if #theme.sounds == 0 then
-		return
+	--' Тут надо отыграть звук
+	local sound = voice(table.random(actor_sound.tbl.sounds))
+	if sound then
+		sound:play(Actor, 0, sound_object.s2d)
 	end
 
-	if actor_sound.begin == nil or
-	   time_global() - actor_sound.begin >= actor_sound.idle
-	then
-		actor_sound.begin = time_global()
-
-		--' Тут надо отыграть звук
-		local sound = theme.sounds[math_random(#theme.sounds)]
-		if sound ~= nil then
-			sound:play(Actor, 0, sound_object.s2d)
-		end
-		actor_sound.idle = math_random(actor_sound.min_snd, actor_sound.max_snd)
-	end
+	actor_sound.next = time_real_ms + math_random(actor_sound.min_snd, actor_sound.max_snd)
 end
 
 --' Таблица для хранения созданных саунд обжектов.
-sound_object_by_theme = {}
+local sound_object_by_theme = {}
+
 --' type = [random|seq|looped]
 function get_sound_object(theme, t_type)
-	local ph_sound_theme = sound_theme.ph_snd_themes[theme]
-	if ph_sound_theme == nil then
-		abort("Missing ph_snd_themes for theme %s", tostring(theme))
-		return
-	end
-
 	local theme_sound_object = sound_object_by_theme[theme]
-	if theme_sound_object == nil then
-		theme_sound_object = {}
+	if not theme_sound_object then
+		theme_sound_object = {
+			ph_sound_theme	= sound_theme.get_ph_snd_theme(theme)
+		}
+
+		if not theme_sound_object.ph_sound_theme then
+			abort("Missing ph_snd_themes for theme %s", tostring(theme))
+			return
+		end
+
 		sound_object_by_theme[theme] = theme_sound_object
 	end
 
@@ -374,7 +378,7 @@ function get_sound_object(theme, t_type)
 
 	--' Выбор следующего айдишника
 	local play_id = -1
-	local table_size = #ph_sound_theme
+	local table_size = #theme_sound_object.ph_sound_theme
 	if theme_sound_object.last_id == nil then
 		if t_type == "random" then
 			if table_size >= 2 then
@@ -411,17 +415,30 @@ function get_sound_object(theme, t_type)
 	theme_sound_object.last_id = play_id
 
 	--' Возвращаем саунд обжект
-	if type(ph_sound_theme[play_id]) == "table" then
-		if theme_sound_object[play_id] == nil then
-			theme_sound_object[play_id.."_r"] = get_safe_sound_object(ph_sound_theme[play_id][1].."_r")
-			theme_sound_object[play_id.."_l"] = get_safe_sound_object(ph_sound_theme[play_id][1].."_l")
+	local obj = theme_sound_object[play_id]
+	if obj then
+		if type(obj) == "table" then
+			return obj[2], obj[1]
+		else
+			return obj
 		end
-		return theme_sound_object[play_id.."_r"], theme_sound_object[play_id.."_l"]
+	end
+
+	local path = theme_sound_object.ph_sound_theme[play_id]
+	if string_sub(path, 1, 7) == "stereo:" then
+		path = string_sub(path, 8)
+		obj = {
+			get_safe_sound_object(path .. "_l"),
+			get_safe_sound_object(path .. "_r")
+		}
+		theme_sound_object[play_id] = obj
+
+		return obj[2], obj[1]
 	else
-		if theme_sound_object[play_id] == nil then
-			theme_sound_object[play_id] = get_safe_sound_object(ph_sound_theme[play_id])
-		end
-		return theme_sound_object[play_id]
+		obj = get_safe_sound_object(path)
+		theme_sound_object[play_id] = obj
+
+		return obj
 	end
 end
 
