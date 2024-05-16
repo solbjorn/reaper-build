@@ -50,7 +50,7 @@ end
 
 function evaluator_blowout:evaluate()
   local npc=self.object
-  if amk_mod.blowout_type()>0 or xr_wounded.is_wounded(npc) then return false end
+	if not level.blowout() or xr_wounded.is_wounded(npc) then return false end
   local blowout=amk.load_variable("blowout",0)
   if self.prevblow==3 and blowout~=3 then
     self.prevblow=blowout
@@ -88,7 +88,7 @@ function evaluator_monolith_blowout:__init(st) super(nil,"evaluator_monolith_blo
 end
 
 function evaluator_monolith_blowout:evaluate()
-  if amk_mod.blowout_type()>0 then return false end
+	if not level.blowout() then return false end
   local blowout=amk.load_variable("blowout",0)
   return blowout==3
 end
@@ -100,7 +100,7 @@ function evaluator_preblowout:__init(st) super(nil,"evaluator_preblowout")
 end
 
 function evaluator_preblowout:evaluate()
-  if amk_mod.blowout_type()>0 then return false end
+	if not level.blowout() then return false end
   local npc=self.object
   local blowout=amk.load_variable("blowout",0)
   return blowout==1
@@ -121,7 +121,7 @@ function evaluator_outside:evaluate()
     return false
   end
   self.st.washitat=nil
-  if amk_mod.blowout_type()>0 then return false end
+	if not level.blowout() then return false end
   local blowout=amk.load_variable("blowout",0)
 	if blowout < 2 then
 		self.st.hidefound = nil

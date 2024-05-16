@@ -109,8 +109,10 @@ function actor_binder:__init (obj) super(obj)
 	self.bCheckStart = false
 	self.actor_detector = xr_detector.actor_detector()
 
-	self.in_rad_zone = false
+	sa_callbacks.__init()
 	reap_callback.__init(self)
+
+	self.in_rad_zone = false
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)

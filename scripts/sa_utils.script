@@ -285,13 +285,31 @@ local gcfg = game_ini()
 ---------------------------------------------------------------------------------------------------
 function level.indoor(lname)
 	if not lname then
-		if level.present() then
+		if curr_level then
+			lname = curr_level
+		elseif level.present() then
 			lname = level.name()
 		else
 			return false
 		end
 	end
-	return gcfg:r_string_cache(lname, "indoor", false)
+	return gcfg:r_bool_cache(lname, "indoor", false)
+end
+---------------------------------------------------------------------------------------------------
+function level.blowout(lname)
+	if not lname then
+		if curr_level then
+			lname = curr_level
+		elseif level.present() then
+			lname = level.name()
+		else
+			return false
+		end
+	end
+	if level.indoor(lname) then
+		return false
+	end
+	return gcfg:r_bool_cache(lname, "blowout", true)
 end
 ---------------------------------------------------------------------------------------------------
 function level.parked_call(action, x)
