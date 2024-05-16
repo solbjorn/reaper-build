@@ -1136,6 +1136,8 @@ local gulags = {
 			}
 		end,
 		check = function(npc_community, se_obj)
+			if not se_obj then return false end
+
 			local name = se_obj:name()
 			return name == "gar_wounded_bandit" or name == "gar_sniper_bandit"
 		end
