@@ -23,7 +23,6 @@ callback.on_switch_torch              = 134
 callback.entity_alive_before_hit      = 152
 
 -- Некоторые недостающие key_bindings
-key_bindings.kPAUSE		= 40
 key_bindings.kACTIVE_JOBS	= 53
 key_bindings.kMAP			= 54
 key_bindings.kCONTACTS		= 55
@@ -57,6 +56,14 @@ _G.inventory_slots = {
 	ARTEFACT	= 10,
 	TOTAL		= 11
 }
+
+--// table
+-- получаем размер таблицы (количество связок [ключ] = значение)
+table.size = function ( t )
+	local n = 0
+	for _ in pairs( t ) do n = n + 1 end
+	return n
+end
 
 -- class 'ini_file'
 ini_file.r_string_ex = function (ini, section, line, def)

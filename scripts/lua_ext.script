@@ -66,17 +66,6 @@ table.random = function(tbl)
     return tbl[table_random_key(tbl)]
 end
 
--- размер любой таблицы
-table.size = function(tbl)
-	if not tbl then return 0 end
-
-	local count = 0
-	for key in pairs(tbl) do
-		count = count+1
-	end
-	return count
-end
-
 local table_copy
 table.copy = function(src, dst)
 	if not dst then dst = { } end

@@ -171,9 +171,9 @@ function key_press(dik)
 	if not actor_flags.alive then return end
 
 	if dik == bind_to_dik(key_bindings.kQUICK_SAVE) and not level.main_input_receiver() then
-		level.send_event_key_press(bind_to_dik(key_bindings.kPAUSE))
+		screen:pause(true)
 		console:execute("save " .. user_name() .. "_quicksave")
-		level.send_event_key_press(bind_to_dik(key_bindings.kPAUSE))
+		screen:pause(false)
 	elseif dik == bind_to_dik(key_bindings.kUSE_BANDAGE) or
 	       dik == bind_to_dik(key_bindings.kUSE_MEDKIT) then
 		local item

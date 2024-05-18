@@ -23,9 +23,7 @@ local snd_ini = ini_file("misc\\script_sound.ltx")
 local nstl = 64
 
 function get_ph_snd_theme(name)
-	if not theme_ini:line_exist(theme_sect, name) then return nil end
-
-	return string.explode(theme_ini:r_string(theme_sect, name), ',', true)
+	return theme_ini:r_list(theme_sect, name)
 end
 
 -----------------------------------------------------------------------------------------------------------------------------------

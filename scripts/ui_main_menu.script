@@ -129,8 +129,8 @@ function main_menu:OnMsgNo()
 end
 
 function main_menu:LoadLastSave()
-	console:execute			("main_menu off")
-	console:execute			("load_last_save")
+	self:OnButton_return_game()
+	console:execute("load_last_save")
 end
 
 function main_menu:OnButton_last_save()
@@ -167,23 +167,20 @@ function main_menu:OnMessageQuitWin()
 	console:execute("quit")
 end
 
-local dlgs = {
-	amk_options_dlg	= true,
-	load_dlg	= true,
-	opt_dlg		= true,
-	save_dlg	= true
-}
+local clear_dlgs = { "amk_options_dlg", "load_dlg", "opt_dlg", "save_dlg" }
 
 function main_menu:OnButton_return_game()
-	self:ClearCallbacks()
-	for k, v in pairs(dlgs) do
+	for v, k in ipairs(clear_dlgs) do
 		v = self[k]
 		if v then
+			v.dlg_video_adv = nil
 			v:ClearCallbacks()
 			self[k] = nil
 		end
 	end
-	get_console():execute("main_menu off")
+	self:ClearCallbacks()
+
+	console:execute("main_menu off")
 end
 
 function main_menu:OnButton_new_novice_game()
@@ -212,7 +209,7 @@ function main_menu:StartGame()
 	end
 
 	console:execute("start server(all/single/alife/new) client(localhost)")
-	console:execute("main_menu off")
+	self:OnButton_return_game()
 end
 
 function main_menu:OnButton_save_clicked()
@@ -257,7 +254,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 			if dik_to_bind(dik) ~= key_bindings.kCONSOLE then
 				self.load_window = nil
 				console:execute("snd_volume_music "..self.sound_volume_music)
-				console:execute("main_menu off")
+				self:OnButton_return_game()
 
 				reap_misc.intro_dream()
 				disable_info("paused_on_load")
