@@ -668,7 +668,7 @@ function ecall(p1,obj,enemy)
 	       obj:character_community() == "zombied" then
 		return false
 	end
-	
+
 	local st = db.storage[obj:id()]
 	if st and st.combat_ignore and st.combat_ignore.action and st.combat_ignore.action.enemy_callback then
 		return st.combat_ignore.action:enemy_callback(obj,enemy)

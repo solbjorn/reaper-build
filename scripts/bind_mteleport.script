@@ -118,7 +118,7 @@ function restrictor_teleport:net_spawn(data)
 	if char_ini:line_exist(self.section, "y_radius") then
 		self.parametrs["y_radius"] = tonumber(char_ini:r_string(self.section, "y_radius"))
 	end
-	
+
 	-- Запомним позицию что-бы каждый раз не считать
 	local s_obj = server_object(self.object:id())
 	self.parametrs["x"] = tonumber(s_obj.position.x);
@@ -133,7 +133,7 @@ function restrictor_teleport:net_spawn(data)
 	if char_ini:line_exist(self.section, "rotate") then
 		self.parametrs["rotate"] = tonumber(char_ini:r_string(self.section, "rotate"))
 	end
-	
+
 	-- Функции рестриктора
 	if char_ini:line_exist(self.section, "info") then
 		-- выдать поршень

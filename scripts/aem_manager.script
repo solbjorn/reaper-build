@@ -199,7 +199,7 @@ function CArenaext:__init()
 
 	-- вещи, которые нельзя выносить с арены (удаляются при выходе с арены)
 	self.arena_items = ini:key_true("arena_items")
-	
+
 	-- запрещённые для боя на арене вещи
 	self.remove_items = ini:key_true("remove_items")
 
@@ -1837,7 +1837,7 @@ end
 -- void put_items_to_box(game_object box, {["section1"]=true, ["section2"]=true, ...} items)
 -------
 function put_items_to_box(box, items)
-	Actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item)
 		if items[item:section()] == true then
 			Actor:transfer_item(item, box)
 		end
@@ -1849,7 +1849,7 @@ end
 -- void put_items_to_box_exept(game_object box, {["section1"]=true, ["section2"]=true, ...} exept)
 -------
 function put_items_to_box_exept(box, exept)
-	Actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item)
 		if exept[item:section()] ~= true then
 			Actor:transfer_item(item, box)
 		end
@@ -1861,7 +1861,7 @@ end
 -- void clear_items({["section1"]=true, ["section2"]=true, ...} items)
 -------
 function clear_items(items)
-	Actor:iterate_inventory(function(arg, item) 
+	Actor:iterate_inventory(function(arg, item)
 		if items[item:section()] == true then
 			release(item)
 		end
