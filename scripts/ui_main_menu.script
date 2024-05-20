@@ -20,6 +20,21 @@ if not all_good then
 	abort(broken)
 end
 
+local static_version = "Версия игры - 1.0006 + X-Ray extensions r187 + xrLuaFix by Artos"
+local mod_version = table.concat({
+	amk_ver.amk_title,
+	amk_ver.amk_version,
+	amk_ver.amk_revision,
+	"+",
+	sak_ver.sak_title,
+	sak_ver.sak_version,
+	"+",
+	wawka_ver.wawka_title,
+	wawka_ver.wawka_version,
+	"+",
+	"ReapeR build 6"
+}, ' ')
+
 local pause_menu_init = true
 
 class "main_menu" (CUIScriptWnd)
@@ -55,23 +70,17 @@ function main_menu:InitControls()
 
 	xml:InitStatic("back_movie", self)
 	xml:InitStatic("background", self)
+
 	self.shniaga = xml:InitMMShniaga("shniaga_wnd", self)
+	if self.alive_on_level then
+		self.shniaga:SetWndRect(324, 440, 392, 280)
+	end
 
 	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")
 
-	local ver = xml:InitStatic("static_version", self)
-	ver:SetText("Версия игры - " .. _G.main_menu.get_main_menu():GetGSVer())
-
-	local mod_ver = xml:InitStatic("mod_version", self)
-	local amk_title 	= amk_ver.amk_title
-	local amk_version    	= amk_ver.amk_version
-	local sak_title 	= sak_ver.sak_title
-	local sak_version    	= sak_ver.sak_version
-	local wawka_title 	= wawka_ver.wawka_title
-	local wawka_version    	= wawka_ver.wawka_version
-	local debug_mode = ""
-	mod_ver:SetText		(amk_title .. " " .. amk_version .. " + " .. sak_title .. " " .. sak_version .. " + " .. wawka_title .. " " .. wawka_version)
+	xml:InitStatic("static_version", self):SetText(static_version)
+	xml:InitStatic("mod_version", self):SetText(mod_version)
 end
 
 function main_menu:Show(f)
@@ -268,21 +277,21 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE and self.alive_on_level then
+		if self.alive_on_level and dik == DIK_keys.DIK_ESCAPE then
 			self:OnButton_return_game()
 		-- OGSE Team on
 		-- Система быстрых сохранений игры
-		elseif dik == DIK_keys.DIK_F6 and self.alive_on_level then
+		elseif self.alive_on_level and dik_to_bind(dik) == key_bindings.kQUICK_SAVE then
 			self:OnButton_return_game()
 			console:execute("save " .. user_name() .. "_quicksave")
-		elseif dik == DIK_keys.DIK_F7 and ui_load_dialog.file_exist(user_name() .. "_quicksave.sav") then
+		elseif dik_to_bind(dik) == key_bindings.kQUICK_LOAD and ui_load_dialog.file_exist(user_name() .. "_quicksave.sav") then
 			if (alife() == nil) then
 				console:execute("disconnect")
 				console:execute("start server(" .. user_name() .. "_quicksave/single/alife/load) client(localhost)")
 			else
 				console:execute("load " .. user_name() .. "_quicksave")
 			end
-		elseif (dik == DIK_keys.DIK_F8 or dik == DIK_keys.DIK_S) and self.alive_on_level then
+		elseif self.alive_on_level and (dik == DIK_keys.DIK_F8 or dik == DIK_keys.DIK_S) then
 			local name = string.format(translate("ui_autosave_day") .. " %d. %02d.%02d. %s", game.days() + 1,
 						   level.get_time_hours(), level.get_time_minutes(), translate(level.name()))
 			name = name:clear()
@@ -297,7 +306,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 			self:OnMessageQuitWin()
 		elseif dik == DIK_keys.DIK_L then
 			self:OnButton_last_save()
-		elseif dik == DIK_keys.DIK_A and self.alive_on_level then
+		elseif self.alive_on_level and dik == DIK_keys.DIK_A then
 			self:amk_options()
 		elseif dik == DIK_keys.DIK_RETURN then
 			return false
