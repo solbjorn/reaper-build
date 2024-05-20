@@ -10,7 +10,7 @@
  - анимация ходьбы (moving)
  - автоматическое изменение размера текстуры снайперского прицела под любое разрешение экрана
  - управление эффектом динамической глубины резкости
- - исправление сброса анимации при попытках: включить подствольник, стрелять, перезаряжаться
+ - исправление сброса анимации при попытках: включить подствольник, стрелять, перезаряжаться и использовать автомобили на расстоянии
  - скрытие патронов у дробовиков после стрельбы и перезарядки (параметр cartridge_bone)
 --]]-----------------------------------------------------------------------------------------------
 local hud_animations_mgr
@@ -23,6 +23,11 @@ end
 local force_dof_mstates = { }
 for i, state in ipairs({ "showing", "hiding", "playing" }) do
 	force_dof_mstates[missile_states[state]] = true
+end
+---------------------------------------------------------------------------------------------------
+local square_scopes = { }
+for _, name in ipairs({ "cro_crosshair", "crosshair_fn2000_comp", "crosshair_m1891_2" }) do
+	square_scopes["wpn\\wpn_" .. name] = true
 end
 --[[-----------------------------------------------------------------------------------------------
  * CONSTANTS
@@ -184,6 +189,11 @@ function CHudAnimationsMgr:update_item_data()
 		else
 			self.scope_texture = read_line(get_weapon_data(self.item, "scope_name"), "scope_texture", "string")
 		end
+		if self.square ~= square_scopes[self.scope_texture] then
+			self:clear_scope_texture()
+			self.square = square_scopes[self.scope_texture]
+			self:init_scope_texture()
+		end
 		if self.st_scope_l then
 			self.st_scope_l:InitTexture(self.scope_texture)
 			self.st_scope_l:SetOriginalRect(0, 0, 1, 1)
@@ -198,7 +208,12 @@ function CHudAnimationsMgr:update_item_data()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudAnimationsMgr:init_scope_texture()
-	local width = 1024 * (screen.height / screen.width) * 1.6
+	local width
+	if self.square then
+		width = 1024 * screen.aspect_ratio / 0.75
+	else
+		width = 1024 * screen.height / screen.width * 1.6
+	end
 	local offset = (1024 - width) / 2
 	if offset > 0 then
 		-- scope left static
