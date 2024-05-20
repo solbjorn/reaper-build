@@ -495,6 +495,22 @@ function issue_event(npc, st, event_fn, ...)
   end
 end
 
+function handle_nil(Actor, npc, func)
+	local str
+	if not Actor and npc then
+		if func == xr_conditions.actor_in_zone then return true end
+
+		str = "Actor is nil for " .. npc:name()
+	elseif not npc and Actor then
+		str = "npc is nil"
+	else
+		str = "Actor and npc are nil"
+	end
+	abort(str)
+
+	return false
+end
+
 function pick_section_from_condlist(npc, condlist)
 	local infop_conditions_met, cond, infop
 	for n = 1, #condlist do
@@ -508,8 +524,7 @@ function pick_section_from_condlist(npc, condlist)
 					break
 				end
 			elseif infop.func then
-				if not Actor or not npc then
-					abort((Actor and "npc" or "actor") .. " is nil")
+				if not ((Actor and npc) or handle_nil(Actor, npc, infop.func)) then
 					return nil
 				end
 				if infop.func(Actor, npc, infop.params) then
@@ -541,8 +556,7 @@ function pick_section_from_condlist(npc, condlist)
 			for inum = 1, #cond.infop_set do
 				infop = cond.infop_set[inum]
 				if infop.func then
-					if not Actor or not npc then
-						abort((Actor and "npc" or "actor") .. " is nil")
+					if not ((Actor and npc) or handle_nil(Actor, npc, infop.func)) then
 						return nil
 					end
 					infop.func(Actor, npc, infop.params)
