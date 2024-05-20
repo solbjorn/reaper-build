@@ -76,14 +76,16 @@ condition_shot_dec 			= 0.00008	;увеличение износа при каждом выстреле
 ;-----------------------------------------------------------------------------------
 
 direction               = 0, 0, 1
-grenade_flame_particles		= weapons\generic_weapon01
 fire_point             	=  0,0.216,0.638
 fire_point2            		=  0,0.216,0.730			; position (3rd person view) for particles of fire (when shooting with secondary fire)
 
-flame_particles			= weapons\generic_weapon05
-smoke_particles         = weapons\generic_shoot_00
+flame_particles				= amik\weapons\flame_particles\flame_particles_05
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_01
+grenade_flame_particles			= amik\weapons\grenade_flame_particles\grenade_flame_particles_00
 
 shell_point		 		= 0,0.216,0.174
+shell_particles	 			= amik\weapons\7_62x39\7_62x39_r_02
+
 shell_dir		 		= 0.0, 1.0, 0.0
 
 rpm_empty_click 	 	= 200
@@ -146,14 +148,6 @@ silencer_y 					= 13
 grenade_launcher_name 		= wpn_addon_grenade_launcher; section name for the attachable grenade launcher
 grenade_launcher_x 			= 116						; offset in inventory icon
 grenade_launcher_y 			= 23
-;silencer_flame_particles 	= weapons\generic_weapon01
-silencer_smoke_particles 	= weapons\generic_shoot_00
-
-silencer_light_color		= 1.0, 0.1, 0.0
-silencer_light_range		= 0.01
-silencer_light_var_color	= 0.05
-silencer_light_var_range	= 0.5
-silencer_light_time 		= 0.2
 
 zoom_enabled			= true
 scope_zoom_factor	    = 50
@@ -177,8 +171,13 @@ snd_silncer_shot		= weapons\ak47\ak47_shot_sil
 ;params when silencer is attached
 ;similar to corresponding params without prefix silencer_
 
-;silencer_flame_particles 	= weapons\generic_weapon01
-silencer_smoke_particles 	= weapons\generic_shoot_00
+silencer_smoke_particles 	= amik\weapons\smoke_particles\silencer_smoke_particles_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
 
 [wpn_ak47_hud]
 allow_inertion				= true
