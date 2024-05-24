@@ -11,14 +11,16 @@ local callback_use_object = callback.use_object
 local callback_patrol_path_in_point = callback.patrol_path_in_point
 local table_insert = table.insert
 
-function bind(obj)
-	obj:bind_object(generic_object_binder(obj))
+function bind(obj, aem)
+	obj:bind_object(generic_object_binder(obj, aem))
 end
 
 ------------------------------------------------------------------------------------
 class "generic_object_binder" (object_binder)
 
-function generic_object_binder:__init(obj) super(obj)
+function generic_object_binder:__init(obj, aem)
+	super(obj)
+
 	self.loaded = false
 	self.particles = {}
 	self.next_update_200 = 0
@@ -31,6 +33,8 @@ function generic_object_binder:__init(obj) super(obj)
 	else
 		self.prev_pos = vector():set(0, -100, 0)
 	end
+
+	self.aem = aem
 end
 
 function generic_object_binder:reload(section)
@@ -254,6 +258,11 @@ function generic_object_binder:net_spawn(sobject)
 	end
 
 	local obj = self.object
+
+	if self.aem == true then
+		obj:add_restrictions("bar_arena_restrictor", "")
+	end
+
 	db.add_obj(obj)
 	-- регистрация в схеме биорадара
 	biodetector.add_obj(obj)
