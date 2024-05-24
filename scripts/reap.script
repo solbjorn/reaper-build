@@ -280,6 +280,11 @@ function drop_weapon(punch)
 end
 
 function wpn_show_enable(info_id)
+	if screen.precache_frame > 0 then
+		timer(wpn_show_enable, 400, true, info_id)
+		return
+	end
+
 	if info_id then
 		ammo_belt.on_info(info_id)
 		grenade_belt.on_info(info_id)
@@ -304,6 +309,11 @@ function wpn_show_enable(info_id)
 end
 
 function wpn_hide_disable(info_id)
+	if screen.precache_frame > 0 then
+		timer(wpn_hide_disable, 400, true, info_id)
+		return
+	end
+
 	vars.wpn_refcnt = (vars.wpn_refcnt or 0) + 1
 	if vars.wpn_refcnt == 1 then
 		local act = Actor:active_slot()
