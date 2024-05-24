@@ -87,17 +87,28 @@ local pda_news = voice([[device\pda\pda_news]])
 local pda_tips = voice([[device\pda\pda_tip]])
 local pda_task = voice([[device\pda\pda_objective]])
 
+local random_icons = {
+	bandit		= { { 498, 235 }, { 581, 235 } },
+	dolg		= { { 498, 141 }, { 581, 141 } },
+	ecolog		= { { 498, 0 }, { 581, 0 } },
+	freedom		= { { 498, 94 }, { 581, 94 } },
+	military	= { { 498, 188 }, { 581, 188 } },
+	stalker		= { { 498, 705 }, { 498, 517 }, { 498, 564 }, { 498, 611 }, { 498, 658 } },
+	trade		= { { 0, 0 }, { 581, 47 } }
+}
+random_icons.gen_info = random_icons.stalker
+
+function random_tip_icon(sender)
+	return table.random(random_icons[sender])
+end
+
 local tips_icons = {
 	default		= { 0, 658 },
 	trader		= { 332, 893, "escape_trader_name" },
 	bes		= { 415, 0, "gar_hellcar_name" },
 	seryi		= { 415, 141, "gar_seryi_name" },
 	fanat		= { 415, 658, "esc_fanat_name" },
-	dolg		= { 498, 141 },
-	freedom		= { 498, 94 },
-	ecolog		= { 498, 0 },
 	arena		= { 332, 141 },
-	stalker		= { 0, 799 },
 	krot		= { 332, 47, "agr_krot_name" },
 	barman		= { 332, 235, "bar_barmen_name" },
 	wolf		= { 332, 940, "esc_wolf_name" },
@@ -117,18 +128,23 @@ local tips_icons = {
 	plichko		= { 332, 282, "bar_plichko_name" },
 	prapor		= { 415, 47, "gar_dolg_blokpost_leader_name" },
 	encyclopedia	= { 82, 282 },
-	military	= { 498, 188 },
 	vasilyev	= { 249, 705, "yan_vasilyev_name" },
 	kalugin		= { 249, 705, "dar_kalugin_name" },
 	kruglov		= { 498, 0, "ros_kruglov_name" },
 	borov		= { 332, 564, "val_borov_name" },
 	death		= { 0, 752 },
-	gen_info	= { 0, 799 },
-	trade 		= { 0, 0 },
 	uniq		= { 498, 47 },
 	unknown		= { 0, 940, "unknown_sender" },
-	bandit		= { 498, 235 },
-	strelok		= { 415, 940, "strelok_name" }
+	strelok		= { 415, 940, "strelok_name" },
+
+	bandit		= random_tip_icon,
+	dolg		= random_tip_icon,
+	freedom		= random_tip_icon,
+	military	= random_tip_icon,
+	gen_info	= random_tip_icon,
+	ecolog		= random_tip_icon,
+	stalker		= random_tip_icon,
+	trade 		= random_tip_icon
 }
 local name_to_sender = { }
 
@@ -136,7 +152,7 @@ local task_icons = { }
 
 function prepare_data()
 	for k, data in pairs(tips_icons) do
-		if data[3] then
+		if type(data) == "table" and data[3] then
 			data[3] = translate(data[3])
 			name_to_sender[data[3]] = k
 		end
@@ -148,19 +164,30 @@ function prepare_data()
 	end
 end
 
-function sender_info_byname(sender, header)
+function get_sinfo(sender)
 	local sinfo = sender and tips_icons[sender]
+	if not sinfo then return nil end
+
+	if type(sinfo) == "function" then
+		sinfo = sinfo(sender)
+	end
+
+	return sinfo
+end
+
+function sender_info_byname(sender, header)
+	local sinfo = get_sinfo(sender)
 	if sinfo then
 		return sinfo
 	end
 
 	sender = header and name_to_sender[header]
-	sinfo = sender and tips_icons[sender]
+	sinfo = get_sinfo(sender)
 	if sinfo then
 		return sinfo
 	end
 
-	return tips_icons["default"]
+	return get_sinfo("default")
 end
 
 function send_tip(news_id, timeout, sender, showtime, sender_id)
@@ -196,7 +223,7 @@ function send_tip(news_id, timeout, sender, showtime, sender_id)
 	end
 	if not sender then sender = "default" end
 
-	local sinfo = tips_icons[sender] or tips_icons["default"]
+	local sinfo = get_sinfo(sender) or get_sinfo("default")
 	local rect = Frect():set(sinfo[1], sinfo[2], 83, 47)
 	local header = sinfo[3] or (sender_id and reap.story_name(sender_id)) or translate("st_tip")
 
@@ -288,16 +315,17 @@ function send_task(type, _task, objective)
 	Actor:give_game_news(news_text, task_texture, task_rect, 0, 10000)
 end
 
+local article_types = {
+	[0]	= "news_article",	-- Справка
+	[1]	= "news_journal",	-- Журнал
+	[2]	= "news_task",		-- Задания
+	[3]	= "news_info"		-- Вырезанный раздел, но пусть будет
+}
+
 function send_encyclopedy(_type, group, name)
-	local article_types = {
-		[0] = "news_article",-- Справка
-		[1] = "news_journal",-- Журнал
-		[2] = "news_task",		-- Задания
-		[3] = "news_info"		-- Вырезанный раздел, но пусть будет
-	}
 	pda_news:play(Actor, 0, sound_object.s2d)
 	if _type == 2 then group = string.match(group, "^[^/]+") end
-	local sinfo = tips_icons["encyclopedia"]
+	local sinfo = get_sinfo("encyclopedia")
 	local task_texture, task_rect = "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47)
 	local news_text = "%c[sender]"..translate(article_types[_type]).."\\n"..
 		"%c[255,255,255,0]"..translate(group)
@@ -326,7 +354,7 @@ end
 function send_level_changer(from, to)
 	pda_news:play(Actor, 0, sound_object.s2d)
 
-	local sinfo = tips_icons["encyclopedia"]
+	local sinfo = get_sinfo("encyclopedia")
 	local task_texture, task_rect = "ui\\ui_iconsTotal", Frect():set(sinfo[1], sinfo[2], 83, 47)
 	local news_text = "%c[sender]" .. translate("st_new_level_changer").. "\\n" ..
 		"%c[255,255,255,0]" .. translate(from) .. " - " .. translate(to)
