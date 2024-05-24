@@ -199,16 +199,6 @@ function generic_object_binder:death_callback(victim, who)
 
 	smart_terrain.on_death( self.object:id() )
 
-	--' Наносим небольшой импульс вперед.
-	local h = hit()
-	h.draftsman = self.object
-	h.type = hit.fire_wound
-	h.direction = Actor:position():sub(self.object:position())
-	h:bone("pelvis")
-	h.power = 1
-	h.impulse = 10
-	self.object:hit(h)
-
 	if self.effector and self.effector.death then
 		self.effector:death()
 		self.effector = nil

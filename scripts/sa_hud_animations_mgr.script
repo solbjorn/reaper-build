@@ -84,27 +84,20 @@ function CHudAnimationsMgr:update()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudAnimationsMgr:idle_animation()
-	if self.animation ~= "kick" then
-		if Actor:is_actor_running() or Actor:is_actor_walking() or Actor:is_actor_crouching() then
-			if self.animation ~= "moving" then
-				if not self:play_hud_animation(self:get_type_animation("moving")) then
-					self:play_hud_animation(self:get_type_animation("idle"))
-				end
-				self.animation = "moving"
-			end
-		elseif Actor:is_actor_sprinting() then
-			if self.animation ~= "sprint" then
-				if not self:play_hud_animation(self:get_type_animation("sprint")) and
-				   not self:play_hud_animation(self:get_type_animation("moving")) then
-					self:play_hud_animation(self:get_type_animation("idle"))
-				end
-				self.animation = "sprint"
-			end
-		else
-			if self.animation ~= "idle" then
-				self:play_hud_animation(self:get_type_animation("idle"))
-				self.animation = "idle"
-			end
+	if Actor:is_actor_running() or Actor:is_actor_walking() or Actor:is_actor_crouching() then
+		if self.animation ~= "moving" then
+			self:play_hud_animation(self:get_type_animation("moving"))
+			self.animation = "moving"
+		end
+	elseif Actor:is_actor_sprinting() then
+		if self.animation ~= "sprint" then
+			self:play_hud_animation(self:get_type_animation("sprint"))
+			self.animation = "sprint"
+		end
+	else
+		if self.animation ~= "idle" then
+			self:play_hud_animation(self:get_type_animation("idle"))
+			self.animation = "idle"
 		end
 	end
 end
@@ -116,16 +109,12 @@ function CHudAnimationsMgr:get_type_animation(state)
 				return "anim_idle_g"
 			elseif state == "moving" then
 				return "anim_idle_g_moving"
-			elseif state == "kick" then
-				return "anim_kick_g"
 			end
 		elseif get_weapon_data(self.item, "is_attached_grenade_launcher") or read_line(self.section, "grenade_launcher_status") == 1 then
 			if state == "idle" then
 				return "anim_idle_gl"
 			elseif state == "moving" then
 				return "anim_idle_gl_moving"
-			elseif state == "kick" then
-				return "anim_kick_gl"
 			end
 		end
 	elseif self.item:is_weapon_pistol() and self:is_mag_empty() then
@@ -133,8 +122,6 @@ function CHudAnimationsMgr:get_type_animation(state)
 			return "anim_empty"
 		elseif state == "moving" then
 			return "anim_idle_moving_empty"
-		elseif state == "kick" then
-			return "anim_kick_empty"
 		end
 	elseif self.item:clsid() == clsid.wpn_bm16_s then
 		local mag_size = self.item:get_ammo_in_magazine()
@@ -158,8 +145,6 @@ function CHudAnimationsMgr:get_type_animation(state)
 		return "anim_idle_moving"
 	elseif state == "sprint" then
 		return "anim_idle_sprint"
-	elseif state == "kick" then
-		return "anim_kick"
 	end
 end
 ---------------------------------------------------------------------------------------------------
@@ -173,10 +158,8 @@ function CHudAnimationsMgr:play_hud_animation(anim_type)
 				self.item:play_hud_animation(anim_name, true)
 				self.anim_name = anim_name
 			end
-			return true
 		end
 	end
-	return false
 end
 ---------------------------------------------------------------------------------------------------
 function CHudAnimationsMgr:update_item_data()

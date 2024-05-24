@@ -290,16 +290,6 @@ function motivator_binder:death_callback(victim, who)
 	freeplay_stats:give_item_on_death(victim, who)
   self:clear_callbacks()
 
-  --' Наносим небольшой импульс вперед.
-  local h = hit()
-  h.draftsman = self_object
-  h.type = hit.fire_wound
-  h.direction = who:position():sub(self_object:position())
-  h:bone("pelvis")
-  h.power = 1
-  h.impulse = 10
-  self_object:hit(h)
-
 	local self_particles = self.particles
 	if #self_particles > 0 then
 		for kk,vv in pairs(self_particles) do
