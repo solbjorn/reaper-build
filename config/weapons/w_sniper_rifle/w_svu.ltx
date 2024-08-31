@@ -1,0 +1,228 @@
+[wpn_svu]: WP_SVD
+class                   = WP_SVU
+min_radius              = 0
+max_radius              = 250
+description				= enc_weapons1_wpn-svu
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+allow_military				= true
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 2.15               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 10000
+
+ammo_mag_size		 	= 10
+ammo_class		 		= ammo_7.62x54_7h1, ammo_7.62x54_ap, ammo_7.62x54_7h14
+
+slot 			 		= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name		 		= wpn-svu
+inv_weight		 		= 4.4
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 55
+inv_grid_y				= 36
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.043 ;0.051	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.6f
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 4.25	;скорость возврата в исходное положение
+cam_relax_speed_ai         	= 120.75	;скорость возврата в исходное положение
+cam_dispersion          	= 2.5	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.5	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 12.0	;максимальный угол отдачи
+cam_max_angle_horz		= 3.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 1.8	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.006	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0009
+;-----------------------------------------------------------------------------------
+
+fire_point              = 0.0, 0.128, 0.522
+fire_point2             = 0.0, 0.128, 0.522
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\big_smoke_particles_01
+
+shell_point		 		= 0.0, 0.128, 0.0
+shell_dir		 		= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\7_62x54\7_62x54_l
+
+PDM_disp_base 			= 4.5
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.68, 0.73, 0.76, 0.80
+hit_impulse				= 8
+hit_rate	= 1.95
+fire_distance       = 210
+bullet_speed		= 412  ; иначе не будет работать "снайпер аддон"
+rpm                 = 140
+
+weapon_min_queue_size_far		= 2
+weapon_max_queue_size_far		= 3
+weapon_min_queue_interval_far		= 500
+weapon_max_queue_interval_far		= 700
+
+weapon_min_queue_size_medium		= 3
+weapon_max_queue_size_medium		= 5
+weapon_min_queue_interval_medium	= 400
+weapon_max_queue_interval_medium	= 600
+
+weapon_min_queue_size_close		= 5
+weapon_max_queue_size_close		= 7
+weapon_min_queue_interval_close		= 300
+weapon_max_queue_interval_close		= 500
+
+hud					= wpn_svu_hud
+
+position                = -0.026, -0.084, 0.0
+strap_position         		= -0.26,-0.11,0.25			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110
+
+visual					= weapons\svu\wpn_svu
+
+light_disabled					= true
+
+ph_mass					= 3
+
+scope_status				= 1
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\PSO1M1-AMK_1680-W
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw				= weapons\svu\svu_draw
+snd_holster				= weapons\sniper_holster
+snd_shoot				= weapons\svu\svu_shoot
+snd_empty				= weapons\ak_empty, 0.5
+snd_reload				= weapons\svu\svu_reload
+;------------------------------------------------------------------------------------------
+
+[wpn_svu_hud]: wpn_hud
+shell_point          	= -0.15, -0.02, 0.05
+fire_point			= -0.165,-0.0675,-0.06;-0.070000,-0.050000,0.080000
+
+visual					= weapons\svu\wpn_svu_hud
+
+anim_holster			= holster
+anim_idle				= idle
+anim_idle_aim			= idle
+anim_idle_moving			= idle
+anim_reload				= reload
+anim_draw				= draw
+anim_holster			= holster
+anim_shoot				= shoot1
+anim_idle_sprint	= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.070000,0.000000,0.000000
+zoom_rotate_x			= 0.020000
+zoom_rotate_y			= -0.040000
+
+[wpn_svu_sk2]: wpn_svu
+description				= wpn_svu_sk2_desc
+inv_grid_y				= 38
+
+fire_point				= 0.0, 0.205, 0.56
+shell_point		 		= 0.0, 0.23, -0.123
+shell_particles				= amik\weapons\7_62x54\7_62x54_r
+
+hud					= wpn_svu_sk2_hud
+
+position 				= -0.026, -0.168, 0.005
+strap_position				= 0.02, -0.21, 0.25
+strap_orientation			= 5, -183, -99
+
+visual					= weapons\svu\wpn_svu_sk2
+
+scope_zoom_factor			= 4
+
+snd_draw				= weapons\svu\svu_sk2_draw
+snd_holster				= weapons\svu\svu_sk2_holster
+snd_shoot				= weapons\svu\svu_sk2_shoot
+snd_reload				= weapons\svu\svu_sk2_reload
+
+[wpn_svu_sk2_hud]: wpn_svu_hud
+shell_point				= -0.02, 0.32, 0.1
+fire_point				= 0.010000, -0.175999, -0.029999
+
+position				= 0.115000, -0.020900, -0.006000
+orientation				= 2.344327, 1.593801, 0.000000
+visual					= weapons\svu\wpn_svu_sk2_hud
+
+anim_idle_aim				= idle_aim
+anim_shoot				= shoot
+anim_idle_moving			= idle_moving
+
+zoom_offset				= -0.102800, 0.005750, -0.085
+zoom_rotate_x				= 0.030960
+zoom_rotate_y				= 0.041510
+
+ignore_scope_texture			= true
+
+; СВУ "Малыш"
+[wpn_svu_sk2_m1]: wpn_svu_sk2
+inv_name				= wpn-svu_m1
+description				= enc_weapons1_wpn-svu_m1
+inv_grid_x				= 69
+inv_grid_y				= 32
+
+class					= WP_VINT
+fire_modes				= 1, -1
+inv_weight				= 3.1
+
+fire_dispersion_base			= 0.03
+cam_relax_speed				= 3.25
+cam_relax_speed_ai			= 80.75
+cam_dispersion				= 0.9
+cam_dispersion_inc			= 0.3
+cam_max_angle				= 8.0
+cam_step_angle_horz			= 0.1
+condition_shot_dec 			= 0.0004
+
+fire_point				= 0.0, 0.128, 0.522
+shell_particles				=
+
+rpm					= 650
+
+hud					= wpn_svu_sk2_m1_hud
+visual					= weapons\svu\wpn_svu_sk2_m1
+
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\pso2
+
+snd_draw				= weapons\svu\svu_sk2_m1_draw
+snd_holster				= weapons\svu\svu_sk2_m1_holster
+snd_shoot				= weapons\svu\svu_sk2_m1_shot
+snd_reload				= weapons\svu\svu_sk2_m1_reload
+
+[wpn_svu_sk2_m1_hud]: wpn_svu_sk2_hud
+shell_point				= -0.020000, 0.365000, 0.080000
+fire_point				= 0.030000, -0.070999, 0.245001
+
+position				= 0.020000, -0.055000, 0.010000
+orientation				= 1.718358, 2.862405, 0.000000
+visual					= weapons\svu\wpn_svu_sk2_m1_hud
+
+zoom_offset				= -0.108400, 0.011450, -0.001000
+zoom_rotate_x				= -0.004940
+zoom_rotate_y				= 0.000210
+
+ignore_scope_texture			= false

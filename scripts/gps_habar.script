@@ -7,7 +7,6 @@ rev: 10/11/08.02
 
 local string_find = string.find
 local string_gsub = string.gsub
-local string_trim = string.trim
 local table_insert = table.insert
 local table_remove = table.remove
 local table_sort = table.sort
@@ -31,18 +30,6 @@ local is_warning_on_death = false
 local is_color_and_sort_list = true
 
 local is_gps_update_in_process = false -- для устранения коллизий при "on_actor_upade"
-
-function trim(s)
-	return string_trim(s)
-end
-
-function toboolean(_str)
-	if string_find(string.lower(_str), "true") or _str == "1" then
-		return true
-	end
-
-	return false
-end
 
 -- выводим сообщение и играем звук. Аргументы sender  и sound не учитываем, т.к. функция используется только для вывода сообщений от gps. Аргументы оставлены для совместимости.
 function send_tip(news_text, header, timeout, showtime, sender, sound)

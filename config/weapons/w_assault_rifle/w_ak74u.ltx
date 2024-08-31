@@ -1,0 +1,250 @@
+[wpn_ak74u]: WP_LR300
+min_radius          	= 30				; [] for AI
+max_radius          	= 100				; [] for AI
+description				= enc_weapons1_wpn-ak74u
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 1000				; the price of the item
+
+ammo_mag_size			= 45				; clip (magazine) size
+fire_modes				= 1, -1
+
+ammo_class				= ammo_5.45x39_fmj, ammo_5.45x39_ap   ; name of the ltx-section of used ammo
+
+slot 					= 2									; number of slot in inventory we put weapon in (1 - knife slot, 2 - pistol, 3 - rifle, 4 - grenade, 5 - apparatus)
+animation_slot			= 2									; type of the animation that will be used
+
+inv_name	        	= wpn-ak74u								; name in inventory
+inv_weight			= 2.7								; weight in inventory
+
+inv_grid_width				= 4
+inv_grid_height				= 2
+inv_grid_x				= 53
+inv_grid_y				= 4
+
+;-----------------------------------------------------------------------------------
+; base dispersion
+;
+; === Setting of the weapon shooting dispersal parameter ===
+;Dispersal consists from to basic constituents - dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal.
+;Dispersal of the weapon depends only from basic dispersal, basket case factor ant time of the ammo.
+;Dispersal of the way the host shooting (standing, running and etc.)
+;Two types of shooting modes can be defined: - usual mode and zoomed mode.
+;Usual mode: - depends from the position of the player while shooting (standing, sitting, walking and running)
+;Zoomed mode - depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector).
+;Weapon recoil in the game also created by recoil effector.
+;
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+fire_dispersion_base			= 0.24		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.09f
+disp_rate = 1.65
+
+;отдача
+cam_relax_speed         		= 5.5		;скорость возврата в исходное положение
+cam_dispersion          	= 0.37		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.2		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 1	;0.69		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 15.0		;максимальный угол отдачи
+cam_max_angle_horz				= 15.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 1.5 		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 5		;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0006
+;-----------------------------------------------------------------------------------
+
+fire_point             		=  0.0, 0.262, 0.447		; position (3rd person view) for particles of fire
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_02
+
+shell_point		 			= 0.00, 0.262, 0.189			; position (3rd person view) for shell to throw out
+shell_particles				= amik\weapons\5_45x39\5_45x39_shells_l_00
+
+PDM_disp_base 				= 3.5
+PDM_disp_vel_factor 		= 1.4
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 5.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.53, 0.55, 0.56, 0.58
+hit_impulse				= 8
+hit_rate	= 1.85
+fire_distance               = 130
+bullet_speed		= 715
+rpm                 = 700
+
+silencer_hit_power       	= 0.5
+silencer_hit_impulse			= 7
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 315
+
+hud					= wpn_ak74u_hud
+position         	        = -0.026,-0.215,0
+strap_position         		= -0.18,-0.45,0.2			; position (offset) and orientation of the weapon when it is strapped
+visual					= weapons\ak-74u\ak74u
+
+light_color					= 0.6,0.5,0.3				; params for light during the fire
+light_range					= 5							; radius
+light_var_color				= 0.05
+light_var_range		 	= 0.1
+light_time 					= 0.2
+
+ph_mass					= 3
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_pbs4
+silencer_x				= 156
+silencer_y				= 0
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
+snd_draw					= weapons\ak74u\ak74u_draw
+snd_holster				= weapons\rifle_holster
+snd_shoot					= weapons\ak74u\ak74u_shoot
+snd_shoot1					= weapons\ak74u\ak74u_shoot1
+snd_shoot2					= weapons\ak74u\ak74u_shoot2
+snd_shoot3					= weapons\ak74u\ak74u_shoot3
+snd_empty					= weapons\ak_empty, 0.7
+snd_reload					= weapons\ak74u\ak74u_reload, 1.0, 0.75
+snd_silncer_shot				= weapons\ak74u\ak74u_shot_sil
+;------------------------------------------------------------------------------------------
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+;-----------------------------------------------------------------------------
+;-- HUD DESCRIPTION
+;-----------------------------------------------------------------------------
+
+[wpn_ak74u_hud]: wpn_hud
+shell_point     	   	 	= 0.15, 0.0, -0.05
+fire_point			= 0.090000,0.000000,-0.060000
+fire_point2              	= 0.30, 0.00, 0.05
+
+orientation             	= 2.5, 1.5, 0
+position                	= -0.025, 0.025, 0
+visual					= weapons\ak-74u\wpn_ak74u_hud
+
+; animation names
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle_moving
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;HUD offset in zoom mode (to all)
+;(use CONSOLE: hud_adjust_mode 0,1,2, then keys WSADQE and P to show current value in console)
+
+zoom_offset			= -0.112700,0.008800,0.015100
+zoom_rotate_x		= 0.020800
+zoom_rotate_y		= 0.060900
+
+[wpn_ak74u_sk2]: wpn_ak74u
+description				= wpn_ak74u_sk2_desc
+inv_grid_x				= 53
+inv_grid_y				= 6
+
+ammo_mag_size				= 30
+shell_particles				= amik\weapons\5_45x39\5_45x39_shells_r_00
+
+hud					= wpn_ak74u_sk2_hud
+visual					= weapons\ak-74u\wpn_ak74u_sk2
+
+silencer_x				= 147
+silencer_y				= 7
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\ak74u\ak74u_sk2_shoot
+snd_shoot1				= weapons\ak74u\ak74u_sk2_shoot1
+snd_shoot2				= weapons\ak74u\ak74u_sk2_shoot2
+snd_shoot3				= weapons\ak74u\ak74u_sk2_shoot3
+snd_shoot4				= weapons\ak74u\ak74u_sk2_shoot4
+snd_shoot5				= weapons\ak74u\ak74u_sk2_shoot5
+snd_reload				= weapons\ak74u\ak74u_sk2_reload
+snd_reload_partly			= weapons\ak74u\ak74u_sk2_reload_partly
+snd_silncer_shot			= weapons\ak74u\ak74u_sk2_shot_sil
+
+[wpn_ak74u_sk2_hud]: wpn_hud
+shell_point				= 0, -0.05, -0.1
+shell_dir				= 0, 0, 0
+
+fire_point				= 0, -0.01, 0
+fire_bone				= bolt
+
+position				= 0.01, -0.01, 0.15
+orientation				= 2, 1, 0
+visual					= weapons\ak-74u\wpn_ak74u_sk2_hud
+
+anim_idle				= aks74u_idle
+anim_reload				= aks74u_reload_empty
+anim_draw				= aks74u_draw
+anim_holster				= aks74u_holster
+anim_shoot				= aks74u_shoot
+anim_idle_aim				= aks74u_idle
+anim_idle_sprint			= aks74u_idle_sprint
+anim_idle_moving			= aks74u_idle_moving
+
+zoom_offset				= -0.108, 0.04, 0
+zoom_rotate_x				= 0.02
+zoom_rotate_y				= 0.0362
+
+[wpn_ak74u_arena]: wpn_ak74u
+[wpn_ak74u_sk2_arena]: wpn_ak74u_sk2
+
+; Аномальный АК-74у
+[wpn_ak74u_m1]: wpn_ak74u
+inv_name				= wpn-ak74u_m2
+description				= enc_weapons1_wpn-ak74u_m2
+inv_grid_width				= 5
+inv_grid_x				= 61
+
+inv_weight				= 3.1
+condition_shot_dec			= 0.0003
+
+smoke_particles				= amik\weapons\smoke_particles\silencer_smoke_particles_00
+flame_particles				=
+light_disabled				= true
+
+hit_power				= 0.65, 0.68, 0.71, 0.74
+fire_distance				= 210
+bullet_speed				= 540
+
+hud					= wpn_ak74u_m1_hud
+visual					= weapons\ak-74u\wpn_ak74u_m1
+
+silencer_status				= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_shoot				= weapons\ak74u\ak74u_m1_shot
+snd_shoot1				= weapons\ak74u\ak74u_m1_shot1
+snd_shoot2				= weapons\ak74u\ak74u_m1_shot
+snd_shoot3				= weapons\ak74u\ak74u_m1_shot1
+;------------------------------------------------------------------------------------------
+
+[wpn_ak74u_m1_hud]: wpn_ak74u_hud
+visual					= weapons\ak-74u\wpn_ak74u_m1_hud

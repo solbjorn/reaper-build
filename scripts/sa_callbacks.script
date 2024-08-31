@@ -10,7 +10,6 @@
  * ACTOR
 --]]-----------------------------------------------------------------------------------------------
 local pda_contacts_dialog
-local hud_animations_mgr
 local hud_interface_mgr
 local mob_health_bar
 local car_mgr
@@ -38,11 +37,9 @@ function actor_update(delta)
 	if mob_health_bar then
 		mob_health_bar:update()
 	end
-	if not hud_animations_mgr then
-		hud_animations_mgr = sa_hud_animations_mgr.get_hud_animations_mgr()
+	if not hud_interface_mgr then
 		hud_interface_mgr = sa_hud_interface_mgr.get_hud_interface_mgr()
 	end
-	hud_animations_mgr:update()
 	hud_interface_mgr:update()
 	sa_inventory_items_mgr.repack_ammo()
 	sa_main.overweight_power_fix()
@@ -50,7 +47,6 @@ function actor_update(delta)
 		sa_main.bunker_cooling_sound()
 		next_500 = time_real_ms + 500
 	end
-	sa_main.scope_zoom_mode_callback()
 end
 ---------------------------------------------------------------------------------------------------
 function switch_mob_health_bar(obj)
@@ -60,10 +56,6 @@ end
 function actor_net_spawn()
 	sa_main.disable_ui_info()
 	pda_talk.init()
-end
----------------------------------------------------------------------------------------------------
-function actor_net_destroy()
-	hud_animations_mgr:clear_scope_texture()
 end
 ---------------------------------------------------------------------------------------------------
 local last_mob_type
@@ -167,9 +159,11 @@ function info(info_id, ui_info)
 			else
 				trade_cond = info_id == "ui_car_body" or nil
 			end
-			sa_inventory_items_mgr.set_items_tradability_flags(trade_cond)
-			Actor:invalidate_inventory()
-			update_inventory_window()
+			level.parked_call(function()
+				sa_inventory_items_mgr.set_items_tradability_flags(trade_cond)
+				Actor:invalidate_inventory()
+				update_inventory_window()
+			end)
 		elseif trade_cond and trade_end_info[info_id] then
 			trade_cond = nil
 		end
@@ -180,16 +174,6 @@ function pda_tab(tab_id)
 	sa_pda.show_hide_menu(tab_id)
 	pda_contacts_dialog = sa_pda.get_pda_contacts_dialog()
 	sa_main.pda_sounds(tab_id)
-end
----------------------------------------------------------------------------------------------------
-function scope_zoom_mode(mode_on)
-	if not level.main_input_receiver() then
-		if mode_on then
-			level.hide_indicators()
-		else
-			level.show_indicators()
-		end
-	end
 end
 ---------------------------------------------------------------------------------------------------
 function select_pda_contact(binded, id)
@@ -240,11 +224,8 @@ function key_press(binded, dik)
 	if not level.main_input_receiver() then
 		sa_main.pda_info_fix(dik)
 	end
-	if hud_animations_mgr then
-		hud_animations_mgr:on_keyboard(dik, key_events.pressed)
-	end
 	sa_main.zoom_effect(dik, key_events.pressed)
-	reap.key_press(dik)
+	reap_callback.key_press(binded, dik)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
@@ -252,10 +233,8 @@ function key_release(binded, dik)
 	if car_mgr then
 		car_mgr:on_keyboard(dik, key_events.released)
 	end
-	if hud_animations_mgr then
-		hud_animations_mgr:on_keyboard(dik, key_events.released)
-	end
 	sa_main.zoom_effect(dik, key_events.released)
+	reap_callback.key_release(binded, dik)
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------

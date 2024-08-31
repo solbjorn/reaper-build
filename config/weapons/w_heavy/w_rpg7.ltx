@@ -1,0 +1,282 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RPG7
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[wpn_rpg7]: weapon
+class                    	= WP_RPG7
+min_radius               	= 50
+max_radius               	= 150
+max_zoom_factor			 	= 5
+description					= enc_weapons1_wpn-rpg7
+
+ef_main_weapon_type			= 4
+ef_weapon_type				= 9
+
+news_weapon_type			= 5
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 2.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 10000
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 1
+ammo_class		 			= ammo_og-7b
+
+single_handed				= 0
+
+slot 				 		= 2
+animation_slot		 		= 4		; type of the animation that will be used
+
+launch_speed				= 5
+
+inv_name					= wpn-rpg7
+inv_weight					= 6.3
+
+inv_grid_width				= 6
+inv_grid_height				= 2
+inv_grid_x				= 47
+inv_grid_y				= 28
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 1.5   ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.5
+
+;отдача
+cam_relax_speed         	= 2.0	;скорость возврата в исходное положение
+cam_dispersion          	= 6.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle				= 8		;максимальный угол отдачи
+cam_max_angle_horz			= 5.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz			= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.0001	;вероятность осечки при максимальном износе
+condition_shot_dec 			= 0.005 ;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+shell_point				 	= 0.0, 0.0, 0.0
+fire_point               	= 0.0, 0.162, 0.35
+
+smoke_particles				= amik\weapons\rpg7\rpg_shoot
+
+; ttc
+;---------------------------------------------------------------
+hit_power       			= 4.80
+hit_impulse				= 170
+hit_type 					= explosion
+hit_rate	= 2.3
+
+fire_distance            	= 400
+bullet_speed			 	= 200 ;300			;начальная скорость пули
+rpm                      	= 5
+
+;---------------------------------------------------------------
+; end ttc
+
+hud					= wpn_rpg7_hud
+
+position                 	= -0.027, -0.113, 0.0
+strap_position         		= -0.28,-0.20,0.25			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-189,110				; (3rd person view in degrees)
+
+visual					= weapons\rpg_7\wpn_rpg_7
+
+fragment_speed	 			= 50
+
+explode_duration		 	= 5		;подолжительность взрыва (с)
+
+light_color		 			= 0.95,0.95,0.3
+light_range		 			= 20.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.75
+
+ph_mass					= 5
+
+;addons
+scope_status				= 1
+scope_zoom_factor			= 2.7
+scope_texture				= wpn\crosshairs\rpg
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\rpg7\rpg7_draw
+snd_holster					= weapons\shotgun_holster
+snd_shoot					= weapons\rpg7\rpg7_shot
+snd_empty					= weapons\rpg7\rpg7_empty
+snd_reload					= weapons\rpg7\rpg7_reload, 1.0, 0.8
+snd_explode					= weapons\rpg7\rpg7_explode
+;------------------------------------------------------------------------------------------
+
+grenade_bone				= grenade
+
+;rocket launcher
+rocket_class				= wpn_rpg7_missile
+;wallmarks
+wallmark_section			= explosion_marks
+;///////////////////////////////////////////////////////
+;спавнить автоматически боеприпасы при подъеме оружия
+auto_spawn_ammo	= false
+
+;запрещение режима Sprint для Актера
+sprint_allowed			= false
+
+[wpn_rpg7_hud]: wpn_hud
+shell_point		 			= 0.0, 0.0, 0.0
+fire_point               	= 0.00, 0.00, 0
+
+fire_bone                	= grenade_0
+grenade_bone			 	= grenade_0
+
+visual					= weapons\rpg_7\wpn_rpg_7_hud
+
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_aim				= idle
+anim_idle_sprint			= idle
+
+;смещения HUD для режима приближения
+zoom_offset					= -0.046700,-0.022000,0.000000
+zoom_rotate_x				= 0.020000
+zoom_rotate_y				= 0.031400
+
+[wpn_rpg7_missile]: base, immunities
+class                    	= G_RPG7
+visual					= weapons\rpg_7\wpn_rpg_7_grenade
+
+inv_weight					= 0
+
+cost					 	= 200
+;---------------------------------------------------------------
+blast						= 5.00
+blast_r						= 10;15
+blast_impulse				= 190
+;delete
+blast_impulse_factor 		= 1
+
+frags						= 8
+frags_r						= 25
+frag_hit					= 1.50
+frag_hit_impulse			= 275
+
+hit_type_blast				= explosion
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0.25
+;---------------------------------------------------------------
+
+wm_size                  	= 0.1
+wallmark_section			= explosion_marks
+
+light_color		         = 1.9,1.4,0.5
+light_range		         = 24.0
+light_time 		         = 1.28
+
+ph_mass			 			= 5
+
+jump_height 				= 0
+
+explode_particles			= amik\weapons\rpg7\rpg_explosion
+
+;трассы от осколков
+fragment_speed	     		= 100
+
+explode_duration		 	= 5		;подолжительность взрыва (с)
+
+;звуки
+snd_explode				= weapons\rpg7\rpg7_explode
+snd_fly_sound				= weapons\rocket_fly
+
+;свойства которые читаются, но не используются (надо убрать)
+inv_name					= "Og-7b"
+inv_weight					= .2
+
+inv_grid_width				= 4
+inv_grid_height				= 1
+inv_grid_x				= 15
+inv_grid_y				= 5
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Свойства CustomRocket
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+engine_present				= true		;присутствует ли в ракете двигатель
+engine_work_time			= 3000		;время работы двигателя (в милисекундах)
+engine_impulse				= 300
+engine_impulse_up			= 133,906	;137.34 ;137.34 = 2*9.81*7 - значение этого параметра (который является некой подъемной силой, вопреки названию),
+										;при котором ракета массой 7кг не опускается под дейсвием
+										;гравитации. 2*9.81=19.62 - ускорение свободного падения в мире сталкеров
+										;при меньших значениях ракета будет опускаться, при больших подниматься
+lights_enabled 				= true		;свет вокруг ракеты, во время полета
+trail_light_color 			= 0.6,0.5,0.3
+trail_light_range 			= 15.0
+
+engine_particles 			= amik\weapons\rpg7\rpg_trail
+
+force_explode_time			= 30000; msec
+
+[wpn_rpg7_sk2]: wpn_rpg7
+inv_grid_y				= 30
+
+hud					= wpn_rpg7_sk2_hud
+visual					= weapons\rpg_7\wpn_rpg_7_sk2
+
+rocket_class				= wpn_rpg7_sk2_missile
+
+snd_shoot				= weapons\rpg7\rpg7_sk2_shot
+snd_reload				= weapons\rpg7\rpg7_sk2_reload
+
+[wpn_rpg7_sk2_hud]: wpn_hud
+shell_point				= 0.00, 0.00, -0.6
+fire_point				= 0, 0, -0.65
+
+fire_bone				= grenade
+grenade_bone			 	= grenade
+
+orientation				= 3, 2, 3
+position				= -0.03, -0.02, 0.25
+visual					= weapons\rpg_7\wpn_rpg_7_sk2_hud
+
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload_empty
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle_moving
+
+zoom_offset				= -0.08, -0.015, -0.3
+zoom_rotate_x				= 0.015
+zoom_rotate_y				= 0.05
+
+[wpn_rpg7_sk2_missile]: wpn_rpg7_missile
+visual					= weapons\rpg_7\wpn_rpg_7_sk2_grenade
+
+[wpn_rpg7_bad]: wpn_rpg7_sk2
+inv_name				= wpn-rpg7_bad
+description				= enc_weapons1_wpn-rpg7_bad
+inv_grid_x				= 53
+
+cost					= 100
+ammo_class		 		= ammo_og-7b_bad
+condition_shot_dec 			= 1.0
+
+hud					= wpn_rpg7_bad_hud
+visual					= weapons\rpg_7\wpn_rpg_7_bad
+
+scope_status				= 0
+scope_zoom_factor			= 1.2
+
+[wpn_rpg7_bad_hud]: wpn_rpg7_sk2_hud
+visual					= weapons\rpg_7\wpn_rpg_7_bad_hud
+
+zoom_offset				= -0.157, -0.015, -0.05

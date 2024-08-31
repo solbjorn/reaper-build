@@ -11,6 +11,18 @@ local pda_dialog, pda_contacts_dialog, pda_talk_dialog
 --[[-----------------------------------------------------------------------------------------------
  * MAIN PDA DIALOG
 --]]-----------------------------------------------------------------------------------------------
+function add_spot_button()
+	level.start_stop_menu(CUIAddSpotWnd(), true)
+end
+---------------------------------------------------------------------------------------------------
+function remove_spot_button()
+	level.start_stop_menu(CUIRemoveSpotWnd(), true)
+end
+---------------------------------------------------------------------------------------------------
+function turn_off_button()
+	level.start_stop_menu(level.get_pda_wnd(), true)
+end
+---------------------------------------------------------------------------------------------------
 class "CUIPdaDialog" (CUIScriptWnd)
 function CUIPdaDialog:__init() super()
 	self:Init(0, 0, 1024, 768)
@@ -23,14 +35,14 @@ function CUIPdaDialog:__init() super()
 	-- add spot button
 	self.btn_add_spot = self.xml:Init3tButton("btn_pda_add_spot", self.st_background)
 	self:Register(self.btn_add_spot, "add_spot_button")
-	self:AddCallback("add_spot_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(CUIAddSpotWnd(), true) end)
+	self:AddCallbackEx("add_spot_button", ui_events.BUTTON_CLICKED, add_spot_button)
 	-- remove spot button
 	self.btn_remove_spot = self.xml:Init3tButton("btn_pda_remove_spot", self.st_background)
 	self:Register(self.btn_remove_spot, "remove_spot_button")
-	self:AddCallback("remove_spot_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(CUIRemoveSpotWnd(), true) end)
+	self:AddCallbackEx("remove_spot_button", ui_events.BUTTON_CLICKED, remove_spot_button)
 	-- turn off button
 	self:Register(self.xml:Init3tButton("btn_pda_off", self.st_background), "turn_off_button")
-	self:AddCallback("turn_off_button", ui_events.BUTTON_CLICKED, function() level.start_stop_menu(level.get_pda_wnd(), true) end)
+	self:AddCallbackEx("turn_off_button", ui_events.BUTTON_CLICKED, turn_off_button)
 	-- hide buttons
 	self:show_spots_control(false)
 end
@@ -61,19 +73,19 @@ function CUIAddSpotWnd:__init() super()
 	self.btn_add = CUI3tButton()
 	self.btn_add:Init("ui_PDA_arrow", 50, 35, 17, 17)
 	self:Register(self.btn_add, "add_button")
-	self:AddCallback("add_button", ui_events.BUTTON_DOWN, self.on_add, self)
+	self:AddCallbackEx("add_button", ui_events.BUTTON_DOWN, self.on_add)
 	self.st_background:AttachChild(self.btn_add)
 	-- close button
 	self.btn_close = CUI3tButton()
 	self.btn_close:Init("ui_PDA_close", 10, 35, 17, 17)
 	self:Register(self.btn_close, "close_button")
-	self:AddCallback("close_button", ui_events.BUTTON_DOWN, self.on_close, self)
+	self:AddCallbackEx("close_button", ui_events.BUTTON_DOWN, self.on_close)
 	self.st_background:AttachChild(self.btn_close)
 	-- language button
 	self.btn_language = CUI3tButton()
 	self.btn_language:Init("ui_PDA_sign", 30, 35, 17, 17)
 	self:Register(self.btn_language, "language_button")
-	self:AddCallback("language_button", ui_events.BUTTON_DOWN, self.on_language, self)
+	self:AddCallbackEx("language_button", ui_events.BUTTON_DOWN, self.on_language)
 	self.st_background:AttachChild(self.btn_language)
 	-- highlight button
 	self.xml:Init3tButton("btn_pda_editbox", self.st_background)
@@ -150,13 +162,13 @@ function CUIRemoveSpotWnd:__init() super()
 			self.list_spots:AddItem(CUIRemoveSpotListItem(text))
 		end
 	end
-	self:AddCallback("spots_list", ui_events.WINDOW_LBUTTON_DB_CLICK, self.on_list_spots, self)
+	self:AddCallbackEx("spots_list", ui_events.WINDOW_LBUTTON_DB_CLICK, self.on_list_spots)
 	self.st_background:AttachChild(self.list_spots)
 	-- close button
 	self.btn_close = CUI3tButton()
 	self.btn_close:Init("ui_PDA_close", 10, 95, 17, 17)
 	self:Register(self.btn_close, "close_button")
-	self:AddCallback("close_button", ui_events.BUTTON_DOWN, function() level.start_stop_menu(self, true) end)
+	self:AddCallbackEx("close_button", ui_events.BUTTON_DOWN, self.on_close)
 	self.st_background:AttachChild(self.btn_close)
 end
 ---------------------------------------------------------------------------------------------------
@@ -168,14 +180,20 @@ function CUIRemoveSpotWnd:on_list_spots()
 		self.list_spots:RemoveItem(index)
 	end
 end
+---------------------------------------------------------------------------------------------------
+function CUIRemoveSpotWnd:on_close()
+	level.start_stop_menu(self, true)
+end
 --[[-----------------------------------------------------------------------------------------------
  * PDA CONTACTS DIALOG
 --]]-----------------------------------------------------------------------------------------------
 local current_contact
 ---------------------------------------------------------------------------------------------------
-local silent_contacts = table.tohash({
-	"bar_arena_manager", "aem_admin", "aem_arny", "osoznanie"
-})
+local silent_contacts = table.tohash({ "aem_arny", "bar_arena_manager", "osoznanie" })
+for i = 1, 5 do
+	silent_contacts["aem_admin_" .. i] = true
+end
+---------------------------------------------------------------------------------------------------
 local bio_statics = {
 	"icon_static", "rank_static", "rank_caption", "community_static",
 	"community_caption", "relation_static", "relation_caption"
@@ -208,7 +226,7 @@ function CUIPdaContactsDialog:__init() super()
 	self.btn_talk:SetTextST("pda_btn_dialog_show")
 	self.btn_talk:Enable(false)
 	self:Register(self.btn_talk, "btn_talk")
-	self:AddCallback("btn_talk", ui_events.BUTTON_DOWN, self.ShowDialogWindow, self)
+	self:AddCallbackEx("btn_talk", ui_events.BUTTON_DOWN, self.ShowDialogWindow)
 end
 ---------------------------------------------------------------------------------------------------
 function CUIPdaContactsDialog:choice_pda_contact(id)
@@ -365,7 +383,7 @@ function CUIPdaTalkDialog:AddActorPhrases(tbl_text)
 		height = math.max(item:GetHeight(), height)
 		item:SetHeight(height)
 		self:Register(item, "question_item_"..uniq_idx)
-		self:AddCallback("question_item_"..uniq_idx, ui_events.BUTTON_CLICKED, function()
+		self:AddCallbackEx("question_item_"..uniq_idx, ui_events.BUTTON_CLICKED, function()
 			level.parked_call(function()
 				self:ClickActorPhrase(i)
 			end)

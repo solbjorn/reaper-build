@@ -12,11 +12,12 @@ local next_update_200 = 0
 local next_update_1000 = 0
 local next_update_5000 = 0
 
-function net_spawn()
+function net_spawn(self)
 	if pause_menu_init then
 		give_info("paused_on_load")
 	end
 
+	self.weapon_manager = reap_wpn.get_weapon_manager()
 	reap_af.trans_init()
 
 	bolt_ending.net_spawn()
@@ -32,6 +33,7 @@ function update(self)
 
 		start = false
 	end
+
 	if pause_menu_init and screen.precache_frame <= 1 then
 		load_slot_restore()
 
@@ -41,10 +43,12 @@ function update(self)
 
 	update_timers()
 	medkit_use.show_med()
+	self.weapon_manager:update()
 
 	if next_update_200 > time_real_ms then return end
 	next_update_200 = time_real_ms + 200
 
+	Inventory:update()
 	safe_place()
 
 	if next_update_1000 > time_real_ms then return end
@@ -164,28 +168,6 @@ end
 function attach_vehicle(obj)
 	if has_map_spot(obj:id(), "green_location") > 0 then
 		del_map_spot(obj:id(), "green_location")
-	end
-end
-
-function key_press(dik)
-	if not actor_flags.alive then return end
-
-	if dik == bind_to_dik(key_bindings.kQUICK_SAVE) and not level.main_input_receiver() then
-		screen:pause(true)
-		console:execute("save " .. user_name() .. "_quicksave")
-		screen:pause(false)
-	elseif dik == bind_to_dik(key_bindings.kUSE_BANDAGE) or
-	       dik == bind_to_dik(key_bindings.kUSE_MEDKIT) then
-		local item
-		if dik == bind_to_dik(key_bindings.kUSE_BANDAGE) then
-			item = Actor:object("bandage")
-		else
-			item = Actor:object("medkit") or Actor:object("medkit_army") or
-			       Actor:object("medkit_scientic")
-		end
-		if item then
-			Actor:eat(item)
-		end
 	end
 end
 
@@ -318,14 +300,7 @@ function wpn_hide_disable(info_id)
 	if vars.wpn_refcnt == 1 then
 		local act = Actor:active_slot()
 		if act < 10 then
-			local item = (act == 1 or act == 2) and Actor:active_item()
-			if item and item:get_ammo_in_magazine() == 0 then
-				level.parked_call(function()
-					Actor:activate_slot(-1)
-				end)
-			else
-				Actor:activate_slot(-1)
-			end
+			Actor:activate_slot(-1)
 			vars.last_slot = act
 		end
 
@@ -341,11 +316,17 @@ end
 local info_fn = {
 	ui_car_body		= wpn_hide_disable,
 	ui_car_body_hide	= wpn_show_enable,
-	ui_inventory		= wpn_hide_disable,
-	ui_inventory_hide	= wpn_show_enable,
 	ui_pda			= wpn_hide_disable,
 	ui_pda_hide		= wpn_show_enable,
 
+	ui_inventory = function(info_id)
+		Inventory:on_inventory_info(info_id)
+		wpn_hide_disable(info_id)
+	end,
+	ui_inventory_hide = function(info_id)
+		Inventory:on_inventory_info(info_id)
+		wpn_show_enable(info_id)
+	end,
 	ui_talk = function()
 		if has_info("ui_trade_hide") then
 			wpn_hide_disable()
@@ -435,10 +416,7 @@ local belt_pri = {
 	bioradar	= 7,
 	bolt_box	= 1
 }
-for i, sect in ipairs({
-	"detector_simple", "detector_advances",
-	"detector_elite", "detector_elite_sak"
-}) do
+for sect in pairs(detectors) do
 	belt_pri[sect] = 6
 end
 
@@ -488,6 +466,8 @@ function belt_sort(a, b)
 	end
 end
 
+local ui_icon_equipment = "ui\\ui_icon_equipment"
+
 function belt_redraw()
 	if #belt_ui > 0 then
 		for i = 1, #belt_ui do
@@ -497,7 +477,10 @@ function belt_redraw()
 		belt_ui = { }
 	end
 
-	if level.main_input_receiver() or Actor:belt_count() == 0 then return end
+	if level.main_input_receiver() or Actor:belt_count() == 0 or
+	   not is_hud_draw() then
+		return
+	end
 
 	local belt_tbl = { }
 	for id, obj in pairs(Inventory.belt_by_id) do
@@ -506,7 +489,6 @@ function belt_redraw()
 
 	table.sort(belt_tbl, belt_sort)
 
-	local path = "ui\\ui_icon_equipment"
 	local item, static
 	local cur_x = 25
 	local t, sta_w
@@ -517,7 +499,7 @@ function belt_redraw()
 		sta_w = t.w * refactor / 2
 
 		static = CUIStatic()
-		static:Init(path, cur_x, 640, sta_w, 25)
+		static:Init(ui_icon_equipment, cur_x, 640, sta_w, 25)
 		cur_x = cur_x + sta_w + 1
 
 		static:SetOriginalRect(t.x, t.y, t.w, t.h)
@@ -922,6 +904,9 @@ local npc_spots = {
 	rad_start_svoboda_vs_dolg = {
 		[story_ids.Sak]				= 1
 	},
+	pri_show_zones = {
+		[story_ids.pri_monolith_leader]		= 2
+	},
 	doktor_alife = {
 		[story_ids.Doktor]			= 1
 	},
@@ -966,16 +951,43 @@ end
 --]]---------------------------------------------------------------------------
 
 local remove_items = {
+	-- l01_escape
+	"esc_tutorial_trigger", "esc_tutorial_zone", "esc_anomaly_tips_zone", "trader_zone",
+
+	-- l02_garbage
+	"gar_vagon_in_restrictor",
+
+	-- l03u_agr_underground
+	"agr_u_bloodsucker_rest",
+
 	-- l04_darkvalley
 	"val_ammo_9x19_pbp_0000", "val_ammo_5.56x45_ap_0000", "val_ammo_5.56x45_ss190_0000",
-	"val_ammo_5.45x39_fmj_0001", "val_ammo_5.45x39_fmj_0003",
+	"val_ammo_5.45x39_fmj_0001", "val_ammo_5.45x39_fmj_0003", "val_trader_tip_zone",
+
+	-- l05_bar
+	"bar_restrictor", "bar_no_weapon_zone",
+
+	-- l06_rostok
+	"rostok_sniper_killer_restrictor",
 
 	-- l07_military
 	"mil_wpn_pm_0000", "mil_wpn_pm", "mil_ammo_5.56x45_ss0000", "mil_ammo_5.56x45_ss0002",
-	"mil_ammo_11.43x23_hydro0000", "mil_ammo_11.43x23_hydro0001",
+	"mil_ammo_11.43x23_hydro0000", "mil_ammo_11.43x23_hydro0001", "mil_sr_sleep_1",
+
+	-- l08_yantar
+	"yan_no_weapon_restr",
+
+	-- l10_radar
+	"rad_sleep_room",
 
 	-- l10u_bunker
-	"bun_krovosos_nest"
+	"bun_krovosos_nest",
+
+	-- l12_stancia
+	"aes_space_restrictor_sound_0054",
+
+	-- l12_stancia_2
+	"aes2_space_restrictor_no_weapon", "aes2_space_restrictor_zombies"
 }
 
 function fix_all_spawn()
@@ -1022,4 +1034,40 @@ function translate_level(lvl)
 	end
 
 	return translate(lvl)
+end
+
+function random_skin(sect)
+	local basem, mod = string.match(sect, "^(.+)_m(%d+)$")
+	if not basem then basem = sect end
+
+	local base, skin = string.match(basem, "^(.+)_sk(%d+)$")
+	if not base then base = basem end
+
+	mod = mod and ("_m" .. mod) or ""
+	local tbl = { }
+
+	sect = base .. "_sk1" .. mod
+	if not config:section_exist(sect) then
+		sect = base .. mod
+	end
+	if config:section_exist(sect) then
+		tbl[1] = sect
+	end
+
+	for i = 2, 100 do
+		sect = base .. "_sk" .. i .. mod
+		if config:section_exist(sect) then
+			tbl[#tbl + 1] = sect
+		else
+			break
+		end
+	end
+
+	if #tbl > 1 then
+		table.sort(tbl, function(a, b)
+			return math.random(0, 1) == 0 and a or b
+		end)
+	end
+
+	return tbl
 end

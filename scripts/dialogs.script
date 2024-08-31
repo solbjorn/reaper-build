@@ -97,14 +97,17 @@ function transfer_bandage(first_speaker, second_speaker)
 	transfer(second_speaker, "bandage", "out")
 	second_speaker:set_relation(game_object.friend, first_speaker)
 end
+
 function kill_yourself(npc, actor)
-	npc:kill(actor)
+	if npc:id() == 0 then npc = actor end
+
+	npc:kill(npc)
 end
 
-function relocate_item_section(victim, section, type)
+function relocate_item_section(victim, section, _type)
 	if quest_section[section] then
-		transfer(victim, section, type)
-	elseif type == "in" then
+		transfer(victim, section, _type)
+	elseif _type == "in" then
 		got(section)
 	else
 		lost(section)

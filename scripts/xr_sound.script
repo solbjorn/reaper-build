@@ -345,7 +345,7 @@ function update_actor()
 	if actor_sound.next and time_real_ms < actor_sound.next then return end
 
 	--' Тут надо отыграть звук
-	local sound = voice(table.random(actor_sound.tbl.sounds))
+	local sound = voice(table.fastrand(actor_sound.tbl.sounds))
 	if sound then
 		sound:play(Actor, 0, sound_object.s2d)
 	end

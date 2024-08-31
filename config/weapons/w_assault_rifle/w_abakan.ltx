@@ -1,0 +1,398 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_abakan]: WP_AK74
+min_radius          	= 30				; [] for AI
+max_radius          	= 100				; [] for AI
+description				= enc_weapons1_wpn-abakan
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 2500				; the price of the item
+
+ammo_mag_size			= 30		; clip (magazine) size
+fire_modes				= 1, 2, -1
+
+ammo_class				= ammo_5.45x39_fmj, ammo_5.45x39_ap  ; name of the ltx-section of used ammo
+grenade_class			= ammo_vog-25, ammo_vog-25p			; name of the ltx-section of used grenades
+
+slot 					= 2									; number of slot in inventory we put weapon in (1 - knife slot, 2 - pistol, 3 - rifle, 4 - grenade, 5 - apparatus)
+animation_slot			= 2									; type of the animation that will be used
+
+inv_name	        	= wpn-abakan					; name in inventory
+inv_weight			= 3.9								; weight in inventory
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 42
+inv_grid_y				= 0
+
+;-----------------------------------------------------------------------------------
+; base dispersion
+;
+; === Setting of the weapon shooting dispersal parameter ===
+;Dispersal consists from to basic constituents – dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal.
+;Dispersal of the weapon depends only from basic dispersal, basket case factor ant time of the ammo.
+;Dispersal of the way the host shooting (standing, running and etc.)
+;Two types of shooting modes can be defined: - usual mode and zoomed mode.
+;Usual mode: - depends from the position of the player while shooting (standing, sitting, walking and running)
+;Zoomed mode – depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector).
+;Weapon recoil in the game also created by recoil effector.
+;
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+dispersion_start		= 2
+fire_dispersion_base			= 0.12		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.3f
+disp_rate = 1.88
+
+;отдача
+cam_relax_speed         		= 4.2		;скорость возврата в исходное положение
+cam_dispersion          	= 0.5		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.11		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.82		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 11.0	;6.5	    ;максимальный угол отдачи
+cam_max_angle_horz				= 15.0	;9.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 1.3	;0.18		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 2		;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.0006	;вероятность осечки при максимальном износе
+misfire_condition_k	= 0.06
+condition_shot_dec			= 0.0005
+;-----------------------------------------------------------------------------------
+
+fire_point             		=  0,0.225,0.687			; position (3rd person view) for particles of fire
+fire_point2			= 0,0.148,0.558			; position (3rd person view) for particles of fire (when shooting with secondary fire)
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_01
+grenade_flame_particles			= amik\weapons\grenade_flame_particles\grenade_flame_particles_02
+
+shell_point		 			= 0,0.252,0.196				; position (3rd person view) for shell to throw out
+shell_particles				= amik\weapons\5_45x39\5_45x39_shells_l_00
+
+PDM_disp_base 			= 5.0
+PDM_disp_vel_factor 		= 1.45
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 6.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.54, 0.55, 0.56, 0.57
+hit_impulse				= 9
+hit_rate	= 1.85
+fire_distance       = 180
+bullet_speed		= 755
+rpm                      	= 600
+
+hud					= wpn_abakan_hud
+position         	        = -0.026,-0.178,0			; position (offset) and orientation of the weapon in the hands of character
+strap_position         		= -0.16,-0.40,0.15			; position (offset) and orientation of the weapon when it is strapped
+visual					= weapons\abakan\wpn_abakan
+
+light_color					= 0.6,0.5,0.3				; params for light during the fire
+light_range					= 5							; radius
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass						= 5							; physic mass (kg)
+
+scope_status				= 2
+scope_name				= wpn_addon_scope
+scope_x					= 42
+scope_y					= -1
+
+grenade_launcher_status			= 2
+grenade_launcher_name			= wpn_addon_grenade_launcher
+grenade_launcher_x			= 133
+grenade_launcher_y			= 27
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
+snd_draw					= weapons\abakan\abakan_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\abakan\abakan_shoot
+snd_shoot1					= weapons\abakan\abakan_shoot1
+snd_shoot2					= weapons\abakan\abakan_shoot2
+snd_shoot3					= weapons\abakan\abakan_shoot3
+snd_empty					= weapons\abakan\abakan_empty, 0.7
+snd_reload					= weapons\abakan\abakan_reload, 1.0, 0.35
+snd_shoot_grenade				= weapons\gp30\GP30_grenshoot
+snd_reload_grenade			= weapons\gp30\gp30_grenload, 1.0, 0.8
+snd_switch					= weapons\gp30\gp30_switch, 1.0, 0.5
+;------------------------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------
+;-- HUD DESCRIPTION
+;-----------------------------------------------------------------------------
+
+[wpn_abakan_hud]: wpn_hud
+shell_point					= 0.105000,-0.022000,-0.049000
+fire_point					= 0.290000,0.001000,-0.047000
+fire_point2			= 0.330000,-0.005000,-0.140000
+
+orientation             	= 2.6, 3, 0
+position                	= 0.01, -0.035, 0
+visual					= weapons\abakan\wpn_abakan_hud
+
+grenade_bone            	= wpn_grenade	; name of the bone in the model for grenade launcher
+
+; animation names
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle_moving
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_grenade_aim
+anim_idle_moving_g			= idle_g_moving
+anim_reload_g				= grenade_reload
+anim_shoot_g				= grenade_shoot
+anim_switch_grenade_on		= grenade_on
+anim_switch_grenade_off		= grenade_off
+anim_draw_g					= grenade_draw
+anim_holster_g				= grenade_holster
+anim_idle_sprint_g		= idle_sprint
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_idle_moving_gl			= idle_w_gl_moving
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl		= idle_sprint
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;HUD offset in zoom mode (to all)
+;(use CONSOLE: hud_adjust_mode 0,1,2, then keys WSADQE and P to show current value in console)
+
+zoom_offset			= -0.120800,0.077200,-0.028000
+zoom_rotate_x		= 0.067500
+zoom_rotate_y		= 0.062220
+
+; same as above, but for attached grenade launcher for
+; in NORMAL shoot mode
+
+grenade_normal_zoom_offset			= -0.120600,0.080800,-0.009000
+grenade_normal_zoom_rotate_x		= 0.072800
+grenade_normal_zoom_rotate_y		= 0.034700
+
+; same as above, but for attached grenade launcher for
+; in GRENADE mode
+
+grenade_zoom_offset			= -0.084600,-0.051200,-0.010000
+grenade_zoom_rotate_x		= -0.027800
+grenade_zoom_rotate_y		= 0.02622
+
+[wpn_abakan_sk2]: wpn_abakan
+inv_grid_y				= 2
+shell_particles				= amik\weapons\5_45x39\5_45x39_shells_r_00
+
+hud					= wpn_abakan_sk2_hud
+position				= -0.026, -0.172, 0
+visual					= weapons\abakan\wpn_abakan_sk2
+
+scope_x					= 41
+scope_y					= -3
+grenade_launcher_x			= 131
+grenade_launcher_y			= 24
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\abakan\abakan_sk2_shoot
+snd_shoot1				= weapons\abakan\abakan_sk2_shoot1
+snd_shoot2				= weapons\abakan\abakan_sk2_shoot2
+snd_shoot3				= weapons\abakan\abakan_sk2_shoot3
+snd_reload				= weapons\abakan\abakan_sk2_reload
+snd_shoot_grenade			= weapons\gp30\gp25_grenshoot
+snd_reload_grenade			= weapons\gp30\gp25_grenload, 1.0, 0.8
+
+[wpn_abakan_sk2_hud]: wpn_hud
+shell_point				= 0.200000, 0.000000, -0.450000
+shell_dir				= 0.0, 0.0, 0.0
+fire_point				= 0.001000, 0.000030, -0.187002
+fire_point2				= 0.101000, -0.320000, 0.240000
+
+grenade_bone				= wpn_grenade
+position				= 0.030000, -0.050000, -0.110000
+orientation				= 1.999828, 1.981898, 0.000000
+visual					= weapons\abakan\wpn_abakan_sk2_hud
+
+anim_idle				= normal_idle
+anim_idle_aim				= normal_idle_aim
+anim_reload				= normal_reload
+anim_draw				= normal_draw
+anim_holster				= normal_holster
+anim_shoot				= normal_shoot
+anim_idle_sprint			= normal_idle_sprint
+anim_idle_moving			= normal_idle_moving
+
+anim_idle_g				= g_idle
+anim_idle_g_aim				= g_idle_aim
+anim_reload_g				= g_reload
+anim_shoot_g				= g_shoot
+anim_switch_grenade_on			= w_gl_switch_on
+anim_switch_grenade_off			= w_gl_switch_off
+anim_draw_g				= g_draw
+anim_holster_g				= g_holster
+anim_idle_sprint_g			= w_gl_idle_sprint
+anim_idle_moving_g			= g_idle_moving
+
+anim_idle_gl				= w_gl_idle
+anim_idle_gl_aim			= w_gl_idle_aim
+anim_reload_gl				= w_gl_reload
+anim_draw_gl				= w_gl_draw
+anim_holster_gl				= w_gl_holster
+anim_shoot_gl				= w_gl_shoot
+anim_idle_sprint_gl			= w_gl_idle_sprint
+anim_idle_moving_gl			= w_gl_idle_moving
+
+zoom_offset				= -0.125350, 0.081120, -0.145000
+zoom_rotate_x				= 0.035100
+zoom_rotate_y				= 0.034400
+
+grenade_normal_zoom_offset		= -0.125350, 0.081120, -0.145000
+grenade_normal_zoom_rotate_x		= 0.035100
+grenade_normal_zoom_rotate_y		= 0.034400
+
+grenade_zoom_offset			= -0.054120, -0.345511, -0.300000
+grenade_zoom_rotate_x			= -0.410101
+grenade_zoom_rotate_y			= 0.034000
+
+scope_zoom_offset			= -0.103190, 0.025970, 0.058510
+scope_zoom_rotate_x			= 0.038600
+scope_zoom_rotate_y			= 0.034150
+
+scope_grenade_normal_zoom_offset	= -0.103190, 0.025970, 0.058510
+scope_grenade_normal_zoom_rotate_x	= 0.038600
+scope_grenade_normal_zoom_rotate_y	= 0.034150
+
+ignore_scope_texture			= true
+
+; АH-94 снайперский
+[wpn_abakan_m1_base]
+inv_name				= wpn-abakan_m1
+inv_grid_x				= 52
+
+min_radius				= 0
+max_radius				= 200
+news_weapon_type			= 2
+
+inv_weight				= 4.4
+fire_modes				= 1, 2
+
+fire_dispersion_base			= 0.1
+condition_shot_dec			= 0.00015
+rpm					= 1800
+
+scope_status				= 1
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\pso2
+
+weapon_min_queue_size_far		= 10
+weapon_max_queue_size_far		= 15
+weapon_min_queue_interval_far		= 500
+weapon_max_queue_interval_far		= 700
+weapon_min_queue_size_medium		= 15
+weapon_max_queue_size_medium		= 20
+weapon_min_queue_interval_medium	= 400
+weapon_max_queue_interval_medium	= 600
+weapon_min_queue_size_close		= 20
+weapon_max_queue_size_close		= 30
+weapon_min_queue_interval_close		= 300
+weapon_max_queue_interval_close		= 500
+
+[wpn_abakan_m1]: wpn_abakan, wpn_abakan_m1_base
+description				= enc_weapons1_wpn-abakan_m1
+
+[wpn_abakan_sk2_m1]: wpn_abakan_sk2, wpn_abakan_m1_base
+description				= wpn_abakan_sk2_m1_desc
+class					= WP_LR300
+
+hud					= wpn_abakan_sk2_m1_hud
+visual					= weapons\abakan\wpn_abakan_sk2_m1
+
+grenade_launcher_status			= 0
+
+[wpn_abakan_sk2_m1_hud]: wpn_hud
+shell_point				= 0.030000, 0.020000, -0.460000
+fire_point				= 0.000000, -0.010000, 0.080000
+fire_point2				= 0, 0, -0.65
+
+position				= 0.030000, -0.050000, -0.110000
+orientation				= 1.999828, 1.981898, 0.000000
+visual					= weapons\abakan\wpn_abakan_sk2_m1_hud
+
+anim_idle				= normal_idle
+anim_idle_aim				= normal_idle_aim
+anim_reload				= normal_reload
+anim_draw				= normal_draw
+anim_holster				= normal_holster
+anim_shoot				= normal_shoot
+anim_idle_sprint			= normal_idle_sprint
+anim_idle_moving			= normal_idle_moving
+
+zoom_offset				= -0.100650, 0.029620, 0.055200
+zoom_rotate_x				= 0.035800
+zoom_rotate_y				= 0.034800
+
+ignore_scope_texture			= true
+
+; АH-94 штурмовой
+[wpn_abakan_m2_base]
+inv_name				= wpn-abakan_m2
+inv_grid_x				= 57
+
+inv_weight				= 5.4
+condition_shot_dec			= 0.00015
+
+grenade_launcher_status			= 1
+
+[wpn_abakan_m2]: wpn_abakan, wpn_abakan_m2_base
+description				= enc_weapons1_wpn-abakan_m2
+
+[wpn_abakan_sk2_m2]: wpn_abakan_sk2, wpn_abakan_m2_base
+description				= wpn_abakan_sk2_m2_desc
+
+hud					= wpn_abakan_sk2_m2_hud
+visual					= weapons\abakan\wpn_abakan_sk2_m2
+
+scope_status				= 0
+scope_zoom_factor			= 1.4
+
+[wpn_abakan_sk2_m2_hud]: wpn_abakan_sk2_hud
+shell_point				= 0.050000, 0.020000, -0.360000
+shell_dir				= 0.0, 1.0, 0.0
+fire_point				= 0.000000, -0.020000, 0.210000
+fire_point2				= 0.000000, -0.020000, 0.210000
+
+position				= 0.030000, -0.050000, -0.110000
+orientation				= 1.999828, 1.981898, 0.000000
+visual					= weapons\abakan\wpn_abakan_sk2_m2_hud
+
+zoom_offset				= -0.112750, 0.052820, -0.145000
+zoom_rotate_x				= 0.035100
+zoom_rotate_y				= 0.034400
+
+grenade_normal_zoom_offset		= -0.112750, 0.052820, -0.145000
+grenade_normal_zoom_rotate_x		= 0.035100
+grenade_normal_zoom_rotate_y		= 0.034400
+
+grenade_zoom_offset			= -0.054120, -0.345511, -0.300000
+grenade_zoom_rotate_x			= -0.410101
+grenade_zoom_rotate_y			= 0.034000

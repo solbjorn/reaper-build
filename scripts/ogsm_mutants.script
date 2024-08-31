@@ -19,12 +19,7 @@ end
 
 -- Эффект при приближении к пси-бюреру
 
-local psy_sounds = {
-	voice([[ambient\random\rnd_moan1]]),
-	voice([[ambient\random\rnd_moan2]]),
-	voice([[ambient\random\rnd_moan4]]),
-	voice([[ambient\random\rnd_moan5]])
-}
+local psy_sounds = { 1, 2, 4, 5 }
 
 function init_psy_burer(self)
 	self.sound_obj_right = voice([[ambient\random\rnd_moan1]])
@@ -146,7 +141,7 @@ function psy_burer(self)
 	self.sound_obj_left.volume = 0.5
 
 	if not self.sound_obj_left:playing() then
-		self.sound_obj_left = table.random(psy_sounds)
+		self.sound_obj_left = voice([[ambient\random\rnd_moan]] .. table.fastrand(psy_sounds))
 		self.sound_obj_left:play_at_pos(Actor, xyz(1, 0, 1), 0, sound_object.s2d)
 
 		local zh = hit()
@@ -159,7 +154,7 @@ function psy_burer(self)
 	end
 
 	if not self.sound_obj_right:playing() then
-		self.sound_obj_right = table.random(psy_sounds)
+		self.sound_obj_right = voice([[ambient\random\rnd_moan]] .. table.fastrand(psy_sounds))
 		self.sound_obj_right:play_at_pos(Actor, xyz(-1, 0, 1), 0, sound_object.s2d)
 
 		local zh = hit()

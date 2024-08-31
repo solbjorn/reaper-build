@@ -1,0 +1,166 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_mp7]: WP_LR300
+min_radius               	= 0
+max_radius                  	= 130
+description			= enc_weapons_wpn-mp7a3
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+news_weapon_type			= 14
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier		= 1.0               	; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              	; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost				= 1500
+
+ammo_mag_size		 	= 40
+ammo_class		 	= ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes			= 1, -1
+
+slot 			 	= 1
+animation_slot			= 1			; type of the animation that will be used
+
+inv_name			= wpn_mp7a3
+inv_weight				= 2
+
+inv_grid_width				= 3
+inv_grid_height				= 2
+inv_grid_x				= 71
+inv_grid_y				= 8
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.2	 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.1f
+
+;отдача
+cam_relax_speed        		= 6.5		;скорость возврата в исходное положение
+cam_dispersion         		= 0.6		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.05		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 0.7		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0		;максимальный угол отдачи
+cam_max_angle_horz		= 9.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.5		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5		;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003		;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0007
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.188, 0.392
+flame_particles				= amik\weapons\flame_particles\flame_particles_04
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_02
+
+shell_point				= 0.0, 0.188, 0.082
+shell_particles				= amik\weapons\9x19\9x19_shells_r
+
+PDM_disp_base 			= 2.5
+PDM_disp_vel_factor 		= 0.6
+PDM_disp_accel_factor 		= 0.6
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.48, 0.48, 0.48, 0.51
+hit_impulse				= 4
+hit_rate	= 1.75
+fire_distance       = 70
+bullet_speed		= 725
+rpm                 		= 900
+
+weapon_min_queue_size_far = 1
+weapon_max_queue_size_far = 2
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 2
+weapon_max_queue_size_medium = 3
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 10
+weapon_max_queue_size_close = 15
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
+
+silencer_hit_power       	= 0.44
+silencer_hit_impulse			= 3
+silencer_fire_distance   	= 200
+silencer_bullet_speed	 	= 300
+
+hud					= wpn_mp7_hud
+position				= -0.026, -0.125, -0.03
+strap_position				= -0.16,-0.36,0.15
+visual					= weapons\mp7\wpn_mp7
+
+light_color		 	= 0.6,0.5,0.3
+light_range		 	= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 	= 0.2
+
+ph_mass			 	= 1
+
+scope_zoom_factor			= 1.1
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_ac
+scope_x					= 54
+scope_y					= -13
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x19
+silencer_x				= 123
+silencer_y				= 7
+
+;звуки
+snd_draw				= weapons\smg_draw
+snd_holster				= weapons\smg_holster
+snd_shoot				= weapons\mp7\mp7_shoot
+snd_shoot1				= weapons\mp7\mp7_shoot1
+snd_shoot2				= weapons\mp7\mp7_shoot2
+snd_shoot3				= weapons\mp7\mp7_shoot3
+snd_empty				= weapons\mp7\mp7_empty
+snd_reload				= weapons\mp7\mp7_reload
+snd_silncer_shot			= weapons\mp7\mp7_shot_sil
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles 		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_mp7_hud]: wpn_hud
+shell_point				= 0.0100, 0.0075, -0.13
+fire_point				= 0, 0.04, -0.120
+
+visual					= weapons\mp7\wpn_mp7_hud
+position				= -0.042000, -0.144, 0.165500
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+zoom_offset				= -0.107600, 0.039600, -0.103000
+zoom_rotate_x				= -0.010600
+zoom_rotate_y				= -0.001700
+
+scope_zoom_offset			= -0.106600, 0.000600, -0.103000
+scope_zoom_rotate_x			= -0.047000
+scope_zoom_rotate_y			= -0.004600
+
+ignore_scope_texture			= true
+scope_zoom_hide_indicators		= false

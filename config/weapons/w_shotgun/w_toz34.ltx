@@ -1,0 +1,217 @@
+[wpn_toz34]: WP_BM16
+min_radius               = 0
+max_radius               = 50
+description				= enc_weapons1_wpn-toz34
+
+ef_main_weapon_type			= 1
+ef_weapon_type				= 7
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 = 500	;1000
+
+ammo_mag_size		 = 2
+ammo_class		 = ammo_12x70_buck, ammo_12x76_zhekan,ammo_12x76_dart
+
+slot 				 = 2		; // secondary
+animation_slot		 = 3		; type of the animation that will be used
+
+inv_name		= wpn-toz34
+inv_weight		= 3.1
+
+inv_grid_width				= 6
+inv_grid_height				= 1
+inv_grid_x				= 66
+inv_grid_y				= 36
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.43  	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.3f
+disp_rate = 1.8
+
+;отдача
+cam_relax_speed         	= 7.0	;скорость возврата в исходное положение
+cam_dispersion          	= 3.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 3.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 8.0	;максимальный угол отдачи
+cam_max_angle_horz		= 15.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 2.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.005	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0012
+;-----------------------------------------------------------------------------------
+
+shell_point				 = 0.0, 0.183, 0.07
+fire_point               = 0.0, 0.183, 0.730
+fire_point2              = 0.0, 0.160, 0.730
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_pump_0
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_pump_00
+
+PDM_disp_base 			= 7.0
+PDM_disp_vel_factor 		= 2.0
+PDM_disp_accel_factor 		= 2.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;-----------  Для Народной солянки 2009  --------------
+hit_power           = 0.76, 0.86, 0.96, 1.06
+hit_impulse				= 4
+hit_rate	= 2.0
+fire_distance       = 70
+bullet_speed		= 420
+rpm                      	= 200
+
+hud					= wpn_toz34_hud
+
+position                 	= -0.026, -0.132, 0.06 ;-0.026, -0.117, 0.0
+orientation              	= 0, 30, 0      ;значение устанавливается в градусах
+
+strap_position         		= -0.26,-0.11,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+
+visual					= weapons\toz34\wpn_toz34_ext
+
+light_color		 = 0.6,0.5,0.3
+light_range		 = 6.0
+light_var_color		 = 0.05
+light_var_range		 = 0.5
+light_time 		 = 0.2
+
+ph_mass			 = 3
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw			= weapons\toz34\toz34_draw
+snd_holster			= weapons\shotgun_holster
+snd_shoot			= weapons\toz34\toz34_shoot
+snd_empty			= weapons\toz34\toz34_empty
+snd_reload			= weapons\toz34\toz34_reload
+snd_shoot_duplet		= weapons\toz34\toz34_shoot_both
+
+snd_shoot_1			= weapons\toz34\toz34_shoot
+snd_reload_1			= weapons\toz34\toz34_reload_one		;reload left
+;------------------------------------------------------------------------------------------
+
+[wpn_toz34_hud]: wpn_hud
+shell_point		 = 0.0, 0.0, 0.0
+fire_point               = 0.0, 0.0, 0.06
+fire_point2              = 0.0, 0.0, 0.06
+fire_bone                = wpn_barrel_0
+
+orientation              = 3, -0.25, 0
+visual					= weapons\toz34\wpn_toz34_hud
+
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_1			= idle_moving
+anim_idle_moving_2			= idle_moving
+anim_reload					= reload ;reload both
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot1
+anim_shoot_both 			= shoot1
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+anim_reload_1				= reload_one
+anim_shoot_1				= shoot1
+
+anim_idle_1					= idle
+anim_idle_2					= idle
+
+anim_zoomed_idle_1			= idle_aim
+anim_zoomedidle_2			= idle_aim
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.126600,0.049000,0.000000
+zoom_rotate_x		= 0.039700
+zoom_rotate_y		= 0.068600
+
+[wpn_toz34_sk2]: wpn_toz34
+inv_grid_y				= 37
+
+hud					= wpn_toz34_sk2_hud
+visual					= weapons\toz34\wpn_toz34_sk2
+
+snd_draw				= weapons\toz34\toz34_sk2_draw
+snd_shoot				= weapons\toz34\toz34_sk2_shoot
+snd_reload				= weapons\toz34\toz34_sk2_reload
+snd_shoot_duplet			= weapons\toz34\toz34_sk2_shoot_both
+
+snd_shoot_1				= weapons\toz34\toz34_sk2_shoot
+snd_reload_1				= weapons\toz34\toz34_sk2_reload_one
+
+[wpn_toz34_sk2_hud]: wpn_hud
+shell_point				= 0.0, 0.0, 0.0
+fire_point				= 0.0, 0.05, 0.6
+fire_point2				= 0.0, 0.05, 0.6
+fire_bone				= barrel
+
+orientation				= 2, 1, 0
+position				= 0.01, -0.02, 0.15
+visual					= weapons\toz34\wpn_toz34_sk2_hud
+
+anim_idle				= toz34_idle
+anim_reload				= toz34_reload_full
+anim_draw				= toz34_draw
+anim_holster				= toz34_hide
+anim_shoot				= toz34_shoot
+anim_shoot_both				= toz34_shoot
+anim_idle_aim				= toz34_idle_aim
+anim_idle_sprint			= toz34_sprint
+
+anim_idle_moving			= idle_moving
+anim_idle_moving_1			= idle_moving
+anim_idle_moving_2			= idle_moving
+
+anim_reload_1				= toz34_reload
+anim_shoot_1				= toz34_shoot
+
+anim_idle_1				= toz34_idle
+anim_idle_2				= toz34_idle
+
+anim_zoomed_idle_1			= toz34_idle_aim
+anim_zoomedidle_2			= toz34_idle_aim
+
+zoom_offset				= -0.111, 0.06, 0
+zoom_rotate_x				= 0.02
+zoom_rotate_y				= 0.035
+
+[wpn_toz34_arena]: wpn_toz34
+[wpn_toz34_sk2_arena]: wpn_toz34_sk2
+
+[hunters_toz]: wpn_toz34
+inv_name				= wpn-hunter_toz
+description				= enc_weapons1_wpn-hunter_toz
+inv_grid_height				= 2
+inv_grid_x				= 75
+inv_grid_y				= 34
+
+ammo_class				= ammo_16cal_buck, ammo_16cal_skart, ammo_16cal_fost
+condition_shot_dec			= 0.0006
+hit_power				= 0.96, 0.99, 1.01, 1.04
+
+hud					= hunters_toz_hud
+visual					= weapons\toz34\wpn_toz34_hunter
+
+scope_status				= 1
+scope_zoom_factor			= 4
+scope_texture				= wpn\crosshairs\hunter
+
+snd_shoot				= weapons\toz34\toz34_m1_shot
+snd_shoot_duplet			= weapons\toz34\toz34_m1_shot
+snd_shoot_1				= weapons\toz34\toz34_m1_shot
+
+[hunters_toz_hud]: wpn_toz34_hud
+visual					= weapons\toz34\wpn_toz34_hunter_hud
+
+anim_idle_moving			= idle
+anim_idle_moving_1			= idle
+anim_idle_moving_2			= idle

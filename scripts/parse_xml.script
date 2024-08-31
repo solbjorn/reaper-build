@@ -134,6 +134,9 @@ function read_xml(filename)
 		end
 
 		str = table_concat(chars)
+	else
+		abort("File " .. filename .. " is not found in gamedata")
+		return nil
 	end
 
 	return unflatten(str)

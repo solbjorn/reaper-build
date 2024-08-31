@@ -1,0 +1,128 @@
+[wpn_tt33]: WP_PM
+min_radius               	= 5
+max_radius               	= 30
+description					= enc_weapons1_wpn-tt33
+
+ef_weapon_type				= 5
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 500
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 8
+ammo_class		 			= ammo_7.62x25_p, ammo_7.62x25_ps
+
+slot 				 		= 1		; // primary
+animation_slot		 		= 1		; type of the animation that will be used
+
+inv_name					= wpn-tt33
+inv_weight					= 0.85
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 77
+inv_grid_y				= 25
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base			= 0.35
+
+;отдача
+cam_relax_speed         	= 5	;скорость возврата в исходное положение
+cam_dispersion          	= 1.5	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.001
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.131, 0.190
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_04
+smoke_particles				= amik\weapons\smoke_particles\p_smoke_particles_02
+
+shell_point				= 0.0, 0.137, 0.035
+shell_dir				= 0.0, 0.0, 0.4
+
+PDM_disp_base 			    = 1.8
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+hit_power           = 0.36, 0.39, 0.42, 0.45
+hit_impulse				= 4
+
+fire_distance       = 55
+bullet_speed		= 435	;начальная скорость пули
+rpm                 = 350
+
+hud					= wpn_tt33_hud
+position				= -0.021, -0.088, -0.008
+visual					= weapons\tt33\wpn_tt33
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass					= 1
+
+;звуки
+snd_draw				= weapons\pistol_draw
+snd_holster				= weapons\pistol_holster
+snd_shoot				= weapons\tt33\tt33_shoot
+snd_empty				= weapons\tt33\tt33_empty
+snd_reload				= weapons\tt33\tt33_reload
+snd_reload_partly			= weapons\tt33\tt33_reload_partly
+snd_close				= $no_sound
+
+[wpn_tt33_hud]: wpn_hud
+shell_point				= -0.05, 0.05, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.2
+visual					= weapons\tt33\wpn_tt33_hud
+
+anim_holster				= tt33_hide
+anim_idle				= tt33_idle
+anim_empty				= tt33_idle_empty
+anim_reload				= tt33_reload
+anim_reload_empty			= tt33_reload
+anim_draw				= tt33_draw
+anim_draw_empty				= tt33_draw_empty
+anim_shoot				= tt33_shoot
+anim_shot_last				= tt33_shoot_last
+anim_close				= tt33_hide_empty
+anim_idle_aim				= tt33_idle_aim
+anim_idle_sprint			= tt33_sprint
+anim_idle_sprint_empty			= tt33_sprint_empty
+anim_idle_moving			= tt33_moving
+anim_idle_moving_empty			= tt33_moving_empty
+
+zoom_offset				= -0.141250, 0.027500, -0.010000
+zoom_rotate_x				= -0.005000
+zoom_rotate_y				= 0.051800
+
+[wpn_tt33_sk2]: wpn_tt33
+inv_grid_y				= 26
+
+hud					= wpn_tt33_sk2_hud
+visual					= weapons\tt33\wpn_tt33_sk2
+
+snd_shoot				= weapons\tt33\tt33_sk2_shoot
+
+[wpn_tt33_sk2_hud]: wpn_tt33_hud
+visual					= weapons\tt33\wpn_tt33_sk2_hud

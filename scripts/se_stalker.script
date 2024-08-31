@@ -183,7 +183,7 @@ function se_stalker:on_register()
 	end
 
 	--' Регистрация в таскменеджере
-	random_task:register_target(self, clsid_script_stalker)
+	random_task:register_stalker(self)
 
 	if self:alive() and self:smart_terrain_id() == 65535 then
 		self:brain():update()
@@ -199,7 +199,7 @@ function se_stalker:on_unregister()
   smart_terrain.unregister_npc(self)
 
 	--' Отрегистрация в таскменеджере
-	random_task:unregister_target(self, clsid_script_stalker)
+	random_task:unregister_stalker(self)
 
 	if not no_ranks_comm[self:community()] then
 		actor_stats.remove_from_ranking(self.id)

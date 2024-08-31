@@ -1,0 +1,260 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_walther]: WP_PM
+class                    	= WP_WALTH
+min_radius               	= 0
+max_radius               	= 50
+description					= enc_weapons1_wpn-walther
+
+ef_weapon_type				= 5
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 800	;600
+
+ammo_elapsed		 		= 16
+ammo_mag_size		 		= 16
+ammo_class		 			= ammo_9x19_fmj, ammo_9x19_pbp
+
+slot 			 			= 1
+animation_slot				= 1									; type of the animation that will be used
+
+inv_name					= wpn-walther
+inv_weight					= 0.69	;.5
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 23
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.3 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 8.5	;скорость возврата в исходное положение
+cam_dispersion          	= 0.47	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.7	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.005	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0007
+;-----------------------------------------------------------------------------------
+
+fire_point               	= 0.0, 0.136, 0.133
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.136, 0.03
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\9x19\9x19_shells_l
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.5
+PDM_disp_accel_factor 		= 0.5
+PDM_crouch	 		        = 1.2
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.35, 0.38, 0.40, 0.44
+hit_impulse				= 4
+hit_rate	= 1.85
+fire_distance       = 50
+bullet_speed		= 420
+rpm                 = 250
+
+silencer_hit_power       	= 0.3
+silencer_hit_impulse			= 3
+silencer_fire_distance   	= 35
+silencer_bullet_speed	 	= 280
+
+hud					= wpn_walther_hud
+position                 	= -0.021, -0.095, 0.0
+visual					= weapons\walter_99\wpn_walter_99
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x19
+silencer_x				= 69
+silencer_y				= -14
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\walther\walther_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\walther\walther_shoot
+snd_shoot1					= weapons\walther\walther_shoot1
+snd_shoot2					= weapons\walther\walther_shoot2
+snd_shoot3					= weapons\walther\walther_shoot3
+snd_empty					= weapons\walther\walther_empty
+snd_reload					= weapons\walther\walther_reload
+snd_close					= weapons\walther\walther_close
+snd_silncer_shot				= weapons\walther\walther_shot_sil
+;------------------------------------------------------------------------------------------
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[wpn_walther_hud]: wpn_hud
+shell_point			= -0.340000,0.000000,0.080000
+fire_point			= -0.255000,0.000600,0.075700
+
+orientation              	= 4,2,0
+visual					= weapons\walter_99\wpn_walter_99_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot1
+anim_shot_last				= shoot_last
+anim_close					= holster	;close
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.162600, 0.057600, 0
+zoom_rotate_x		= 0.0238
+zoom_rotate_y		= 0.0705
+
+[wpn_walther_sk2]: wpn_walther
+inv_grid_y				= 24
+shell_particles				= amik\weapons\9x19\9x19_shells_r
+
+hud					= wpn_walther_sk2_hud
+visual					= weapons\walter_99\wpn_walter_99_sk2
+
+silencer_x				= 80
+silencer_y				= -19
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\walther\walther_sk2_shoot
+snd_shoot1				= weapons\walther\walther_sk2_shoot
+snd_shoot2				= weapons\walther\walther_sk2_shoot
+snd_shoot3				= weapons\walther\walther_sk2_shoot
+snd_reload				= weapons\walther\walther_sk2_reload
+snd_reload_partly			= weapons\walther\walther_sk2_reload_partly
+snd_close				= $no_sound
+snd_silncer_shot			= weapons\walther\walther_sk2_shot_sil
+
+[wpn_walther_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\walter_99\wpn_walter_99_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= fort12_reload_empty
+anim_reload_empty			= fort12_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.114, 0.03, 0.0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.053
+
+; Вальтер 9x18
+[wpn_walther_sk2_m1]: wpn_walther_sk2
+inv_name				= wpn-walther_m1
+description				= enc_weapons1_wpn-walther_m1
+
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 23
+
+cost					= 2000
+ammo_class				= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
+condition_shot_dec			= 0.0002
+
+fire_point				= 0.0, 0.135, 0.215
+shell_point				= 0.0, 0.136, 0.03
+shell_particles				= amik\weapons\9x18\9x18_r_00
+
+hit_impulse				= 3
+silencer_hit_impulse			= 2
+
+hud					= wpn_walther_sk2_m1_hud
+position				= -0.021, -0.095, -0.0125
+visual					= weapons\walter_99\wpn_walter_99_sk2_m1
+
+scope_zoom_factor			= 1.2
+silencer_status				= 0
+
+snd_shoot				= weapons\walther\walther_sk2_m1_shoot
+snd_shoot1				= weapons\walther\walther_sk2_m1_shoot
+snd_shoot2				= weapons\walther\walther_sk2_m1_shoot
+snd_shoot3				= weapons\walther\walther_sk2_m1_shoot
+snd_reload				= weapons\walther\walther_sk2_m1_reload
+snd_reload_partly			= weapons\walther\walther_sk2_m1_reload_partly
+
+[wpn_walther_sk2_m1_hud]: wpn_hud
+shell_point				= 0.025, 0, -0.30
+fire_point				= 0, -0.005, -0.3025
+fire_bone				= muzzle
+
+position				= -0.0265, -0.17, -0.0265
+orientation				= 1.75, 2.25, 1.35
+visual					= weapons\walter_99\wpn_walter_99_sk2_m1_hud
+
+anim_holster				= p99_holster
+anim_idle				= p99_idle
+anim_empty				= p99_idle_opened
+anim_reload				= p99_reload
+anim_reload_empty			= p99_reload_empty
+anim_draw				= p99_draw
+anim_draw_empty				= p99_draw_opened
+anim_shoot				= p99_shoot
+anim_shot_last				= p99_shoot_opened
+anim_close				= p99_holster_opened
+anim_idle_aim				= p99_idle_aim
+anim_idle_sprint			= p99_idle_sprint
+anim_idle_sprint_empty			= p99_idle_sprint_opened
+anim_idle_moving			= p99_idle_moving
+anim_idle_moving_empty			= p99_idle_moving_opened
+
+zoom_offset				= -0.0980, 0.0235, -0.075
+zoom_rotate_x				= 0.0100
+zoom_rotate_y				= 0.0450

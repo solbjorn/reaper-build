@@ -1,84 +1,28 @@
-local nagrad = {
+local nagrad
 
-  level_1 = {
-  "ammo_5.45x39_ap",
-  "ammo_7.62x39_ap",
-  "ammo_5.56x45_ap",
-  "ammo_5.7x28_ap",
-  "ammo_9x19_pbp",
-  "ammo_11.43x23_hydro"
- },
-  level_2 = {
-  "af_vyvert",
-  "af_gravi",
-  "af_medusa",
-  "af_night_star",
-  "af_fireball",
-  "af_gold_fish",
-  "af_drops",
-  "af_soul",
-  "af_cristall_flower",
-  "af_electra_moonlight",
-  "af_rusty_sea-urchin",
-  "af_dummy_glassbeads"
- },
-  level_3 = {
-  "ammo_357sw_jfp",
-  "ammo_44mag_jhp",
-  "ammo_50ae_thv",
-  "ammo_7.62x25_ps",
-  "ammo_7.62x51",
-  "ammo_338_lapua"
- },
-  level_4 = {
-  "af_spirit_1",
-  "af_cry_1",
-  "af_babka_1",
-  "af_pudd_1",
-  "af_dik_1",
-  "af_kol_1",
-  "af_armor_1"
- },
-  level_5 = {
-  "wpn_p38_sk1",
-  "wpn_apb_sk1",
-  "wpn_tt33_sk1",
-  "wpn_ppsh41_sk2",
-  "wpn_m1891_30",
-  "wpn_bm16_full",
-  "wpn_bizon"
- },
-  level_6 = {
-  "af_spirit_2",
-  "af_cry_2",
-  "af_babka_2",
-  "af_pudd_2",
-  "af_dik_2",
-  "af_kol_2",
-  "af_armor_2",
-  "af_simbion"
- }
-}
+function random_reward(level, count)
+	if not nagrad then nagrad = linspiro.init_random("new_story") end
+	level = "level_" .. level
 
-function prines_kopyto(first_speaker, second_speaker)
+	for i = 1, (count or 1) do
+		got(table.fastrand(nagrad[level]))
+	end
+end
+
+function prines_kopyto()
 	return has("mutant_boar_leg", 30)
 end
-function otdal_kopyto(first_speaker, second_speaker)
-	local item = ""
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+function otdal_kopyto()
 	lost("mutant_boar_leg", 30)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(2)
 end
 
-function prines_hvost(first_speaker, second_speaker)
+function prines_hvost()
 	return has("mutant_dog_tail", 15)
 end
-function otdal_hvost(first_speaker, second_speaker)
-	local item = ""
-	local count = math.random(3,4)
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+function otdal_hvost()
 	lost("mutant_dog_tail", 15)
-	got(item, count)
+	random_reward(1, math.random(3, 4))
 end
 
 function add_man()
@@ -94,15 +38,11 @@ function metka_man()
 level_tasks.add_location(507,"green_location","Раненый")
 end
 
-function voronin_flesh_have(task, objective)
-if Actor ~= nil then
-return Actor:object("crazy_flash") ~= nil
-end
-return false
+function voronin_flesh_have()
+	return has("crazy_flash")
 end
 
 function voronin_flesh_done(first_speaker, second_speaker)
-local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -111,9 +51,8 @@ local item = ""
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "crazy_flash", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
 function fox_kriss_have(task, objective)
@@ -157,15 +96,11 @@ dialogs.relocate_item_section(first_speaker, "bar_tiran_pda", "in")
 second_speaker:set_relation(game_object.friend, second_speaker)
 end
 
-function gavr_pda_have(task, objective)
-if Actor ~= nil then
-return Actor:object("bar_lucky_pda") ~= nil
-end
-return false
+function gavr_pda_have()
+	return has("bar_lucky_pda")
 end
 
 function gavr_pda_done(first_speaker, second_speaker)
-	local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -174,20 +109,15 @@ function gavr_pda_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "bar_lucky_pda", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
-function saharov_pda_have(task, objective)
-if Actor ~= nil then
-return Actor:object("pda_priz") ~= nil
-end
-return false
+function saharov_pda_have()
+	return has("pda_priz")
 end
 
 function saharov_pda_done(first_speaker, second_speaker)
-local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -196,31 +126,17 @@ local item = ""
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "pda_priz", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
-function freeman_eagle_have(task, objective)
-if Actor ~= nil then
-return Actor:object("wpn_eagle_m1") ~= nil
-end
-return false
+function freeman_eagle_have()
+	return has("wpn_desert_eagle_sk2_m1")
 end
 
 function freeman_eagle_done(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
-	dialogs.relocate_item_section(trader, "wpn_eagle_m1", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	transfer_good(first_speaker:id() == 0 and second_speaker or first_speaker, "wpn_desert_eagle_sk2_m1", "out")
+	random_reward(2)
 end
 
 function ghange_set()
@@ -234,15 +150,11 @@ function ghange_set()
 	end
 end
 
-function freeman_case_have(task, objective)
-if Actor ~= nil then
-return Actor:object("case_freeman") ~= nil
-end
-return false
+function freeman_case_have()
+	return has("case_freeman")
 end
 
 function freeman_case_done(first_speaker, second_speaker)
-	local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -251,20 +163,15 @@ function freeman_case_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "case_freeman", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
-function gavr_doc_have(task, objective)
-if Actor ~= nil then
-return Actor:object("lab_x10_documents") ~= nil
-end
-return false
+function gavr_doc_have()
+	return has("lab_x10_documents")
 end
 
 function gavr_doc_done(first_speaker, second_speaker)
-	local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -273,20 +180,15 @@ function gavr_doc_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
 	dialogs.relocate_item_section(trader, "lab_x10_documents", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(2)
 end
 
-function bland_flash_have(task, objective)
-if Actor ~= nil then
-return Actor:object("bland_flash") ~= nil
-end
-return false
+function bland_flash_have()
+	return has("bland_flash")
 end
 
 function bland_flash_done(first_speaker, second_speaker)
-	local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -295,20 +197,19 @@ function bland_flash_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "bland_flash", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
 function krov_kamen()
 	return has("mutant_flesh_eye",5)
 end
 
-function otdal_kamen(first_speaker, second_speaker)
+function otdal_kamen()
 	lost("mutant_flesh_eye",5)
 end
 
-function nagrada_kamen(first_speaker, second_speaker)
+function nagrada_kamen()
 	got("ammo_9x19_pbp",3)
 end
 
@@ -316,11 +217,11 @@ function prines_gravi()
 	return has("mutant_face_tushkano",15)
 end
 
-function otdal_gravi(first_speaker, second_speaker)
+function otdal_gravi()
 	lost("mutant_face_tushkano",15)
 end
 
-function nagrada_gravi(first_speaker, second_speaker)
+function nagrada_gravi()
 	got("ammo_11.43x23_hydro",3)
 end
 
@@ -328,24 +229,20 @@ function prines_ruki()
 	return has("mutant_hand_kontroler",2)
 end
 
-function otdal_ruki(first_speaker, second_speaker)
+function otdal_ruki()
 	lost("mutant_hand_kontroler",2)
 end
 
-function nagrada_ruki(first_speaker, second_speaker)
+function nagrada_ruki()
 	got("ammo_5.45x39_ap",5)
 	got("vodka",2)
 end
 
-function dan_grab_have(task, objective)
-if Actor ~= nil then
-return Actor:object("bad_psy_helmet") ~= nil
-end
-return false
+function dan_grab_have()
+	return has("bad_psy_helmet")
 end
 
 function dan_grab_done(first_speaker, second_speaker)
-local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -354,21 +251,15 @@ local item = ""
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "bad_psy_helmet", "out", 1)
-    dialogs.relocate_item_section(actor, item , "in", count)
+	random_reward(4)
 end
 
-function yakut_help_have(task, objective)
-if Actor ~= nil then
-return Actor:object("new_book") ~= nil
-end
-return false
+function yakut_help_have()
+	return has("new_book")
 end
 
 function yakut_help_done(first_speaker, second_speaker)
-    local item = ""
-	local count = math.random(3,5)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -377,16 +268,12 @@ function yakut_help_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
 	dialogs.relocate_item_section(trader, "new_book", "out", 1)
-	got(item, count)
+	random_reward(2, math.random(3, 5))
 end
 
-function yakut_treasure_have(task, objective)
-if Actor ~= nil then
-return Actor:object("notebook_new") ~= nil
-end
-return false
+function yakut_treasure_have()
+	return has("notebook_new")
 end
 
 function yakut_treasure_done(first_speaker, second_speaker)
@@ -394,11 +281,8 @@ function yakut_treasure_done(first_speaker, second_speaker)
 	second_speaker:set_relation(game_object.friend, second_speaker)
 end
 
-function dan_flash_have(task, objective)
-if Actor ~= nil then
-return Actor:object("nauch_flash") ~= nil
-end
-return false
+function dan_flash_have()
+	return has("nauch_flash")
 end
 
 function dan_flash_done(first_speaker, second_speaker)
@@ -406,16 +290,11 @@ function dan_flash_done(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "good_psy_helmet", "in")
 end
 
-function treasure_ecolog_have(task, objective)
-if Actor ~= nil then
-return Actor:object("new_book_prizrak") ~= nil
-end
-return false
+function treasure_ecolog_have()
+	return has("new_book_prizrak")
 end
 
 function treasure_ecolog_done(first_speaker, second_speaker)
-    local item = ""
-	local count = math.random(2,3)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -424,9 +303,8 @@ function treasure_ecolog_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "new_book_prizrak", "out", 1)
-	got(item, count)
+	random_reward(4, math.random(2, 3))
 end
 
 function barmen_simbion_have(task, objective)
@@ -440,16 +318,11 @@ function barmen_simbion_done(first_speaker, second_speaker)
     dialogs.relocate_item_section(second_speaker, "af_simbion", "out")
 end
 
-function system_ecolog_have(task, objective)
-if Actor ~= nil then
-return Actor:object("computer_new") ~= nil
-end
-return false
+function system_ecolog_have()
+	return has("computer_new")
 end
 
 function system_ecolog_done(first_speaker, second_speaker)
-    local item = ""
-	local count = math.random(2,3)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -458,9 +331,8 @@ function system_ecolog_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "computer_new", "out", 1)
-	got(item, count)
+	random_reward(4, math.random(2, 3))
 end
 
 function prizrak_zver_have(task, objective)
@@ -472,19 +344,14 @@ end
 
 function prizrak_zver_done(first_speaker, second_speaker)
     dialogs.relocate_item_section(first_speaker, "sniper_flash", "out")
-	dialogs.relocate_item_section(second_speaker, "wpn_dark_gauss", "in")
+	got("wpn_gauss_sk2_m1")
 end
 
-function prizrak_finalzver_have(task, objective)
-if Actor ~= nil then
-return Actor:object("new_document_sniper") ~= nil
-end
-return false
+function prizrak_finalzver_have()
+	return has("new_document_sniper")
 end
 
 function prizrak_finalzver_done(first_speaker, second_speaker)
-    local item = ""
-	local count = math.random(2,3)
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -493,9 +360,8 @@ function prizrak_finalzver_done(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
 	dialogs.relocate_item_section(trader, "new_document_sniper", "out", 1)
-	got(item, count)
+	random_reward(4, math.random(2, 3))
 end
 
 function yakut_ograblen_have(task, objective)
@@ -512,15 +378,11 @@ function yakut_ograblen_done(first_speaker, second_speaker)
 	got("medkit_army",4)
 end
 
-function helmet_est(task, objective)
-if Actor ~= nil then
-return Actor:object("good_psy_helmet") ~= nil
-end
-return false
+function helmet_est()
+	return has("good_psy_helmet")
 end
 
 function helmet_otdal(first_speaker, second_speaker)
-    local item = ""
 	local actor, trader
 	if Actor and 0 == first_speaker:id() then
 		actor = first_speaker
@@ -529,67 +391,57 @@ function helmet_otdal(first_speaker, second_speaker)
 		actor = second_speaker
 		trader = first_speaker
 	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
 	dialogs.relocate_item_section(trader, "good_psy_helmet", "out", 1)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(2)
 end
 
 function left_arhara(first_speaker, second_speaker)
     dialogs.relocate_item_section(second_speaker, "device_torch", "in")
 end
 
-function atak_larger_done(first_speaker, second_speaker)
-    local item = ""
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
-	dialogs.relocate_item_section(second_speaker, item , "in")
+function atak_larger_done()
+	random_reward(2)
 end
 
 function tri_kristal()
 	return has("af_cristall",2)
 end
 
-function otdal_kristal(first_speaker, second_speaker)
-	local item = ""
-	item = nagrad.level_6[math.random(table.getn(nagrad.level_6))]
+function otdal_kristal()
 	lost("af_cristall", 2)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(6)
 end
 
 function prines_lomot()
 	return has("af_mincer_meat",2)
 end
 
-function otdal_lomot(first_speaker, second_speaker)
-	local item = ""
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+function otdal_lomot()
 	lost("af_mincer_meat", 2)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(3)
 end
 
 function prines_odingrav()
 	return has("af_gravi")
 end
 
-function otdal_odingrav(first_speaker, second_speaker)
+function otdal_odingrav()
 	lost("af_gravi",1)
 end
 
-function nagrada_odingrav(first_speaker, second_speaker)
+function nagrada_odingrav()
 	got("medkit_scientic",3)
 end
 
-function zahar_naemnik_done(first_speaker, second_speaker)
-    local item = ""
-	local count = math.random(3,5)
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
-	got(item, count)
+function zahar_naemnik_done()
+	random_reward(1, math.random(3, 5))
 end
 
 function prapor_apt_have()
 	return has("medkit_scientic",10)
 end
 
-function prapor_apt_done(first_speaker, second_speaker)
+function prapor_apt_done()
 	lost("medkit_scientic",10)
 end
 
@@ -605,7 +457,7 @@ function otdal_pda_voen(first_speaker, second_speaker)
     dialogs.relocate_item_section(second_speaker, "voen_pda", "out")
 end
 
-function prizrak_tainiy_have(first_speaker, second_speaker)
+function prizrak_tainiy_have()
 	return has("plan_document")
 end
 

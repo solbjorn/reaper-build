@@ -1,465 +1,18 @@
-----Таблица наград настоящим везунчикам
-local spec_list = {
+local spec_list, bad_list, trader_list, barman_list, ecolog_list, dolg_list, freedom_list
 
-	special_section_lvl1 = {
-	"af_spirit_1",
-	"af_cry_1",
-	"af_babka_1",
-	"af_pudd_1",
-	"af_dik_1",
-	"af_kol_1",
-	"af_armor_1"
-	},
+function init_random_rewards()
+	local ltx = ini_file("misc\\random_rewards.ltx")
+	local iter
 
-	special_section_lvl2 = {
-	"af_spirit_2",
-	"af_cry_2",
-	"af_babka_2",
-	"af_pudd_2",
-	"af_dik_2",
-	"af_kol_2",
-	"af_armor_2"
-	},
+	bad_list = ltx:r_list("bad_list", "items") or { }
 
-	special_section_lvl3 = {
-	"af_spirit_3",
-	"af_cry_3",
-	"af_babka_3",
-	"af_pudd_3",
-	"af_dik_3",
-	"af_kol_3",
-	"af_armor_3",
-	"af_simbion"
-	}
- }
+	for _, sect in ipairs({ "spec", "trader", "barman", "ecolog", "dolg", "freedom" }) do
+		sect = sect .. "_list"
+		this[sect] = linspiro.read_random(sect, ltx)
+	end
 
---Таблица наград наудачникам
-local bad_list = {
-	"ammo_50ae_thv",
-	"ammo_arbolt",
-	"ammo_7.62x51",
-	"ammo_338_lapua",
-	"ammo_357sw_jhp",
-	"ammo_357sw_jfp"
- }
-
---Таблица наград Сидоровича
-local trader_list = {
-
-	eliminate_lager_lvl1 = {
-	"af_drops",
-	"af_ameba_slime",
-	"af_rusty_thorn",
-	"af_electra_sparkler",
-	"af_blood",
-	"af_vyvert",
-	"af_medusa",
-	"af_armor_1"
-	},
-
-	eliminate_lager_lvl2 = {
-	"af_cristall_flower",
-	"af_gravi",
-	"af_mincer_meat",
-	"af_electra_flash",
-	"af_rusty_kristall",
-	"af_ameba_slug",
-	"af_fireball",
-	"af_armor_2"
-	},
-
-	eliminate_lager_lvl3 = {
-	"af_night_star",
-	"af_gold_fish",
-	"af_soul",
-	"af_electra_moonlight",
-	"af_rusty_sea-urchin",
-	"af_ameba_mica",
-	"af_cristall",
-	"af_armor_3"
-	},
-
-	artefact_lvl1 = {
-	"medkit",
-	"medkit_army",
-	"wpn_fort",
-	"wpn_pm_m1",
-	"grenade_rgd5"
-	},
-
-	artefact_lvl2 = {
-	"wpn_mp5",
-	"wpn_aps",
-	"wpn_colt1911",
-	"wpn_hpsa",
-	"wpn_usp",
-	"wpn_walther",
-	"grenade_f1"
-	},
-
-	kill_stalker_lvl1 = {
-	"af_drops",
-	"af_ameba_slime",
-	"af_rusty_thorn",
-	"af_electra_sparkler",
-	"af_blood",
-	"af_vyvert",
-	"af_medusa",
-	"af_armor_1"
-	},
-
-	kill_stalker_lvl2 = {
-	"af_cristall_flower",
-	"af_gravi",
-	"af_mincer_meat",
-	"af_electra_flash",
-	"af_rusty_kristall",
-	"af_ameba_slug",
-	"af_fireball",
-	"af_armor_2"
-	},
-
-	kill_stalker_lvl3 = {
-	"af_night_star",
-	"af_gold_fish",
-	"af_soul",
-	"af_electra_moonlight",
-	"af_rusty_sea-urchin",
-	"af_ameba_mica",
-	"af_cristall",
-	"af_armor_3"
-	}
-}
-
---Таблица наград Бармена
- local barman_list = {
-
-	eliminate_lager_lvl1 = {
-	"af_drops",
-	"af_ameba_slime",
-	"af_rusty_thorn",
-	"af_electra_sparkler",
-	"af_blood",
-	"af_vyvert",
-	"af_medusa",
-	"af_armor_1",
-	"ammo_16cal_skart",
-	"ammo_5.45x39_ap",
-	"ammo_11.43x23_fmj",
-	"ammo_9x39_pab9",
-	"ammo_5.56x45_ss190",
-	"grenade_f1",
-	"grenade_gd-05"
-	},
-
-	eliminate_lager_lvl2 = {
-	"af_spirit_1",
-	"af_cry_1",
-	"af_babka_1",
-	"af_pudd_1",
-	"af_dik_1",
-	"af_kol_1",
-	"af_armor_1",
-	"ammo_16cal_fost",
-	"ammo_5.45x39_ap",
-	"ammo_11.43x23_hydro",
-	"ammo_9x39_sp5",
-	"ammo_5.56x45_ap",
-	"ammo_7.62x54_7h1",
-	"wpn_lr300",
-	"wpn_hpsa",
-	"ammo_vog-25",
-	"ammo_m209"
-	},
-
-	eliminate_lager_lvl3 = {
-	"af_spirit_2",
-	"af_cry_2",
-	"af_babka_2",
-	"af_pudd_2",
-	"af_dik_2",
-	"af_kol_2",
-	"af_armor_2",
-	"ammo_9x39_ap",
-	"ammo_5.56x45_ap",
-	"ammo_7.62x54_7h14",
-	"wpn_sig550",
-	"wpn_beretta",
-	"ammo_og-7b",
-	"ammo_vog-25p",
-	"ammo_m209"
-	},
-
-	artefact_lvl1 = {
-	"medkit",
-	"medkit_army",
-	"medkit_scientic",
-	"wpn_bizon",
-	"wpn_kriss_super_v",
-	"wpn_mp7a3",
-	"wpn_p90",
-	"wpn_desert_eagle"
-	},
-
-	kill_stalker_lvl1 = {
-	"af_cristall_flower",
-	"af_gravi",
-	"af_mincer_meat",
-	"af_electra_flash",
-	"af_rusty_kristall",
-	"af_ameba_slug",
-	"af_fireball",
-	"af_dummy_pellicle",
-	"af_armor_1"
-	},
-
-	kill_stalker_lvl2 = {
-	"af_night_star",
-	"af_gold_fish",
-	"af_soul",
-	"af_electra_moonlight",
-	"af_rusty_sea-urchin",
-	"af_ameba_mica",
-	"af_cristall",
-	"af_fuzz_kolobok",
-	"af_armor_2"
-	}
-}
-
---Таблица наград Сахарова
-local ecolog_list = {
-
-	eliminate_lager_lvl1 = {
-	"medkit_scientic",
-	"af_spirit_1",
-	"af_cry_1",
-	"af_babka_1",
-	"af_pudd_1",
-	"af_dik_1",
-	"af_kol_1",
-	"af_armor_1",
-	"af_buliz",
-	"ammo_9x39_pab9",
-	"ammo_7.62x54r",
-	"grenade_f1"
-	},
-
-	monster_part_lvl1 = {
-	"medkit",
-	"af_drops",
-	"af_ameba_slime",
-	"af_rusty_thorn",
-	"af_electra_sparkler",
-	"af_blood",
-	"af_vyvert",
-	"af_medusa",
-	"ammo_og-7b",
-	"ammo_vog-25p",
-	"ammo_vog-25",
-	"ammo_m209",
-	"grenade_f1",
-	"grenade_rgd5",
-	"af_armor_1"
-	},
-
-	monster_part_lvl2 = {
-	"medkit_army",
-	"af_cristall_flower",
-	"af_gravi",
-	"af_mincer_meat",
-	"af_electra_flash",
-	"af_rusty_kristall",
-	"af_ameba_slug",
-	"af_fireball",
-	"af_armor_1",
-	"af_buliz",
-	"ammo_9x39_sp5",
-	"ammo_7.62x54r",
-	"grenade_f1"
-	},
-
-	monster_part_lvl3 = {
-	"medkit_scientic",
-	"af_night_star",
-	"af_gold_fish",
-	"af_soul",
-	"af_electra_moonlight",
-	"af_rusty_sea-urchin",
-	"af_ameba_mica",
-	"af_cristall",
-	"af_armor_2",
-	"af_buliz",
-	"af_simbion",
-	"ammo_9x39_ap",
-	"ammo_7.62x54r",
-	"grenade_f1"
-	},
-
-	artefact_lvl1 = {
-	"medkit_scientic",
-	"ammo_gauss",
-	"ammo_9x39_ap",
-	"wpn_spas12",
-	"wpn_sig_m1",
-	"wpn_val",
-	"ecolog_outfit"
-	},
-
-	artefact_lvl2 = {
-	"medkit_scientic",
-	"ammo_gauss",
-	"ammo_super_gauss",
-	"ammo_9x39_ap",
-	"wpn_spas12_m1",
-	"wpn_sig_m2",
-	"wpn_val_m1",
-	"scientific_outfit"
-	}
-}
-
---Таблица наград Воронина
-local dolg_list = {
-
-	eliminate_lager_lvl1 = {
-	"medkit",
-	"af_armor_1",
-	"ammo_7.62x51",
-	"ammo_9x39_pab9",
-	"ammo_12x76_zhekan",
-	"ammo_16cal_skart",
-	"ammo_vog-25",
-	"grenade_rgd5"
-	},
-
-	eliminate_lager_lvl2 = {
-	"medkit",
-	"af_armor_1",
-	"ammo_338_lapua",
-	"ammo_9x39_sp5",
-	"ammo_7.62x54_ap",
-	"ammo_7.62x54r",
-	"ammo_vog-25p",
-	"grenade_f1"
-	},
-
-	eliminate_lager_lvl3 = {
-	"medkit_army",
-	"af_armor_2",
-	"ammo_9x39_ap",
-	"ammo_7.62x54r",
-	"ammo_vog-25p",
-	"grenade_f1"
-	},
-
-	eliminate_lager_lvl4 = {
-	"medkit_scientic",
-	"af_armor_3",
-	"wpn_rpk74",
-	"ammo_og-7b",
-	"ammo_vog-25p",
-	"grenade_f1"
-	},
-
-	eliminate_lager_lvl5 = {
-	"medkit_scientic",
-	"af_armor_3",
-	"wpn_svd_m1",
-	"wpn_rg6",
-	"ammo_og-7b",
-	"ammo_vog-25p",
-	"grenade_f1"
-	}
-}
-
-local freedom_list = {
-
-	eliminate_lager_lvl1 = {
-	"medkit_army",
-	"af_armor_1",
-	"ammo_5.56x45_ap",
-	"ammo_44mag_jhp",
-	"ammo_357sw_jhp",
-	"ammo_7.62x51",
-	"ammo_5.7x28_ss190",
-	"ammo_m209",
-	"grenade_rgd5"
-	},
-
-	eliminate_lager_lvl2 = {
-	"medkit_army",
-	"af_armor_1",
-	"ammo_9x39_ap",
-	"ammo_5.56x45_ap",
-	"ammo_50ae_thv",
-	"ammo_357sw_jfp",
-	"ammo_338_lapua",
-	"ammo_5.7x28_ap",
-	"ammo_m209",
-	"grenade_f1"
-	},
-
-	eliminate_lager_lvl3 = {
-	"medkit_scientic",
-	"af_armor_2",
-	"ammo_m209",
-	"grenade_f1",
-	"wpn_pkm",
-	"wpn_lr300_m1",
-	"wpn_sig_m1"
-	},
-
-	eliminate_lager_lvl4 = {
-	"medkit_scientic",
-	"af_armor_3",
-	"ammo_m209",
-	"grenade_f1",
-	"wpn_awm",
-	"wpn_l85_m2",
-	"wpn_sig_m2"
-	},
-
-	kill_stalker_lvl2 = {
-	"af_spirit_1",
-	"af_cry_1",
-	"af_babka_1",
-	"af_pudd_1",
-	"af_dik_1",
-	"af_kol_1",
-	"af_armor_1"
-	},
-
-	kill_stalker_lvl3 = {
-	"af_spirit_2",
-	"af_cry_2",
-	"af_babka_2",
-	"af_pudd_2",
-	"af_dik_2",
-	"af_kol_2",
-	"af_armor_2",
-	"wpn_l85_m1",
-	"exo_outfit"
-	},
-
-	defend_lager_lvl1 = {
-	"af_cristall_flower",
-	"af_gravi",
-	"af_mincer_meat",
-	"af_electra_flash",
-	"af_rusty_kristall",
-	"af_ameba_slug",
-	"af_fireball"
-	},
-
-	defend_lager_lvl2 = {
-	"af_night_star",
-	"af_gold_fish",
-	"af_soul",
-	"af_electra_moonlight",
-	"af_rusty_sea-urchin",
-	"af_ameba_mica",
-	"af_cristall"
-	}
-}
+	init_random_rewards = nil
+end
 
 local parent_by_story = {
   [003] = "trader",
@@ -494,6 +47,14 @@ end
 
 local is_find_task = table.tohash({ "artefact", "monster_part", "find_item" })
 
+function relocate_good(victim, section)
+	if quest_section[section] then
+		transfer_good(victim, section, "out")
+	else
+		lost_good(section)
+	end
+end
+
 local return_task_by_type = {
   eliminate_lager = "return_for_reward",
 	eliminate_lair = "return_for_reward",
@@ -506,6 +67,15 @@ local return_task_by_type = {
 local return_location = {
 	return_for_reward = "blue_location",
 	return_for_reward_bring = "blue_location_2"
+}
+
+local task_status = {
+	normal		= 0,
+	selected	= 1,
+	completed	= 2,
+	refused		= 3,
+	failed		= 4,
+	rewarded	= 5
 }
 
 local table_insert = table.insert
@@ -532,34 +102,11 @@ function stringhash(str)
 end
 
 class "CRandomTask"
---Функция check_task получает id квеста и проверяет есть ли он в списке исключений для которых генерировать случайные награды не нужно
-function CRandomTask:check_task(name)
-	if     name == "tm_find_artefact_3"
-		or name == "tm_kill_stalker_1"
-		or name == "tm_kill_stalker_4"
-		or name == "tm_kill_stalker_5"
-	    or name == "barmen_find_artefact_3"
-		or name == "barmen_find_artefact_5"
-		or name == "ecolog_find_artefact_1"
-		or name == "ecolog_find_artefact_5"
-		or name == "dolg_kill_stalker_1"
-	then
-		return false
-	else
-		return true
-	end
-end
 
 --Функция lin_task (id квеста, торговец дающий квест)
 function CRandomTask:lin_task(name, parent)
 	local level = 0
 	local item, qtype  = "",""
-
-	--Проверяем  нету ли выбранного квеста в списке исключений
-	if self:check_task(name) == false then
-		item = "false"
-		return item
-	end
 
 	--Делим квесты на группы в зависимости от типа
 	if     string_find(name,"eliminate_camp") then
@@ -588,6 +135,8 @@ function CRandomTask:lin_task(name, parent)
 	elseif string_find(name,"7") or string_find(name,"8") or string_find(name,"9") then
 		level = 4
 	end
+
+	if not bad_list then init_random_rewards() end
 
 	--Если квест дает Сидорович
 	if parent == "trader" then
@@ -849,6 +398,8 @@ function CRandomTask:__init()
   self.task_info = {}
 	self.kill_targets = container:get("kill_targets", { })
 
+	local curr_task_info
+
 	ini:iterate_lines("list", function(result, id, value)
 		if not ini:section_exist(id) then
 			abort("There is no section [%s] in task_manager.ltx", id)
@@ -863,7 +414,7 @@ function CRandomTask:__init()
     hash_to_id[hash]=id
     id_to_hash[id]=hash
 
-		local curr_task_info = { }
+		curr_task_info = { }
 		self.task_info[id] = curr_task_info
 
 		if not ini:line_exist(id, "type") then
@@ -872,7 +423,6 @@ function CRandomTask:__init()
 		end
 
 		curr_task_info.type			= ini:r_string(id, "type")
-
 		curr_task_info.name			= id
 
 		if ini:line_exist(id, "parent") then
@@ -898,6 +448,10 @@ function CRandomTask:__init()
 
 		local sss = (ini:line_exist(id, "reward_item") and ini:r_string(id, "reward_item")) or nil
 		curr_task_info.reward_item = sss and string.parse_names(sss)
+
+		if ini:line_exist(id, "reward_random") and ini:r_bool(id, "reward_random") ~= true then
+			curr_task_info.norandom = true
+		end
 
 		-- Награда информацией
 		curr_task_info.reward_info = ini:r_string_ex(id, "reward_info")
@@ -931,11 +485,23 @@ function CRandomTask:__init()
 		curr_task_info.enabled_props		= false
 
     --' Статус квеста, может быть: "normal", "selected", "completed", "refused", "failed", "rewarded"
-		curr_task_info.status				= "normal"
+		curr_task_info.status = task_status.normal
+
+		if is_find_task[curr_task_info.type] then
+			if condition_item(curr_task_info.target) then
+				curr_task_info.has = has_good
+				curr_task_info.relocate = relocate_good
+			else
+				curr_task_info.has = has
+				curr_task_info.relocate = dialogs.relocate_item_section
+			end
+		end
 	end)
 
+	is_find_task = nil
+
   --' Создание дополнительных ассоциативных таблиц для облегчения поиска
-  self.task_id_by_type = {}
+	self.target_type = { }
   self.task_id_by_parent = {}
   self.task_id_by_yes_phrase_id = {}
   self.task_id_by_completed_phrase_id = {}
@@ -944,32 +510,43 @@ function CRandomTask:__init()
   self.task_id_by_init_phrase_id = {}
   self.active_task_by_type = {}
 
-	local value
+	local target, value
 	for k,v in pairs(self.task_info) do
 		--' По типу квеста
-		value = self.task_id_by_type[v.type]
-		if value == nil then
-			value = {}
-			self.task_id_by_type[v.type] = value
+		if not v.has and v.target then
+			target = self.target_type[v.type]
+			if not target then
+				target = { }
+				self.target_type[v.type] = target
+			end
+
+			value = target[v.target]
+			if not value then
+				value = { }
+				target[v.target] = value
+			end
+
+			value[#value + 1] = v
 		end
-		value[#value+1] = k
 
 		--' По типу вендора
 		value = self.task_id_by_parent[v.parent]
-		if value == nil then
-			value = {}
+		if not value then
+			value = { }
 			self.task_id_by_parent[v.parent] = value
 		end
-		value[#value+1] = k
 
-    --' По id фразы согласия на квест
-    self.task_id_by_yes_phrase_id[tostring(v.yes_phrase_id)] = k
-    self.task_id_by_completed_phrase_id[v.completed_phrase_id] = k
-    self.task_id_by_desc_phrase_id[v.desc_phrase_id] = k
+		value[#value + 1] = k
+
+		--' По id фразы согласия на квест
+		self.task_id_by_yes_phrase_id[tostring(v.yes_phrase_id)] = k
+		self.task_id_by_completed_phrase_id[v.completed_phrase_id] = k
+		self.task_id_by_desc_phrase_id[v.desc_phrase_id] = k
 		self.task_id_by_never_phrase_id[v.never_phrase_id] = k
-    --' По id фразы выдачи квеста.
+
+		--' По id фразы выдачи квеста.
 		self.task_id_by_init_phrase_id[tostring(v.init_phrase_id)] = k
-  end
+	end
 
 	self.protected_smarts = {}
 end
@@ -1008,19 +585,6 @@ function CRandomTask:read_info_reward_section(ini, tbl)
 	end
 end
 
---------------------------------------
---' Статус квеста, может быть: "normal", "selected", "completed", "refused", "failed", "rewarded"
--- Ну и замечательно. Запишем его числом. - семикратная экономия.
-local status_to_num = {
-	["normal"]		= 0,
-	["selected"]	= 1,
-	["completed"]	= 2,
-	["refused"]		= 3,
-	["failed"]		= 4,
-	["rewarded"]	= 5
-}
-local num_to_status = table.invert(status_to_num)
-
 -- Будем записывать не id задания а его хеш - семикратная экономия.
 function CRandomTask:save(p)
 	local tasks = { }
@@ -1044,8 +608,7 @@ function CRandomTask:save(p)
 		end
 		p:w_u16(id_to_hash[k])
 
-		n = status_to_num[v.status] or abort("[CRandomTask:save] Wrong status '%s' for task %s!", v.status, k)
-
+		n = v.status
 		if v.enabled then n = bit_or(n, 8) end
 		if v.enabled_props then n = bit_or(n, 16) end
 
@@ -1114,8 +677,7 @@ function CRandomTask:load(p)
 		end
 
 		n = bit_and(n, bit_not(8 + 16 + 32 + 64 + 128 + 256 + 512))
-		t.status = num_to_status[n]
-			or abort("[CRandomTask:load] Error with loading task [%s] status: %s", id, n)
+		t.status = n
 	end
 end
 
@@ -1144,33 +706,45 @@ function CRandomTask:parent_can_task(actor, npc, p1, p2, p3)
   end
   return avail
 end
+
 --' Есть ли у игрока хоть одно задание от данного вендора
 function CRandomTask:active_parent_task(actor, npc)
-  local parent = self:get_parent(npc)
-  for k,v in pairs(self.active_task_by_type) do
+	local parent = self:get_parent(npc)
+	local ti
 
-    if self.task_info[v].parent == parent and
-      (self.task_info[v].status == "selected" or
-       self.task_info[v].status == "completed")
-    then
-      return true
-    end
-  end
-  return false
+	for k, v in pairs(self.active_task_by_type) do
+		ti = self.task_info[v]
+
+		if ti.parent == parent and
+		   (ti.status == task_status.selected or
+		    ti.status == task_status.completed) then
+			return true
+		end
+	end
+
+	return false
 end
+
 --' Есть ли у игрока завершенные задания (которые осталось только сдать)
 function CRandomTask:have_completed_job(actor, npc)
-  local parent = self:get_parent(npc)
-  for k,v in pairs(self.active_task_by_type) do
-    if self.task_info[v].parent == parent and
-       self.task_info[v].status == "completed"
-    then
-			if not is_find_task[self.task_info[v].type] then return true end
-			return Actor:object(self.task_info[v].target) ~= nil
-    end
-  end
-  return false
+	local parent = self:get_parent(npc)
+	local ti
+
+	for k, v in pairs(self.active_task_by_type) do
+		ti = self.task_info[v]
+
+		if ti.parent == parent and ti.status == task_status.completed then
+			if ti.has then
+				return ti.has(ti.target)
+			end
+
+			return true
+		end
+	end
+
+	return false
 end
+
 --' Выдача квеста игроку
 function CRandomTask:action_give_task(actor, npc, p1, p2)
   local task = CGameTask()
@@ -1189,7 +763,7 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
 
   --' Выбираем текущую цель квеста
   if task_desc.target_objects ~= nil then
-    self.task_info[task_id].selected_target = task_desc.target_objects[math_random(#task_desc.target_objects)]
+		task_desc.selected_target = table.fastrand(task_desc.target_objects)
   end
 
 	if task_desc.type == "eliminate_lager" or task_desc.type == "eliminate_lair" then
@@ -1213,10 +787,6 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
       amk_add_target_id_to_kill_targets(task_desc.selected_target,task_desc.target_dialog,task_id)
     end
     -------------------------------------
-  elseif task_desc.type == "find_item" then
-    objective:set_map_hint(task_desc.text)
-    objective:set_map_location("find_item_location")
-    objective:set_object_id(task_desc.selected_target)
   end
   objective:add_complete_func("task_manager.task_complete")
   task:add_objective(objective)
@@ -1247,7 +817,7 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
   Actor:give_task(task,time,false)
 
   --' дизаблим все остальные задания данного типа, так как игрок не может одновременно обладать двумя заданиями одного типа.
-  self.task_info[self.task_id_by_yes_phrase_id[p2]].status = "selected"
+	self.task_info[self.task_id_by_yes_phrase_id[p2]].status = task_status.selected
   self.active_task_by_type[task_desc.complex_type] = self.task_id_by_yes_phrase_id[p2]
   for k,v in pairs(self.task_info) do
     if v.complex_type == task_desc.complex_type then
@@ -1260,7 +830,7 @@ function CRandomTask:action_refuse_task(actor, npc, p1, p2)
   local task_desc = self.task_info[self.task_id_by_yes_phrase_id[p2]]
 
   --' Делаем доступными все задания данного типа
-	task_desc.status = "refused"
+	task_desc.status = task_status.refused
   -- Удаляем цель из списка
 	amk_remove_target_id_from_kill_targets(task_desc.selected_target)
   -------------------------
@@ -1299,7 +869,7 @@ function CRandomTask:task_complete(p1, p2)
   end
 
   if p2 == 0 then
-    if sel_task.status == "rewarded" then
+		if sel_task.status == task_status.rewarded then
 			sel_task.given = true
       return true
     end
@@ -1309,13 +879,13 @@ function CRandomTask:task_complete(p1, p2)
 		if sel_task.type == "eliminate_lager" or sel_task.type == "eliminate_lair" then
 			local oo = server_object(sel_task.selected_target)
 			if oo and oo.gulag:get_population_comed() == 0 then
-				sel_task.status = "completed"
+				sel_task.status = task_status.completed
 				return true
 			end
 		elseif sel_task.type == "defend_lager" then
       --' Квест выполнен потому что рейд прекратился
       if xr_gulag.getGulagState(sel_task.defend_target) == 0 then
-				sel_task.status = "completed"
+				sel_task.status = task_status.completed
         return true
       end
 		elseif sel_task.type == "kill_stalker" then
@@ -1332,19 +902,18 @@ function CRandomTask:task_complete(p1, p2)
         -- Сталкер убит. Удаляем его ид из списка  целей
         amk_remove_target_id_from_kill_targets(sel_task.selected_target)
         -------------------------------------------------
-				sel_task.status = "completed"
+				sel_task.status = task_status.completed
         return true
       end
-		elseif is_find_task[sel_task.type] then
-			if Actor:object(sel_task.target) then
-				sel_task.status = "completed"
-				return true
-			end
+		elseif sel_task.has and sel_task.has(sel_task.target) then
+			sel_task.status = task_status.completed
+			return true
 		end
-  end
+	end
 
-  return false
+	return false
 end
+
 --' Проверяем, не профейлен ли таск
 function CRandomTask:task_fail(p1, p2)
   if p2 == 0 then
@@ -1358,18 +927,18 @@ function CRandomTask:task_fail(p1, p2)
     --' Проверяем что жив, выдавший квест.
 		local parent = story_object(story_by_parent[sel_task.parent])
     if parent == nil or (parent.alive ~= nil and not parent:alive()) then
-			sel_task.status = "failed"
+			sel_task.status = task_status.failed
 			sel_task.given = true
       return true
     end
 
-    if sel_task.status == "refused" or sel_task.status == "failed" then
+		if sel_task.status == task_status.refused or sel_task.status == task_status.failed then
 			sel_task.given = true
       return true
     end
 		if sel_task.type == "defend_lager" then
 			if server_object(sel_task.selected_target).gulag:get_population_comed() == 0 then
-				sel_task.status = "failed"
+				sel_task.status = task_status.failed
 				sel_task.given = true
         return true
       end
@@ -1397,7 +966,7 @@ function CRandomTask:task_callback(p1, p2, state)
   ----------------------------------
 
 	if state == task.completed or state == task.fail then
-		task_info.status = "normal"
+		task_info.status = task_status.normal
 		--' восстановление других заданий данного типа
 		for i, v in ipairs(self.task_id_by_parent[task_info.parent]) do
 			if self.task_info[v].complex_type == p1 then
@@ -1533,48 +1102,24 @@ function CRandomTask:check_task_props(task_id)
     end
 		task_desc.enabled_props = false
     return
-	elseif task_desc.type == "find_item" then
-		if task_desc.target_objects == nil or #task_desc.target_objects == 0 then
-			task_desc.enabled_props = false
-      return
-    end
-		for k,v in pairs(task_desc.target_objects) do
-			local obj = server_object(v)
-      if obj ~= nil then
-        --' Нужно игнорировать предметы, которые находяться у вендоров.
-        if obj.parent_id ~= nil then
-          for kk,vv in pairs(parent_by_story) do
-						local parent = story_object(kk)
-            if parent ~= nil and obj.parent_id == parent.id then
-              --' Игнорим предмет
-							task_desc.enabled_props = false
-              return
-            end
-          end
-        end
-
-				task_desc.enabled_props = true
-        return
-      end
-			task_desc.enabled_props = false
-      return
-    end
-  else
+	else
 		task_desc.enabled_props = true
-    return
-  end
+		return
+	end
 end
 
 --' Проверяется является ли текущий таск выданным игроку
 function CRandomTask:active_task(actor, npc, p1, p2, p3)
 	local status = self.task_info[self.task_id_by_init_phrase_id[p3]].status
-	return status == "selected" or status == "completed"
+
+	return status == task_status.selected or status == task_status.completed
 end
 
 function CRandomTask:make_task_failed(task_id)
-	if self.task_info[task_id] then
-    self.task_info[task_id].status="failed"
-  end
+	local ti = self.task_info[task_id]
+	if ti then
+		ti.status = task_status.failed
+	end
 end
 
 -- Проверяется наличие квестовых предметов
@@ -1583,10 +1128,13 @@ function CRandomTask:completed_task(actor, npc, p1, p2, p3)
   local tid=self.task_id_by_desc_phrase_id[p2]
   if not tid then return false end
   local task_desc=self.task_info[tid]
-  if task_desc.status~="completed" then return false end
-	if is_find_task[task_desc.type] then
-		return Actor:object(task_desc.target) ~= nil
+
+	if task_desc.status ~= task_status.completed then return false end
+
+	if task_desc.has then
+		return task_desc.has(task_desc.target)
 	end
+
 	return true
 end
 
@@ -1633,21 +1181,22 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 	local v=self.task_id_by_completed_phrase_id[p2]
 
 	local task_desc = self.task_info[v]
-	if task_desc.status == "completed" and task_desc.parent == parent then
+	if task_desc.status == task_status.completed and task_desc.parent == parent then
 		--' Забираем у игрока квестовый предмет.
 		local can_finish = true
-		if is_find_task[task_desc.type] then
-			if has(task_desc.target) then
-				dialogs.relocate_item_section(npc, task_desc.target, "out")
+
+		if task_desc.has then
+			if task_desc.has(task_desc.target) then
+				task_desc.relocate(npc, task_desc.target, "out")
 			else
 				can_finish = false
 			end
 		end
 
 		if can_finish == true then
-			task_desc.status = "rewarded"
+			task_desc.status = task_status.rewarded
 
-			if get_value("option_reward", 0) > 0 then
+			if get_value("option_reward", 0) > 0 and not task_desc.norandom then
 				local sss = self:lin_task(task_desc.name, task_desc.parent)
 
 				--В случае если функция обратила для sss значение false наполнить таблицу предметами по умолчанию
@@ -1659,7 +1208,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 
 			if task_desc.reward_item ~= nil then
 				for kk,vv in pairs(task_desc.reward_item) do
-					got(vv)
+					got_random(vv)
 				end
 			end
 
@@ -1784,116 +1333,129 @@ function CRandomTask:init_reward_dialog(dlg, parent)
 end
 
 --' Регистрация целей для квестов.
-function CRandomTask:register_target(obj, obj_clsid)
-	if obj_clsid == nil then
-		--' Возможно регистрируется цель для квеста "найти предмет"
-		local t
-		for k,v in ipairs(self.task_id_by_type["find_item"]) do
-			t = self.task_info[v]
-			if obj:section_name() == t.target then
-				if t.target_objects == nil then
-					t.target_objects = {}
-				end
-				table_insert(t.target_objects, obj.id)
-			end
-		end
-	elseif obj_clsid == clsid_script_stalker then
-		--' Возможно регистрируется цель для квеста "убить сталкера"
-		if not (obj.alive ~= nil and obj:alive() == true) then
-			return
-		end
-		if obj:can_switch_online() == false then return end
-		local t
-		for k,v in ipairs(self.task_id_by_type["kill_stalker"]) do
-			t = self.task_info[v]
-			if obj:profile_name() == t.target then
-				if t.target_objects == nil then
-					t.target_objects = {}
-				end
-				table_insert(t.target_objects, obj.id)
-			end
-		end
-	elseif obj_clsid == clsid_smart_terrain then
-		--' Возможно регистрируется цель для квеста "вынести лагерь"
-		local name = obj:name()
-		local t
-		for k,v in ipairs(self.task_id_by_type["eliminate_lager"]) do
-			t = self.task_info[v]
-			if name == t.target then
-				if t.target_objects == nil then
-					t.target_objects = {}
-				end
-				table_insert(t.target_objects, obj.id)
-				self.protected_smarts[t.target] = v
-			end
-		end
-		--' Возможно регистрируется цель для квеста "вынести логово"
-		for k,v in ipairs(self.task_id_by_type["eliminate_lair"]) do
-			t = self.task_info[v]
-			if name == t.target then
-				if t.target_objects == nil then
-					t.target_objects = {}
-				end
-				table_insert(t.target_objects, obj.id)
-				self.protected_smarts[t.target] = v
-			end
-		end
-		--' Либо регистрируется цель для квеста "защитить лагерь"
-		for k,v in ipairs(self.task_id_by_type["defend_lager"]) do
-			t = self.task_info[v]
-			if name == t.target then
-				--' Проверка что в кастом дате указано от кого защищать
-				local sm_ini = obj:spawn_ini()
-				local defend_target = utils.cfg_get_number(sm_ini, "random_task", "defend_target", nil, true)
-				if t.target_objects == nil then
-					t.target_objects = {}
-				end
-				table_insert(t.target_objects, obj.id)
-				self.protected_smarts[t.target] = v
-				local sobj = story_object(defend_target)
-				if sobj then
-					self.protected_smarts[sobj:name()] = v
-				end
-			end
+function CRandomTask:protect_smart(name, task)
+	local v = self.protected_smarts[name]
+	if not v then
+		v = { }
+		self.protected_smarts[name] = v
+	end
+
+	v[#v + 1] = task
+end
+
+function CRandomTask:smart_is_protected(sm)
+	local v = self.protected_smarts[sm:name()]
+	if not v then return false end
+
+	for _, task in ipairs(v) do
+		if task.status == task_status.selected then
+			return true
 		end
 	end
+
+	return false
 end
---' Отрегистрация целей для квестов.
-function CRandomTask:unregister_target(obj, obj_clsid)
-	if obj_clsid == nil then
-		--' Возможно отрегистрируется цель для квеста "найти предмет"
-		local obj_id = obj.id
-		for k,v in ipairs(self.task_id_by_type["find_item"]) do
-			local t = self.task_info[v].target_objects
-			if t ~= nil then
-				for i = 1, #t do
-					if t[i] == obj_id then
-						table_remove(t, i)
-						break
-					end
-				end
+
+function CRandomTask:register_smart(obj)
+	local name = obj:name()
+
+	--' Возможно регистрируется цель для квеста "вынести лагерь"
+	local t = self.target_type.eliminate_lager[name]
+	if t then
+		for tobj, task in ipairs(t) do
+			tobj = task.target_objects
+			if not tobj then
+				tobj = { }
+				task.target_objects = tobj
 			end
+
+			tobj[#tobj + 1] = obj.id
+			self:protect_smart(name, task)
 		end
-	elseif obj_clsid == clsid_script_stalker then
-		--' Возможно отрегистрируется цель для квеста "убить сталкера"
-		local obj_id = obj.id
-		for k,v in ipairs(self.task_id_by_type["kill_stalker"]) do
-			local t = self.task_info[v].target_objects
-			if t ~= nil then
-				for i = 1, #t do
-					if t[i] == obj_id then
-						table_remove(t, i)
-						break
-					end
-				end
+	end
+
+	--' Возможно регистрируется цель для квеста "вынести логово"
+	t = self.target_type.eliminate_lair[name]
+	if t then
+		for tobj, task in ipairs(t) do
+			tobj = task.target_objects
+			if not tobj then
+				tobj = { }
+				task.target_objects = tobj
+			end
+
+			tobj[#tobj + 1] = obj.id
+			self:protect_smart(name, task)
+		end
+	end
+
+	--' Либо регистрируется цель для квеста "защитить лагерь"
+	local sobj
+
+	t = self.target_type.defend_lager[name]
+	if t then
+		--' Проверка что в кастом дате указано от кого защищать
+		local defend = obj:spawn_ini():r_u32_ex("random_task", "defend_target")
+		if not defend then
+			abort(name .. ": no defend_target for task manager")
+			return
+		end
+
+		for tobj, task in ipairs(t) do
+			tobj = task.target_objects
+			if not tobj then
+				tobj = { }
+				task.target_objects = tobj
+			end
+
+			tobj[#tobj + 1] = obj.id
+			self:protect_smart(name, task)
+
+			sobj = story_object(defend)
+			if sobj then
+				self:protect_smart(sobj:name(), task)
 			end
 		end
 	end
 end
 
-function CRandomTask:smart_is_protected(sm)
-	local v = self.protected_smarts[sm:name()]
-	return v ~= nil and self.task_info[v].status == "selected"
+function CRandomTask:register_stalker(obj)
+	if not (obj.alive ~= nil and obj:alive() == true) then
+		return
+	end
+
+	local t = self.target_type.kill_stalker[obj:profile_name()]
+	if not t then return end
+
+	for tobj, task in ipairs(t) do
+		tobj = task.target_objects
+		if not tobj then
+			tobj = { }
+			task.target_objects = tobj
+		end
+
+		tobj[#tobj + 1] = obj.id
+	end
+end
+
+--' Отрегистрация целей для квестов.
+function CRandomTask:unregister_stalker(obj)
+	local t = self.target_type.kill_stalker[obj:profile_name()]
+	if not t then return end
+
+	local obj_id = obj.id
+
+	for tobj, task in ipairs(t) do
+		tobj = task.target_objects
+		if tobj then
+			for i = 1, #tobj do
+				if tobj[i] == obj_id then
+					table_remove(tobj, i)
+					break
+				end
+			end
+		end
+	end
 end
 
 function init_trader_task_dialog(dlg)

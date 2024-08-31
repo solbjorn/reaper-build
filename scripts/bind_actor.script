@@ -152,7 +152,7 @@ function actor_binder:net_spawn(data)
 	xr_box.init_drop_box()
 
 	sa_callbacks.actor_net_spawn()
-	reap.net_spawn()
+	reap.net_spawn(self)
 
 	set_extensions_flags(extensions_flags.key_press + extensions_flags.key_release +
 			     extensions_flags.mouse_wheel + extensions_flags.mouse_move)
@@ -196,9 +196,7 @@ function actor_binder:net_destroy()
 
   xr_sound.stop_all_sound_object()
 
-	sa_callbacks.actor_net_destroy()
-	reap_callback.net_destroy()
-
+	reap_callback.net_destroy(self)
 	set_extensions_flags(0)
 
   object_binder.net_destroy(self)

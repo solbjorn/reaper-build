@@ -433,7 +433,7 @@ function init_wounded(npc, ini, section, st, scheme)
 	local def = {}
 	local npc_community = npc:character_community()
 	if npc_community == "monolith" then
-    local state = table.random(wounded_by_state)
+		local state = table.fastrand(wounded_by_state)
     def.hp_state      = "50|"..state.."@nil"
     def.hp_state_see    = "50|"..state.."@nil"
     def.psy_state     = ""
@@ -458,7 +458,7 @@ function init_wounded(npc, ini, section, st, scheme)
     def.use_medkit      = false
 
   else
-    local state = table.random(wounded_by_state)
+		local state = table.fastrand(wounded_by_state)
     def.hp_state      = "10|"..state.."@help_heavy"
     def.hp_state_see    = "10|"..state.."@help_heavy"
     def.psy_state     = "50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20|{=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy"

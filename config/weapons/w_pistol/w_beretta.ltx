@@ -1,0 +1,261 @@
+[wpn_beretta]: WP_PM
+min_radius               	= 0
+max_radius               	= 50
+description					= enc_weapons1_wpn-beretta
+
+ef_weapon_type				= 5
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 900	;600
+
+ammo_elapsed		 		= 16
+ammo_mag_size		 		= 15
+ammo_class		 			= ammo_9x19_fmj, ammo_9x19_pbp
+
+slot 			 			= 1
+animation_slot				= 1									; type of the animation that will be used
+
+inv_name					= wpn-beretta
+inv_weight					= 1.0	;.5
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 27
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.26 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 8		;скорость возврата в исходное положение
+cam_dispersion          	= 0.65		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0		;максимальный угол отдачи
+cam_max_angle_horz		= 10.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.9		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5		;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.005	    	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0007
+
+;-----------------------------------------------------------------------------------
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.48
+hit_impulse				= 4
+hit_rate	        = 1.85
+fire_distance       = 60
+bullet_speed		= 420
+rpm                 = 250
+
+PDM_disp_base 			    = 2.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		        = 2.7
+PDM_crouch_no_acc 		    = 1.0
+
+silencer_hit_power       	= 0.44
+silencer_hit_impulse			= 3
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 240
+
+;-----------------------------------------------------------------------------------
+hud					= wpn_beretta_hud
+visual					= weapons\beretta92fs\wpn_beretta92fs
+
+position                 	= -0.021, -0.085, 0.0
+fire_point               	= 0.0, 0.133, 0.161
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.133, 0.047
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\9x19\9x19_shells_l
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 		= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x19
+silencer_x				= 77
+silencer_y				= -15
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\beretta\beretta_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\beretta\beretta_shoot
+snd_shoot1					= weapons\beretta\beretta_shoot1
+snd_shoot2					= weapons\beretta\beretta_shoot2
+snd_shoot3					= weapons\beretta\beretta_shoot3
+snd_empty					= weapons\beretta\beretta_empty
+snd_reload					= weapons\beretta\beretta_reload
+snd_close					= weapons\beretta\beretta_close
+snd_silncer_shot				= weapons\beretta\beretta_shot_sil
+;------------------------------------------------------------------------------------------
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_beretta_hud]: wpn_hud
+shell_point			= 0.002300,0.080000,-0.370000
+fire_point			= -0.002000,0.076000,-0.235999
+
+orientation              	= 6,2.5,0
+position                 	= 0.01,0,0
+visual					= weapons\beretta92fs\wpn_beretta92fs_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster ;idle
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;HUD offset in zoom mode (to all)
+zoom_offset				= -0.182000, 0.069200, 0
+zoom_rotate_x			= 0.042400
+zoom_rotate_y			= 0.103700
+
+[wpn_beretta_sk2]: wpn_beretta
+inv_grid_y				= 28
+
+shell_particles	 			= amik\weapons\9x19\9x19_shells_r
+hud					= wpn_beretta_sk2_hud
+visual					= weapons\beretta92fs\wpn_beretta92fs_sk2
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\beretta\beretta_sk2_shoot
+snd_shoot1				= weapons\beretta\beretta_sk2_shoot
+snd_shoot2				= weapons\beretta\beretta_sk2_shoot
+snd_shoot3				= weapons\beretta\beretta_sk2_shoot
+snd_empty				= weapons\beretta\beretta_sk2_empty
+snd_reload				= weapons\beretta\beretta_sk2_reload
+snd_reload_partly			= weapons\beretta\beretta_sk2_reload_partly
+snd_close				= $no_sound
+snd_silncer_shot			= weapons\beretta\beretta_sk2_shot_sil
+
+silencer_x				= 83
+silencer_y				= -21
+
+[wpn_beretta_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0.05, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\beretta92fs\wpn_beretta92fs_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= beretta92fs_reload_empty
+anim_reload_empty			= beretta92fs_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.115, 0.03, 0.0
+zoom_rotate_x				= 0.02
+zoom_rotate_y				= 0.0538
+
+; Беретта М93R
+[wpn_beretta_sk2_m1]: wpn_beretta_sk2
+inv_name				= wpn-beretta_m1
+description				= enc_weapons1_wpn-beretta_m1
+
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 27
+
+class					= WP_LR300
+cost					= 3500
+ammo_mag_size				= 20
+fire_modes 				= 1, 3
+
+fire_dispersion_base			= 0.15
+cam_relax_speed				= 9
+condition_shot_dec 			= 0.0003
+
+fire_point				= 0, 0.133, 0.217
+shell_point				= 0, 0.129, 0.030
+
+hit_power				= 0.5
+rpm					= 1000
+
+hud					= wpn_beretta_sk2_m1_hud
+position				= -0.021, -0.085, 0.0
+visual					= weapons\beretta92fs\wpn_beretta92fs_sk2_m1
+
+silencer_status				= 0
+
+snd_shoot				= weapons\beretta\beretta_sk2_m1_shoot
+snd_shoot1				= weapons\beretta\beretta_sk2_m1_shoot1
+snd_shoot2				= weapons\beretta\beretta_sk2_m1_shoot2
+snd_shoot3				= weapons\beretta\beretta_sk2_m1_shoot3
+snd_reload				= weapons\beretta\beretta_sk2_m1_reload
+snd_reload_partly			= weapons\beretta\beretta_sk2_m1_reload_partly
+
+[wpn_beretta_sk2_m1_hud]: wpn_hud
+shell_point				= 0.015, -0.005, -0.35
+fire_point				= 0, -0.0075, -0.325
+fire_bone				= muzzle
+
+position				= 0.003, -0.175, 0.05
+orientation				= 2, 2, 2
+visual					= weapons\beretta92fs\wpn_beretta92fs_sk2_m1_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload
+anim_reload_empty			= reload_empty
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint_empty
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+
+zoom_offset				= -0.13990, 0.0660, -0.033
+zoom_rotate_x				= 0.0340
+zoom_rotate_y				= 0.0558

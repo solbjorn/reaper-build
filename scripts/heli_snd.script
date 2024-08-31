@@ -48,7 +48,7 @@ function play_snd( st, snd_set, priority )
 	then
 		stop_snd( st )
 
-		st.snd_obj = voice([[helicopter\]] .. table.random(snd[snd_set]))
+		st.snd_obj = voice([[helicopter\]] .. table.fastrand(snd[snd_set]))
 		st.snd_obj:play( Actor, 0, sound_object.s2d )
 
 		st.snd_priority = priority

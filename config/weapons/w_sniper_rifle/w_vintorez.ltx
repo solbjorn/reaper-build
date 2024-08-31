@@ -1,0 +1,230 @@
+[wpn_vintorez]: WP_LR300
+class                    	= WP_VINT
+min_radius               	= 50
+max_radius               	= 150
+description					= enc_weapons1_wpn-vintorez
+
+ef_main_weapon_type			= 3
+ef_weapon_type				= 8
+
+news_weapon_type			= 2
+allow_military				= true
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 2.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 12000
+
+ammo_mag_size		     	= 10
+ammo_class		         	= ammo_9x39_pab9, ammo_9x39_ap, ammo_9x39_sp5
+fire_modes					= -1, 1
+
+slot 			         	= 2		; // secondary
+animation_slot			 	= 2		; type of the animation that will be used
+
+inv_name		         	= wpn-vintorez
+inv_weight		         	= 3.2
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 20
+inv_grid_y				= 4
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.022	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.44f
+disp_rate = 1.8
+
+;отдача
+cam_relax_speed         		= 6.75	;скорость возврата в исходное положение
+cam_relax_speed_ai         	= 5
+cam_dispersion          	= 0.21	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.15	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 7.0	;максимальный угол отдачи
+cam_max_angle_horz				= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 1.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 4	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.005 ;вероятность осечки при максимальном износе
+misfire_condition_k		= 0.3
+condition_shot_dec			= 0.001
+;-----------------------------------------------------------------------------------
+
+fire_point               	= 0.0, 0.127, 0.559
+
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.127, 0.10
+shell_dir		 			= 0.0, 1.0, 0.0
+shell_particles				= amik\weapons\9x39\9x39_shells_l_00
+
+PDM_disp_base 			    = 4.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		        = 5.5
+PDM_crouch_no_acc 		    = 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power                   = 0.31
+hit_impulse				= 8
+hit_rate	= 1.95
+fire_distance       = 180
+bullet_speed				= 315
+rpm                     = 800
+
+hud					= wpn_vintorez_hud
+
+position                 	= -0.026, -0.084, 0.0
+strap_position         		= -0.26,-0.11,0.20			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110
+
+visual					= weapons\vintorez\wpn_vintorez
+
+light_disabled				= true
+
+ph_mass			         	= 4
+
+scope_status				= 1
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\PSO1M2-AMK_1680-W
+
+silencer_status				= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw				= weapons\vintorez\vintorez_draw
+snd_holster				= weapons\rifle_holster
+snd_shoot				= weapons\vintorez\vintorez_shoot
+snd_empty				= weapons\vintorez\vintorez_empty, 0.8
+snd_reload				= weapons\vintorez\vintorez_reload, 1.0, 0.5
+;------------------------------------------------------------------------------------------
+
+[wpn_vintorez_hud]: wpn_hud
+shell_point          		= -0.15, -0.02, 0.05
+fire_point               	= 0.320000,0.040000,0.070000
+
+orientation              	= 4, 2, 0
+visual					= weapons\vintorez\wpn_vintorez_hud
+
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_idle_moving			= idle_moving
+anim_reload		= reload
+anim_draw		= draw
+anim_holster	= holster
+anim_shoot		= shoot
+anim_idle_sprint			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset					= -0.130000,0.000000,0.000000
+zoom_rotate_x				= 0.034400
+zoom_rotate_y				= 0.068800
+
+[wpn_vintorez_sk2]: wpn_vintorez
+description				= wpn_vintorez_sk2_desc
+inv_grid_y				= 6
+
+fire_point				= 0.0, 0.175, 0.580
+shell_point				= 0, 0.190, 0.120
+shell_particles				= amik\weapons\9x39\9x39_shells_r_00
+
+hud					= wpn_vintorez_sk2_hud
+
+position				= -0.026, -0.131, -0.016
+strap_position				= -0.02, -0.21, 0.32
+strap_orientation			= 5, -182, -103
+
+visual					= weapons\vintorez\wpn_vintorez_sk2
+
+scope_zoom_factor			= 1.2
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_pso1m2
+scope_x					= 57
+scope_y					= 3
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\val\val_sk2_shoot
+snd_reload				= weapons\vintorez\vintorez_sk2_reload
+
+[wpn_vintorez_sk2_hud]: wpn_hud
+shell_point				= 0.005000, 0.005000, -0.130000
+fire_point				= -0.004000, -0.014970, 0.124999
+
+position				= 0.115100, 0.095000, -0.395500
+visual					= weapons\vintorez\wpn_vintorez_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle
+
+zoom_offset				= -0.114490, 0.055660, -0.1715
+zoom_rotate_x				= -0.001
+zoom_rotate_y				= 0
+
+scope_zoom_offset			= -0.103190, 0.014760, -0.1505
+scope_zoom_rotate_x			= 0.0001
+scope_zoom_rotate_y			= 0
+
+ignore_scope_texture			= true
+
+; Именной Винторез
+[wpn_vintorez_sk2_m1]: wpn_vintorez_sk2
+inv_name				= wpn-vintorez_m1
+description				= enc_weapons1_wpn-vintorez_m1
+inv_grid_x				= 35
+inv_grid_y				= 2
+
+inv_weight				= 2.5
+cost					= 20000
+ammo_mag_size				= 20
+
+fire_dispersion_base			= 0.011
+control_inertion_factor			= 1.4f
+cam_relax_speed				= 7.5
+cam_dispersion				= 0.065
+cam_dispersion_inc			= 0.1
+cam_dispertion_frac			= 0.5
+cam_max_angle				= 5.0
+cam_step_angle_horz			= 1.35
+fire_dispersion_condition_factor	= 1.5
+
+misfire_probability			= 0.01
+misfire_condition_k			= 0.1
+condition_shot_dec			= 0.00025
+
+bullet_speed				= 490
+
+hud					= wpn_vintorez_sk2_m1_hud
+visual					= weapons\vintorez\wpn_vintorez_sk2_m1
+
+scope_status				= 1
+scope_zoom_factor			= 6
+
+snd_draw				= weapons\val\val_sk2_draw
+snd_holster				= weapons\val\val_sk2_holster
+snd_shoot				= weapons\vintorez\vintorez_sk2_m1_shot
+snd_reload				= weapons\val\val_sk2_reload
+
+[wpn_vintorez_sk2_m1_hud]: wpn_vintorez_sk2_hud
+shell_point				= 0.020000, -0.010000, -0.830000
+fire_point				= 0.030000, -0.040000, -0.060000
+fire_bone				= muzzle
+
+position				= 0.116000, -0.070000, -0.185000
+orientation				= 2.518468, 2.852850, 0.000000
+
+visual					= weapons\vintorez\wpn_vintorez_sk2_m1_hud
+
+scope_zoom_offset			= -0.099730, 0.019260, -0.0553
+scope_zoom_rotate_x			= 0.048560
+scope_zoom_rotate_y			= 0.043820

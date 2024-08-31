@@ -192,15 +192,15 @@ end
 
 --' SVOBODA GIVE REWARD
 
-function svoboda_give_reward(first_speaker, second_speaker)
+function svoboda_give_reward()
     local spawn_items = {
         [1] = { "ammo_9x19_fmj" },
         [2] = { "ammo_9x19_fmj", "bandage", "bandage" },
-        [3] = { "ammo_5.56x45_ss190", "ammo_5.56x45_ss190" },
+		[3] = { "wpn_pm_sk2_m1", "ammo_9x19_pbp", "ammo_9x19_pbp" },
         [4] = { "ammo_5.56x45_ss190", "ammo_5.56x45_ss190", "ammo_m209", "ammo_m209" },
         [5] = { "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209", "ammo_m209", "ammo_m209" },
         [6] = { "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209", "ammo_m209", "ammo_m209" },
-        [7] = { "wpn_fn2000", "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209" }
+		[7] = { "wpn_fn2000_sk2", "wpn_addon_grenade_launcher_eglm", "ammo_5.56x45_ap", "ammo_5.56x45_ap", "ammo_m209" }
        }
     for i = 1,7 do
          if has_alife_info("svoboda_freeplay_reward_task_"..i.."_start") and not has_alife_info("svoboda_freeplay_reward_task_"..i.."_done") then
@@ -273,7 +273,7 @@ end
 
 --' DOLG GIVE REWARD
 
-function dolg_give_reward(first_speaker, second_speaker)
+function dolg_give_reward()
     local spawn_items = {
         [1] = { "ammo_16cal_buck" },
         [2] = { "ammo_12x70_buck", "ammo_12x70_buck" },
@@ -281,7 +281,7 @@ function dolg_give_reward(first_speaker, second_speaker)
         [4] = { "ammo_12x76_dart", "ammo_12x76_dart", "ammo_12x76_dart" },
         [5] = { "ammo_12x76_dart", "ammo_12x76_dart", "ammo_12x76_dart", "ammo_arbolt", "ammo_arbolt" },
         [6] = { "ammo_7.62x54r", "ammo_arbolt", "ammo_arbolt", "ammo_arbolt" },
-        [7] = { "wpn_pkm", "ammo_7.62x54r", "ammo_7.62x54r" }
+		[7] = { "wpn_pkm", "ammo_7.62x54r", "ammo_7.62x54r" }
        }
     for i = 1,7 do
          if has_alife_info("dolg_freeplay_reward_task_"..i.."_objective_1_done") and not has_alife_info("dolg_freeplay_reward_task_"..i.."_done") then

@@ -26,9 +26,9 @@ end
 
 function GetDamage(section)
 	local hit_power = config:r_float(section,"hit_power")
-	local hit_rate = config:r_float_ex(section, "hit_rate", 1.8)
-	local ammo_class = config:r_string_cache(section, "ammo_class"):explode(",")
-	local k_hit = config:r_float_cache(ammo_class[#ammo_class], "k_hit")
+	local hit_rate = config:r_float(section, "hit_rate")
+	local ammo_class = config:r_list(section, "ammo_class")
+	local k_hit = config:r_float(ammo_class[#ammo_class], "k_hit")
 
 	local hit = hit_rate + math.log10(2*hit_power*k_hit)
 
@@ -37,10 +37,10 @@ end
 
 function GetHandling(section)
 	local misfire_probability = config:r_float(section,"misfire_probability")
-	local misfire_condition_k = config:r_float_ex(section, "misfire_condition_k", 0.05)
+	local misfire_condition_k = config:r_float(section, "misfire_condition_k")
 	local condition_shot_dec = config:r_float(section,"condition_shot_dec")
-	local ammo_class = config:r_string_cache(section, "ammo_class"):explode(",")
-	local impair = config:r_float_cache(ammo_class[#ammo_class], "impair")
+	local ammo_class = config:r_list(section, "ammo_class")
+	local impair = config:r_float(ammo_class[#ammo_class], "impair")
 
 	local n = 3000
 	local cond = 1 - impair*condition_shot_dec*n
@@ -61,9 +61,9 @@ end
 
 function GetAccuracy(section)
 	local fire_dispersion_base = config:r_float(section,"fire_dispersion_base")
-	local disp_rate = config:r_float_ex(section, "disp_rate", 1.8)
-	local ammo_class = config:r_string_cache(section, "ammo_class"):explode(",")
-	local k_disp = config:r_float_cache(ammo_class[#ammo_class], "k_disp")
+	local disp_rate = config:r_float(section, "disp_rate")
+	local ammo_class = config:r_list(section, "ammo_class")
+	local k_disp = config:r_float(ammo_class[#ammo_class], "k_disp")
 
 	local fir = disp_rate + math.log10(0.9/(fire_dispersion_base*k_disp))
 

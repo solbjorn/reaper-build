@@ -192,10 +192,9 @@ function send_artefact (npc, actor)
     dialogs.relocate_item_section(npc, "af_cristall", "in")
 end
 
-function send_colt_python(actor, npc)
-    dialogs.relocate_item_section(npc, "wpn_colt_python", "in")
-    dialogs.relocate_item_section(npc, "ammo_357sw_jhp", "in")
-    dialogs.relocate_item_section(npc, "ammo_357sw_jfp", "in")
+function send_colt_python()
+	got("wpn_colt_python")
+	got("ammo_357sw_jhp", 2)
 end
 
 function killactor (actor, npc)
@@ -210,9 +209,9 @@ function set_actor_enemy_for (sid)
     npc:set_relation (game_object.enemy, Actor)
 end
 
-function transfer_scope (npc, actor)
-    dialogs.relocate_item_section(npc, "wpn_addon_scope", "in")
-    dialogs.relocate_item_section(npc, "vodka", "out")
+function transfer_scope()
+	lost("vodka")
+	got("wpn_addon_scope_ac")
 end
 
 function actor_set_freedom (actor, npc)

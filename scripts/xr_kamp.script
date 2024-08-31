@@ -653,11 +653,8 @@ function CKampManager:proceedRole(npc, director)
 		end
 
 		-- Если мы решили говорить историю, надо выбрать какую именно говорить.
-		if sound == "play_story" and self.selected_story == nil and db.story_by_id[npc_id] ~= nil then
-			local story_num = #db.story_by_id[npc_id]
-			if story_num > 0 then
-				self.selected_story = db.story_by_id[npc_id][math_random(story_num)]
-			end
+		if sound == "play_story" and not self.selected_story then
+			self.selected_story = table.fastrand(xr_info.camp_stories)
 		end
 
 		self.npc[npc_id].begin = time_global()
@@ -873,31 +870,29 @@ function CKampManager:checkNpcAbility(npc)
 		self.kamp_states["guitar"] = false
 		self.kamp_states["post_guitar"] = false
 	end
+
 	-- анекдоты
 	if self.population > 1 then
 		self.kamp_states["pre_joke"] = true
 		self.kamp_states["joke"] = true
 		self.kamp_states["post_joke"] = true
+
+		self.kamp_states["story"] = true
+		self.kamp_states["post_story"] = true
 	else
 		self.kamp_states["pre_joke"] = false
 		self.kamp_states["joke"] = false
 		self.kamp_states["post_joke"] = false
+
+		self.kamp_states["story"] = false
+		self.kamp_states["post_story"] = false
 	end
+
 	-- курить
 	if npc:object("sigaret") then
 		npc_states["eat_sigaret"] = true
 	else
 		npc_states["eat_sigaret"] = false
-	end
-
-	-- Если чувак знает истории, надо добавить их к лагерю
-
-	if self.population > 1 and db.story_by_id[npc_id] ~= nil then
-		self.kamp_states["story"] = true
-		self.kamp_states["post_story"] = true
-	else
-		self.kamp_states["story"] = false
-		self.kamp_states["post_story"] = false
 	end
 end
 function CKampManager:addNpc(npc)
@@ -922,10 +917,6 @@ function CKampManager:addNpc(npc)
 								play_harmonica = false, play_guitar = false, play_joke = false, play_story = false}}
 	end
 	self:selectPosition(npc)
-	if db.story_by_id[npc_id] == nil then
-		local char_ini1 = ini_file("scripts\\stories.ltx")
-		xr_info.loadInfo(npc, char_ini1)
-	end
 end
 function CKampManager:removeNpc(npc)
 	local npc_id = npc:id()

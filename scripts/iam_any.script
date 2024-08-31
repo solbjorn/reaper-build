@@ -12,6 +12,7 @@ function iAmAnyInit()
 	iAmMonsterInit()
 	iAmArtefactInit()
 
+	iam_device_init()
 	iam_tech_init()
 end
 
@@ -186,7 +187,12 @@ function iAmArtefactInit()
 end
 
 local clsid_car_s
+local clsid_device_detector_simple
 local clsid_script_heli
+
+function iam_device_init()
+	clsid_device_detector_simple = clsid.device_detector_simple
+end
 
 function iam_tech_init()
 	clsid_car_s = clsid.car_s
@@ -209,11 +215,25 @@ function is_artefact(obj)
 	return iAmArtefact[obj:clsid()] == true
 end
 
+local cached_bino = { }
+
 function is_binoculars(obj)
-	return obj:clsid() == clsid_wpn_binocular_s
+	local res = cached_bino[obj.section and obj:section() or obj:section_name()]
+	if res ~= nil then return res end
+
+	local sect = obj.section and obj:section() or obj:section_name()
+	res = obj:clsid() == clsid_wpn_binocular_s and config:r_u32_ex(sect, "news_weapon_type", 0) == 0
+	cached_bino[sect] = res
+
+	return res
 end
 
+local cached_btr = { }
+
 function is_btr(obj)
+	local res = cached_btr[obj.section and obj:section() or obj:section_name()]
+	if res ~= nil then return res end
+
 	if obj:clsid() ~= clsid_car_s then
 		return false
 	end
@@ -225,7 +245,10 @@ function is_btr(obj)
 		vis = obj:get_visual_name()
 	end
 
-	return (vis and string.find(vis, "btr")) ~= nil
+	res = (vis and string.find(vis, "btr")) ~= nil
+	cached_btr[obj.section and obj:section() or obj:section_name()] = res
+
+	return res
 end
 
 function is_capsule(obj)
@@ -234,6 +257,10 @@ end
 
 function is_car(obj)
 	return obj:clsid() == clsid_car_s
+end
+
+function is_detector(obj)
+	return obj:clsid() == clsid_device_detector_simple
 end
 
 function is_grenade(obj)
@@ -270,4 +297,21 @@ end
 
 function is_weapon(obj)
 	return iAmWeapon[obj:clsid()] == true
+end
+
+function is_weapon_addon(obj)
+	return iAmAddon[obj:clsid()] == true
+end
+
+local cached_pistol = { }
+
+function is_weapon_pistol(obj)
+	local res = cached_pistol[obj.section and obj:section() or obj:section_name()]
+	if res ~= nil then return res end
+
+	local sect = obj.section and obj:section() or obj:section_name()
+	res = iAmPistol[obj:clsid()] or config:r_u32_ex(sect, "news_weapon_type", 0) == 1
+	cached_pistol[sect] = res
+
+	return res
 end

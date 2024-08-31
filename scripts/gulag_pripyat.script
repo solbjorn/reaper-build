@@ -17,27 +17,6 @@ local state_wave7 = 7
 local state_wave8 = 8
 
 --------------------------------------------------------------------------
--- Locals
---------------------------------------------------------------------------
-local function obj_has_item(npc_info, item_name, def_val)
-    local se_obj = npc_info.se_obj
-    local t = true
-
-    if def_val then
-        t = def_val
-    end
-
-    if se_obj.online then
-        local obj = level.object_by_id(se_obj.id)
-        if obj then
-            t = obj:object(item_name) ~= nil
-        end
-    end
-
-    return t
-end
-
---------------------------------------------------------------------------
 -- General
 --------------------------------------------------------------------------
 
@@ -211,7 +190,7 @@ function m_predicate_s_sniper(npc_info)
 end
 
 function m_predicate_e_rpg(npc_info)
-    return npc_info.profile_name == "pri_monolith_exo" and obj_has_item(npc_info, "wpn_rpg7")
+	return npc_info.profile_name == "pri_monolith_exo_rpg"
 end
 
 local gulags = {

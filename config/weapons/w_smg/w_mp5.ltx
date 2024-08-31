@@ -1,0 +1,316 @@
+[wpn_mp5]: WP_LR300
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-mp5
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+news_weapon_type			= 14
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 1100	;4600
+
+ammo_mag_size		 	= 30
+ammo_class		 		= ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes				= 1, 3, -1
+
+inv_name				= wpn-mp5
+inv_weight				= 2.5
+
+inv_grid_width				= 3
+inv_grid_height				= 2
+inv_grid_x				= 42
+inv_grid_y				= 24
+
+slot 						= 1		; // primary
+animation_slot			= 2		; type of the animation that will be used
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.18 ;0.33 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.07f
+disp_rate = 1.75
+
+;отдача
+cam_relax_speed        			= 6.5;0.2	;скорость возврата в исходное положение
+cam_dispersion         			= 0.2	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.12	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.4	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 6.0	;максимальный угол отдачи
+cam_max_angle_horz			= 9.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz			= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0007
+;-----------------------------------------------------------------------------------
+
+fire_point              = 0.0, 0.188, 0.392
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 		= 0.0, 0.188, 0.082
+shell_dir		 		= 0.0, 1.0, 0.0
+shell_particles				= amik\weapons\9x19\9x19_shells_l
+
+PDM_disp_base 			= 4.0
+PDM_disp_vel_factor 		= 1.8
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.48
+hit_impulse				= 4
+hit_rate	= 1.75
+fire_distance       = 120
+bullet_speed		= 410
+rpm                     = 800
+
+silencer_hit_power       	= 0.42
+silencer_hit_impulse			= 3
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 290
+
+hud					= wpn_mp5_hud
+position                = -0.026, -0.125, 0.0
+strap_position         		= -0.16,-0.36,0.15
+visual					= weapons\mp5\wpn_mp5
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.1
+light_time 		 		= 0.2
+
+ph_mass			 		= 3
+
+scope_zoom_factor			= 1.1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x19
+silencer_x				= 138
+silencer_y				= 16
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw			= weapons\mp5\mp5_draw
+snd_holster			= weapons\smg_holster
+snd_shoot			= weapons\mp5\mp5_shoot
+snd_shoot1			= weapons\mp5\mp5_shoot1
+snd_shoot2			= weapons\mp5\mp5_shoot2
+snd_shoot3			= weapons\mp5\mp5_shoot3
+snd_empty			= weapons\mp5\mp5_empty, 0.8
+snd_reload			= weapons\mp5\mp5_reload, 1.0, 0.3
+snd_silncer_shot		= weapons\mp5\mp5_shot_sil
+;------------------------------------------------------------------------------------------
+
+[wpn_mp5_hud]: wpn_hud
+shell_point          	= 0.00, 0.00, 0.00
+shell_dir		 		=    0.0, 0.0, 0.0
+fire_point				= 0.010000,0.080000,0.210000
+
+orientation             = 2.5, 1.5, 0
+visual					= weapons\mp5\wpn_mp5_hud
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_idle_moving			= idle_moving
+anim_reload			= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot
+anim_idle_sprint			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.103000,0.007100,-0.065100
+zoom_rotate_x		= 0.013000
+zoom_rotate_y		= 0.043400
+
+[wpn_mp5_sk2]: wpn_mp5
+inv_name				= wpn_mp5_sk2_name
+description				= wpn_mp5_sk2_desc
+inv_grid_y				= 26
+
+inv_weight				= 2.2
+shell_particles				= amik\weapons\9x19\9x19_shells_r
+rpm					= 900
+
+hud					= wpn_mp5_sk2_hud
+orientation				= 0, -10, 0
+visual					= weapons\mp5\wpn_mp5_sk2
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_ac
+scope_x					= 37
+scope_y					= -8
+
+silencer_x				= 124
+silencer_y				= 8
+
+snd_draw				= weapons\smg_draw
+snd_shoot				= weapons\mp5\mp5_sk2_shoot
+snd_shoot1				= weapons\mp5\mp5_sk2_shoot1
+snd_shoot2				= weapons\mp5\mp5_sk2_shoot2
+snd_shoot3				= weapons\mp5\mp5_sk2_shoot3
+snd_reload				= weapons\mp5\mp5_sk2_reload
+snd_silncer_shot			= weapons\mp5\mp5_sk2_shot_sil
+
+[wpn_mp5_sk2_hud]: wpn_hud
+shell_point				= 0.1, -0.01, -0.55
+fire_point				= 0, 0, -0.5
+fire_bone				= muzzle
+
+position				= 0.08, -0.03, 0.3
+orientation				= 2, 2, 0
+visual					= weapons\mp5\wpn_mp5_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+zoom_offset				= -0.157600, 0.062200, -0.122000
+zoom_rotate_x				= 0.042600
+zoom_rotate_y				= 0.033800
+
+scope_zoom_offset			= -0.157600, -0.004800, -0.122000
+scope_zoom_rotate_x			= 0.015200
+scope_zoom_rotate_y			= 0.033800
+
+ignore_scope_texture			= true
+scope_zoom_hide_indicators		= false
+
+[wpn_mp5_arena]: wpn_mp5
+[wpn_mp5_sk2_arena]: wpn_mp5_sk2
+
+; Модифицированный MP5 9x18
+[wpn_mp5_sk2_m1]: wpn_mp5_sk2
+inv_name				= wpn-mp5_m1
+description				= enc_weapons1_wpn-mp5_m1
+
+inv_grid_width				= 4
+inv_grid_x				= 31
+inv_grid_y				= 8
+
+inv_weight				= 2.8
+ammo_class		 		= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
+condition_shot_dec			= 0.0002
+
+shell_particles				= amik\weapons\9x18\9x18_r_00
+
+hit_impulse				= 3
+rpm					= 800
+silencer_hit_impulse			= 2
+
+hud					= wpn_mp5_sk2_m1_hud
+orientation				= 0, 0, 0
+visual					= weapons\mp5\wpn_mp5_sk2_m1_hud
+
+scope_status				= 1
+scope_zoom_factor			= 1.3
+scope_texture				=
+
+silencer_name				= wpn_addon_silencer_9x18
+silencer_x				= 186
+silencer_y				= 11
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_shoot				= weapons\mp5\mp5_m1_shoot
+snd_shoot1				= weapons\mp5\mp5_m1_shoot1
+snd_shoot2				= weapons\mp5\mp5_m1_shoot2
+snd_shoot3				= weapons\mp5\mp5_m1_shoot3
+snd_reload				= weapons\mp5\mp5_sk2_m1_reload
+snd_reload_partly			= weapons\mp5\mp5_sk2_m1_reload_partly
+snd_silncer_shot			= weapons\mp5\mp5_m1_shot_sil
+;------------------------------------------------------------------------------------------
+
+[wpn_mp5_sk2_m1_hud]: wpn_mp5_sk2_hud
+shell_dir		 		= 0.0, 0.0, 0.0
+fire_point				= 0.0, -0.05, -0.15
+fire_bone				= bolt
+
+orientation				= 2.2, 1, 0
+position				= 0.0, 0.02, 0.15
+visual					= weapons\mp5\wpn_mp5_sk2_m1_hud
+
+anim_idle_aim				= idle_aim
+anim_reload				= reload_empty
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle_moving
+
+zoom_offset				= -0.146, 0.045, 0
+zoom_rotate_x				= 0.02
+zoom_rotate_y				= 0.0365
+
+scope_zoom_offset			= -0.144, 0.003, 0
+scope_zoom_rotate_x			= 0.02
+scope_zoom_rotate_y			= 0.0365
+
+; Бесшумный МП5
+[wpn_mp5_sk2_m2]: wpn_mp5_sk2
+inv_name				= wpn-mp5_m2
+description				= enc_weapons1_wpn-mp5_m2
+inv_grid_width				= 4
+inv_grid_x				= 48
+
+inv_weight				= 2.8
+fire_dispersion_base			= 0.15
+condition_shot_dec			= 0.0002
+
+fire_point				= 0.0, 0.188, 0.470
+smoke_particles				= amik\weapons\smoke_particles\silencer_smoke_particles_02
+flame_particles				=
+light_disabled				= true
+
+rpm					= 800
+
+hud					= wpn_mp5_sk2_m2_hud
+visual					= weapons\mp5\wpn_mp5_sk2_m2
+
+scope_x					= 77
+scope_y					= -3
+silencer_status				= 1
+
+snd_shoot				= weapons\mp5\mp5_sk2_m2_shot
+snd_shoot1				= weapons\mp5\mp5_sk2_m2_shot1
+snd_shoot2				= weapons\mp5\mp5_sk2_m2_shot2
+snd_shoot3				= weapons\mp5\mp5_sk2_m2_shot3
+snd_reload				= weapons\mp5\mp5_sk2_m2_reload
+
+[wpn_mp5_sk2_m2_hud]: wpn_mp5_sk2_hud
+shell_point				= 0.1, 0.05, 0.0
+fire_point				= 0.02, 0.1, 0.0
+fire_bone				= wpn_body
+
+position				= -0.054, -0.19, 0.1255
+orientation				= 0.55, 2.4, 0.15
+visual					= weapons\mp5\wpn_mp5_sk2_m2_hud
+
+anim_reload				= reload_2
+
+zoom_offset				= -0.101300, 0.046700, -0.083000
+zoom_rotate_x				= 0.031900
+zoom_rotate_y				= 0.008900
+
+scope_zoom_offset			= -0.101300, 0.034700, -0.083000
+scope_zoom_rotate_x			= 0.048900
+scope_zoom_rotate_y			= 0.009700

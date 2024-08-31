@@ -47,7 +47,11 @@
 				<next>337</next>
 				<next>339</next>
 				<next>341</next>
-				<next>68</next>
+				<next>70</next>
+				<next>71</next>
+				<next>72</next>
+				<next>73</next>
+				<next>680</next>
             </phrase>
 			<phrase id="2">
 			<precondition>wawka_dialog.na_mosinka</precondition>
@@ -55,10 +59,10 @@
 				<next>35</next>
             </phrase>
 			<phrase id="3">
-			<precondition>wawka_dialog.na_mosinka_optika</precondition>
-                <text>mosinka_3</text>
+				<precondition>wawka_dialog.na_ak74_m2</precondition>
+				<text>mosinka_3</text>
 				<next>36</next>
-            </phrase>
+			</phrase>
 			<phrase id="4">
 			<precondition>wawka_dialog.na_ak74_m1</precondition>
                 <text>mosinka_4</text>
@@ -230,12 +234,12 @@
 				<next>338</next>
             </phrase>
 			<phrase id="339">
-			<precondition>wawka_dialog.na_p38_sk1</precondition>
+			<precondition>wawka_dialog.na_p38</precondition>
                 <text>mosinka_339</text>
 				<next>340</next>
             </phrase>
 			<phrase id="341">
-			<precondition>wawka_dialog.na_rpk74_m1</precondition>
+			<precondition>wawka_dialog.na_ak47_m2</precondition>
                 <text>mosinka_341</text>
 				<next>342</next>
             </phrase>
@@ -245,9 +249,9 @@
                 <text>mosinka_35</text>
             </phrase>
 			<phrase id="36">
-			<action>wawka_dialog.vzyal_mosinka_optika</action>
-                <text>mosinka_36</text>
-            </phrase>
+				<action>wawka_dialog.vzyal_ak74_m2</action>
+				<text>mosinka_36</text>
+			</phrase>
 			<phrase id="37">
 			<action>wawka_dialog.vzyal_ak74_m1</action>
                 <text>mosinka_37</text>
@@ -385,18 +389,54 @@
                 <text>mosinka_338</text>
             </phrase>
 			<phrase id="340">
-			<action>wawka_dialog.vzyal_p38_sk1</action>
+			<action>wawka_dialog.vzyal_p38</action>
                 <text>mosinka_340</text>
             </phrase>
 			<phrase id="342">
-			<action>wawka_dialog.vzyal_rpk74_m1</action>
-                <text>mosinka_340</text>
+			<action>wawka_dialog.vzyal_ak47_m2</action>
+			<text>mosinka_342</text>
             </phrase>
-			<phrase id="68">
-                <text>mosinka_68</text>
-            </phrase>
-        </phrase_list>
-      </dialog>
+			<phrase id="70">
+				<precondition>wawka_dialog.has_saiga_m1</precondition>
+				<text>mosinka_70</text>
+				<next>701</next>
+			</phrase>
+			<phrase id="701">
+				<action>wawka_dialog.lost_saiga_m1</action>
+				<text>mosinka_701</text>
+			</phrase>
+			<phrase id="71">
+				<precondition>wawka_dialog.has_val_m2</precondition>
+				<text>mosinka_71</text>
+				<next>711</next>
+			</phrase>
+			<phrase id="711">
+				<action>wawka_dialog.lost_val_m2</action>
+				<text>mosinka_711</text>
+			</phrase>
+			<phrase id="72">
+				<precondition>wawka_dialog.has_msr</precondition>
+				<text>mosinka_72</text>
+				<next>721</next>
+			</phrase>
+			<phrase id="721">
+				<action>wawka_dialog.lost_msr</action>
+				<text>mosinka_721</text>
+			</phrase>
+			<phrase id="73">
+				<precondition>wawka_dialog.has_fn2000_m1</precondition>
+				<text>mosinka_73</text>
+				<next>731</next>
+			</phrase>
+			<phrase id="731">
+				<action>wawka_dialog.lost_fn2000_m1</action>
+				<text>mosinka_731</text>
+			</phrase>
+			<phrase id="680">
+				<text>mosinka_680</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
 	<dialog id="trade_dialog_voron">
 		<phrase_list>
 			<phrase id="0">
@@ -1691,7 +1731,7 @@
 			<phrase id="65">
                 <text>arbalet_dialog_sidor_65</text>
 				<action>wawka_dialog.give_arbalet_bad</action>
-				<action>wawka_dialog.add_wpn_p38_sk1_10_vodka</action>
+				<action>wawka_dialog.add_wpn_p38_10_vodka</action>
 				<next>66</next>
             </phrase>
 			<phrase id="66">
@@ -1766,8 +1806,7 @@
     </dialog>
 	<dialog id="awm_dialog_barman">
 		<has_info>barman_awm_have</has_info>
-		<precondition>wawka_dialog.have_awm_2</precondition>
-		<precondition>wawka_dialog.good_awm_have</precondition>
+		<precondition>wawka_dialog.good_awm_2</precondition>
 		<dont_has_info>barman_awm_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1832,7 +1871,7 @@
 			<phrase id="1">
                 <text>have_awm_dialog_barman_1</text>
 				<action>wawka_dialog.give_remkomplekt</action>
-				<action>wawka_dialog.add_awm_m1</action>
+				<action>wawka_dialog.add_msr</action>
 				<give_info>barman_remkomplekt_done</give_info>
 				<next>2</next>
             </phrase>
@@ -1987,8 +2026,7 @@
     </dialog>
 	<dialog id="awm3_dialog_barman">
 		<has_info>barman_awm2_have</has_info>
-		<precondition>wawka_dialog.have_awm_2</precondition>
-		<precondition>wawka_dialog.good_awm_have</precondition>
+		<precondition>wawka_dialog.good_awm_2</precondition>
 		<dont_has_info>barman_awm2_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -2223,7 +2261,7 @@
     </dialog>
 	<dialog id="bad_awm_dialog">
 		<has_info>barman_awm2_have</has_info>
-		<precondition>wawka_dialog.bad_awm_have</precondition>
+		<precondition>wawka_dialog.bad_awm_2</precondition>
                 <dont_has_info>barman_awm2_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">

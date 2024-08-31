@@ -171,10 +171,9 @@ function transfer_deneg(first_speaker, second_speaker)
 	dialogs.relocate_item_section(first_speaker, "arc_art_box_1basic", "out")
 end
 
-function give_weapon_from_trader(trader, actor)
-    dialogs.relocate_item_section(trader, "wpn_knife", "in")
-	dialogs.relocate_item_section(trader, "arc_art_box_1basic", "in")
-
+function give_weapon_from_trader()
+	got("wpn_knife")
+	got("arc_art_box_1basic")
 	got("fake_bolt", 5)
 end
 
@@ -331,21 +330,17 @@ function have_fox_info(first_speaker, second_speaker)
 end
 
 --' fox help
-
 function transfer_medikit_to_fox (player, wounded)
 	wounded:set_relation(game_object.friend, player)
 	Actor:give_info_portion("escape_fox_heal")
 end
 
-function give_weapon_to_actor (trader, actor)
-	if not has_alife_info("kvest_art_started") then
-	    dialogs.relocate_item_section(trader, "wpn_knife", "in")
-		dialogs.relocate_item_section(trader, "vodka", "in")
-	else
-		--dialogs.relocate_item_section(trader, "wpn_pm", "in")
-	    dialogs.relocate_item_section(trader, "vodka", "in")
-	    --dialogs.relocate_item_section(trader, "ammo_9x18_fmj", "in")
+function give_weapon_to_actor()
+	if not has_info("kvest_art_started") then
+		got("wpn_knife")
 	end
+
+	got("vodka")
 end
 
 --' Escape blockpost box
@@ -443,36 +438,35 @@ function give_knife_to_actor(first_speaker, second_speaker)
 end
 
 --' Escape bandits factory
-function give_factory_reward_trader(first_speaker, second_speaker)
+function give_factory_reward_trader()
 	got_money(500)
 end
 
 --' Give X-18 documents read
-
-function give_documents_reward (first_speaker, second_speaker)
+function give_documents_reward()
 	got_money(1000)
 end
 
 --' Kill killers raid
-function give_reward_killers(first_speaker, second_speaker)
+function give_reward_killers()
 	got_money(2500)
 end
 
 --' Soldiers on bridge
-function has_soldiers_bribe(actor, npc)
-	return actor:money() >= 500
+function has_soldiers_bribe()
+	return has_money(500)
 end
 
-function give_soldiers_bribe(actor, npc)
+function give_soldiers_bribe()
 	lost_money(500)
 end
 
-function fox_pay_money(actor, npc)
+function fox_pay_money()
 	got_money(1500)
 	Treasure:give_treasure("esc_secret_truck_goods")
 end
 
-function wolf_precond_univ (actor, npc)
+function wolf_precond_univ()
 	return has_alife_info("esc_kill_bandits_quest_done") or (has_alife_info("tutorial_wounded_give_info") and not has_alife_info("esc_kill_bandits_quest_have"))
 end
 

@@ -1,0 +1,270 @@
+;;;;;;;;;;;;;;;;;;;;;;
+[wpn_val]: WP_LR300
+class                		= WP_VAL
+min_radius					= 30
+max_radius					= 100
+description					= enc_weapons1_wpn-val
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost		 	 			= 9000
+
+ammo_mag_size				= 20
+ammo_class		 			= ammo_9x39_pab9, ammo_9x39_ap, ammo_9x39_sp5
+fire_modes					= 1, -1
+
+slot 				 		= 2		; // secondary
+animation_slot		 		= 2		; type of the animation that will be used
+
+inv_name	         		= wpn-val
+inv_weight		 			= 2.5
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 20
+inv_grid_y				= 0
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.12	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.04f
+disp_rate = 1.75
+
+;отдача
+cam_relax_speed        		 	= 5	;скорость возврата в исходное положение
+cam_relax_speed_ai         	= 120.75
+cam_dispersion        		= 0.28	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.11	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9 ;1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 8.0	;максимальный угол отдачи
+cam_max_angle_horz				= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 2.1	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 2 ;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.0005	;0.00001 ;вероятность осечки при максимальном износе
+misfire_condition_k 	= 0.2
+condition_shot_dec			= 0.0007
+;-----------------------------------------------------------------------------------
+
+PDM_disp_base 			    = 4.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		        = 5.0
+PDM_crouch_no_acc 		    = 1.0
+
+fire_point           	    = 0.0, 0.174, 0.562
+
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_03
+
+shell_point		 			= 0.0, 0.174, 0.078
+shell_dir		 			= 0.0, 1.0, 0.0
+shell_particles				= amik\weapons\9x39\9x39_shells_l_00
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.31
+hit_impulse				= 8
+hit_rate	= 1.95
+fire_distance               = 130
+bullet_speed				= 300
+rpm             		= 800
+
+hud					= wpn_val_hud
+
+position        	        = -0.026, -0.131, 0.0
+strap_position         		= -0.26,-0.11,0.25			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+
+visual					= weapons\val\wpn_val
+
+light_disabled				= true
+
+ph_mass					= 4
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_pso1m2
+scope_x					= 51
+scope_y					= 3
+
+silencer_status				= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\val\val_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\val\val_shoot
+snd_shoot1					= weapons\val\val_shoot1
+snd_shoot2					= weapons\val\val_shoot2
+snd_shoot3					= weapons\val\val_shoot3
+snd_empty					= weapons\val\val_empty, 0.8
+snd_reload					= weapons\val\val_reload, 1.0, 0.5
+;------------------------------------------------------------------------------------------
+
+[wpn_val_hud]: wpn_hud
+shell_point			= -0.030000,-0.020000,0.050000
+fire_point       	        = 0.200000,0.020000,0.060000
+
+orientation      	        = 4, 2, 0
+visual					= weapons\val\wpn_val_hud
+
+anim_idle			= idle
+anim_idle_moving			= idle_moving
+anim_reload			= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot1
+anim_idle_aim		= idle_aim
+anim_idle_sprint			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.132450,0.054700,-0.080700
+zoom_rotate_x		= 0.058900
+zoom_rotate_y		= 0.086000
+
+[wpn_val_sk2]: wpn_val
+inv_grid_y				= 2
+
+fire_point				= 0.0, 0.175, 0.580
+shell_point				= 0, 0.190, 0.120
+shell_particles				= amik\weapons\9x39\9x39_shells_r_00
+
+hud					= wpn_val_sk2_hud
+strap_position				= -0.32, -0.10, 0.08
+strap_orientation			= -5, -5, 110
+visual					= weapons\val\wpn_val_sk2
+
+scope_y					= 1
+
+snd_draw				= weapons\val\val_sk2_draw
+snd_holster				= weapons\val\val_sk2_holster
+snd_shoot				= weapons\val\val_sk2_shoot
+snd_shoot1				= weapons\val\val_sk2_shoot
+snd_shoot2				= weapons\val\val_sk2_shoot
+snd_shoot3				= weapons\val\val_sk2_shoot
+snd_reload				= weapons\val\val_sk2_reload
+
+[wpn_val_sk2_hud]: wpn_hud
+shell_point				= 0.005000, 0.005000, -0.130000
+fire_point				= -0.004000, -0.014970, 0.124999
+
+position				= 0.109000, -0.064000, -0.170000
+orientation				= 1.489376, 2.290610, 0.000000
+visual					= weapons\val\wpn_val_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset				= -0.104100, 0.065800, -0.080000
+zoom_rotate_x				= 0.043100
+zoom_rotate_y				= 0.025500
+
+scope_zoom_offset			= -0.096630, 0.019570, -0.02
+scope_zoom_rotate_x			= 0.044000
+scope_zoom_rotate_y			= 0.027000
+
+ignore_scope_texture			= true
+
+[wpn_val_arena]: wpn_val
+[wpn_val_sk2_arena]: wpn_val_sk2
+
+; Вал ПСО
+[wpn_val_m1_base]
+description				= enc_weapons1_wpn-val_m1
+inv_name				= wpn-val_m1
+inv_grid_x				= 30
+inv_weight				= 3.0
+
+condition_shot_dec			= 0.0002
+
+scope_status				= 1
+scope_zoom_factor			= 4
+scope_texture				= wpn\crosshairs\pso1m2
+
+[wpn_val_m1]: wpn_val, wpn_val_m1_base
+
+[wpn_val_sk2_m1]: wpn_val_sk2, wpn_val_m1_base
+hud					= wpn_val_sk2_m1_hud
+position				= -0.026, -0.131, -0.016
+visual					= weapons\val\wpn_val_sk2_m1
+
+[wpn_val_sk2_m1_hud]: wpn_val_sk2_hud
+shell_point				= 0, -0.010, -0.85
+fire_point				= 0.000000, 0.00000, -0.440000
+fire_bone				= muzzle
+
+orientation				= 2, 3, 0
+position				= 0.10, -0.07, -0.09
+visual					= weapons\val\wpn_val_sk2_m1_hud
+
+scope_zoom_offset			= -0.088730, 0.026720, -0.154
+scope_zoom_rotate_x			= 0.053200
+scope_zoom_rotate_y			= 0.036000
+
+; Вал "Custom"
+[wpn_val_sk2_m2]: wpn_val_sk2
+inv_name				= wpn_val_sk2_m2_name
+description				= wpn_val_sk2_m2_desc
+inv_grid_x				= 35
+inv_grid_y				= 0
+
+cost					= 20000
+ammo_mag_size				= 30
+fire_modes				= 1, 3, -1
+condition_shot_dec			= 0.0002
+
+fire_point				= 0.0, 0.212, 0.638
+shell_point				= 0.0, 0.186, 0.082
+
+hud					= wpn_val_sk2_m2_hud
+
+position				= -0.022, -0.175, -0.012
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+
+visual					= weapons\val\wpn_val_sk2_m2
+
+scope_zoom_factor			= 1.4
+scope_name				= wpn_addon_scope_magnifier
+scope_x					= 66
+scope_y					= -4
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\val\val_sk2_m2_shoot
+snd_shoot1				= weapons\val\val_sk2_m2_shoot
+snd_shoot2				= weapons\val\val_sk2_m2_shoot
+snd_shoot3				= weapons\val\val_sk2_m2_shoot
+snd_reload				= weapons\val\val_sk2_m2_reload
+
+[wpn_val_sk2_m2_hud]: wpn_hud
+shell_point				= 0.0375, -0.055, -0.4250
+fire_point				= 0.00, -0.0375, -0.400
+fire_bone				= muzzle
+
+position				= 0.076, -0.040, -0.0272
+visual					= weapons\val\wpn_val_sk2_m2_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_reload				= reload
+anim_draw				= draw_1
+anim_holster				= holster_1
+anim_shoot				= shoot_1
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle_moving
+
+zoom_offset				= -0.07500, 0.01800, -0.0920
+zoom_rotate_x				= 0.00400
+zoom_rotate_y				= -0.00165

@@ -1,0 +1,169 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_pb]: WP_PM
+min_radius      	        = 0
+max_radius      	        = 30
+description					= enc_weapons1_wpn-pb
+
+ef_weapon_type				= 5
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost						= 300
+
+ammo_elapsed			 	= 8
+ammo_mag_size			 	= 8;7
+ammo_class				= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
+
+slot 				 		= 1
+animation_slot				= 1		; type of the animation that will be used
+
+inv_name					= wpn-pb
+inv_weight					= .97
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 15
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.35 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 10;0.6	;скорость возврата в исходное положение
+cam_dispersion          	= 0.3	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.005	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point          	    = 0.0, 0.104, 0.273
+
+smoke_particles				= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+shell_point		 			= 0.0, 0.104, 0.03
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\9x18\9x18_l_00
+
+PDM_disp_base 			= 2.1
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        	= 0.35, 0.37, 0.39, 0.42
+hit_impulse				= 2
+hit_rate	        = 1.80
+fire_distance       = 40
+bullet_speed		= 290
+rpm                 = 250
+
+hud					= wpn_pb_hud
+position         	        = -0.021, -0.07, 0.0
+visual					= weapons\pb\wpn_pb
+
+light_disabled					= true
+
+ph_mass			 				= 1
+
+silencer_status				= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\pm\pm_draw; weapons\generic_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\pb\pb_shoot
+snd_shoot1					= weapons\pb\pb_shoot1
+snd_shoot2					= weapons\pb\pb_shoot2
+snd_shoot3					= weapons\pb\pb_shoot3
+snd_empty					= weapons\pm\pm_empty
+snd_reload					= weapons\pm\pm_reload
+snd_close					= weapons\pm\pm_close
+;------------------------------------------------------------------------------------------
+
+[wpn_pb_hud]: wpn_hud
+shell_point		 	= -0.342000,0.004500,0.077500
+fire_point			= -0.115000,0.000000,0.075000
+
+orientation              	= 3,2,0
+visual					= weapons\pb\wpn_pb_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot1
+anim_shot_last				= shoot_last
+anim_close					= holster
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.132600,0.067400,-0.178000
+zoom_rotate_x		= 0.0251
+zoom_rotate_y		= 0.0522
+
+[wpn_pb_sk2]: wpn_pb
+inv_grid_y				= 16
+
+shell_particles				= amik\weapons\9x18\9x18_r_00
+
+hud					= wpn_pb_sk2_hud
+visual					= weapons\pb\wpn_pb_sk2
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\pm\pm_sk2_shot_sil
+snd_shoot1				= weapons\pm\pm_sk2_shot_sil
+snd_shoot2				= weapons\pm\pm_sk2_shot_sil
+snd_shoot3				= weapons\pm\pm_sk2_shot_sil
+snd_reload				= weapons\pm\pm_sk2_reload
+snd_reload_partly			= weapons\pm\pm_sk2_reload_partly
+snd_close				= $no_sound
+
+[wpn_pb_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\pb\wpn_pb_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= pm_reload_empty
+anim_reload_empty			= pm_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.115, 0.02, 0.0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.052

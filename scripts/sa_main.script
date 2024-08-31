@@ -158,28 +158,6 @@ function pda_tab_callback(info_id)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
- * Scope zoom mode callback
---]]-----------------------------------------------------------------------------------------------
-function scope_zoom_mode_callback()
-	local active_item = Actor:active_item()
-	if active_item and active_item:is_weapon() then
-		if get_weapon_data(active_item, "zoom_mode") and get_weapon_data(active_item, "scope_enabled") and get_weapon_data(active_item, "scope_texture") and not get_weapon_data(active_item, "grenade_mode") then
-			if not actor_flags.scope_zoom_mode then
-				sa_callbacks.scope_zoom_mode(true)
-				actor_flags.scope_zoom_mode = true
-			end
-		else
-			if actor_flags.scope_zoom_mode then
-				sa_callbacks.scope_zoom_mode(false)
-				actor_flags.scope_zoom_mode = false
-			end
-		end
-	elseif actor_flags.scope_zoom_mode then
-		sa_callbacks.scope_zoom_mode(false)
-		actor_flags.scope_zoom_mode = false
-	end
-end
---[[-----------------------------------------------------------------------------------------------
  * Light death callback
 --]]-----------------------------------------------------------------------------------------------
 function light_death_callback(obj, who)

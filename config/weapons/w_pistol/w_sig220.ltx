@@ -1,0 +1,195 @@
+[wpn_sig220]: WP_PM
+min_radius               	= 0
+max_radius               	= 50
+description					= enc_weapons1_wpn-sig220
+
+ef_weapon_type				= 5
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 1200	;600
+
+ammo_elapsed		 		= 16
+ammo_mag_size		 		= 7
+ammo_class		 			= ammo_11.43x23_fmj, ammo_11.43x23_hydro
+
+slot 			 			= 1
+animation_slot				= 1									; type of the animation that will be used
+
+inv_name					= wpn-sig220
+inv_weight					= 0.72	;.5
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 19
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.24	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.8
+
+;отдача
+cam_relax_speed         	= 7.8	;скорость возврата в исходное положение
+cam_dispersion          	= 0.6	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.005	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point               	= 0.0, 0.133, 0.161
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.133, 0.047
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\45\45_l
+
+PDM_disp_base 			= 2.0
+PDM_disp_vel_factor 		= 0.75
+PDM_disp_accel_factor 		= 0.75
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.45, 0.47, 0.49, 0.52
+hit_impulse				= 3
+hit_rate	= 1.85
+fire_distance       = 60
+bullet_speed		= 295
+rpm                 = 250
+
+silencer_hit_power			= 0.4, 0.42, 0.44, 0.47
+silencer_hit_impulse			= 2
+silencer_fire_distance   	= 40
+silencer_bullet_speed	 	= 240
+
+hud					= wpn_sig220_hud
+position                 	= -0.021, -0.085, 0.0
+visual					= weapons\sig220\wpn_sig220
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_45
+silencer_x				= 71
+silencer_y				= -12
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\sig220\sig220_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\sig220\sig220_shoot
+snd_shoot1					= weapons\sig220\sig220_shoot1
+snd_shoot2					= weapons\sig220\sig220_shoot2
+snd_shoot3					= weapons\sig220\sig220_shoot3
+snd_empty					= weapons\sig220\sig220_empty
+snd_reload					= weapons\sig220\sig220_reload
+snd_close					= weapons\sig220\sig220_close
+snd_silncer_shot				= weapons\sig220\sig220_shot_sil
+;------------------------------------------------------------------------------------------
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_sig220_hud]: wpn_hud
+shell_point			= 0.005000,0.095000,-0.320000
+fire_point			= 0.003000,0.091000,-0.235999
+
+orientation              	= 6,2,0
+visual					= weapons\sig220\wpn_sig220_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= shoot
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.175300, 0.068600, 0.0464
+zoom_rotate_x		= 0.045100
+zoom_rotate_y		= 0.106400
+
+[wpn_sig220_sk2]: wpn_sig220
+inv_grid_y				= 20
+
+shell_particles				= amik\weapons\45\45_r
+
+hud					= wpn_sig220_sk2_hud
+visual					= weapons\sig220\wpn_sig220_sk2
+
+silencer_x				= 83
+silencer_y				= -17
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\sig220\sig220_sk2_shoot
+snd_shoot1				= weapons\sig220\sig220_sk2_shoot
+snd_shoot2				= weapons\sig220\sig220_sk2_shoot
+snd_shoot3				= weapons\sig220\sig220_sk2_shoot
+snd_reload				= weapons\sig220\sig220_sk2_reload
+snd_reload_partly			= weapons\sig220\sig220_sk2_reload_partly
+snd_close				= $no_sound
+snd_silncer_shot			= weapons\sig220\sig220_sk2_shot_sil
+
+[wpn_sig220_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\sig220\wpn_sig220_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= sig220_reload_empty
+anim_reload_empty			= sig220_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.115, 0.03, 0.0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.053

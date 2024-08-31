@@ -1,0 +1,228 @@
+[wpn_svd]: WP_SVD
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-svd
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+allow_military				= true
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 2.15               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 15000
+
+ammo_mag_size			= 10
+ammo_class				= ammo_7.62x54_7h1, ammo_7.62x54_ap, ammo_7.62x54_7h14
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name				= wpn-svd
+inv_weight				= 4.9
+
+inv_grid_width				= 6
+inv_grid_height				= 2
+inv_grid_x				= 42
+inv_grid_y				= 36
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.021  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 2.2f
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         		= 2.5	;скорость возврата в исходное положение
+cam_dispersion          	= 0.22	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.15	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.6	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 18.0	;максимальный угол отдачи
+cam_max_angle_horz				= 20.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.005 ;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0009
+;-----------------------------------------------------------------------------------
+
+fire_point              = 0.0, 0.129, 0.942
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\big_smoke_particles_01
+
+shell_point		 		= 0.0, 0.129, 0.192
+shell_dir		 		= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\7_62x54\7_62x54_l
+
+PDM_disp_base 			= 5.5
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.68, 0.73, 0.76, 0.80
+hit_impulse				= 9
+hit_rate	= 2.0
+fire_distance       = 210
+bullet_speed		= 450  ; иначе не будет работать "снайпер аддон"
+rpm                     	= 120
+
+hud					= wpn_svd_hud
+position                = -0.026, -0.077, 0.00
+strap_position         		= -0.15,-0.15,0.45
+visual					= weapons\svd\wpn_svd
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+ph_mass			 		= 3
+
+scope_status				= 1
+scope_zoom_factor			= 7.5
+scope_texture				= wpn\crosshairs\1P21-AMK_1680-W
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw				= weapons\svd\svd_draw
+snd_holster				= weapons\sniper_holster
+snd_shoot				= weapons\svd\svd_shoot
+snd_empty				= weapons\ak_empty, 0.7
+snd_reload				= weapons\svd\svd_reload
+;------------------------------------------------------------------------------------------
+
+[wpn_svd_hud]: wpn_hud
+shell_point			= -0.140000,-0.030000,0.080000
+fire_point			= 0.225, -0.0775, -0.04
+
+visual					= weapons\svd\wpn_svd_hud
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_idle_moving			= idle
+anim_reload		= reload
+anim_draw		= draw
+anim_holster	= holster
+anim_shoot		= shoot
+anim_idle_sprint	= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.020000,-0.030000,0.030000
+zoom_rotate_x			= 0.000000
+zoom_rotate_y			= -0.020000
+
+[wpn_svd_sk2]: wpn_svd
+description				= wpn_svd_sk2_desc
+inv_grid_y				= 38
+
+shell_particles				=
+
+silencer_hit_power			= 0.62, 0.67, 0.7, 0.74
+silencer_hit_impulse			= 8
+silencer_fire_distance			= 170
+silencer_bullet_speed			= 400
+
+hud					= wpn_svd_sk2_hud
+strap_orientation			= -25, -189, 65
+visual					= weapons\svd\wpn_svd_sk2
+
+scope_zoom_factor			= 6
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_tgp_v
+silencer_x				= 270
+silencer_y				= 21
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_01
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 4.0
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+snd_draw				= weapons\sniper_draw
+snd_shoot				= weapons\svd\svd_sk2_shoot
+snd_reload				= weapons\svd\svd_sk2_reload
+snd_silncer_shot			= weapons\svd\svd_sk2_shot_sil
+
+[wpn_svd_sk2_hud]: wpn_hud
+shell_point				= 0.000000, 0.050000, -0.08000
+fire_point				= 0.133000, -0.212000, 1.105000
+fire_point2				= 0.037, -0.040, 0.085000
+
+position				= 0.008000, -0.005000, -0.120000
+orientation				= 1.146305, 1.142701, 0.000000
+visual					= weapons\svd\wpn_svd_sk2_hud
+
+anim_holster				= svd_holster
+anim_idle				= svd_idle
+anim_idle_aim				= svd_idle_aim
+anim_reload				= svd_reload
+anim_draw				= svd_draw
+anim_holster				= svd_holster
+anim_shoot				= svd_shoot
+anim_idle_sprint			= svd_idle_sprint
+anim_idle_moving			= svd_idle
+
+zoom_offset				= -0.106680, 0.017090, 0.011
+zoom_rotate_x				= 0.020200
+zoom_rotate_y				= 0.019600
+
+ignore_scope_texture			= true
+
+; СВД "Дальнобойщик"
+[wpn_svd_sk2_m1]: wpn_svd_sk2
+inv_name				= wpn-svd_m1
+description				= enc_weapons1_wpn-svd_m1
+inv_grid_x				= 68
+inv_grid_y				= 34
+
+cam_dispersion				= 0.9
+cam_step_angle_horz			= 0.1
+condition_shot_dec			= 0.0004
+
+fire_point				= 0.0, 0.223, 0.984
+shell_point				= 0.0, 0.23, 0.179
+shell_particles				= amik\weapons\7_62x54\7_62x54_r
+
+hud					= wpn_svd_sk2_m1_hud
+
+position				= -0.026, -0.172, 0.015
+strap_position				= 0.01, -0.21, 0.45
+strap_orientation			= 5, -183, -99
+
+visual					= weapons\svd\wpn_svd_sk2_m1
+
+scope_zoom_factor			= 8
+silencer_x				= 273
+
+snd_draw				= weapons\svd\svd_sk2_m1_draw
+snd_holster				= weapons\svd\svd_sk2_m1_holster
+snd_shoot				= weapons\svd\svd_sk2_m1_shot
+snd_reload				= weapons\svd\svd_sk2_m1_reload
+snd_silncer_shot			= weapons\svd\svd_sk2_m1_shot_sil
+
+[wpn_svd_sk2_m1_hud]: wpn_svd_hud
+shell_point				= 0.030000,  0.020000,-0.110000
+fire_point				= -0.010000, 0.031600, 0.566003
+
+position				= 0.123000, -0.080000, -0.090000
+orientation				= 2.573459, 3.500000, 0.000000
+visual					= weapons\svd\wpn_svd_sk2_m1_hud
+
+anim_idle_aim				= idle_aim
+
+zoom_offset				= -0.107770, 0.040080, 0.07
+zoom_rotate_x				= 0.058938
+zoom_rotate_y				= 0.045752
+
+ignore_scope_texture			= true

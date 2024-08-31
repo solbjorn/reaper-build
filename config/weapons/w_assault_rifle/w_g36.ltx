@@ -1,0 +1,375 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;               G36                      ;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_g36]: WP_AK74
+min_radius          		= 30
+max_radius          		= 100
+description			= enc_weapons1_wpn-g36
+launch_speed				= 0
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier		= 1.85            ; во сколько раз увеличивается eye_range
+holder_fov_modifier			= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost						= 18000
+
+ammo_mag_size				= 30
+ammo_class					= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class				= ammo_m209
+fire_modes					= 1, 3, -1
+
+slot 						= 2		; // secondary
+animation_slot				= 2		; type of the animation that will be used
+
+inv_name	        		= wpn-g36
+inv_weight					= 3.6
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 51
+inv_grid_y				= 12
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base			= 0.17  	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.15f
+disp_rate = 1.88
+
+;отдача
+cam_relax_speed         		= 6.5 		;скорость возврата в исходное положение
+cam_dispersion          	= 0.58		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.12	;0.18		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.8	;0.25	;0.000001	;0.85		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 14.0		;максимальный угол отдачи
+cam_max_angle_horz				= 15.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 2.0	;0.18		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 1.5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.0025		;вероятность осечки при максимальном износе
+misfire_condition_k		= 0.07
+condition_shot_dec			= 0.0003
+;-----------------------------------------------------------------------------------
+
+fire_point             		=  0.0, 0.21, 0.58
+fire_point2			= 0.000000,0.120000,0.645000
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_03
+grenade_flame_particles			= amik\weapons\grenade_flame_particles\grenade_flame_particles_00
+
+shell_point		 			= 0.0, 0.21, 0.13
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\5_56x45\5_56x45_l_00
+
+PDM_disp_base 			= 5.5
+PDM_disp_vel_factor 		= 1.4
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        			= 0.56
+hit_impulse				= 9
+hit_rate	= 1.85
+fire_distance           	= 180
+bullet_speed				= 880
+rpm                      	= 750
+
+hud					= wpn_g36_hud
+
+position         	        = -0.026, -0.132, 0.0
+strap_position         		= -0.26,-0.11,0.25			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+
+visual					= weapons\g36\wpn_g36
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass						= 4
+
+scope_status				= 1
+scope_zoom_factor			= 3
+scope_texture				= wpn\crosshairs\g36
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_556
+silencer_x				= 195
+silencer_y				= 16
+
+grenade_launcher_status			= 2
+grenade_launcher_name			= wpn_addon_grenade_launcher_gl5040
+grenade_launcher_x			= 129
+grenade_launcher_y			= 34
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\g36\g36_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\g36\g36_shoot
+snd_shoot1					= weapons\g36\g36_shoot1
+snd_shoot2					= weapons\g36\g36_shoot2
+snd_shoot3					= weapons\g36\g36_shoot3
+snd_empty					= weapons\g36\g36_empty, 0.8
+snd_reload					= weapons\g36\g36_reload, 1.0, 0.35
+snd_shoot_grenade				= weapons\m203\M203_grenshoot
+snd_reload_grenade			= weapons\ag36\ag36_grenload, 1.0, 0.3
+snd_switch					= weapons\m203\M203_switch, 1.0, 0.5
+snd_silncer_shot				= weapons\g36\g36_shot_sil
+;------------------------------------------------------------------------------------------
+
+;настройки для глушителя;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AMK
+silencer_hit_power       	= 0.5
+silencer_hit_impulse			= 8
+silencer_fire_distance   	= 120
+silencer_bullet_speed	 	= 300
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_g36_hud]: wpn_hud
+shell_point			 	= 0.15, 0.0, -0.05
+fire_point					= 0.015000,0.077000,0.139000
+fire_point2              	= 0.020000,-0.025000,0.160000
+
+grenade_bone            	= grenade
+
+orientation             	= 5, 0, 0
+visual					= weapons\g36\wpn_g36_hud
+
+anim_idle					= idle
+anim_idle_aim				= idle
+anim_idle_moving			= idle_moving
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster_w_gl
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_grenade
+anim_idle_moving_g			= idle_g_moving
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= switch_on
+anim_holster_g				= switch_off
+anim_idle_sprint_g		= idle_sprint
+
+;(режим обычной стрельбы)
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl
+anim_idle_moving_gl			= idle_w_gl_moving
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl		= idle_sprint
+
+zoom_offset                     = -0.135500,0.010000,0.000000
+zoom_rotate_x           		= -0.013900
+zoom_rotate_y           		= 0.067000
+
+;тоже самое, но для прицепленого подствольника
+;режим подствольника
+grenade_zoom_offset			= -0.142900,-0.234600,0.000000
+grenade_zoom_rotate_x		= -0.266700
+grenade_zoom_rotate_y		= 0.088000
+
+;режим обычной стрельбы
+grenade_normal_zoom_offset		= -0.135500, 0.010000, 0.000000
+grenade_normal_zoom_rotate_x		= -0.013900
+grenade_normal_zoom_rotate_y		= 0.067000
+
+[wpn_g36_sk2]: wpn_g36
+inv_name				= wpn_g36_sk2_name
+description				= wpn_g36_sk2_desc
+inv_grid_y				= 14
+
+fire_point2				= 0.0, 0.21, 0.71
+shell_particles				= amik\weapons\5_56x45\5_56x45_r_00
+
+hud					= wpn_g36_sk2_hud
+visual					= weapons\g36\wpn_g36_sk2
+
+silencer_x				= 202
+silencer_y				= 17
+
+grenade_launcher_name			= wpn_addon_grenade_launcher_ag36
+grenade_launcher_x			= 123
+grenade_launcher_y			= 44
+
+snd_draw				= weapons\g36\g36_sk2_draw
+snd_holster				= weapons\g36\g36_sk2_holster
+snd_shoot				= weapons\g36\g36_sk2_shoot
+snd_shoot1				= weapons\g36\g36_sk2_shoot1
+snd_shoot2				= weapons\g36\g36_sk2_shoot2
+snd_shoot3				= weapons\g36\g36_sk2_shoot3
+snd_reload				= weapons\g36\g36_sk2_reload
+snd_shoot_grenade			= weapons\g36\g36_sk2_grenshoot
+snd_reload_grenade			= weapons\g36\g36_sk2_grenload
+snd_switch				= weapons\g36\g36_sk2_switch
+snd_silncer_shot			= weapons\g36\g36_sk2_shot_sil
+
+[wpn_g36_sk2_hud]: wpn_hud
+shell_point				= 0, 0, 0.05
+fire_point				= 0, 0.1, 0
+fire_point2				= 0, 0.05, 0
+
+grenade_bone				= grenade
+position				= 0, 0, 0.20
+visual					= weapons\g36\wpn_g36_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+anim_idle_g				= idle_g
+anim_idle_g_aim				= aim_g
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on			= switch_on
+anim_switch_grenade_off			= switch_off
+anim_draw_g				= draw_g
+anim_holster_g				= holster_g
+anim_idle_sprint_g			= sprint_g
+anim_idle_moving_g			= moving_g
+
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= aim_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl			= sprint_w_gl
+anim_idle_moving_gl			= moving_w_gl
+
+zoom_offset				= -0.073200, 0.005800, -0.1585
+zoom_rotate_x				= -0.005500
+zoom_rotate_y				= 0.008800
+
+grenade_zoom_offset			= -0.041400, -0.062000, 0.000000
+grenade_zoom_rotate_x			= -0.143100
+grenade_zoom_rotate_y			= 0.021650
+
+grenade_normal_zoom_offset		= -0.073200, 0.005800, -0.1585
+grenade_normal_zoom_rotate_x		= -0.005500
+grenade_normal_zoom_rotate_y		= 0.008800
+
+ignore_scope_texture			= true
+
+[wpn_g36_arena]: wpn_g36
+[wpn_g36_sk2_arena]: wpn_g36_sk2
+
+; G36 "Кристалл"
+[wpn_g36_sk2_m1]: wpn_g36
+inv_name				= wpn-g36_m1
+description				= enc_weapons1_wpn-g36_m1
+inv_grid_x				= 36
+inv_grid_y				= 4
+
+fire_dispersion_base			= 0.10
+cam_relax_speed				= 4.2
+cam_dispersion				= 0.1
+cam_dispersion_inc			= 0.05
+cam_dispertion_frac			= 0.75
+condition_shot_dec			= 0.0001
+
+hit_power				= 0.6
+
+fire_point2				= 0.0, 0.21, 0.71
+shell_particles				= amik\weapons\5_56x45\5_56x45_r_00
+
+hud					= wpn_g36_sk2_m1_hud
+visual					= weapons\g36\wpn_g36_sk2_m1
+
+scope_texture				= wpn\crosshairs\g36e
+
+silencer_x				= 220
+silencer_y				= 14
+
+grenade_launcher_name			= wpn_addon_grenade_launcher_m203
+grenade_launcher_x			= 128
+grenade_launcher_y			= 29
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\g36\g36_sk2_m1_shoot
+snd_shoot1				= weapons\g36\g36_sk2_m1_shoot1
+snd_shoot2				= weapons\g36\g36_sk2_m1_shoot2
+snd_shoot3				= weapons\g36\g36_sk2_m1_shoot3
+snd_shoot4				= weapons\g36\g36_sk2_m1_shoot4
+snd_reload				= weapons\g36\g36_sk2_m1_reload
+snd_reload_grenade			= weapons\g36\g36_sk2_m1_grenload
+snd_silncer_shot			= weapons\g36\g36_sk2_m1_shot_sil
+
+[wpn_g36_sk2_m1_hud]: wpn_hud
+shell_point				= 0.1, 0, -0.7
+fire_point				= 0, 0, -0.5
+fire_point2				= 0, -0.09, -0.5
+
+fire_bone				= muzzle
+grenade_bone				= grenade
+
+position				= -0.044, -0.18, 0.14
+orientation				= 2, 2, 0
+visual					= weapons\g36\wpn_g36_sk2_m1_hud
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+anim_idle_g				= idle_g
+anim_idle_g_aim				= aim_g
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on			= switch_on
+anim_switch_grenade_off			= switch_off
+anim_draw_g				= draw_g
+anim_holster_g				= holster_g
+anim_idle_sprint_g			= sprint_g
+anim_idle_moving_g			= moving_g
+
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= aim_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl			= sprint_w_gl
+anim_idle_moving_gl			= moving_w_gl
+
+zoom_offset				= -0.1087, 0.026, -0.175
+zoom_rotate_x				= 0.0415
+zoom_rotate_y				= 0.009
+
+grenade_zoom_offset			= -0.114000, -0.100000, 0.000000
+grenade_zoom_rotate_x			= -0.126000
+grenade_zoom_rotate_y			= 0.037750
+
+grenade_normal_zoom_offset		= -0.1087, 0.026, -0.175
+grenade_normal_zoom_rotate_x		= 0.0415
+grenade_normal_zoom_rotate_y		= 0.009

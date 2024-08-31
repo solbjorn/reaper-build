@@ -275,8 +275,8 @@ function spawn_next(n)
 	else
 		-- последняя записка с холмов Радара - удаляем телепорты
 		valerich_dialog.release_tel()
-		level.add_pp_effector(table.random(effects) .. ".ppe", 77777776, false)
-		say([[ambient\random\rnd_]] .. table.random(sound_spawn))
+		level.add_pp_effector(table.fastrand(effects) .. ".ppe", 77777776, false)
+		say([[ambient\random\rnd_]] .. table.fastrand(sound_spawn))
 		amk_particle.amk_particle({
 			particle	= "amk\\zomb_explode",
 			pos		= Actor:position()

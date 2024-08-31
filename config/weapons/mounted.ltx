@@ -1,0 +1,95 @@
+[mounted_weapon]: base, immunities
+class						= W_MOUNTD
+visual  	                = weapons\mounted_weapons\wpn_pkm_trenoga.ogf
+
+news_weapon_type			= 9
+
+;-----------------------------------------------------------------------------------
+
+;params of weapon recoil
+fire_dispersion_base		= 1 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 3.0		;скорость возврата в исходное положение
+cam_dispersion          	= 0.7		;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle				= 8	    	;максимальный угол отдачи
+cam_max_angle_horz			= 9.0   	;(degree) maximum shot horizontal degree
+cam_step_angle_horz			= 1.8		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.0001	;вероятность осечки при максимальном износе
+condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+; ttc
+hit_power					= 1.2
+hit_impulse			= 9
+hit_type 					= fire_wound
+
+fire_distance  		        = 500
+bullet_speed				= 870			;начальная скорость пули
+rpm            		        = 750
+
+use_aim_bullet			= false
+
+light_color		 = 0.9,0.9,0.5
+light_range		 = 6
+light_var_color  = 0.05
+light_var_range  = 0.5
+light_time 		 = 0.3
+
+flame_particles		    = weapons\generic_weapon08
+smoke_particles		    = weapons\generic_shoot_00
+
+shell_point		 = 0.00, 0.0,0
+shell_particles	 = weapons\generic_shells00
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+
+snd_shoot					= weapons\weapon_btr
+;------------------------------------------------------------------------------------------
+ammo_class		 = ammo_7.62x54r
+
+[stationary_mgun]: base, immunities
+class						= W_STMGUN
+visual  	                = weapons\mounted_weapons\wpn_pkm_trenoga.ogf
+
+news_weapon_type			= 9
+
+cam_relax_speed         	= 3.0		;скорость возврата в исходное положение
+cam_dispersion          	= 0.0007		;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle				= 1	    	;максимальный угол отдачи
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_shoot					= weapons\weapon_btr
+;------------------------------------------------------------------------------------------
+
+use_aim_bullet				= false
+
+ammo_class					= ammo_btr
+fire_dispersion_base		= 1.0 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+rpm            		        = 300
+hit_power					= 1.2
+hit_impulse			= 9
+fire_distance  		        = 1000
+bullet_speed				= 500			;начальная скорость пули
+
+light_color					= 0.9,0.9,0.5
+light_range					= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.3
+
+flame_particles				= weapons\generic_weapon_btr
+smoke_particles				= weapons\generic_shoot_00
+shell_point					= 0.0, 0.0, 0.0
+shell_particles				= weapons\generic_shells00
+
+tracer_trail_scale	 = 1.0
+tracer_start_length	 = 1.0
+tracer_width		 = 1.0
+
+inv_name	        	= Mounted Weapon								; name in inventory
+
+[btr_mgun]: stationary_mgun
+cam_max_angle				= 8

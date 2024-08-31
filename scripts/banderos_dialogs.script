@@ -1,172 +1,73 @@
-local nagrad = {
-  level_1 = {
-  "ammo_flame_2",
-  "ammo_flame_2",
-  "ammo_flame_2"
- },
-  level_2 = {
-  "ammo_9x39_sp5",
-  "ammo_7.62x54_7h14",
-  "ammo_5.45x39_ap",
-  "ammo_5.56x45_ap",
-  "ammo_11.43x23_hydro",
-  "ammo_7.62x54r",
-  "ammo_7.62x39_st",
-  "ammo_5.56x45_ss190"
- },
-  level_3 = {
-  "af_armor_1",
-  "af_babka_1",
-  "af_cry_1",
-  "af_dik_1",
-  "af_kol_1",
-  "af_pudd_1",
-  "af_spirit_1",
-  "af_night_star",
-  "af_gold_fish",
-  "af_electra_moonlight",
-  "af_rusty_sea-urchin",
-  "af_dummy_glassbeads"
- },
-  level_4 = {
-  "af_armor_2",
-  "af_babka_2",
-  "af_cry_2",
-  "af_dik_2",
-  "af_kol_2",
-  "af_pudd_2",
-  "af_spirit_2",
-  "af_armor_3",
-  "af_babka_3",
-  "af_cry_3",
-  "af_dik_3",
-  "af_kol_3",
-  "af_pudd_3",
-  "af_spirit_3",
-  "af_simbion"
- }
-}
+local nagrad
+
+function random_reward(level, count)
+	if not nagrad then nagrad = linspiro.init_random("banderos") end
+	level = "level_" .. level
+
+	for i = 1, (count or 1) do
+		got(table.fastrand(nagrad[level]))
+	end
+end
 
 --20 БУТЫЛОК ВОДКИ
-function prines_vodku(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function prines_vodku()
 	return has("vodka", 20)
 end
-function otdal_vodku(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+function otdal_vodku()
 	lost("vodka", 20)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(1)
 end
 
 ---10 БУТЫЛОК ВОДКИ
-function malo_vodki(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function malo_vodki()
 	return has("vodka", 10)
 end
-function otdal_malo_vodki(first_speaker, second_speaker)
-	local item = ""
-	local count = math.random(2,3)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+function otdal_malo_vodki()
 	lost("vodka", 10)
-	got(item, count)
+	random_reward(2, math.random(2, 3))
 end
 
 --награда за три арта
-function prines_art(first_speaker, second_speaker)
+function prines_art()
 	got_money(20000)
-	dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
+	got("treasure_item")
 end
 
 --проверяем наличие артов у ГГ артов
-function est_li_art(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function est_li_art()
 	return has("banderos_art", 3)
 end
 --отдаём арты Сахару
-function otdat_art(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
+function otdat_art()
 	lost("banderos_art", 3)
 end
 
 --вызываем функцию из таска при появлении (взятии) арта в инвентаре
-	function vzial_art(task, objective)
-	if Actor ~= nil then
-		return Actor:object("banderos_art") ~= nil
-	end
-	return false
+function vzial_art()
+	return has("banderos_art")
 end
 
 --награда за РГ-6
-function prines_rg(first_speaker, second_speaker)
+function prines_rg()
 	got_money(10000)
-	dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
-	dialogs.relocate_item_section(second_speaker, "af_babka_1", "in")
+
+	got("treasure_item")
+	got("af_babka_1")
 end
 
 --проверяем наличие РГ у ГГ
-function est_li_rg_u_gg(stalker, player)
-	return stalker:object ("wpn_rg6_m1") ~= nil
+function est_li_rg_u_gg()
+	return has("wpn_rg-6_sk2_m1")
 end
 
 --отдаём РГ
 function otdat_rg(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "wpn_rg6_m1", "out")
+	transfer_good(second_speaker, "wpn_rg-6_sk2_m1", "out")
 end
 
 --вызываем функцию из таска при появлении (взятии) РГ в инвентаре
-function vzial_rg(task, objective)
-	if Actor ~= nil then
-		return Actor:object("wpn_rg6_m1") ~= nil
-	end
-	return false
+function vzial_rg()
+	return has("wpn_rg-6_sk2_m1")
 end
 
 --вступление в Свободу
@@ -177,12 +78,12 @@ function actor_set_freedom(actor, npc)
 	return true
 end
 
---Вручает Лукаш при вступлении в Свободу
-function novobranets(first_speaker, second_speaker)
-		dialogs.relocate_item_section(second_speaker, "svoboda_heavy_gaz_outfit_m1", "in")
-		dialogs.relocate_item_section(second_speaker, "wpn_lr300", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_5.56x45_ap", "in")
-		relation_registry.set_community_goodwill ("freedom", actor, 500)
+-- Вручает Лукаш при вступлении в Свободу
+function novobranets()
+	got("svoboda_heavy_gaz_outfit_m1")
+	got_random("wpn_lr300")
+	got("ammo_5.56x45_ap")
+	relation_registry.set_community_goodwill("freedom", Actor, 500)
 end
 
 --###################################################################################
@@ -190,122 +91,64 @@ end
 --###################################################################################
 ---ПРИНЁС ТРИ КПК ДОЛГУ
 --проверяем наличие КПК у ГГ
-function have_pda_svoboda(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function have_pda_svoboda()
 	return has("device_freedom_pda", 3)
 end
 --отдаём КПК и получаем награду
-function out_pda_svoboda(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+function out_pda_svoboda()
 	lost("device_freedom_pda", 3)
-	dialogs.relocate_item_section(second_speaker, item , "in")
-	relation_registry.set_community_goodwill ("dolg", actor, 70)
+	random_reward(4)
+	relation_registry.set_community_goodwill("dolg", Actor, 70)
 end
 --ПРИНЁС ОДИН КПК ДОЛГУ
 --проверяем наличие КПК у ГГ
-	function have_a_one_pda_svoboda(stalker, player)
-  		return stalker:object ("device_freedom_pda") ~= nil
-	end
+function have_a_one_pda_svoboda()
+	return has("device_freedom_pda")
+end
 
 --отдаём КПК и получаем награду
-function out_one_pda_svoboda(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
-	dialogs.relocate_item_section(trader, "device_freedom_pda", "out")
-	dialogs.relocate_item_section(second_speaker, item , "in")
-	relation_registry.set_community_goodwill ("dolg", actor, 30)
+function out_one_pda_svoboda()
+	lost("device_freedom_pda")
+	random_reward(3)
+	relation_registry.set_community_goodwill("dolg", Actor, 30)
 end
 
 --###################################################################################
 --#				КВЕСТЫ С КПК ДЛЯ ФРИМЕНОВ			    #
 --###################################################################################
 ---ПРИНЁС ТРИ КПК ФРИМЕНАМ
-function have_pda_dolg(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function have_pda_dolg()
 	return has("device_dolg_pda", 3)
 end
-function out_pda_dolg(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+function out_pda_dolg()
 	lost("device_dolg_pda", 3)
-	dialogs.relocate_item_section(second_speaker, item , "in")
-	relation_registry.set_community_goodwill ("freedom", actor, 70)
+	random_reward(4)
+	relation_registry.set_community_goodwill("freedom", Actor, 70)
 end
 
 --ПРИНЁС ОДИН КПК СВОБОДЕ
 --проверяем наличие КПК у ГГ
-	function have_a_one_pda_dolg(stalker, player)
-  		return stalker:object ("device_dolg_pda") ~= nil
-	end
+function have_a_one_pda_dolg()
+	return has("device_dolg_pda")
+end
 
 --отдаём КПК и получаем награду
-function out_one_pda_dolg(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
-	dialogs.relocate_item_section(trader, "device_dolg_pda", "out")
-	dialogs.relocate_item_section(second_speaker, item , "in")
-	relation_registry.set_community_goodwill ("freedom", actor, 30)
+function out_one_pda_dolg()
+	lost("device_dolg_pda")
+	random_reward(3)
+	relation_registry.set_community_goodwill("freedom", Actor, 30)
 end
 
 --###################################################################################
 --#				КПК ТИРАНА					    #
 --###################################################################################
+
 --награда за КПК
-function prines_kpk_tirana(first_speaker, second_speaker)
-		dialogs.relocate_item_section(second_speaker, "treasure_item", "in")
-		dialogs.relocate_item_section(second_speaker, "wpn_groza_m1", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_5.45x39_ap", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_5.45x39_ap", "in")
-	end
+function prines_kpk_tirana()
+	got_random("wpn_groza_sk2_m1")
+	got("treasure_item")
+	got("ammo_5.45x39_ap", 2)
+end
 
 --проверяем наличие РГ PDA у ГГ
 	function est_li_kpk_tirana(stalker, player)
@@ -318,28 +161,24 @@ function prines_kpk_tirana(first_speaker, second_speaker)
 	end
 
 --вызываем функцию из таска при появлении (взятии) КПК в инвентаре
-	function vzial_kpk_tirana(task, objective)
-	if Actor ~= nil then
-		return Actor:object("device_tiran_pda") ~= nil
-	end
-	return false
+function vzial_kpk_tirana()
+	return has("device_tiran_pda")
 end
 
 --###################################################################################
 --#				Документы из Х10				    #
 --###################################################################################
+
 --награда за документы из Х10
-function prines_documenty(first_speaker, second_speaker)
-		dialogs.relocate_item_section(second_speaker, "wpn_pkm", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_7.62x54r", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_7.62x54r", "in")
-		dialogs.relocate_item_section(second_speaker, "ammo_7.62x54r", "in")
-	end
+function prines_documenty()
+	got_random("wpn_pkm")
+	got("ammo_7.62x54r", 2)
+end
 
 --проверяем наличие документов у ГГ
-	function est_li_documenty(stalker, player)
-  		return stalker:object ("banderos_documents") ~= nil
-	end
+function est_li_documenty()
+	return has("banderos_documents")
+end
 
 --отдаём документы
 	function otdat_documenty(first_speaker, second_speaker)
@@ -347,9 +186,6 @@ function prines_documenty(first_speaker, second_speaker)
 	end
 
 --вызываем функцию из таска при появлении (взятии) документов в инвентаре
-	function vzial_documenty(task, objective)
-	if Actor ~= nil then
-		return Actor:object("banderos_documents") ~= nil
-	end
-	return false
+function vzial_documenty()
+	return has("banderos_documents")
 end

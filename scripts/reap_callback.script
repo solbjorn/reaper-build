@@ -59,7 +59,7 @@ end
 function take_item_from_box(box, item)
 	if box:section() == "m_inventory_box" and box:is_inv_box_empty() then
 		level.start_stop_menu(level.main_input_receiver(), true)
-		create("treasure_item", xyz(), 0, 0, 0)
+		got_item("treasure_item")
 		release(box)
 	end
 
@@ -99,6 +99,85 @@ function actor_death(victim, who)
 	news_main.on_death(victim, who)
 end
 
-function net_destroy()
+function net_destroy(self)
+	self.weapon_manager:clear_scope_texture()
 	ui_scroll_indicators.destroy_indicators()
+end
+
+local torch_snd = { voice([[interface\inv_torch_on]]), voice([[interface\inv_torch_off]]) }
+local tmp
+
+local hotkeys = {
+	[key_bindings.kQUICK_SAVE] = function()
+		if level.main_input_receiver() then return end
+
+		screen:pause(true)
+		console:execute("save " .. user_name() .. "_quicksave")
+		screen:pause(false)
+	end,
+	[key_bindings.kTORCH] = function()
+		local torch = Actor:item_in_slot(9)
+		if not torch then return end
+
+		say(torch_snd[torch:is_torch_enabled() and 2 or 1])
+	end,
+	[key_bindings.kUSE_BANDAGE] = function()
+		local item = Actor:object("bandage")
+		if item then
+			Actor:eat(item)
+		end
+	end,
+	[key_bindings.kUSE_MEDKIT] = function()
+		local item = Actor:object("medkit") or Actor:object("medkit_army") or
+			     Actor:object("medkit_scientic")
+		if item then
+			Actor:eat(item)
+		end
+	end
+}
+
+tmp = function(binded, bind)
+	binded.weapon_manager:on_key_press(bind)
+end
+for _, key in ipairs({
+	"kUSE",
+	"kWPN_FIREMODE_NEXT",
+	"kWPN_FIREMODE_PREV",
+	"kWPN_RELOAD"
+}) do
+	hotkeys[key_bindings[key]] = tmp
+end
+
+local relkeys = { }
+
+tmp = function(binded, bind)
+	binded.weapon_manager:on_key_release(bind)
+end
+for _, key in ipairs({
+	"kWPN_FIRE",
+	"kWPN_FUNC"
+}) do
+	relkeys[key_bindings[key]] = tmp
+end
+
+tmp = nil
+
+function key_press(binded, dik)
+	if not actor_flags.alive then return end
+
+	local bind = dik_to_bind(dik)
+	local fn = hotkeys[bind]
+	if fn then
+		fn(binded, bind)
+	end
+end
+
+function key_release(binded, dik)
+	if not actor_flags.alive then return end
+
+	local bind = dik_to_bind(dik)
+	local fn = relkeys[bind]
+	if fn then
+		fn(binded, bind)
+	end
 end

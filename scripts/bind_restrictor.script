@@ -5,27 +5,6 @@ Space restrictor binder
 Примечания:
   - обновлений у рестрикторов нету, поэтому для тех, кому надо, актёр вызывает искусственно на своём обновлении
 --------------------------------------------------------------------------------------------------]]
-local removed_names = {
-	['gar_vagon_in_restrictor'] = true,
-	['bar_restrictor'] = true,
-	['rostok_sniper_killer_restrictor'] = true,
-	['agr_u_bloodsucker_rest'] = true,
-
-	esc_tutorial_trigger				= true,
-	esc_tutorial_zone				= true,
-	esc_anomaly_tips_zone				= true,
-	trader_zone					= true,
-	bar_no_weapon_zone				= true,
-	yan_no_weapon_restr				= true,
-	aes2_space_restrictor_no_weapon			= true,
-
-	val_trader_tip_zone				= true,
-	mil_sr_sleep_1					= true,
-	rad_sleep_room					= true,
-	pri_wave3_followers_btr_phrase1_sound_zone	= true,
-	aes_space_restrictor_sound_0054			= true,
-	aes2_space_restrictor_zombies			= true
-}
 
 local updatable_binders = {}    -- биндеры, которые требуют обновлений (update)
 
@@ -54,11 +33,6 @@ function actor_update(delta)
 end
 
 function bind( obj )
-	if removed_names[obj:name()] then
-		release(obj)
-		return
-	end
-
   obj:bind_object( restrictor_binder( obj ) )
 end
 

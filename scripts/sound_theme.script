@@ -16,14 +16,13 @@ local const rmk_greet     = 4
 local const rmk_sporadic  = 5
 local const rmk_priority  = 6
 
-local theme_ini = ini_file([[misc\sound_theme.ltx]])
 local theme_sect = "ph_snd_themes"
 
 local snd_ini = ini_file("misc\\script_sound.ltx")
 local nstl = 64
 
 function get_ph_snd_theme(name)
-	return theme_ini:r_list(theme_sect, name)
+	return ini_file([[misc\sound_theme.ltx]]):r_list(theme_sect, name)
 end
 
 -----------------------------------------------------------------------------------------------------------------------------------

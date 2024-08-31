@@ -138,14 +138,127 @@ class				= II_DOC
 class				= II_FOOD
 
 ; Патроны
-[AMMO]:base, immunities
+[AMMO]: base, immunities
 class				= AMMO
 belt				= true
 impair				= 1		; коэффициент износа ствола от пули
 buck_shot			= 1		; кол-во составляющих в пуле, > 1 только для дроби
 tracer				= on
-tracer_color_ID		= 0
+tracer_color_ID			= 0
 explosive			= off
+
+; Прицел
+[WP_SCOPE]: base, immunities
+class				= WP_SCOPE
+
+; Глушитель
+[W_SILENC]: base, immunities
+class				= W_SILENC
+degradable			= true
+
+; Подствольный гранатомёт. Все одинаковые параметры здесь.
+[W_GLAUNC]: base, immunities
+class				= W_GLAUNC
+news_weapon_type		= 5
+
+grenade_vel			= 76
+
+; Оружие
+[weapon]: base, immunities
+scheduled			= off
+degradable			= true
+
+hand_dependence			= 1
+sprint_allowed			= true
+
+misfire_condition_k		= 0.05
+disp_rate			= 1.85
+hit_rate			= 1.85
+
+hit_type			= fire_wound
+use_aim_bullet			= false
+rpm_empty_click			= 200
+
+direction			= 0, 0, 1
+normal				= 0, 1, 0
+
+position			= 0, 0, 0
+orientation			= 0, 0, 0
+
+strap_bone0			= bip01_spine2
+strap_bone1			= bip01_spine1
+
+zoom_enabled			= true
+scope_zoom_factor		= 1.2
+
+scope_status			= 0
+silencer_status			= 0
+grenade_launcher_status		= 0
+
+; Огнестрельное оружие
+[WP_AK74]: weapon
+class				= WP_AK74
+news_weapon_type		= 3
+
+ammo_elapsed			= 30
+launch_speed			= 0
+single_handed			= 0
+
+strap_orientation		= -10, -5, 10
+
+grenade_vel			= 76
+ironsight_zoom_factor		= 1.2
+
+[WP_BM16]: weapon
+class				= WP_BM16
+news_weapon_type		= 4
+
+ammo_elapsed			= 0
+single_handed			= 0
+
+[WP_GROZA]: WP_AK74
+class				= WP_GROZA
+
+[WP_HPSA]: weapon
+class				= WP_HPSA
+news_weapon_type		= 1
+
+single_handed			= 1
+scope_zoom_factor		= 1.0
+
+[WP_LR300]: WP_AK74
+class				= WP_LR300
+
+[WP_PM]: WP_HPSA
+class				= WP_PM
+
+[WP_RG6]: weapon
+class				= WP_RG6
+news_weapon_type		= 5
+
+ammo_elapsed			= 0
+
+[WP_SHOTG]: WP_BM16
+class				= WP_SHOTG
+
+[WP_SVD]: weapon
+class				= WP_SVD
+news_weapon_type		= 2
+
+ammo_elapsed			= 0
+single_handed			= 0
+
+[wpn_hud]
+allow_inertion			= true
+
+shell_dir			= 0, 1, 0
+fire_bone			= wpn_body
+
+position			= 0, 0, 0
+orientation			= 0, 0, 0
+
+zoom_hide_crosshair		= true
+zoom_rotate_time		= 0.3
 
 ; Различные служебные и базовые секции
 [breakable_object]
@@ -199,7 +312,6 @@ default = 10000, 10001
 
 [identity_immunities]:immunities
 use_aim_bullet				= false
-time_to_aim				= 1.0
 
 [common_ph_friction_params_on_npc_death]:friction
 

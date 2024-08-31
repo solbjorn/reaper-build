@@ -120,48 +120,25 @@ function rank_get(npc, actor)
 	end
 end
 
-function have_a_item(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function have_a_item()
 	return has("mutant_krovosos_jaw", 3) and
 	       has("mutant_burer_hand", 3) and
 	       has("mutant_psevdodog_tail", 3)
 end
 
-function out_item(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
+function out_item()
 	lost("mutant_krovosos_jaw", 3)
 	lost("mutant_burer_hand", 3)
 	lost("mutant_psevdodog_tail", 3)
 end
+
 --Воронин
-function enter_to_dolg(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	dialogs.relocate_item_section(trader, "dolg_black_exoskeleton", "in")
-	dialogs.relocate_item_section(trader, "wpn_groza", "in")
+function enter_to_dolg()
+	got("dolg_black_exoskeleton")
+	got_random("wpn_groza")
 	got("ammo_9x39_ap", 10)
 end
+
 function spawn_bar()
 	--Снайпер долговец на вышке
 	local obj = AI:create("bar_dolg_respawn_3",vector():set(184.15, 8.37, 96.34),45473,1186)
@@ -176,6 +153,7 @@ function spawn_bar()
 	params.sid = story_ids.bar_linspiro_ecolog
 	amk.write_stalker_params(params,obj)
 end
+
 --*************************************************************
 --                             ОТНОШЕНИЕ К СВОБОДЕ
 --*************************************************************
@@ -228,252 +206,91 @@ end
 --              ЧЛЕН ГРУППИРОВКИ ДОЛГ ПРИ ИСПОЛНЕНИИ
 --*************************************************************
 -- Петренко
-local nagrad = {
-  level_1 = {
-  "af_spirit_4",
-  "af_pudd_4",
-  "af_dik_4",
-  "af_kol_4",
-  "af_armor_4"
- },
-  level_2 = {
-  "af_spirit_1",
-  "af_babka_1",
-  "af_pudd_1",
-  "af_dik_1",
-  "af_kol_1",
-  "af_armor_1"
- },
-  level_3 = {
-  "af_fuzz_kolobok",
-  "af_dummy_spring",
-  "af_dummy_dummy",
-  "af_dummy_battery",
-  "af_dummy_pellicle",
-  "af_dummy_glassbeads"
- },
-  level_4 = {
-  "ammo_9x39_ap",
-  "ammo_9x39_sp5",
-  "ammo_7.62x54_7h14"
- }
-}
---КРОВОСОС
-function krovosos(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
+
+local nagrad
+
+function init_random(sect, ltx)
+	if not ltx then ltx = ini_file("misc\\random_rewards.ltx") end
+
+	local iter = { }
+
+	for _, _type in ipairs(ltx:r_list(sect, "items") or { }) do
+		iter[sect] = ltx:r_list(sect, _type) or { }
 	end
 
+	return iter
+end
+
+function random_reward(level, count)
+	if not nagrad then nagrad = init_random("linspiro") end
+	level = "level_" .. level
+
+	for i = 1, (count or 1) do
+		got(table.fastrand(nagrad[level]))
+	end
+end
+
+--КРОВОСОС
+function krovosos()
 	return has("mutant_krovosos_jaw", 3)
 end
-function out_krovosos(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_1[math.random(table.getn(nagrad.level_1))]
+function out_krovosos()
 	lost("mutant_krovosos_jaw", 3)
-    dialogs.relocate_item_section(second_speaker, item , "in")
+	random_reward(1)
 end
 --БЮРЕР
-function burer(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function burer()
 	return has("mutant_burer_hand", 3)
 end
-function out_burer(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+function out_burer()
 	lost("mutant_burer_hand", 3)
-    dialogs.relocate_item_section(actor, item , "in")
+	random_reward(2)
 end
 --ПСЕВДОСОБАКИ
-function psevdodog(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function psevdodog()
 	return has("mutant_psevdodog_tail", 3)
 end
-function out_psevdodog(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_2[math.random(table.getn(nagrad.level_2))]
+function out_psevdodog()
 	lost("mutant_psevdodog_tail", 3)
-    dialogs.relocate_item_section(actor, item , "in")
+	random_reward(2)
 end
 --ЗОМБИ
-function zombie(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function zombie()
 	return has("mutant_zombie_hand", 3)
 end
-function out_zombie(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+function out_zombie()
 	lost("mutant_zombie_hand", 3)
-    dialogs.relocate_item_section(actor, item , "in")
+	random_reward(3)
 end
 --СНОРКИ
-function snork(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function snork()
 	return has("mutant_snork_leg", 3)
 end
-function out_snork(first_speaker, second_speaker)
-	local item = ""
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_3[math.random(table.getn(nagrad.level_3))]
+function out_snork()
 	lost("mutant_snork_leg", 3)
-    dialogs.relocate_item_section(actor, item , "in")
+	random_reward(3)
 end
 --СОБАКИ
-function dog(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function dog()
 	return has("mutant_dog_tail", 3)
 end
-function out_dog(first_speaker, second_speaker)
-	local item = ""
-	local count = math.random(3,10)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+function out_dog()
 	lost("mutant_dog_tail", 3)
-	got(item, count)
+	random_reward(4, math.random(3, 10))
 end
 --ПЛОТИ
-function flesh(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function flesh()
 	return has("mutant_flesh_eye", 3)
 end
-function out_flesh(first_speaker, second_speaker)
-	local item = ""
-	local count = math.random(3,10)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+function out_flesh()
 	lost("mutant_flesh_eye", 3)
-	got(item, count)
+	random_reward(4, math.random(3, 10))
 end
 --КАБАНЫ
-function boar(first_speaker, second_speaker)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-
+function boar()
 	return has("mutant_boar_leg", 3)
 end
-function out_boar(first_speaker, second_speaker)
-	local item = ""
-	local count = math.random(3,10)
-	local actor, trader
-	if Actor and 0 == first_speaker:id() then
-		actor = first_speaker
-		trader = second_speaker
-	else
-		actor = second_speaker
-		trader = first_speaker
-	end
-	item = nagrad.level_4[math.random(table.getn(nagrad.level_4))]
+function out_boar()
 	lost("mutant_boar_leg", 3)
-	got(item, count)
+	random_reward(4, math.random(3, 10))
 end

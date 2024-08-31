@@ -84,6 +84,7 @@ end
 -- Старт игры
 function start_game_callback()
 	init_clsids()
+	xrs_grenade.init_clsids()
 
 	AI = alife()
 	netpacket = m_netpk.c_net_packet()
@@ -92,7 +93,9 @@ function start_game_callback()
 	local death = ini_file("misc\\death_generic.ltx")
 	ammo_section = death:key_true("ammo_sections")
 	quest_section = death:key_true("keep_items")
+
 	news_manager.prepare_data()
+	xr_info.init()
 
 	xr_sound.clear_all_sound_object()
 	dialog_manager.fill_phrase_table()
@@ -153,14 +156,69 @@ end
 function has(s, i)
 	return Inventory:has(s, i)
 end
+function has_good(s, i)
+	return Inventory:has_good(s, i)
+end
 function got(s, i)
 	Inventory:got(s, i)
 end
 function lost(s, i)
 	Inventory:lost(s, i)
 end
+function lost_good(s, i)
+	Inventory:lost(s, i, true)
+end
 function transfer(v, s, t)
 	Inventory:transfer(v, s, t)
+end
+
+function transfer_good(v, s, t)
+	Inventory:transfer(v, s, t, true)
+end
+
+function has_bad(s, i)
+	return Inventory:has_bad(s, i)
+end
+
+function has_random(s, i)
+	return Inventory:has_random(s, i)
+end
+
+function has_random_good(s, i)
+	return Inventory:has_random_good(s, i)
+end
+
+function got_random(s, i)
+	Inventory:got_random(s, i)
+end
+
+function lost_random(s, i)
+	Inventory:lost_random(s, i)
+end
+
+function lost_random_good(s, i)
+	Inventory:lost_random(s, i, true)
+end
+
+function transfer_random_good(v, s, t)
+	Inventory:transfer_random(v, s, t, true)
+end
+
+function has_random_bad(s, i)
+	return Inventory:has_random_bad(s, i)
+end
+
+function condition_item(s)
+	return config:r_bool_cache(s, "degradable") == true
+end
+
+-- Спавн секции в инвентарь актора без вывода сообщения
+function got_item(s)
+	return create(s, xyz(), 0, 0, 0)
+end
+
+function got_item_random(s)
+	return create_random(s, xyz(), 0, 0, 0)
 end
 
 -- Деньги
@@ -201,6 +259,10 @@ end
 -- Вместо AI:create() все варианты
 function create(...)
 	return AI:create(...)
+end
+
+function create_random(sect, ...)
+	return AI:create(table.fastrand(reap.random_skin(sect)), ...)
 end
 
 -- Вместо AI:release(), AI:release(AI:object(id|name)) со всеми проверками.
@@ -305,83 +367,16 @@ function action(obj,...)
     return  entity_action(act)
 end
 
--- Имитация движкового класса Fvector2
-
-class "vector2"
-
-function vector2:__init()
-	self.x = 0
-	self.y = 0
-end
-
-function vector2:__finalize()
-end
-
-function vector2:set(x, y)
-	self.x = x
-	self.y = y
-
-	return self
-end
-
-function vector2:add(vec2)
-	self.x = self.x + vec2.x
-	self.y = self.y + vec2.y
-
-	return self
-end
-
-function vector2:sub(vec2)
-	self.x = self.x - vec2.x
-	self.y = self.y - vec2.y
-
-	return self
-end
-
-function vector2:div(x, y)
-	if not y then y = x end
-
-	self.x = self.x/x
-	self.y = self.y/y
-
-	return self
-end
-
-function vector2:mul(x, y)
-	if not y then y = x end
-
-	self.x = self.x*x
-	self.y = self.y*y
-
-	return self
-end
-
-function vector2:get()
-	return self.x, self.y
-end
-
-function vector2:distance_to(vec2)
-	local dx, dy = (self.x - vec2.x), (self.y - vec2.y)
-
-	return math.sqrt(dx*dx + dy*dy)
-end
-
-function vector2:clamp(rect)
-	self.x = math.clamp(self.x, rect.x1, rect.x2)
-	self.y = math.clamp(self.y, rect.y1, rect.y2)
-
-	return self
-end
-
 function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
-function reset_action (npc, script_name)
-    if npc:get_script () then
-       npc:script (false, script_name)
-    end
-    npc:script (true, script_name)
+function reset_action(npc, name)
+	if npc:get_script() then
+		npc:script(false, name)
+	end
+
+	npc:script(true, name)
 end
 
 -- Константа, которую использовать в местах, где нужно задать неограниченное время действия
@@ -389,9 +384,7 @@ time_infinite = 100000000
 
 -- Рандомный выбор из списка параметров
 function random_choice(...)
-    local arg = {...}
-    local r = math.random(1, #arg)
-    return arg[r]
+	return table.fastrand({ ... })
 end
 
 function is_object_online(obj_id)

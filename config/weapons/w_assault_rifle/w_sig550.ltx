@@ -1,0 +1,476 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_sig550]: WP_AK74
+min_radius          	= 30
+max_radius          	= 100
+description				= enc_weapons1_wpn-sig550
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 6500
+
+ammo_mag_size			= 30
+ammo_class				= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class			= ammo_m209
+fire_modes				= 1, 3, -1
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name	        	= wpn-sig550
+inv_weight				= 4.0
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 53
+inv_grid_y				= 32
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base			= 0.15	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.4f
+disp_rate = 1.9
+
+;отдача
+cam_relax_speed         		= 6.5 		;скорость возврата в исходное положение
+cam_dispersion          	= 0.58		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.19		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.85	;0.000001	;0.85		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 14.0		;максимальный угол отдачи
+cam_max_angle_horz				= 15.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 1.35	;0.18		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 1.5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.0015	;вероятность осечки при максимальном износе
+misfire_condition_k		= 0.07
+condition_shot_dec			= 0.000666
+;-----------------------------------------------------------------------------------
+
+fire_point			= 0.000000,0.137000,0.649000
+fire_point2			= 0.000000,0.072000,0.542000
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_03
+grenade_flame_particles			= amik\weapons\grenade_flame_particles\grenade_flame_particles_00
+
+shell_point			= -0.020000,0.167000,0.082000
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\5_56x45\5_56x45_l
+
+PDM_disp_base 			= 5.5
+PDM_disp_vel_factor 		= 1.45
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 6.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        			= 0.57
+hit_impulse				= 9
+hit_rate	= 1.95
+fire_distance           	= 180
+bullet_speed				= 840
+rpm                     	= 700
+
+silencer_hit_power       	= 0.53
+silencer_hit_impulse			= 8
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 365
+
+hud					= wpn_sig550_hud
+
+position         	        = -0.026, -0.097, 0.0
+strap_position         		= -0.26,-0.11,0.25			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+
+visual					= weapons\sig550\wpn_sig550
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass						= 4
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_elcan
+scope_x					= 69
+scope_y					= -5
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_556
+silencer_x				= 201
+silencer_y				= 16
+
+grenade_launcher_status			= 2
+grenade_launcher_name			= wpn_addon_grenade_launcher_gl5040
+grenade_launcher_x			= 118
+grenade_launcher_y			= 30
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\sig550\sig550_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\sig550\sig550_shoot
+snd_shoot1					= weapons\sig550\sig550_shoot1
+snd_shoot2					= weapons\sig550\sig550_shoot2
+snd_shoot3					= weapons\sig550\sig550_shoot3
+snd_empty					= weapons\sig550\sig550_empty, 0.8
+snd_reload					= weapons\sig550\sig550_reload, 1.0, 0.35
+snd_shoot_grenade				= weapons\m203\M203_grenshoot
+snd_reload_grenade			= weapons\m203\M203_grenload_sig, 1.0, 0.5
+snd_switch					= weapons\m203\M203_switch, 1.0, 0.5
+snd_silncer_shot				= weapons\sig550\sig550_shot_sil
+;------------------------------------------------------------------------------------------
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_sig550_hud]: wpn_hud
+shell_point			= 0.120000,0.000000,0.070000
+fire_point			= -0.000000,0.062000,0.134000
+fire_point2              	= 0.000000,-0.040000,0.165000
+
+orientation             	= 3, 2.5, 0
+position                	= -0.025, -0.03, 0
+visual					= weapons\sig550\wpn_sig550_hud
+
+grenade_bone            	= grenade
+
+anim_idle				= idle
+anim_idle_aim			= idle_aim
+anim_idle_moving			= idle_moving
+anim_reload				= reload
+anim_draw				= draw
+anim_holster			= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_w_gl_aim
+anim_idle_moving_g			= idle_g_moving
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= draw_grenade
+anim_holster_g				= holster_grenade
+anim_idle_sprint_g		= idle_sprint
+
+;(режим обычной стрельбы)
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_idle_moving_gl			= idle_w_gl_moving
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl		= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.110400,0.041700,-0.131000
+zoom_rotate_x		= 0.030700
+zoom_rotate_y		= 0.051500
+
+;тоже самое, но для прицепленого подствольника
+;режим подствольника
+grenade_zoom_offset			= -0.110700,-0.166000,0.000000
+grenade_zoom_rotate_x		= -0.189901
+grenade_zoom_rotate_y		= 0.051800
+
+;режим обычной стрельбы
+grenade_normal_zoom_offset			= -0.110400,0.041700,-0.131000
+grenade_normal_zoom_rotate_x		= 0.030700
+grenade_normal_zoom_rotate_y		= 0.051500
+
+[wpn_sig550_sk2]: wpn_sig550
+inv_grid_y				= 34
+
+fire_point				= 0.000000, 0.167000, 0.649000
+fire_point2				= 0.0, 0.097, 0.722
+
+shell_point				= 0, 0.256, 0.174
+shell_particles				=
+
+hud					= wpn_sig550_sk2_hud
+
+position				= -0.026, -0.172, 0
+strap_position				= -0.16, -0.40, 0.15
+strap_orientation			= -10, -5, 10
+
+visual					= weapons\sig550\wpn_sig550_sk2
+
+scope_x					= 73
+scope_y					= -10
+silencer_x				= 217
+silencer_y				= 10
+grenade_launcher_x			= 119
+grenade_launcher_y			= 26
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\sig550\sig550_sk2_shoot
+snd_shoot1				= weapons\sig550\sig550_sk2_shoot1
+snd_shoot2				= weapons\sig550\sig550_sk2_shoot2
+snd_shoot3				= weapons\sig550\sig550_sk2_shoot3
+snd_empty				= weapons\sig550\sig550_sk2_empty, 0.5
+snd_reload				= weapons\sig550\sig550_sk2_reload
+snd_reload_grenade			= weapons\sig550\sig550_sk2_grenload
+snd_silncer_shot			= weapons\sig550\sig550_sk2_shot_sil
+
+[wpn_sig550_sk2_hud]: wpn_hud
+shell_point				= 0.0, 0.0, -0.4
+shell_dir				= 0.0, 0.0, 0.0
+fire_point				= 0.0, -0.03, 0.01
+fire_point2				= 0.0, -0.09, 0.02
+
+grenade_bone				= wpn_grenade
+visual					= weapons\sig550\wpn_sig550_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+anim_idle_g				= idle_g
+anim_idle_g_aim				= idle_aim_g
+anim_idle_moving_g			= idle_g
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on			= switch_on
+anim_switch_grenade_off			= switch_off
+anim_draw_g				= draw_g
+anim_holster_g				= holster_g
+anim_idle_sprint_g			= idle_w_gl_sprint
+
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_aim_w_gl
+anim_idle_moving_gl			= idle_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl			= idle_w_gl_sprint
+
+zoom_offset				= -0.097450, 0.042810, -0.105000
+zoom_rotate_x				= 0.010600
+zoom_rotate_y				= 0.000200
+
+grenade_normal_zoom_offset		= -0.097450, 0.042810, -0.105000
+grenade_normal_zoom_rotate_x		= 0.010600
+grenade_normal_zoom_rotate_y		= 0.000200
+
+grenade_zoom_offset			= -0.097450, 0.042810, -0.105000
+grenade_zoom_rotate_x			= 0.010600
+grenade_zoom_rotate_y			= 0.000200
+
+scope_zoom_offset			= -0.098600, 0.005900, -0.105999
+scope_zoom_rotate_x			= 0
+scope_zoom_rotate_y			= 0
+
+scope_grenade_normal_zoom_offset	= -0.098600, 0.005900, -0.105999
+scope_grenade_normal_zoom_rotate_x	= 0
+scope_grenade_normal_zoom_rotate_y	= 0
+
+scope_grenade_zoom_offset		= -0.098650, -0.027702, -0.247000
+scope_grenade_zoom_rotate_x		= 0.010600
+scope_grenade_zoom_rotate_y		= 0.000200
+
+ignore_scope_texture			= true
+
+; Штурмовой SiG 552
+[wpn_sig550_sk2_m1]: wpn_sig550_sk2
+class					= WP_VAL
+
+inv_name				= wpn-sig_m1
+description				= enc_weapons1_wpn-sig_m1
+inv_weight				= 3
+inv_grid_width				= 4
+inv_grid_x				= 63
+
+fire_dispersion_base			= 0.2
+control_inertion_factor			= 1.09f
+condition_shot_dec			= 0.0002
+
+fire_point				= 0, 0.137, 0.450
+shell_point				= -0.02, 0.167, 0.082
+shell_particles				= amik\weapons\5_56x45\5_56x45_r
+
+hud					= wpn_sig550_sk2_m1_hud
+
+position				= -0.026, -0.097, 0.0
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+
+visual					= weapons\sig550\wpn_sig550_sk2_m1
+
+scope_status				= 1
+scope_zoom_factor			= 1.4
+scope_texture				=
+
+silencer_x				= 165
+silencer_y				= 20
+grenade_launcher_status			= 0
+
+snd_shoot				= weapons\sig550\sig550_sk2_m1_shot
+snd_shoot1				= weapons\sig550\sig550_sk2_m1_shot
+snd_shoot2				= weapons\sig550\sig550_sk2_m1_shot
+snd_shoot3				= weapons\sig550\sig550_sk2_m1_shot
+snd_empty				= weapons\sig550\sig550_sk2_m1_empty
+snd_reload				= weapons\sig550\sig550_sk2_m1_reload
+snd_silncer_shot			= weapons\sig550\sig550_sk2_m1_shot_sil
+
+[wpn_sig550_sk2_m1_hud]: wpn_hud
+shell_point				= 0.1, 0.0, 0.0
+fire_point				= 0.02, 0.1, 0.0
+
+position				= -0.024, -0.18, 0.1
+orientation				= 0.55, 2.4, 0.15
+visual					= weapons\sig550\wpn_sig550_sk2_m1_hud
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+zoom_offset				= -0.128000, 0.069600, -0.059000
+zoom_rotate_x				= 0.035500
+zoom_rotate_y				= 0.008500
+
+scope_zoom_offset			= -0.128000, 0.044600, -0.096000
+scope_zoom_rotate_x			= 0.035500
+scope_zoom_rotate_y			= 0.010500
+
+ignore_scope_texture			= true
+scope_zoom_hide_indicators		= false
+
+; Снайперская SiG-550
+[wpn_sig550_m2_base]
+inv_name				= wpn-sig_m2
+
+news_weapon_type			= 2
+inv_weight				= 4.8
+fire_modes				= 1, 2
+
+fire_dispersion_base			= 0.10
+cam_relax_speed				= 9.5
+cam_dispersion				= 0.28
+condition_shot_dec			= 0.0002
+
+fire_distance				= 200
+rpm					= 1200
+ph_mass					= 5
+
+scope_status				= 1
+grenade_launcher_status			= 0
+
+scope_zoom_factor			= 6
+
+[wpn_sig550_m2]: wpn_sig550, wpn_sig550_m2_base
+description				= enc_weapons1_wpn-sig_m2
+inv_grid_x				= 63
+
+hud					= wpn_sig550_m2_hud
+visual					= weapons\sig550\wpn_sig550_m2
+
+scope_texture				= wpn\crosshairs\mildot
+silencer_y				= 19
+
+[wpn_sig550_m2_hud]: wpn_sig550_hud
+visual					= weapons\sig550\wpn_sig550_m2_hud
+
+[wpn_sig550_sk2_m2]: wpn_sig550_sk2, wpn_sig550_m2_base
+description				= wpn_sig550_sk2_m2_desc
+inv_grid_width				= 6
+inv_grid_x				= 66
+inv_grid_y				= 30
+
+ammo_mag_size				= 20
+
+fire_point				= 0.000000, 0.137000, 0.649000
+shell_point				= 0, 0.256, 0.174
+shell_particles				= amik\weapons\5_56x45\5_56x45_r
+
+hud					= wpn_sig550_sk2_m2_hud
+
+position				= -0.026, -0.172, 0
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+
+visual					= weapons\sig550\wpn_sig550_sk2_m2
+
+silencer_status				= 0
+scope_texture				=
+
+snd_shoot				= weapons\sig550\sig550_sk2_m2_shot
+snd_shoot1				= weapons\sig550\sig550_sk2_m2_shot
+snd_shoot2				= weapons\sig550\sig550_sk2_m2_shot
+snd_shoot3				= weapons\sig550\sig550_sk2_m2_shot
+snd_empty				= weapons\sig550\sig550_empty
+snd_reload				= weapons\sig550\sig550_sk2_m2_reload
+
+[wpn_sig550_sk2_m2_hud]: wpn_hud
+shell_point				= 0.000000, -0.010000, -0.440000
+shell_dir				= 0.0, 0.0, 0.0
+fire_point				= 0.0, -0.03, 0.01
+fire_point2				= 0.0, -0.09, 0.02
+
+grenade_bone				= wpn_grenade
+
+position				= 0.010000, 0.000000, -0.070000
+orientation				= 0.572939, 1.718358, 0.000000
+visual					= weapons\sig550\wpn_sig550_sk2_m2_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_w_gl_sprint
+
+anim_idle_g				= idle_g
+anim_idle_g_aim				= idle_aim_g
+anim_idle_moving_g			= idle_g
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on			= switch_on
+anim_switch_grenade_off			= switch_off
+anim_draw_g				= draw_g
+anim_holster_g				= holster_g
+anim_idle_sprint_g			= idle_sprint
+
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_aim_w_gl
+anim_idle_moving_gl			= idle_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl			= idle_sprint
+
+zoom_offset				= -0.107200, 0.000500, -0.029000
+zoom_rotate_x				= 0.030100
+zoom_rotate_y				= 0.011000
+
+ignore_scope_texture			= true

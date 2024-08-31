@@ -1,9 +1,16 @@
 -- Инвентарь ГГ
 -- Refactored by RanHum
+
+local cond_threshold = 0.95
+
 class "CInventory"
 
 function CInventory:__init()
+	self.need_update_ruck = true
+	self.inventory_open = false
+
 	self.sack = {}				-- Инвентарь ГГ
+	self.good = {}				-- Исправное оружие/броня ГГ
 	self.belt_by_sect = { }
 	self.belt_by_id = { }
 end
@@ -13,52 +20,339 @@ function CInventory:has(sect, count)
 	return (self.sack[sect] or 0) >= (count or 1)
 end
 
+function CInventory:has_good(sect, count)
+	return (self.good[sect] or 0) >= (count or 1)
+end
+
 -- Получаем предметы
 function CInventory:got(sect, count)
-	if not count then count = 1 end
+	if not count or count < 1 then count = 1 end
 
 	for i = 1, count do
-		create(sect,xyz(0,0,0),0,0,0)
+		got_item(sect)
 	end
 	news_manager.relocate_item("in", sect, count)
 end
 
 -- Теряем предметы
-function CInventory:lost(sect, count)
-	if not count then count = 1 end
-
+function CInventory:lost_fast(sect, count)
 	local cnt = 0
+
 	Actor:iterate_inventory(function(dummy, item)
 		if cnt < count and item:section() == sect then
 			release(item)
 			cnt = cnt + 1
 		end
 	end)
+
+	return cnt
+end
+
+function CInventory:lost_slow(sect, count, cond)
+	cond = cond and cond_threshold or 0
+
+	local avail = { }
+	local cnt, ic = 1
+
+	Actor:iterate_inventory(function(dummy, item)
+		if item:section() == sect then
+			ic = item:condition()
+			if ic >= cond then
+				avail[cnt] = { item:id(), ic }
+				cnt = cnt + 1
+			end
+		end
+	end)
+
+	table.sort(avail, function(a, b)
+		return a[2] < b[2]
+	end)
+
+	cnt = 0
+	for i = 1, #avail do
+		release(avail[i][1])
+
+		cnt = cnt + 1
+		if cnt == count then break end
+	end
+
+	return cnt
+end
+
+function CInventory:lost(sect, count, cond)
+	if not count or count < 1 then count = 1 end
+
+	if not condition_item(sect) then
+		count = self:lost_fast(sect, count)
+	else
+		count = self:lost_slow(sect, count, cond)
+	end
+
 	if cnt > 0 then
-		news_manager.relocate_item("out", sect, cnt)
+		news_manager.relocate_item("out", sect, count)
 	end
 end
 
 -- Передаем один предмет
-function CInventory:transfer(victim, sect, type)
-	if type == "in" then
-		victim:transfer_item(victim:object(sect), Actor)
-	elseif type == "out" then
-		Actor:transfer_item(Actor:object(sect), victim)
+function CInventory:actor_object(sect, cond)
+	if not condition_item(sect) then
+		return Actor:object(sect)
 	end
-	news_manager.relocate_item(type, sect)
+
+	cond = cond and cond_threshold or 0
+
+	local target = self.sack[sect]
+	if not target then
+		return nil
+	elseif target == 1 then
+		target = Actor:object(sect)
+
+		return target:condition() >= cond and target or nil
+	end
+
+	local tgcond, ic = 2
+
+	Actor:iterate_inventory(function(dummy, item)
+		if item:section() == sect then
+			ic = item:condition()
+			if ic >= cond and ic < tgcond then
+				target = item
+				tgcond = ic
+			end
+		end
+	end)
+
+	return target
+end
+
+function CInventory:transfer(victim, sect, _type, cond)
+	if _type == "out" then
+		Actor:transfer_item(self:actor_object(sect, cond), victim)
+	elseif _type == "in" then
+		victim:transfer_item(victim:object(sect), Actor)
+	end
+
+	news_manager.relocate_item(_type, sect)
+end
+
+function CInventory:has_bad_tbl(tbl, count)
+	if not count or count < 1 then count = 1 end
+
+	if #tbl == 1 then
+		local sect = tbl[1]
+
+		if not self.sack[sect] or (self.good[sect] or 0) >= count then
+			return false
+		end
+		if count == 1 and self.sack[sect] == 1 then
+			return Actor:object(sect):condition() < cond_threshold
+		end
+	end
+
+	tbl = table.tohash(tbl)
+	local good, bad = 0, 0
+
+	Actor:iterate_inventory(function(dummy, item)
+		if tbl[item:section()] then
+			if item:condition() >= cond_threshold then
+				good = good + 1
+			else
+				bad = bad + 1
+			end
+		end
+	end)
+
+	good = good >= count
+	bad = bad >= count
+
+	return bad and not good
+end
+
+function CInventory:has_bad(sect, count)
+	return self:has_bad_tbl({ sect }, count)
+end
+
+function CInventory:has_random(sect, count)
+	if not count or count < 1 then count = 1 end
+
+	local tbl = reap.random_skin(sect)
+	local n = 0
+
+	for i = 1, #tbl do
+		n = n + (self.sack[tbl[i]] or 0)
+		if n >= count then
+			return true
+		end
+	end
+
+	return false
+end
+
+function CInventory:has_random_good(sect, count)
+	if not count or count < 1 then count = 1 end
+
+	local tbl = reap.random_skin(sect)
+	local n = 0
+
+	for i = 1, #tbl do
+		n = n + (self.good[tbl[i]] or 0)
+		if n >= count then
+			return true
+		end
+	end
+
+	return false
+end
+
+function CInventory:got_random(sect, count)
+	if not count or count < 1 then count = 1 end
+
+	local tbl = reap.random_skin(sect)
+	local got = { }
+
+	for i = 1, count do
+		sect = table.fastrand(tbl)
+		got_item(sect)
+		table.add(got, sect)
+	end
+
+	for i = 1, #tbl do
+		sect = tbl[i]
+		if got[sect] then
+			news_manager.relocate_item("in", sect, got[sect])
+		end
+	end
+end
+
+function CInventory:lost_random_fast(lost, count)
+	local cnt, sect = 0
+
+	Actor:iterate_inventory(function(dummy, item)
+		if cnt < count then
+			sect = item:section()
+			if lost[sect] then
+				release(item)
+
+				table.add(lost, sect)
+				cnt = cnt + 1
+			end
+		end
+	end)
+end
+
+function CInventory:lost_random_slow(lost, count, cond)
+	cond = cond and cond_threshold or 0
+
+	local avail = { }
+	local cnt, ic = 1
+	local sect
+
+	Actor:iterate_inventory(function(dummy, item)
+		sect = item:section()
+		if lost[sect] then
+			ic = item:condition()
+			if ic >= cond then
+				avail[cnt] = { item:id(), ic, sect }
+				cnt = cnt + 1
+			end
+		end
+	end)
+
+	table.sort(avail, function(a, b)
+		return a[2] < b[2]
+	end)
+
+	cnt = 0
+	for i = 1, #avail do
+		release(avail[i][1])
+		table.add(lost, avail[i][3])
+
+		cnt = cnt + 1
+		if cnt == count then break end
+	end
+end
+
+function CInventory:lost_random(sect, count, cond)
+	if not count or count < 1 then count = 1 end
+
+	local tbl = reap.random_skin(sect)
+	local lost = table.tohash(tbl, function(t, i)
+		return self.sack[t[i]] and 0
+	end)
+
+	if not condition_item(sect) then
+		self:lost_random_fast(lost, count)
+	else
+		self:lost_random_slow(lost, count, cond)
+	end
+
+	for i = 1, #tbl do
+		sect = tbl[i]
+		count = lost[sect]
+		if count and count > 0 then
+			news_manager.relocate_item("out", sect, count)
+		end
+	end
+end
+
+function CInventory:transfer_random(victim, sect, _type, cond)
+	local tbl = reap.random_skin(sect)
+	local obj
+
+	for i = 1, #tbl do
+		if _type == "out" then
+			obj = self:actor_object(tbl[i], cond)
+			if obj then
+				Actor:transfer_item(obj, victim)
+				break
+			end
+		elseif _type == "in" then
+			obj = victim:object(tbl[i])
+			if obj then
+				victim:transfer_item(obj, Actor)
+				break
+			end
+		end
+	end
+
+	news_manager.relocate_item(_type, obj:section())
+end
+
+function CInventory:has_random_bad(sect, count)
+	return self:has_bad_tbl(reap.random_skin(sect), count)
+end
+
+function CInventory:update()
+	if not self.need_update_ruck then return end
+
+	self.good = { }
+	Actor:iterate_inventory(function(dummy, item)
+		if condition_item(item:section()) and item:condition() >= cond_threshold then
+			table.add(self.good, item:section())
+		end
+	end)
+
+	self.need_update_ruck = false
 end
 
 -- Калбек на поднятие предмета
 function CInventory:on_item_take(item)
 	table.add(self.sack, item:section())
 	restriction_stock.restriction_of_stock(item, 0)
+
+	if not self.inventory_open then
+		self.need_update_ruck = true
+	end
 end
 
 -- Калбек на потерю предмета
 function CInventory:on_item_drop(item)
 	table.sub(self.sack, item:section())
 	restriction_stock.restriction_of_stock(item, 1)
+
+	if not self.inventory_open then
+		self.need_update_ruck = true
+	end
 end
 
 -- Калбек на надевание на пояс
@@ -71,6 +365,16 @@ end
 function CInventory:on_item_move_from_belt(item)
 	table.sub(self.belt_by_sect, item:section())
 	self.belt_by_id[item:id()] = nil
+end
+
+-- Открытие/закрытие инвентаря
+function CInventory:on_inventory_info(info)
+	if info == "ui_inventory" then
+		self.inventory_open = true
+	elseif info == "ui_inventory_hide" then
+		self.inventory_open = false
+		self.need_update_ruck = true
+	end
 end
 
 -- предмет на поясе

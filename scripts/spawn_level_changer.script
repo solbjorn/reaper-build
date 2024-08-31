@@ -775,17 +775,17 @@ function teleport_start(obj)
 	if teleport.pay and not has_money(teleport.pay) then
 		sms(translate("telepot_allowed_2_0") .. teleport.pay .. translate("telepot_allowed_2_1"),
 		    nil, nil, 20000)
-		create(sect, xyz(), 0, 0, 0)
+		got_item(sect)
 		return
 	elseif teleport.art and not has(teleport.art) then
 		sms(translate("telepot_allowed_3_0") .. get_inv_name(teleport.art),
 		    nil, nil, 20000)
-		create(sect, xyz(), 0, 0, 0)
+		got_item(sect)
 		return
 	end
 
 	if teleport.keep then
-		create(sect, xyz(), 0, 0, 0)
+		got_item(sect)
 	end
 	if teleport.art then
 		lost(teleport.art)
@@ -795,7 +795,7 @@ function teleport_start(obj)
 	end
 
 	-- вызываем случайную функцию для данного телепорта
-	jump(type(teleport.goto_func) == "table" and table.random(teleport.goto_func) or teleport.goto_func)
+	jump(type(teleport.goto_func) == "table" and table.fastrand(teleport.goto_func) or teleport.goto_func)
 end
 
 function remove_old_teleport()

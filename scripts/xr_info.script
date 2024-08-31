@@ -4,326 +4,187 @@
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
-local stories_by_community = {
-	stalker = {
-			"stalker_story_1",
-			"stalker_story_4",
-			"stalker_story_5",
-			"stalker_story_8",
-			"stalker_story_10",
-			"stalker_story_14"},
-
-	monolith = {
-			"stalker_story_16",
-			"stalker_story_17",
-			"stalker_story_18",
-			"stalker_story_19",
-			"stalker_story_20"},
-
-	military = {
-			"stalker_story_10"},
-
-	killer = {
-			"stalker_story_7"},
-
-	ecolog = {},
-
-	dolg = {
-			"stalker_story_2",
-			"stalker_story_6",
-			"stalker_story_10",
-			"stalker_story_13"},
-
-	freedom = {
-			"stalker_story_3",
-			"stalker_story_9",
-			"stalker_story_10"},
-
-	bandit = {
-			"stalker_story_11"}
-
-}
-
-local info_by_rank = {
-	novice = {
-			"encyclopedy_zone_artifact_af-medusa",
-			"encyclopedy_zone_artifact_af-cristall-flower",
-			"encyclopedy_zone_artifact_af-vyvert",
-			"encyclopedy_zone_artifact_af-gravi",
-			"encyclopedy_zone_artifact_af-blood",
-			"encyclopedy_zone_artifact_af-soul",
-			"encyclopedy_zone_zone-story_story-2006",
-			"encyclopedy_zone_surge",
-			"encyclopedy_zone_anomalies_bald",
-			"encyclopedy_zone_anomalies_gravi",
-			"encyclopedy_zone_anomalies_meat",
-			"encyclopedy_zone_anomalies_electra",
-			"encyclopedy_zone_anomalies_radioactive",
-			"encyclopedy_zone_locations_escape",
-			"encyclopedy_zone_locations_garbage",
-			"encyclopedy_mutant_crow_general",
-			"encyclopedy_mutant_rat_general",
-			"encyclopedy_mutant_flesh_general",
-			"encyclopedy_mutant_blind_general",
-			"encyclopedy_mutant_cat_general",
-			"encyclopedy_mutant_boar_general",
-			"encyclopedy_social_military_army",
-			"encyclopedy_social_stalker-clans_duty",
-			"encyclopedy_social_stalker-clans_bandits",
-			"encyclopedy_vehicles_niva",
-			"encyclopedy_vehicles_tr13",
-			"encyclopedy_vehicles_uaz",
-			"encyclopedy_vehicles_zaporozh"
-			},
-
-	stalker = {
-			"encyclopedy_zone_artifact_af-medusa",
-			"encyclopedy_zone_artifact_af-cristall-flower",
-			"encyclopedy_zone_artifact_af-night-star",
-			"encyclopedy_zone_artifact_af-vyvert",
-			"encyclopedy_zone_artifact_af-gravi",
-			"encyclopedy_zone_artifact_af-gold-fish",
-			"encyclopedy_zone_artifact_af-blood",
-			"encyclopedy_zone_artifact_af-mincer-meat",
-			"encyclopedy_zone_artifact_af-soul",
-			"encyclopedy_zone_zone-story_story-2008",
-			"encyclopedy_zone_surge",
-			"encyclopedy_zone_psy",
-			"encyclopedy_zone_anomalies_fuzz",
-			"encyclopedy_zone_anomalies_radioactive",
-			"encyclopedy_zone_anomalies_electra",
-			"encyclopedy_zone_anomalies_ameba",
-			"encyclopedy_zone_locations_escape",
-			"encyclopedy_zone_locations_garbage",
-			"encyclopedy_zone_locations_agroprom",
-			"encyclopedy_zone_locations_darkdolina",
-			"encyclopedy_zone_locations_bar",
-			"encyclopedy_zone_locations_rostok",
-			"encyclopedy_mutant_tushkano",
-			"encyclopedy_mutant_pseudodog_general",
-			"encyclopedy_mutant_bloodsucker_general",
-			"encyclopedy_mutant_burer_general",
-			"encyclopedy_mutant_fracture_general",
-			"encyclopedy_mutant_zombie_general",
-			"encyclopedy_mutant_zombieg_general",
-			"encyclopedy_mutant_fracture_general",
-			"encyclopedy_mutant_chimera_general",
-			"encyclopedy_mutant_snork_general",
-			"encyclopedy_mutant_flesh_general",
-			"encyclopedy_mutant_blind_general",
-			"encyclopedy_mutant_cat_general",
-			"encyclopedy_mutant_boar_general",
-			"encyclopedy_social_stalker-clans_freedom",
-			"encyclopedy_social_stalker-clans_monolith",
-			"encyclopedy_social_stalker-clans_killers",
-			"encyclopedy_social_stalker-clans_zomstalkers",
-			"encyclopedy_social_scientists_mobile-labs",
-			"encyclopedy_social_military_army",
-			"encyclopedy_social_stalker-clans_duty",
-			"encyclopedy_social_stalker-clans_bandits",
-			"encyclopedy_vehicles_btr-70",
-			"encyclopedy_vehicles_kamaz",
-			"encyclopedy_vehicles_niva",
-			"encyclopedy_vehicles_uaz"
-			},
-
-	veteran = {
-			"encyclopedy_zone_artifact_af-electra-sparkler",
-			"encyclopedy_zone_artifact_af-electra-flash",
-			"encyclopedy_zone_artifact_af-rusty-thorn",
-			"encyclopedy_zone_artifact_af-rusty-kristall",
-			"encyclopedy_zone_artifact_af-gravi",
-			"encyclopedy_zone_artifact_af-gold-fish",
-			"encyclopedy_zone_artifact_af-blood",
-			"encyclopedy_zone_artifact_af-mincer-meat",
-			"encyclopedy_zone_artifact_af-soul",
-			"encyclopedy_zone_artifact_af-electra-sparkler",
-			"encyclopedy_zone_artifact_af-electra-flash",
-			"encyclopedy_zone_artifact_af-electra-moonlight",
-			"encyclopedy_zone_artifact_af-ameba-slime",
-			"encyclopedy_zone_artifact_af-ameba-slug",
-			"encyclopedy_zone_zone-story_story-2010",
-			"encyclopedy_zone_zone-story_story-raid",
-			"encyclopedy_zone_surge",
-			"encyclopedy_zone_psy",
-			"encyclopedy_zone_anomalies_fuzz",
-			"encyclopedy_zone_anomalies_radioactive",
-			"encyclopedy_zone_anomalies_electra",
-			"encyclopedy_zone_anomalies_ameba",
-			"encyclopedy_zone_locations_agroprom",
-			"encyclopedy_zone_locations_darkdolina",
-			"encyclopedy_zone_locations_bar",
-			"encyclopedy_zone_locations_rostok",
-			"encyclopedy_zone_locations_military-loc",
-			"encyclopedy_zone_locations_yantar",
-			"encyclopedy_zone_locations_radar",
-			"encyclopedy_mutant_pseudogiant_general",
-			"encyclopedy_mutant_poltergeist_general",
-			"encyclopedy_mutant_controller_general",
-			"encyclopedy_mutant_bloodsucker_general",
-			"encyclopedy_mutant_burer_general",
-			"encyclopedy_mutant_fracture_general",
-			"encyclopedy_mutant_zombie_general",
-			"encyclopedy_mutant_zombieg_general",
-			"encyclopedy_mutant_fracture_general",
-			"encyclopedy_mutant_chimera_general",
-			"encyclopedy_mutant_snork_general",
-			"encyclopedy_mutant_electrochimera",
-			"encyclopedy_mutant_zombie_rusty",
-			"encyclopedy_mutant_zombie_plague",
-			"encyclopedy_social_stalker-clans_loners",
-			"encyclopedy_social_military_milstalkers",
-			"encyclopedy_social_stalker-clans_freedom",
-			"encyclopedy_social_stalker-clans_monolith",
-			"encyclopedy_social_stalker-clans_killers",
-			"encyclopedy_social_stalker-clans_zomstalkers",
-			"encyclopedy_social_scientists_mobile-labs",
-			"encyclopedy_vehicles_btr-70",
-			"encyclopedy_vehicles_kamaz",
-			"encyclopedy_vehicles_raf",
-			"encyclopedy_vehicles_uaz"
-			},
-
-	master = {
-			"encyclopedy_zone_artifact_af-electra-sparkler",
-			"encyclopedy_zone_artifact_af-electra-flash",
-			"encyclopedy_zone_artifact_af-electra-moonlight",
-			"encyclopedy_zone_artifact_af-rusty-thorn",
-			"encyclopedy_zone_artifact_af-rusty-kristall",
-			"encyclopedy_zone_artifact_af-rusty-sea-urchin",
-			"encyclopedy_zone_artifact_af-drops",
-			"encyclopedy_zone_artifact_af-fireball",
-			"encyclopedy_zone_artifact_af-cristall",
-			"encyclopedy_zone_zone-story_story-raid",
-			"encyclopedy_zone_psy",
-			"encyclopedy_zone_anomalies_fuzz",
-			"encyclopedy_zone_anomalies_radioactive",
-			"encyclopedy_zone_anomalies_electra",
-			"encyclopedy_zone_anomalies_ameba",
-			"encyclopedy_zone_locations_yantar",
-			"encyclopedy_zone_locations_radar",
-			"encyclopedy_zone_locations_pripiat",
-			"encyclopedy_zone_locations_stancia",
-			"encyclopedy_mutant_pseudogiant_general",
-			"encyclopedy_mutant_poltergeist_general",
-			"encyclopedy_mutant_controller_general",
-			"encyclopedy_mutant_electrochimera",
-			"encyclopedy_mutant_psy_burer",
-			"encyclopedy_mutant_zombie_plague",
-			"encyclopedy_mutant_psy_dog",
-			"encyclopedy_social_stalker-clans_loners",
-			"encyclopedy_social_military_milstalkers",
-			"encyclopedy_vehicles_btr-70",
-			"encyclopedy_vehicles_mi-24",
-			"encyclopedy_vehicles_raf"
-			}
-}
-
-local stories_by_rank = {
-	novice = {},
-
-	stalker = {
-			"stalker_story_1",
-			"stalker_story_2",
-			"stalker_story_3",
-			"stalker_story_5",
-			"stalker_story_7",
-			"stalker_story_11",
-			"stalker_story_12",
-			"stalker_story_16",
-			"stalker_story_17",
-			"stalker_story_18",
-			"stalker_story_19",
-			"stalker_story_20"
-			},
-
-	veteran = {
-			"stalker_story_2",
-			"stalker_story_3",
-			"stalker_story_4",
-			"stalker_story_7",
-			"stalker_story_8",
-			"stalker_story_10",
-			"stalker_story_11",
-			"stalker_story_12",
-			"stalker_story_13",
-			"stalker_story_14",
-			"stalker_story_16",
-			"stalker_story_17",
-			"stalker_story_18",
-			"stalker_story_19",
-			"stalker_story_20"
-			},
-
-	master = {
-			"stalker_story_4",
-			"stalker_story_6",
-			"stalker_story_8",
-			"stalker_story_9",
-			"stalker_story_10",
-			"stalker_story_13",
-			"stalker_story_14",
-			"stalker_story_16",
-			"stalker_story_17",
-			"stalker_story_18",
-			"stalker_story_19",
-			"stalker_story_20"
-			}
-}
-
 local math_random = math.random
+local string_sub = string.sub
+
+local infos = { }
+local stories = { }
+
+camp_stories = nil
+
+function init()
+	local comms = {
+		"actor", "actor_dolg", "actor_freedom", "arena_enemy", "bandit",
+		"dolg", "ecolog", "freedom", "green", "killer", "military",
+		"monolith", "sniper", "stalker", "stranger", "trader", "zombied"
+	}
+	local ranks = { "novice", "experienced", "veteran", "master" }
+	local ini = ini_file("misc\\npc_info.ltx")
+	local stories_by_community = { }
+	local info_by_community = { }
+	local stories_by_rank = { }
+	local info_by_rank = { }
+
+	for _, rank in ipairs(ranks) do
+		info_by_rank[rank] = ini:key_true("info_" .. rank)
+		stories_by_rank[rank] = ini:key_true("stories_" .. rank)
+	end
+
+	for val, comm in ipairs(comms) do
+		val = ini:list("info_" .. comm)
+		if #val > 0 then
+			info_by_community[comm] = val
+		end
+
+		val = ini:list("stories_" .. comm)
+		if #val > 0 then
+			stories_by_community[comm] = val
+		end
+	end
+
+	for curr, rank in ipairs(ranks) do
+		curr = info_by_rank[rank]
+
+		for comm, avail in pairs(info_by_community) do
+			val = { }
+
+			for _, info in ipairs(avail) do
+				if curr[info] then
+					val[#val + 1] = info
+				end
+			end
+
+			if #val > 0 then
+				avail = infos[comm]
+				if not avail then
+					avail = { }
+					infos[comm] = avail
+				end
+
+				avail[rank] = val
+			end
+		end
+
+		curr = stories_by_rank[rank]
+
+		for comm, avail in pairs(stories_by_community) do
+			val = { }
+
+			for _, info in ipairs(avail) do
+				if curr[info] then
+					val[#val + 1] = info
+				end
+			end
+
+			if #val > 0 then
+				avail = stories[comm]
+				if not avail then
+					avail = { }
+					stories[comm] = avail
+				end
+
+				avail[rank] = val
+			end
+		end
+	end
+
+	for _, comm in ipairs(ini:list("info_default")) do
+		infos[comm] = infos.stalker
+	end
+	for _, comm in ipairs(ini:list("stories_default")) do
+		stories[comm] = stories.stalker
+	end
+
+	camp_stories = ini:list("camp_stories")
+	this.init = nil
+end
+
+local wpn_art = table.tohash({ "encyclopedy_ammo", "encyclopedy_gren", "encyclopedy_wpn_" })
 
 function loadInfo(npc, char_ini)
 	-- Загрузка из кастом даты
 	char_ini:iterate_lines("known_info", function(result, id, value)
-		give_npc_info(npc, id)
+		npc:give_info_portion(id)
 	end)
 
-	local community_stories = stories_by_community[npc:character_community()]
-	if community_stories == nil then
-		return
-	end
-
+	local comm = npc:character_community()
 	local rank = ranks.get_obj_rank_name(npc)
-	local rank_info = info_by_rank[rank]
-	if rank_info == nil then
-		return
+
+	local avail_info = infos[comm]
+	if avail_info then
+		avail_info = avail_info[rank]
+	end
+	if not avail_info then
+		avail_info = { }
 	end
 
-	local size_rank_info = #rank_info
-	local size = size_rank_info + #community_stories
+	local avail_stories = stories[comm]
+	if avail_stories then
+		avail_stories = avail_stories[rank]
+	end
+	if not avail_stories then
+		avail_stories = { }
+	end
 
-	for k = 1,3 do
-		if math_random(100) >= 60 then
-			local rnd = math_random(size)
-			if rnd > size_rank_info then
-				local info = community_stories[math_random(#community_stories)]
-				for kk, vv in pairs(stories_by_rank[rank]) do
-					if vv == info then
-						give_npc_info(npc, info)
+	local size_info = #avail_info
+	local size_stories = #avail_stories
+	if size_info + size_stories == 0 then return end
+
+	local cnt = 0
+	for _ = 1, 3 do
+		if math_random(1000) > 666 then
+			cnt = cnt + 1
+		end
+	end
+	if cnt == 0 then return end
+
+	local try = cnt < size_stories and cnt or size_stories
+	local cnt_str = 0
+	for _ = 1, try do
+		if math_random(100) > 85 then
+			cnt_str = cnt_str + 1
+		end
+	end
+
+	try = cnt - cnt_str
+	local cnt_enc = math_random(0, try)
+	local cnt_wpn = try - cnt_enc
+
+	local given, info, wpn = { }
+	while true do
+		try = 0
+		while true do
+			if cnt_str == 0 then
+				info = "encyclopedy_" .. avail_info[math_random(size_info)]
+				if not given[info] then
+					wpn = wpn_art[string_sub(info, 1, 16)]
+					if wpn and cnt_wpn > 0 then
+						cnt_wpn = cnt_wpn - 1
+						break
+					elseif not wpn and cnt_enc > 0 then
+						cnt_enc = cnt_enc - 1
 						break
 					end
 				end
+
+				try = try + 1
+				if try == size_info then break end
 			else
-				give_npc_info(npc, rank_info[rnd])
+				info = avail_stories[math_random(size_stories)]
+				if not given[info] then
+					cnt_str = cnt_str - 1
+					break
+				end
+
+				try = try + 1
+				if try == size_stories then break end
 			end
 		end
-	end
-end
 
-function give_npc_info(npc, info)
-	-- Даем НПС инфопоршны
-	npc:give_info_portion(info)
+		npc:give_info_portion(info)
+		given[info] = true
 
-	-- Проверяем есть ли озвученная история на этот инфопоршн, и если есть
-	-- добавляем ее тоже
-	if sound_theme.theme[info] ~= nil then
-		local s_by_id = db.story_by_id[npc:id()]
-		if s_by_id == nil then
-			s_by_id = {}
-			db.story_by_id[npc:id()] = s_by_id
-		end
-
-		s_by_id[#s_by_id + 1] = info
+		cnt = cnt - 1
+		if cnt == 0 then break end
 	end
 end

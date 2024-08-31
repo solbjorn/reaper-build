@@ -1,0 +1,251 @@
+[wpn_fort]: WP_PM
+min_radius               	= 5
+max_radius               	= 30
+description					= enc_weapons1_wpn-fort
+
+ef_weapon_type				= 5
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0            ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 350
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 12
+ammo_class				= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
+
+slot 				 		= 1		; // primary
+animation_slot		 		= 1		; type of the animation that will be used
+
+inv_name					= wpn-fort
+inv_weight					= 0.83
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 11
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.37  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 10;	;скорость возврата в исходное положение
+cam_dispersion          	= 0.35	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.7	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point               	= 0.0, 0.148, 0.157
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.05, 0.148, 0.053
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\9x18\9x18_l_00
+
+PDM_disp_base 			= 1.8
+PDM_disp_vel_factor 		= 0.6
+PDM_disp_accel_factor 		= 0.6
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.36, 0.38, 0.40, 0.42
+hit_impulse				= 3
+hit_rate	        = 1.86
+fire_distance       = 50
+bullet_speed		= 310
+rpm                 = 280
+
+silencer_hit_power       	= 0.32
+silencer_hit_impulse			= 2
+silencer_fire_distance   	= 35
+silencer_bullet_speed	 	= 220
+
+hud					= wpn_fort_hud
+position                 	= -0.021, -0.10, 0.0
+visual					= weapons\fort\wpn_fort
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x18
+silencer_x				= 68
+silencer_y				= -15
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\fort\fort_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\fort\fort_shoot
+snd_shoot1					= weapons\fort\fort_shoot1
+snd_shoot2					= weapons\fort\fort_shoot2
+snd_shoot3					= weapons\fort\fort_shoot3
+snd_empty					= weapons\fort\fort_empty
+snd_reload					= weapons\fort\fort_reload
+snd_close					= weapons\fort\fort_close
+snd_silncer_shot				= weapons\fort\fort_shot_sil
+;------------------------------------------------------------------------------------------
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_fort_hud]: wpn_hud
+shell_point			= -0.370000,-0.015000,0.090000
+fire_point			= -0.235000,0.000000,0.060000
+
+orientation              	= 4.95,1.73,0.25
+position                 	= 0,0.03,0
+visual					= weapons\fort\wpn_fort_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot1
+anim_shot_last				= shoot_last
+anim_close					= holster	;close
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.142700, 0.056100, -0.1065
+zoom_rotate_x		= 0.039500
+zoom_rotate_y		= 0.084500
+
+[wpn_fort_sk2]: wpn_fort
+inv_grid_y				= 12
+
+shell_particles	 			= amik\weapons\9x18\9x18_r_00
+
+hud					= wpn_fort_sk2_hud
+visual					= weapons\fort\wpn_fort_sk2
+
+silencer_x				= 82
+silencer_y				= -18
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\fort\fort_sk2_shoot
+snd_shoot1				= weapons\fort\fort_sk2_shoot
+snd_shoot2				= weapons\fort\fort_sk2_shoot
+snd_shoot3				= weapons\fort\fort_sk2_shoot
+snd_reload				= weapons\fort\fort_sk2_reload
+snd_reload_partly			= weapons\fort\fort_sk2_reload_partly
+snd_close				= $no_sound
+snd_silncer_shot			= weapons\fort\fort_sk2_shot_sil
+
+[wpn_fort_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\fort\wpn_fort_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= fort12_reload_empty
+anim_reload_empty			= fort12_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.115, 0.03, 0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.053
+
+; Форт-17
+[wpn_fort_sk2_m1]: wpn_fort_sk2
+inv_name				= wpn-fort_m
+description				= enc_weapons1_wpn-fort_m1
+inv_grid_x				= 79
+
+cost					= 1200
+ammo_mag_size				= 15
+condition_shot_dec			= 0.0003
+
+fire_point				= 0, 0.13, 0.16
+shell_point				= 0.05, 0.148, 0.045
+
+rpm					= 400
+
+hud					= wpn_fort_sk2_m1_hud
+position				= -0.021, -0.1, -0.0075
+visual					= weapons\fort\wpn_fort_sk2_m1
+
+silencer_x				= 83
+silencer_y				= -16
+
+snd_reload				= weapons\fort\fort_sk2_m1_reload
+
+[wpn_fort_sk2_m1_hud]: wpn_hud
+shell_point				= 0.045, -0.03, -0.33
+fire_point				= 0, 0, -0.387
+fire_bone				= muzzle
+
+position				= 0.02, -0.185, 0.039
+orientation				= 2, 2, 0
+visual					= weapons\fort\wpn_fort_sk2_m1_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload
+anim_reload_empty			= reload_full_1
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= close
+anim_idle_aim				= aim
+anim_idle_sprint			= sprint
+anim_idle_sprint_empty			= sprint
+anim_idle_moving			= idle
+anim_idle_moving_empty			= idle_empty
+
+zoom_offset				= -0.1421, 0.06677, -0.011
+zoom_rotate_x				= 0.02475
+zoom_rotate_y				= 0.036

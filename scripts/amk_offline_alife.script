@@ -1982,11 +1982,9 @@ function do_process_trade(npc)
 			for k,v in pairs(item_list) do
 				local sect = v:section_name()
 				if v:is_weapon() and not (v:is_binoculars() or v:is_grenade() or v:is_knife()) then
-					local bOk = false
+					local bOk
 					if m_comm == "military" then
-						if sect == "wpn_ak74" or sect =="wpn_ak74u" or sect =="wpn_abakan" or sect =="wpn_pm" or sect =="wpn_usp" or sect =="wpn_val" or sect =="wpn_walther" or sect =="wpn_svu" or sect =="wpn_sig550" or sect =="wpn_fn2000" or sect =="wpn_vintorez" or sect =="wpn_groza" then
-							bOk = true
-						end
+						bOk = config:r_bool_cache(sect, "allow_military", false)
 					else
 						bOk = true
 					end
@@ -2085,17 +2083,17 @@ function do_process_trade(npc)
 					if cnt_drink > 3 then
 						table_insert(sell_list, v)
 					end
-				elseif sect == "detector_simple" or sect =="detector_advances" or sect == "detector_elite" then
+				elseif v:is_detector() then
 					cnt_detector = cnt_detector + 1
 					if cnt_detector > 1 then
 						table_insert(sell_list, v)
 					end
-				elseif sect == "wpn_addon_scope" or sect =="wpn_addon_scope_susat" or sect == "wpn_addon_silencer" or sect == "wpn_addon_grenade_launcher" or sect == "wpn_addon_grenade_launcher_m203" then
+				elseif v:is_weapon_addon() then
 					cnt_addons = cnt_addons + 1
 					if cnt_addons > 2 then
 						table_insert(sell_list, v)
 					end
-				elseif monster_parts[sect] then
+				elseif v:is_monster_part() then
 					cnt_mparts = cnt_mparts + 1
 					if cnt_mparts > 2 then
 						table_insert(sell_list, v)
@@ -2104,7 +2102,6 @@ function do_process_trade(npc)
 			end
 			table_sort(weapons, function(a,b) return get_weapon_firepower(a.obj) > get_weapon_firepower(b.obj) end)
 			-- Так, теперь у нас отсортированны все пушки НПС. Найдем ту, для которой есть патроны...
-			-- А вот воякам надо оставить бы их АКшники...? (wpn_ak74, wpn_ak74u, wpn_abakan, wpn_pm, wpn_usp, wpn_val, wpn_walther, wpn_svu, wpn_sig550, wpn_fn2000, wpn_vintorez, wpn_groza)
 			local b_self = false
 			local b_best = false
 			local s_self = ""
@@ -2722,7 +2719,11 @@ function trap_explosion(box)
 	h.draftsman = Actor
 
 	local bpos = box.position
-	amk_particle.amk_particle({particle=[[explosions\explosion_dynamite]], pos=bpos, sound=[[weapons\rpg7_explode]]})
+	amk_particle.amk_particle({
+		particle = [[amik\explosion\expl_dynamite]],
+		pos = bpos,
+		sound = [[weapons\rpg7\rpg7_explode]]
+	})
 	local apos = Actor:position()
 	local dist = box.position:distance_to(apos)
 	if dist > 0 then

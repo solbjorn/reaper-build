@@ -1,0 +1,204 @@
+[wpn_gauss]: WP_SVD
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-gauss
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+news_weapon_type			= 15
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 2.85           ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 25000
+
+ammo_mag_size			= 10
+ammo_class				= ammo_gauss
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name				= wpn-gauss
+inv_weight				= 6.5
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 62
+inv_grid_y				= 12
+
+sprint_allowed			= false
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.009 ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.4f
+disp_rate = 1.95
+
+;отдача
+cam_relax_speed         	= 3;0.05	;скорость возврата в исходное положение
+cam_dispersion          	= 0.05	;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle			= 4.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.0001 ;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.00001
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.00,0.12,0.69
+flame_particles         = weapons\generic_weapon_gauss
+shell_point		 		= 0.00,0.12,0.174				; position (3rd person view) for shell to throw out
+smoke_particles	 		= weapons\generic_weapon07	; name of the particles for shells
+
+PDM_disp_base 			= 7.0
+PDM_disp_vel_factor 		= 1.8
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		= 1.8
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 1.50, 1.50, 1.50, 1.90
+hit_impulse			= 10
+hit_rate	= 1.85
+fire_distance           	= 1000
+bullet_speed		= 15000
+rpm                     	= 30
+; end ttc
+
+hud					= wpn_gauss_hud
+
+position                = -0.026, -0.070, 0.0
+strap_position         		= -0.26,-0.11,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+
+visual					= weapons\gauss\wpn_gauss
+
+light_color		 		= 1.3,1.5,2
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.5
+
+ph_mass			 		= 3
+
+scope_status				= 1
+scope_zoom_factor			= 8
+scope_texture				= wpn\crosshairs\gauss
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw				= weapons\gauss\gauss_draw
+snd_holster				= weapons\gauss\gauss_holster
+snd_shoot				= weapons\gauss\gauss_shoot
+snd_empty				= weapons\gauss\gauss_empty, 0.5
+snd_reload				= weapons\gauss\gauss_reload, 1.0, 1.0
+;------------------------------------------------------------------------------------------
+
+[wpn_gauss_hud]: wpn_hud
+shell_point			= -0.042000,0.103000,0.267000
+fire_point			= -0.044000,0.111000,0.155000
+
+orientation             = 1, 1, 0
+visual					= weapons\gauss\wpn_gauss_hud
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_idle_moving			= idle_moving
+anim_reload		= reload
+anim_draw		= draw
+anim_shoot		= shoot
+anim_idle_sprint			= idle
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.020000,-0.030000,0.030000
+zoom_rotate_x		= 0.017200
+zoom_rotate_y		= -0.002800
+
+[wpn_gauss_sk2]: wpn_gauss
+inv_grid_y				= 14
+
+hud					= wpn_gauss_sk2_hud
+visual					= weapons\gauss\wpn_gauss_sk2
+
+snd_shoot				= weapons\gauss\gauss_sk2_shoot
+snd_reload				= weapons\gauss\gauss_sk2_reload
+
+[wpn_gauss_sk2_hud]: wpn_hud
+shell_point				= 0, 0, -0.6
+fire_point				= 0, 0, 0
+fire_bone				= bullet
+
+orientation				= 2, 1, 0
+position				= 0.01, -0.01, 0.15
+visual					= weapons\gauss\wpn_gauss_sk2_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle_moving
+anim_reload				= reload_empty
+anim_draw				= draw
+anim_shoot				= shoot
+
+zoom_offset				= -0.103, 0.02, 0
+zoom_rotate_x				= 0.02
+zoom_rotate_y				= 0.036
+
+[wpn_gauss_sk2_m1]: wpn_gauss_sk2
+inv_name				= wpn_dark_gauss
+description				= enc_weapons1_wpn_dark_gauss
+inv_grid_x				= 67
+
+class					= WP_LR300
+cost					= 40000
+inv_weight				= 7
+
+ammo_mag_size				= 20
+fire_modes				= 1, -1
+sprint_allowed				= true
+
+fire_dispersion_base			= 0.05
+cam_relax_speed				= 3
+cam_dispersion				= 0.5
+
+fire_point				= 0, 0.216, 0.638
+bullet_speed				= 7500
+rpm					= 150
+
+hud					= wpn_gauss_sk2_m1_hud
+position				= -0.026, -0.172, 0
+visual					= weapons\gauss\wpn_gauss_sk2_m1
+
+scope_texture				= wpn\crosshairs\comp
+silencer_status				= 1
+
+snd_shoot				= weapons\gauss\gauss_sk2_m1_shoot
+snd_reload				= weapons\gauss\gauss_sk2_m1_reload
+
+[wpn_gauss_sk2_m1_hud]: wpn_gauss_hud
+shell_point				= -0.042000, 0.103000, 0.267000
+fire_point				= -0.004000, 0.101000, 0.215000
+
+position				= -0.020000, -0.200000, 0.200000
+orientation				= 0.000000, 1.718358, 0.000000
+visual					= weapons\gauss\wpn_gauss_sk2_m1_hud
+
+anim_holster_empty			= holster_empty
+anim_close				= holster_empty
+anim_draw_empty				= draw_empty
+anim_idle_empty				= idle_empty
+anim_reload_empty			= reload_empty
+anim_idle_aim				= idle_aim
+anim_idle_aim_empty			= idle_aim_empty
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint_empty
+
+zoom_offset				= -0.109960, 0.053910, 0.051100
+zoom_rotate_x				= 0.033210
+zoom_rotate_y				= 0.000130

@@ -1,0 +1,258 @@
+[wpn_colt1911]: WP_PM
+min_radius               	= 5
+max_radius               	= 30
+description					= enc_weapons1_wpn-colt1911
+
+ef_weapon_type				= 5
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 1100
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 7
+ammo_class		 			= ammo_11.43x23_fmj, ammo_11.43x23_hydro
+
+slot 				 		= 1		; // primary
+animation_slot		 		= 1		; type of the animation that will be used
+
+inv_name					= wpn-colt1911
+inv_weight					= 1.1
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 7
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.22	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 8;3.0	;скорость возврата в исходное положение
+cam_dispersion          	= 1.5	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point			= 0.000000,0.130000,0.185000
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.127, 0.05
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\45\45_l
+
+PDM_disp_base 			    = 2.1
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		        = 3.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.39, 0.43, 0.45, 0.49
+hit_impulse				= 3
+hit_rate	= 1.85
+fire_distance           = 50
+bullet_speed			= 285
+rpm                     = 250
+
+silencer_hit_power       	= 0.36
+silencer_hit_impulse			= 2
+silencer_fire_distance   	= 35
+silencer_bullet_speed	 	= 200
+
+hud					= wpn_colt1911_hud
+position                 	= -0.021, -0.092, 0.0
+visual					= weapons\colt1911\wpn_colt1911
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_45
+silencer_x				= 79
+silencer_y				= -10
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\colt\colt_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\colt\colt_shoot
+snd_shoot1					= weapons\colt\colt_shoot1
+snd_shoot2					= weapons\colt\colt_shoot2
+snd_shoot3					= weapons\colt\colt_shoot3
+snd_empty					= weapons\colt\colt_empty
+snd_reload					= weapons\colt\colt_reload
+snd_close					= weapons\colt\colt_close
+snd_silncer_shot				= weapons\colt\colt_shot_sil
+;------------------------------------------------------------------------------------------
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_01
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_colt1911_hud]: wpn_hud
+shell_point			= 0.005000,0.085000,-0.345000
+fire_point			= 0.005000,0.076400,-0.228500
+
+orientation              	= 3,2,0
+position                 	= -0.05,0,0
+visual					= weapons\colt1911\wpn_colt1911_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster	;draw
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.126600, 0.067000, 0.0441
+zoom_rotate_x		= 0.026000
+zoom_rotate_y		= 0.0511
+
+[wpn_colt1911_sk2]: wpn_colt1911
+inv_grid_y				= 8
+
+shell_particles				= amik\weapons\45\45_r
+
+hud					= wpn_colt1911_sk2_hud
+visual					= weapons\colt1911\wpn_colt1911_sk2
+
+silencer_x				= 89
+silencer_y				= -16
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\colt\colt_sk2_shoot
+snd_shoot1				= weapons\colt\colt_sk2_shoot
+snd_shoot2				= weapons\colt\colt_sk2_shoot
+snd_shoot3				= weapons\colt\colt_sk2_shoot
+snd_reload				= weapons\colt\colt_sk2_reload
+snd_reload_partly			= weapons\colt\colt_sk2_reload_partly
+snd_close				= $no_sound
+snd_silncer_shot			= weapons\colt\colt_sk2_shot_sil
+
+[wpn_colt1911_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0.0, -0.5
+fire_point				= 0, 0, -0.3
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\colt1911\wpn_colt1911_sk2_hud
+
+anim_holster				= pm_holster
+anim_idle				= pm_idle
+anim_empty				= pm_idle_empty
+anim_reload				= colt1911_reload_empty
+anim_reload_empty			= colt1911_reload_empty
+anim_draw				= pm_draw
+anim_draw_empty				= pm_draw_empty
+anim_shoot				= pm_shoot
+anim_shot_last				= pm_shoot_last
+anim_close				= pm_holster_empty
+anim_idle_aim				= pm_idle
+anim_idle_sprint			= pm_idle_sprint
+anim_idle_moving			= pm_idle_moving
+anim_idle_sprint_empty			= pm_idle_sprint_empty
+anim_idle_moving_empty			= pm_idle_moving_empty
+
+zoom_offset				= -0.116, 0.026, 0.0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.0538
+
+; Бесшумный Кольт
+[wpn_colt1911_sk2_m1]: wpn_colt1911_sk2
+inv_name				= wpn-colt_m1
+description				= enc_weapons1_wpn-colt_m1
+
+inv_grid_width				= 3
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 7
+
+ammo_mag_size				= 10
+inv_weight				= 1.6
+condition_shot_dec			= 0.0003
+
+fire_point				= 0.0, 0.215, 0.192
+shell_point				= 0.0, 0.220, 0.03
+
+smoke_particles				= amik\weapons\smoke_particles\silencer_smoke_particles_01
+flame_particles				=
+light_disabled				= true
+
+hud					= wpn_colt1911_sk2_m1_hud
+position				= -0.021, -0.170, -0.002
+visual					= weapons\colt1911\wpn_colt1911_sk2_m1
+
+scope_zoom_factor			= 1.2
+silencer_status				= 1
+
+snd_shoot				= weapons\colt\colt_sk2_m1_shot
+snd_shoot1				= weapons\colt\colt_sk2_m1_shot
+snd_shoot2				= weapons\colt\colt_sk2_m1_shot
+snd_shoot3				= weapons\colt\colt_sk2_m1_shot
+snd_reload				= weapons\colt\colt_sk2_m1_reload
+snd_reload_partly			= weapons\colt\colt_sk2_m1_reload_partly
+
+[wpn_colt1911_sk2_m1_hud]: wpn_hud
+shell_point				= 0.025, 0.005, -0.1
+fire_point				= 0.0000, 0.0275, -0.1835
+
+position				= -0.050, -0.145, -0.0500
+visual					= weapons\colt1911\wpn_colt1911_sk2_m1_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= empty
+anim_reload				= reload
+anim_reload_empty			= reload_full
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot_1
+anim_shot_last				= shoot_last_1
+anim_close				= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_idle_moving_empty			= empty
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+zoom_offset				= -0.0685, 0.00725, -0.035
+zoom_rotate_x				= -0.00760
+zoom_rotate_y				= -0.00385

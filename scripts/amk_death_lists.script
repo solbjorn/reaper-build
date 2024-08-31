@@ -65,9 +65,9 @@ local where_dead={
 }
 
 function get_strings()
-	local reason = table.random(dead_reason)
+	local reason = table.fastrand(dead_reason)
 	local curr, lname = level.name()
-	repeat lname = table.random(where_dead)
+	repeat lname = table.fastrand(where_dead)
 	until lname ~= curr
 	return reason, translate(lname)
 end

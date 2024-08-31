@@ -1,11 +1,10 @@
 function spawn_podarok_adrenalin()    --спавним подарочек Тески...
-	local sobj = create("wpn_abakan_m2",
-			    xyz(-179.03843688965, 1.2425957918167, 100.98793792725),
-			    57819, 673)
+	local sobj = create_random("wpn_mg42", xyz(-179.03843688965, 1.2425957918167, 100.98793792725),
+				   57819, 673)
 	if not sobj then return end
 
 	level.client_spawn_manager():add(sobj.id, 0, function(id, obj)
-		obj:set_ammo_elapsed(math.random(0, 9))
+		obj:set_ammo_elapsed(math.random(0, 18))
 		obj:set_condition(math.random(28, 69) / 100)
 	end)
 end

@@ -101,17 +101,16 @@ Actor:give_info_portion( "freeman_braad_one" )
 end
 
 function setGulagEnemy()
-local npc,obj
+	local obj = server_object("rostok_stalker")
+	if not obj then return end
 
-	for i, npc in pairs(db.creatures) do
-        if npc:name() == "rostok_stalker" then
-            obj = AI:object(npc:id())
-			break
-        end
-    end
-	AI:create("wpn_mp5",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
-	AI:create("wpn_val",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
-	AI:create_ammo("ammo_5.56x45_ss190",obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id,30)
+	for _, sect in ipairs({
+		"wpn_mp5", "wpn_val", "ammo_9x19_pbp",
+		"ammo_9x39_pab9", "ammo_5.56x45_ss190"
+	}) do
+		create_random(sect, obj.position, obj.m_level_vertex_id,
+			      obj.m_game_vertex_id, obj.id)
+	end
 end
 
 function bloodsucker()
@@ -321,7 +320,7 @@ local items = {
 		["matras"] = true,
 		["wpn_binoc"] = true,
 		["stalker_outfit_m3"] = true,
-		["wpn_mp5_m1"] = true,
+	wpn_mp5_sk2_m1			= true,
 		["device_pda"] = true,
 		["notebook_new"] = true,
 		["notebook"] = true,

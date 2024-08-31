@@ -1,0 +1,411 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_l85]: WP_AK74
+min_radius          	= 30
+max_radius          	= 100
+description				= enc_weapons1_wpn-l85
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.85		       ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 4000
+
+ammo_mag_size			= 30
+ammo_class				= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class			= ammo_m209
+fire_modes				= 1, -1
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name	        	= wpn-l85
+inv_weight				= 4.7
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 42
+inv_grid_y				= 20
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base			= 0.14		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.35f
+disp_rate = 1.9
+
+;отдача
+cam_relax_speed         		= 4.5 		;скорость возврата в исходное положение
+cam_relax_speed_ai         		= 120.75
+cam_dispersion          	= 0.97		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.22		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.8	;0.000001	;0.85		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle					= 25.0		;максимальный угол отдачи
+cam_max_angle_horz				= 22.0		;(degree) maximum shot horizontal degree
+cam_step_angle_horz				= 4.2	;0.18		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 2	    ;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.008	;вероятность осечки при максимальном износе
+misfire_condition_k	= 0.1
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point             		=  0.0, 0.186, 0.435
+fire_point2            		=  0.0, 0.106, 0.468
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_08
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_03
+grenade_flame_particles			= amik\weapons\grenade_flame_particles\grenade_flame_particles_00
+
+shell_point		 			= 0.0, 0.186, 0.0
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\5_56x45\5_56x45_l_00
+
+PDM_disp_base 			= 4.0
+PDM_disp_vel_factor 	= 0.8
+PDM_disp_accel_factor 	= 0.8
+PDM_crouch	 		    = 4.5
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        		= 0.56
+hit_impulse				= 9
+hit_rate	            = 1.94
+fire_distance           = 180
+bullet_speed			= 960
+rpm                      	= 650
+
+silencer_hit_power       	= 0.51
+silencer_hit_impulse			= 8
+silencer_fire_distance   	= 140
+silencer_bullet_speed	 	= 450
+
+hud					= wpn_l85_hud
+
+position         	        = -0.026, -0.135, 0.0
+strap_position         		= -0.15,-0.36,0.25			; position (offset) and orientation of the weapon when it is strapped
+
+visual					= weapons\l85\wpn_l85
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range		 	    = 0.1
+light_time 					= 0.2
+
+ph_mass						= 5
+
+scope_status				= 1
+scope_zoom_factor			= 4
+scope_texture				= wpn\crosshairs\susat
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_556
+silencer_x				= 189
+silencer_y				= 18
+
+grenade_launcher_status			= 2
+grenade_launcher_name			= wpn_addon_grenade_launcher_m203
+grenade_launcher_x			= 131
+grenade_launcher_y			= 35
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw					= weapons\l85\l85_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\l85\l85_shoot
+snd_shoot1					= weapons\l85\l85_shoot1
+snd_shoot2					= weapons\l85\l85_shoot2
+snd_shoot3					= weapons\l85\l85_shoot3
+snd_empty					= weapons\l85\l85_empty, 0.7
+snd_reload					= weapons\l85\l85_reload, 1.0, 0.35
+snd_shoot_grenade				= weapons\m203\M203_grenshoot
+snd_reload_grenade			= weapons\ag36\ag36_grenload, 1.0, 0.5
+snd_switch					= weapons\m203\M203_switch, 1.0, 0.5
+snd_silncer_shot				= weapons\l85\l85_shot_sil
+;------------------------------------------------------------------------------------------
+
+;настройки для глушителя
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_l85_hud]: wpn_hud
+shell_point     	   	 	= 0.15, 0.0, -0.05
+fire_point			= -0.010000,0.085000,-0.075000
+fire_point2              	= -0.010000,-0.010000,0.010000
+
+orientation             	= 3, 2, 0
+visual					= weapons\l85\wpn_l85_hud
+
+grenade_bone            	= grenade
+
+anim_idle				= idle
+anim_idle_aim			= idle
+anim_idle_moving			= idle_moving
+anim_reload				= reload
+anim_draw				= draw
+anim_holster			= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_grenade
+anim_idle_moving_g			= idle_g_moving
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_gl_on
+anim_switch_grenade_off		= switch_gl_off
+anim_draw_g					= draw_grenade
+anim_holster_g				= holster_grenade
+anim_idle_sprint_g		= idle_sprint
+
+;(режим обычной стрельбы)
+anim_idle_gl				= idle_with_gl
+anim_idle_gl_aim			= idle_with_gl
+anim_idle_moving_gl			= idle_w_gl_moving
+anim_reload_gl				= reload_with_gl
+anim_draw_gl				= draw_with_gl
+anim_holster_gl				= holster_with_gl
+anim_shoot_gl				= shoot_with_gl
+anim_idle_sprint_gl		= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset					= -0.112500,0.015800,0.000000
+zoom_rotate_x				= 0.000400
+zoom_rotate_y				= 0.017200
+
+;тоже самое, но для прицепленого подствольника
+;режим обычной стрельбы
+zoom_offset			= -0.062500,-0.016000,0.000000
+zoom_rotate_x		= 0.033500
+zoom_rotate_y		= 0.068800
+
+;режим подствольника
+grenade_zoom_offset			= -0.120800,-0.174100,0.000000
+grenade_zoom_rotate_x		= -0.189300
+grenade_zoom_rotate_y		= 0.053800
+
+grenade_normal_zoom_offset		= -0.112500,0.014000,0.000000
+grenade_normal_zoom_rotate_x	= 0.033500
+grenade_normal_zoom_rotate_y	= 0.068800
+
+[wpn_l85_sk2]: wpn_l85
+inv_name				= wpn_l85_sk2_name
+description				= wpn_l85_sk2_desc
+inv_grid_y				= 22
+
+inv_weight				= 4
+
+shell_point				= 0, 0.186, -0.2
+shell_particles				= amik\weapons\5_56x45\5_56x45_r_00
+
+hud					= wpn_l85_sk2_hud
+position				= -0.026, -0.115, -0.02
+visual					= weapons\l85\wpn_l85_sk2
+
+scope_zoom_factor			= 1.2
+
+scope_status				= 2
+scope_name				= wpn_addon_scope_ar15
+scope_x					= 70
+scope_y					= -16
+
+silencer_x				= 197
+silencer_y				= 14
+grenade_launcher_x			= 130
+grenade_launcher_y			= 34
+
+snd_draw				= weapons\rifle_draw
+snd_shoot				= weapons\l85\l85_sk2_shoot
+snd_shoot1				= weapons\l85\l85_sk2_shoot1
+snd_shoot2				= weapons\l85\l85_sk2_shoot2
+snd_shoot3				= weapons\l85\l85_sk2_shoot3
+snd_reload				= weapons\l85\l85_sk2_reload
+snd_reload_grenade			= weapons\l85\l85_sk2_grenload
+snd_switch				= weapons\l85\l85_sk2_switch, 0.65
+snd_silncer_shot			= weapons\l85\l85_sk2_shot_sil
+
+[wpn_l85_sk2_hud]: wpn_hud
+shell_point				= 0, 0, -0.8
+fire_point				= 0, 0.0, -0.5
+fire_point2				= -0.05, -0.1, -0.5
+
+fire_bone				= muzzle
+grenade_bone				= grenade
+
+position				= -0.042, -0.18, 0.25
+orientation				= 2, 3, 0
+visual					= weapons\l85\wpn_l85_sk2_hud
+
+anim_idle				= idle
+anim_idle_aim				= aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+anim_idle_moving			= moving
+
+anim_idle_g				= idle_g
+anim_idle_g_aim				= aim_g
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on			= switch_on
+anim_switch_grenade_off			= switch_off
+anim_draw_g				= draw_g
+anim_holster_g				= holster_g
+anim_idle_sprint_g			= sprint_g
+anim_idle_moving_g			= moving_g
+
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= aim_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint_gl			= sprint_w_gl
+anim_idle_moving_gl			= moving_w_gl
+
+zoom_offset				= -0.117450, 0.049050, -0.120000
+zoom_rotate_x				= 0.044500
+zoom_rotate_y				= 0.034000
+
+grenade_zoom_offset			= -0.114350, -0.131250, -0.120000
+grenade_zoom_rotate_x			= -0.188800
+grenade_zoom_rotate_y			= 0.030400
+
+grenade_normal_zoom_offset		= -0.117450, 0.049050, -0.120000
+grenade_normal_zoom_rotate_x		= 0.044500
+grenade_normal_zoom_rotate_y		= 0.034000
+
+; Сбалансированная L85
+[wpn_l85_m1_base]
+inv_grid_x				= 47
+
+cam_dispersion				= 0.75
+cam_dispersion_inc			= 0.2
+condition_shot_dec			= 0.0002
+
+[wpn_l85_m1]: wpn_l85, wpn_l85_m1_base
+inv_name				= wpn-l85_m1
+description				= enc_weapons1_wpn-l85_m1
+
+[wpn_l85_sk2_m1]: wpn_l85_sk2, wpn_l85_m1_base
+inv_name				= wpn_l85_sk2_m1_name
+description				= wpn_l85_sk2_m1_desc
+
+; Облегченная l85
+[wpn_l85_m2_base]
+inv_grid_x				= 52
+
+condition_shot_dec			= 0.0002
+
+smoke_particles				= amik\weapons\smoke_particles\silencer_smoke_particles_02
+flame_particles				=
+light_disabled				= true
+
+silencer_status				= 1
+
+[wpn_l85_m2]: wpn_l85, wpn_l85_m2_base
+inv_name				= wpn-l85_m2
+description				= enc_weapons1_wpn-l85_m2
+inv_weight				= 3
+
+grenade_launcher_x			= 106
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_shoot				= weapons\l85\l85_m2_shot
+snd_shoot1				= weapons\l85\l85_m2_shot
+snd_shoot2				= weapons\l85\l85_m2_shot
+snd_shoot3				= weapons\l85\l85_m2_shot
+;------------------------------------------------------------------------------------------
+
+[wpn_l85_sk2_m2]: wpn_l85_sk2, wpn_l85_m2_base
+inv_name				= wpn_l85_sk2_m2_name
+description				= wpn_l85_sk2_m2_desc
+inv_grid_width				= 6
+inv_weight				= 2.8
+
+shell_point				= 0.0, 0.186, 0.0
+
+hud					= wpn_l85_sk2_m2_hud
+position				= -0.026, -0.135, 0.0
+visual					= weapons\l85\wpn_l85_sk2_m2
+
+scope_status				= 0
+scope_zoom_factor			= 1.4
+
+grenade_launcher_name			= wpn_addon_grenade_launcher_ag36
+grenade_launcher_x			= 133
+grenade_launcher_y			= 41
+
+snd_shoot				= weapons\l85\l85_sk2_m2_shot
+snd_shoot1				= weapons\l85\l85_sk2_m2_shot
+snd_shoot2				= weapons\l85\l85_sk2_m2_shot
+snd_shoot3				= weapons\l85\l85_sk2_m2_shot
+snd_reload				= weapons\l85\l85_sk2_m2_reload
+snd_reload_grenade			= weapons\l85\l85_sk2_m2_grenload
+snd_switch				= weapons\l85\l85_sk2_m2_switch
+
+[wpn_l85_sk2_m2_hud]: wpn_hud
+shell_point				= -0.059999, -0.100000, -0.300000
+shell_dir				= 0.0, 0.0, 0.0
+
+fire_point				= 0.000000, 0.000000, 0.310000
+fire_point2				= 0.000000, 0.000000, 0.310000
+
+grenade_bone				= wpn_grenade
+
+position				= 0.030000, -0.020000, -0.161000
+orientation				= 2.291125, 3.434400, 0.000000
+visual					= weapons\l85\wpn_l85_sk2_m2_hud
+
+anim_idle				= normal_idle
+anim_draw				= normal_draw
+anim_idle_aim				= normal_idle_aim
+anim_reload				= normal_reload
+anim_holster				= normal_holster
+anim_shoot				= normal_shoot
+anim_idle_sprint			= normal_idle_sprint
+anim_idle_moving			= normal_idle_moving
+
+anim_draw_gl				= w_gl_draw
+anim_holster_gl				= w_gl_holster
+anim_idle_gl				= w_gl_idle
+anim_idle_gl_aim			= w_gl_idle_aim
+anim_reload_gl				= w_gl_reload
+anim_shoot_gl				= w_gl_shoot
+anim_switch_grenade_off			= w_gl_switch_off
+anim_switch_grenade_on			= w_gl_switch_on
+anim_idle_sprint_gl			= w_gl_idle_sprint
+anim_idle_moving_gl			= w_gl_idle_moving
+
+anim_draw_g				= grenade_draw
+anim_holster_g				= grenade_holster
+anim_idle_g				= grenade_idle
+anim_idle_g_aim				= grenade_idle_aim
+anim_reload_g				= grenade_reload
+anim_shoot_g				= grenade_shoot
+anim_idle_sprint_g			= grenade_idle_sprint
+anim_idle_moving_g			= grenade_idle_moving
+
+zoom_offset				= -0.144540, 0.026200, -0.209000
+zoom_rotate_x				= 0.022000
+zoom_rotate_y				= 0.039700
+
+grenade_normal_zoom_offset		= -0.144540, 0.026200, -0.209000
+grenade_normal_zoom_rotate_x		= 0.022000
+grenade_normal_zoom_rotate_y		= 0.039700
+
+grenade_zoom_offset			= -0.070610, -0.041097, -0.267001
+grenade_zoom_rotate_x			= -0.085598
+grenade_zoom_rotate_y			= 0.020200

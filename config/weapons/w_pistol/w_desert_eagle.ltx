@@ -1,0 +1,230 @@
+[wpn_desert_eagle]: WP_PM
+min_radius               	= 5
+max_radius               	= 30
+description					= enc_weapons1_wpn-desert-eagle
+
+ef_weapon_type				= 5
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 2500
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 8
+ammo_class		 			= ammo_44mag_jsp, ammo_44mag_jhp
+
+slot 				 		= 1		; // primary
+animation_slot		 		= 1		; type of the animation that will be used
+
+inv_name					= wp_desert_eagle
+inv_weight				= 1.7
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 9
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.22  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.3f
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 6.0	;скорость возврата в исходное положение
+cam_dispersion          	= 6.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 90.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0009
+;-----------------------------------------------------------------------------------
+
+fire_point			= -0.005000,0.130000,0.220000
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point		 			= 0.0, 0.133, 0.06
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\45\45_l
+
+PDM_disp_base 			= 3.2
+PDM_disp_vel_factor 		= 1.1
+PDM_disp_accel_factor 		= 1.1
+PDM_crouch	 		= 5.0
+PDM_crouch_no_acc 		= 1.2
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.54, 0.56, 0.59, 0.62
+hit_impulse				= 4
+hit_rate	= 1.85
+fire_distance       = 65
+bullet_speed		= 315
+rpm                 = 250
+
+hud					= wpn_desert_eagle_hud
+position                 	= -0.021, -0.09, 0.0
+visual					= weapons\desert_eagle\wpn_desert_eagle
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;sound
+snd_draw					= weapons\de\de_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\de\de_shoot
+snd_shoot1					= weapons\de\de_shoot1
+snd_shoot2					= weapons\de\de_shoot2
+snd_shoot3					= weapons\de\de_shoot3
+snd_empty					= weapons\de\de_empty
+snd_reload					= weapons\de\de_reload
+snd_close					= weapons\de\de_close
+;------------------------------------------------------------------------------------------
+
+[wpn_desert_eagle_hud]: wpn_hud
+shell_point			= 0.000000,0.080000,-0.225000
+fire_point			= -0.001000,0.071000,-0.125000
+
+orientation              	= 3,2,0
+visual					= weapons\desert_eagle\wpn_desert_eagle_hud
+
+anim_holster				= holster
+anim_idle					= idle
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster ;draw
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.119400,0.044400,0.111400
+zoom_rotate_x		= 0.012600
+zoom_rotate_y		= 0.052100
+
+[wpn_desert_eagle_sk2]: wpn_desert_eagle
+inv_grid_x				= 75
+inv_grid_y				= 10
+
+shell_particles				= amik\weapons\45\45_r
+
+hud					= wpn_desert_eagle_sk2_hud
+visual					= weapons\desert_eagle\wpn_desert_eagle_sk2
+
+snd_draw				= weapons\pistol_draw
+snd_shoot				= weapons\de\de_sk2_shoot
+snd_shoot1				= weapons\de\de_sk2_shoot
+snd_shoot2				= weapons\de\de_sk2_shoot
+snd_shoot3				= weapons\de\de_sk2_shoot
+snd_reload				= weapons\de\de_sk2_reload
+snd_reload_partly			= weapons\de\de_sk2_reload_partly
+snd_close				= $no_sound
+
+[wpn_desert_eagle_sk2_hud]: wpn_hud
+shell_point				= -0.05, 0.0, -0.5
+fire_point				= 0, 0, -0.2
+fire_bone				= bolt
+
+orientation				= 3, 1, 0
+position				= 0.0, -0.09, 0.15
+visual					= weapons\desert_eagle\wpn_desert_eagle_sk2_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload_empty
+anim_reload_empty			= reload_empty
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= holster
+anim_idle_aim				= idle
+anim_idle_sprint			= idle_sprint
+anim_idle_moving			= idle_moving
+anim_idle_sprint_empty			= idle_sprint_empty
+anim_idle_moving_empty			= idle_moving_empty
+
+zoom_offset				= -0.118, 0.017, 0.0
+zoom_rotate_x				= 0.01
+zoom_rotate_y				= 0.055
+
+; Desert Eagle Mark XIX
+[wpn_desert_eagle_sk2_m1]: wpn_desert_eagle_sk2
+inv_name				= wpn-eagle_m1
+description				= enc_weapons1_wpn-eagle_m1
+
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 9
+
+ammo_mag_size				= 7
+ammo_class				= ammo_50ae_jhp, ammo_50ae_thv
+condition_shot_dec			= 0.0003
+
+shell_particles				=
+
+hit_power				= 0.57, 0.59, 0.61, 0.65
+hit_impulse				= 5
+
+hud					= wpn_desert_eagle_sk2_m1_hud
+position				= -0.021, -0.085, 0.0
+visual					= weapons\desert_eagle\wpn_desert_eagle_sk2_m1
+
+scope_zoom_factor			= 1.2
+silencer_status				= 1
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_shoot				= weapons\de\de_m1_shoot
+snd_shoot1				= weapons\de\de_m1_shoot1
+snd_shoot2				= weapons\de\de_m1_shoot2
+snd_shoot3				= weapons\de\de_m1_shoot3
+snd_reload				= weapons\de\de_sk2_m1_reload
+;------------------------------------------------------------------------------------------
+
+[wpn_desert_eagle_sk2_m1_hud]: wpn_hud
+shell_point				= -0.000000, 0.040000, -0.235000
+fire_point				= 0.0, 0.01, -0.35
+
+visual					= weapons\desert_eagle\wpn_desert_eagle_sk2_m1_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload
+anim_reload_empty			= reload_empty
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_idle_moving_empty			= idle_empty
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+zoom_offset				= -0.136770, 0.029000, -0.090000
+zoom_rotate_x				= 0
+zoom_rotate_y				= 0

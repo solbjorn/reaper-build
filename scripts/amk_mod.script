@@ -586,7 +586,7 @@ function music_select_section(time)
 	lvl = ehits+lvl+ahits
 
 	if music_section == "" then
-		music_section = table.random(music_themes).."_null"
+		music_section = table.fastrand(music_themes) .. "_null"
 	end
 
 	local last_sel_max = 0
@@ -1357,19 +1357,6 @@ end
 
 function check_armor()
 	local armor = Actor:item_in_slot(6)
-
-	if Actor:active_slot()==2 then
-		local weapon = Actor:item_in_slot(2)
-		local tmp = weapon and armor and armor:section()
-
-		if tmp and weapon:section()=="wpn_pkm1" and not string_find(tmp, "exo") then
-			Actor:drop_item(weapon)
-			local tmpw = amk.spawn_item_in_inv("wpn_pkm1")
-			Actor:transfer_item(weapon, Actor)
-			AI:release(tmpw)
-		end
-	end
-
 	if not armor then
 		last_armor_id=0
 		return
@@ -1449,7 +1436,7 @@ local zombi_skeletons={
 function spawn_skel(obj)
 	local skel = create("breakable_object", obj:position(), obj:level_vertex_id(), obj:game_vertex_id())
 	local t = amk.get_breakable_data(skel)
-	t.visual = table.random(zombi_skeletons)
+	t.visual = table.fastrand(zombi_skeletons)
 	t.mass = 1.0
 	t.physic_type = 3
 	t.skeleton_flags = 1
@@ -1482,14 +1469,11 @@ function zomby_blow(obj)
 end
 
 function firebat_ammo()
-	local ammo=Actor:object("ammo_flame")
-	if ammo then
-		Actor:iterate_inventory(
-			function(dummy,item)
-				if item:section()=="ammo_flame" then
-					AI:release(AI:object(item:id()))
-				end
-			end
-			, Actor)
-	end
+	if not (has("ammo_flame_fake") or has("ammo_flame_2_fake")) then return end
+
+	Actor:iterate_inventory(function(dummy, item)
+		if string.find(item:section(), "ammo_flame") then
+			release(item)
+		end
+	end)
 end

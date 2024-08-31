@@ -1,0 +1,137 @@
+; Ручной вариант шестиствольного пулемета "миниган" ХМ-134
+[wpn_m134]: WP_LR300
+min_radius               	= 0
+max_radius               	= 100
+description				= wpn_m134_desc
+
+ef_main_weapon_type			= 2 ;3
+ef_weapon_type				= 6 ;8
+
+news_weapon_type			= 9
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 2.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 3760
+ammo_mag_size				= 100
+
+ammo_class				= ammo_7.62x51_box
+fire_modes				= -1
+
+slot 			         	= 2		; // first
+animation_slot			 	= 2		; type of the animation that will be used
+
+inv_name				= wpn_m134_name
+inv_weight		         	= 10.8
+sprint_allowed			= false
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 36
+inv_grid_y				= 6
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 1.0	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.04f
+disp_rate = 1.5
+
+;отдача
+cam_relax_speed         	= 2.0 ;2.75	;скорость возврата в исходное положение
+cam_dispersion          	= 0.300	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.3	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 12.0	;максимальный угол отдачи
+cam_max_angle_horz		= 15.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 4.5 ;4.3	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 7	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.0003	;вероятность осечки при максимальном износе
+condition_shot_dec 			= 0.001
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.00, 1.1
+shell_point				= 0.0, 0.199, 0.09
+shell_dir				= 0.0, 1.0, 0.0
+
+flame_particles				= amik\weapons\flame_particles\btr_flame
+smoke_particles				= amik\weapons\smoke_particles\big_smoke_particles_01
+shell_particles				= amik\weapons\7_62x51\7_62x51_l_01
+
+PDM_disp_base 			= 2.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        			= 0.56
+hit_impulse				= 9
+hit_rate	                = 1.85
+fire_distance           	= 150
+bullet_speed				= 840
+rpm                     	= 766
+
+weapon_min_queue_size_far		= 15
+weapon_max_queue_size_far		= 15
+weapon_min_queue_interval_far		= 500
+weapon_max_queue_interval_far		= 700
+
+weapon_min_queue_size_medium		= 30
+weapon_max_queue_size_medium		= 30
+weapon_min_queue_interval_medium	= 400
+weapon_max_queue_interval_medium	= 600
+
+weapon_min_queue_size_close		= 100
+weapon_max_queue_size_close		= 100
+weapon_min_queue_interval_close		= 300
+weapon_max_queue_interval_close		= 500
+
+hud					= wpn_m134_hud
+position				= -0.026, -0.130, 0.0
+strap_position				= -0.15, -0.37, 0.2
+visual					= weapons\m134\wpn_m134
+
+light_disabled				= false
+
+light_color					= 0.6,0.5,0.3				; params for light during the fire
+light_range					= 5							; radius
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass			         	= 8
+
+zoom_enabled				= false
+
+;звуки
+snd_draw				= weapons\m134\m134_draw
+snd_holster				= weapons\m134\m134_holster
+snd_shoot				= weapons\m134\m134_shoot
+snd_empty				= weapons\m134\m134_empty
+snd_reload				= weapons\m134\m134_reload, 1.0, 1.3
+
+[wpn_m134_hud]: wpn_hud
+shell_point				= -0.0, 0.0, -1.0
+fire_point				= 0.0, 0, 0.45
+
+fire_bone				= barrels
+
+orientation				= 4, 5, 0
+position				= 0.13, -0.19, 0.75
+visual					= weapons\m134\wpn_m134_hud
+
+anim_idle				= idle
+anim_idle_aim				= idle
+anim_reload				= reload1
+anim_draw				= draw
+anim_holster				= no_anim
+anim_shoot				= shoot
+anim_idle_moving			= idle
+anim_idle_sprint			= idle
+
+zoom_offset				= -0.156700, -0.015200, 0.000000
+zoom_rotate_x				= 0.011600
+zoom_rotate_y				= 0.035500

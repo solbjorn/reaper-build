@@ -274,14 +274,9 @@ function CheckPreconditionsForPhare(id,who)
 end
 
 function CheckPreconditionsForDialog(tbl)
-	if tbl == nil then
-		abort("Kurwa tbl is nil")
-		return false
-	end
-
 	if (tbl["init_func"]~=nil) and (tbl["init_func"]~=false) then
 		startInitFunction(tbl["init_func"])
-		if (#tblInitDialogTbl==0) then
+		if table.size(tblInitDialogTbl) == 0 then
 			abort("NOT VALID DIALOG INIT!!! "..tbl["init_func"])
 			return false
 		else
@@ -467,6 +462,7 @@ end
 
 function init()
 	local parse_xml_file = parse_xml.file
+
 	local t = string.parse_names(config:r_string("profiles", "files"))
 	for i = 1, #t do
 		addToGlobalPre(parse_xml_file("gameplay\\" .. t[i] .. ".xml"))

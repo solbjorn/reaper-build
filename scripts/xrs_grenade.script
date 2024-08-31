@@ -19,83 +19,29 @@ local gr_fakes = {
 	["grenade_rgd5_fake"]	= true
 }
 
-grenades = {}
-grenadiers = {}
-pseudo_grenades = {}
+local grenades = { }
+local grenadiers = { }
 
-test_grenades={}
+local pseudo_grenades = { }
+local test_grenades = { }
 
 evid_crazy_grenadier=18670
 evid_aaa_grenade=evid_crazy_grenadier + 1
 
-actid_crazy_fire_in_the_hole=evid_crazy_grenadier
-actid_run_from_grenade=actid_crazy_fire_in_the_hole + 1
+local actid_crazy_fire_in_the_hole = evid_crazy_grenadier
+local actid_run_from_grenade = actid_crazy_fire_in_the_hole + 1
 
-grenade_max_dist = 50
-grenade_bone = "bip01_head"
+local grenade_max_dist = 50
+local grenade_bone = "bip01_r_hand"
 
-snd_grenade_replics={
-	stalker = {
-		[[stalker\grenade_ready_1]],
-		[[stalker\grenade_ready_2]],
-		[[stalker\grenade_ready_3]],
-		[[stalker\grenade_ready_4]],
-		[[stalker\grenade_ready_5]],
-		[[stalker\grenade_ready_6]],
-		[[stalker\grenade_ready_7]]
-	},
-	military = {
-		[[military\grenade_ready_1]],
-		[[military\grenade_ready_2]],
-		[[military\grenade_ready_3]],
-		[[military\grenade_ready_4]],
-		[[military\grenade_ready_5]],
-		[[military\grenade_ready_6]],
-		[[military\grenade_ready_7]]
-	},
-	bandit = {
-		[[bandit\grenade_ready_1]],
-		[[bandit\grenade_ready_2]],
-		[[bandit\grenade_ready_3]],
-		[[bandit\grenade_ready_4]],
-		[[bandit\grenade_ready_5]],
-		[[bandit\grenade_ready_6]],
-		[[bandit\grenade_ready_7]]
-	},
-	monolith = {
-	    [[monolith\grenade_ready_1]],
-		[[monolith\grenade_ready_2]],
-		[[monolith\grenade_ready_3]],
-		[[monolith\grenade_ready_4]],
-		[[monolith\grenade_ready_5]],
-		[[monolith\grenade_ready_6]],
-		[[monolith\grenade_ready_7]]
-	},
-	killer = {
-		[[killer\grenade_ready_1]],
-		[[killer\grenade_ready_2]],
-		[[killer\grenade_ready_3]],
-		[[killer\grenade_ready_4]],
-		[[killer\grenade_ready_5]]
-	},
-	dolg = {
-		[[dolg\grenade_ready_1]],
-		[[dolg\grenade_ready_2]],
-		[[dolg\grenade_ready_3]],
-		[[dolg\grenade_ready_4]],
-		[[dolg\grenade_ready_5]],
-		[[dolg\grenade_ready_6]],
-		[[dolg\grenade_ready_7]]
-	},
-	freedom = {
-		[[freedom\grenade_ready_1]],
-		[[freedom\grenade_ready_2]],
-		[[freedom\grenade_ready_3]],
-		[[freedom\grenade_ready_4]],
-		[[freedom\grenade_ready_5]],
-		[[freedom\grenade_ready_6]],
-		[[freedom\grenade_ready_7]]
-	}
+local snd_grenade_replics = {
+	bandit		= 7,
+	dolg		= 7,
+	freedom		= 7,
+	killer		= 5,
+	military	= 7,
+	monolith	= 7,
+	stalker		= 7
 }
 ----------------------------------------------------------------------------------------------------------------------
 -- EVALUATORS
@@ -390,9 +336,14 @@ function action_fire_in_the_hole:execute()
 			npc:set_body_state(move.standing)
 			npc:movement_enabled(true)
 
-			local snd_sect = snd_grenade_replics[npc:character_community()] or snd_grenade_replics.stalker
-			local snd = [[characters_voice\grenadier\]]..snd_sect[math.random(#snd_sect)]
-			snd = xr_sound.get_safe_sound_object(snd)
+			local comm = npc:character_community()
+			local snd = snd_grenade_replics[comm]
+			if not snd then
+				comm = "stalker"
+				snd = snd_grenade_replics[comm]
+			end
+
+			snd = voice([[characters_voice\grenadier\]] .. comm .. [[\grenade_ready_]] .. math.random(snd))
 			snd:play_no_feedback(npc, sound_object.s3d, 0, npc:position(), 1.0)
 
 			self.start_time = time_global()
@@ -654,10 +605,36 @@ function death_callback(npc)
 	end
 end
 
-function check_enemy(npc,be)
-	return be and npc:alive() and (be:is_stalker() or be:is_monster())
-		and be:alive() and not be:wounded() and npc:see(be)
-		and be:position():distance_to(level.vertex_position(be:level_vertex_id()))<2 --из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
+local clsid_enemy
+
+function init_clsids()
+	clsid_enemy = {
+		[clsid.actor]		= true,
+		[clsid.bloodsucker_s]	= true,
+		[clsid.boar_s]		= true,
+		[clsid.burer_s]		= true,
+		[clsid.chimera_s]	= true,
+		[clsid.controller_s]	= true,
+		[clsid.flesh_s]		= true,
+		[clsid.fracture_s]	= true,
+		[clsid.gigant_s]	= true,
+		[clsid.poltergeist_s]	= true,
+		[clsid.pseudodog_s]	= true,
+		[clsid.psy_dog_s]	= true,
+		[clsid.script_stalker]	= true,
+		[clsid.script_trader]	= true,
+		[clsid.snork_s]		= true,
+		[clsid.zombie_s]	= true
+	}
+
+	this.init_clsids = nil
+end
+
+function check_enemy(npc, be)
+	return be and npc:alive() and clsid_enemy[be:clsid()] and
+	       be:alive() and not be:wounded() and npc:see(be) and
+	       -- из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
+	       be:position():distance_to(level.vertex_position(be:level_vertex_id())) < 2
 end
 
 function npc_update(binder)

@@ -54,7 +54,7 @@ function CHudInterfaceMgr:date_static()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:night_vision_static()
-	if level.has_pp_effector(effector_ids.night_vision) > 0 and get_actor_data("camera_type") == EActorCameras.eacFirstEye then
+	if level.has_pp_effector(effector_ids.night_vision) ~= 0 and get_actor_data("camera_type") == EActorCameras.eacFirstEye then
 		if not self.night_vision_active then
 			local rect = amk_mod.get_hud_rect()
 			self.night_vision:SetWndRect(rect.x, rect.y, rect.w, rect.h)

@@ -94,9 +94,11 @@ amk_spawn_item("m_inventory_seif",vec:set(306.47,-39.39,-26.22),1930,69058)
 		end
 	end
 end
+
 function add_ak47()
-amk_spawn_item("wpn_ak47",vector():set(108.5,7.74,-9.07),987,304788)
+	create_random("wpn_ak47", xyz(108.5, 7.74, -9.07), 304788, 987)
 end
+
 function add_doktor_book()
 amk_spawn_item("sak_book4",vector():set(-3.49,-4.26,191.34),2195,96166)
 end
@@ -131,9 +133,12 @@ end
 function add_decoder()
 amk_spawn_item("decoder1",vector():set(-42.65,19.18,1.97),1530,2557) --декодер в  X-16 возле главного пульта
 end
+
+-- Гаусс-пистолет  в ТД
 function add_gauss()
-amk_spawn_item("wpn_gungauss",vector():set(-126.11,0.91,-533.55),836,31356) --Гаусс-пистолет  в ТД
+	create("wpn_gungauss", xyz(-126.11, 0.91, -533.55), 31356, 836)
 end
+
 function add_medusa_green()
 amk_spawn_item("af_medusa_green",vector():set(260.59,-9.82,-135),404,373051) --Изумрудная медуза на свалке
 end
@@ -196,10 +201,14 @@ end
 function add_kontainer()
 amk_spawn_item("inventory_sakbox_05",vector():set(378,-52,-179.20),2097,101537)
 end
+
 function agroprom_wpm()
-local obj = AI:story_object(9115)
-AI:create("wpn_vintorez_m1",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+	local obj = story_object(9115)
+
+	create("wpn_vintorez_sk2_m1", obj.position, obj.m_level_vertex_id,
+	       obj.m_game_vertex_id, obj.id)
 end
+
 function add_books()
 amk_spawn_item("sak_book1",vector():set(28.11,-12.07,38.93),1161,6530)
 amk_spawn_item("sak_book2",vector():set(-120.27,21.56,-32.65),1529,165)

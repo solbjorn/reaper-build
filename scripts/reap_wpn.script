@@ -1,0 +1,587 @@
+--[[---------------------------------------------------------------------------
+ * Former sa_hud_animations_mgr.script from Shadows Addon (Ray Twitty aka Shadows)
+--]]---------------------------------------------------------------------------
+
+--[[---------------------------------------------------------------------------
+ * Constants
+--]]---------------------------------------------------------------------------
+
+local hud_zoom_offsets = { 104, 108, 112, 96, 100 }
+local NO_SCOPE = [[act\nevidimka_face]]
+local FIREMODE_SWITCH_SOUND = [[weapons\firemode_switch]]
+local MAX_ANIM_COUNT = 8
+local NO_ANIM = ""
+
+local force_dof_states = { }
+for _, state in ipairs({ "reload", "showing", "hiding", "switch" }) do
+	force_dof_states[weapon_states[state]] = true
+end
+
+local force_dof_mstates = { }
+for _, state in ipairs({ "showing", "hiding", "playing" }) do
+	force_dof_mstates[missile_states[state]] = true
+end
+
+local scope_ratio = { }
+for _, name in ipairs({ "1P21-AMK_1680-W", "crossbow", "PSO1M1-AMK_1680-W", "PSO1M2-AMK_1680-W" }) do
+	scope_ratio[name] = 0.625
+end
+for _, name in ipairs({ "awm", "comp", "lr300_m2", "mildot" }) do
+	scope_ratio[name] = 0.75
+end
+
+--[[---------------------------------------------------------------------------
+ * Singleton class
+--]]---------------------------------------------------------------------------
+
+class "weapon_manager"
+
+function weapon_manager:__init()
+	self.next_500 = 0
+
+	self.scope_ratio = screen.height / screen.width
+	self:init_scope_texture()
+end
+
+function weapon_manager:update()
+	self.item = Actor:active_item()
+	if self.item then
+		self.current_state = self.item:get_hud_item_state()
+
+		local status, grenade_mode = self.item:id()
+		if status ~= self.item_id then
+			self.item_id = status
+			self:update_item_data()
+		end
+
+		if self.item:is_weapon() then
+			status = get_weapon_data(self.item, "zoom_mode")
+			grenade_mode = self.gl_status ~= 0 and get_weapon_data(self.item, "grenade_mode")
+		else
+			status = false
+			grenade_mode = false
+		end
+		if status ~= self.zoom_mode or grenade_mode ~= self.grenade_mode then
+			self:update_zoom_offsets(status, grenade_mode)
+		end
+
+		status = self.zoom_mode and get_weapon_data(self.item, "scope_enabled") and
+			 not get_weapon_data(self.item, "grenade_mode")
+		if status ~= actor_flags.scope_zoom_mode then
+			self:scope_zoom_mode(status)
+		end
+
+		status = actor_flags.scope_zoom_mode and
+			 get_weapon_data(self.item, "zoom_rotation_factor") == 1 and
+			 get_actor_data("camera_type") == EActorCameras.eacFirstEye
+		if status ~= self.scope_tex_status then
+			self:show_scope_texture(status)
+		end
+
+		if self:is_idle_state() then
+			self:idle_animation()
+		else
+			self.animation = NO_ANIM
+		end
+
+		if self.last_state ~= self.current_state then
+			if self.item:is_weapon_shotgun() and self.cartridge_bone then
+				if self.current_state == weapon_states.fire or
+				   self.current_state == weapon_states.reload then
+					self.item:set_hud_bone_visible(self.cartridge_bone, 1)
+				else
+					self.item:set_hud_bone_visible(self.cartridge_bone, 0)
+				end
+			end
+			self.last_state = self.current_state
+		end
+
+		self:dof_control()
+
+		if time_real_ms >= self.next_500 then
+			if self.rotate_params then
+				self:update_rotate_time()
+			end
+
+			self.next_500 = time_real_ms + 500
+		end
+	elseif self.item_id ~= 0 then
+		if self.scope_tex_status then
+			self:show_scope_texture(false)
+		end
+		if actor_flags.scope_zoom_mode then
+			self:scope_zoom_mode(false)
+		end
+		self:dof_control()
+
+		self.item_id = 0
+	end
+end
+
+function weapon_manager:update_item_data()
+	self.animation = NO_ANIM
+	self.anims = { }
+	self.last_state = -1
+
+	self.section = self.item:section()
+	self.hud_section = get_hud_data(self.item, "hud_section")
+	self.cartridge_bone = config:r_string_ex(self.hud_section, "cartridge_bone")
+	self.gl_status = config:r_float_ex(self.section, "grenade_launcher_status", 0)
+	self.firemode_sound = #(config:r_list(self.section, "fire_modes") or { }) > 1 and
+			      voice(FIREMODE_SWITCH_SOUND) or nil
+
+	self:read_scope_params()
+	self:read_zoom_offsets()
+	self:read_rotate_params()
+
+	self:show_scope_texture(false)
+end
+
+function weapon_manager:scope_zoom_mode(status)
+	if not level.main_input_receiver() then
+		if status and not self.scope_keep_hud then
+			level.hide_indicators()
+		else
+			level.show_indicators()
+		end
+	end
+
+	actor_flags.scope_zoom_mode = status
+end
+
+function weapon_manager:dof_control()
+	local value = 0
+	if self.item and get_actor_data("camera_type") ~= EActorCameras.eacFreeLook then
+		if get_actor_data("zoom_mode") then
+			value = 0.25
+		else
+			if self.item:is_weapon() then
+				force = force_dof_states[self.current_state]
+			else
+				force = force_dof_mstates[self.current_state]
+			end
+			if force then
+				value = 0.15
+			end
+		end
+	end
+
+	if self.dof_value ~= value then
+		console:execute("r2_aa_weight 0.25,0.25," .. value)
+		self.dof_value = value
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Idle animation
+--]]---------------------------------------------------------------------------
+
+function weapon_manager:get_type_animation(state)
+	if self.item:is_weapon_gl() then
+		if get_weapon_data(self.item, "grenade_mode") then
+			if state == "idle" then
+				return "anim_idle_g"
+			elseif state == "moving" then
+				return "anim_idle_moving_g"
+			elseif state == "sprint" then
+				return "anim_idle_sprint_g"
+			end
+		elseif self.gl_status == 1 or get_weapon_data(self.item, "is_attached_grenade_launcher") then
+			if state == "idle" then
+				return "anim_idle_gl"
+			elseif state == "moving" then
+				return "anim_idle_moving_gl"
+			elseif state == "sprint" then
+				return "anim_idle_sprint_gl"
+			end
+		end
+	elseif self.item:is_weapon_pistol() and self.item:get_ammo_in_magazine() == 0 then
+		if state == "idle" then
+			return "anim_empty"
+		elseif state == "moving" then
+			return "anim_idle_moving_empty"
+		elseif state == "sprint" then
+			return "anim_idle_sprint_empty"
+		end
+	elseif self.item:clsid() == clsid.wpn_bm16_s then
+		local mag_size = self.item:get_ammo_in_magazine()
+		if mag_size == 1 then
+			if state == "idle" then
+				return "anim_idle_1"
+			elseif state == "moving" then
+				return "anim_idle_moving_1"
+			end
+		elseif mag_size == 2 then
+			if state == "idle" then
+				return "anim_idle_2"
+			elseif state == "moving" then
+				return "anim_idle_moving_2"
+			end
+		end
+	end
+	if state == "idle" then
+		return "anim_idle"
+	elseif state == "moving" then
+		return "anim_idle_moving"
+	elseif state == "sprint" then
+		return "anim_idle_sprint"
+	end
+end
+
+function weapon_manager:fill_animations_list(anim_type)
+	local anim_name = config:r_string(self.hud_section, anim_type)
+	if not self.item:has_hud_animation(anim_name) then
+		abort(self.hud_section .. ": no "  .. anim_name .. " animations available")
+		return
+	end
+
+	local animations_list = { anim_name }
+	for i = 2, MAX_ANIM_COUNT do
+		if self.item:has_hud_animation(anim_name .. i) then
+			animations_list[#animations_list + 1] = anim_name .. i
+		end
+	end
+
+	if #animations_list == 1 then
+		animations_list = animations_list[1]
+	end
+	self.anims[anim_type] = animations_list
+
+	return animations_list
+end
+
+function weapon_manager:play_hud_animation(anim_type)
+	if not config:line_exist(self.hud_section, anim_type) then
+		abort(self.hud_section .. ": " .. anim_type .. " is not defined")
+		return
+	end
+
+	local anim_name = self.anims[anim_type] or self:fill_animations_list(anim_type)
+	if type(anim_name) == "table" then
+		anim_name = table.fastrand(anim_name)
+	end
+	if self.anim_name ~= anim_name then
+		self.item:play_hud_animation(anim_name, true)
+		self.anim_name = anim_name
+	end
+end
+
+function weapon_manager:is_idle_state()
+	if get_actor_data("zoom_mode") then return false end
+
+	if self.item:is_weapon() then
+		return self.current_state == weapon_states.idle
+	else
+		return self.current_state == missile_states.idle
+	end
+end
+
+function weapon_manager:idle_animation()
+	local name
+	if Actor:is_actor_running() or Actor:is_actor_walking() or Actor:is_actor_crouching() then
+		name = "moving"
+	elseif Actor:is_actor_sprinting() then
+		name = "sprint"
+	else
+		name = "idle"
+	end
+	if self.animation ~= name then
+		self:play_hud_animation(self:get_type_animation(name))
+		self.animation = name
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Scope texture
+--]]---------------------------------------------------------------------------
+
+function weapon_manager:read_scope_params()
+	if not self.item:is_weapon() or not get_weapon_data(self.item, "scope_enabled") then return end
+	self.scope_keep_hud = config:r_bool_ex(self.hud_section, "scope_zoom_hide_indicators", true) == false
+
+	local var
+	if not config:r_bool_ex(self.hud_section, "ignore_scope_texture") then
+		if config:r_u32(self.section, "scope_status") == 1 then
+			var = self.section
+		else
+			var = get_weapon_data(self.item, "scope_name")
+		end
+		self.scope_texture = config:r_string_ex(var, "scope_texture")
+	else
+		self.scope_texture = nil
+	end
+
+	var = self.item:get_wpn_int8(nil, 936)
+	self.item:set_wpn_int8(936, self.scope_texture and bit_and(var, 127) or bit_or(var, 128))
+
+	if not self.scope_texture then
+		self.scope_texture = NO_SCOPE
+	end
+
+	var = scope_ratio[string.sub(self.scope_texture, 16)] or 0.5625
+	if self.scope_ratio ~= var then
+		self.scope_ratio = var
+		self:rescale_scope_texture()
+	end
+
+	if self.st_scope_l then
+		self.st_scope_l:InitTexture(self.scope_texture)
+		self.st_scope_l:SetOriginalRect(0, 0, 1, 1)
+	end
+	if self.st_scope_r then
+		self.st_scope_r:InitTexture(self.scope_texture)
+		self.st_scope_r:SetOriginalRect(0, 0, 1, 1)
+	end
+	self.st_scope:InitTexture(self.scope_texture)
+end
+
+function weapon_manager:get_scope_offset()
+	local width = 1024 * screen.height / (screen.width * self.scope_ratio)
+
+	return width, (1024 - width) / 2
+end
+
+function weapon_manager:init_scope_texture()
+	local width, offset = self:get_scope_offset()
+	local st
+
+	st = CUIStatic()
+	st:Init(0, 0, offset, 768)
+	st:SetStretchTexture(true)
+	hud:AddDialogToRender(st)
+	self.st_scope_l = st
+
+	st = CUIStatic()
+	st:Init(width + offset, 0, offset + 1, 768)
+	st:SetStretchTexture(true)
+	hud:AddDialogToRender(st)
+	self.st_scope_r = st
+
+	st = CUIStatic()
+	st:Init(offset, 0, width, 768)
+	st:SetStretchTexture(true)
+	hud:AddDialogToRender(st)
+	self.st_scope = st
+end
+
+function weapon_manager:rescale_scope_texture()
+	local width, offset = self:get_scope_offset()
+
+	self.st_scope_l:SetWndRect(0, 0, offset, 768)
+	self.st_scope_r:SetWndRect(width + offset, 0, offset + 1, 768)
+	self.st_scope:SetWndRect(offset, 0, width, 768)
+end
+
+function weapon_manager:show_scope_texture(status)
+	if self.st_scope_l then
+		self.st_scope_l:Show(status)
+	end
+	if self.st_scope_r then
+		self.st_scope_r:Show(status)
+	end
+	self.st_scope:Show(status)
+
+	self.scope_tex_status = status
+end
+
+function weapon_manager:clear_scope_texture()
+	self.scope_tex_status = nil
+
+	if self.st_scope_l then
+		hud:RemoveDialogToRender(self.st_scope_l)
+	end
+	if self.st_scope_r then
+		hud:RemoveDialogToRender(self.st_scope_r)
+	end
+	hud:RemoveDialogToRender(self.st_scope)
+end
+
+--[[---------------------------------------------------------------------------
+ * Extended zoom offsets
+--]]---------------------------------------------------------------------------
+
+function weapon_manager:read_zoom_offsets()
+	self.zoom_mode = false
+	self.grenade_mode = false
+
+	if not self.item:is_weapon() then
+		self.offsets = nil
+		return
+	end
+
+	self.offsets = { }
+	local res = config:r_list(self.hud_section, "zoom_offset")
+	res[4] = config:r_float(self.hud_section, "zoom_rotate_x")
+	res[5] = config:r_float(self.hud_section, "zoom_rotate_y")
+	self.offsets.normal = res
+
+	if get_weapon_data(self.item, "scope_enabled") and
+	   config:line_exist(self.hud_section, "scope_zoom_offset") then
+		res = config:r_list(self.hud_section, "scope_zoom_offset")
+		res[4] = config:r_float(self.hud_section, "scope_zoom_rotate_x")
+		res[5] = config:r_float(self.hud_section, "scope_zoom_rotate_y")
+		self.offsets.scope = res
+	end
+
+	if self.gl_status == 0 or not self.item:is_weapon_gl() then return end
+
+	if self.gl_status == 2 then
+		res = config:r_list(self.hud_section, "grenade_normal_zoom_offset")
+		res[4] = config:r_float(self.hud_section, "grenade_normal_zoom_rotate_x")
+		res[5] = config:r_float(self.hud_section, "grenade_normal_zoom_rotate_y")
+		self.offsets.grenade_normal = res
+	end
+
+	res = config:r_list(self.hud_section, "grenade_zoom_offset")
+	res[4] = config:r_float(self.hud_section, "grenade_zoom_rotate_x")
+	res[5] = config:r_float(self.hud_section, "grenade_zoom_rotate_y")
+	self.offsets.grenade = res
+
+	if not get_weapon_data(self.item, "scope_enabled") then return end
+
+	if config:line_exist(self.hud_section, "scope_grenade_normal_zoom_offset") then
+		res = config:r_list(self.hud_section, "scope_grenade_normal_zoom_offset")
+		res[4] = config:r_float(self.hud_section, "scope_grenade_normal_zoom_rotate_x")
+		res[5] = config:r_float(self.hud_section, "scope_grenade_normal_zoom_rotate_y")
+		self.offsets.scope_grenade_normal = res
+	end
+
+	if config:line_exist(self.hud_section, "scope_grenade_zoom_offset") then
+		res = config:r_list(self.hud_section, "scope_grenade_zoom_offset")
+		res[4] = config:r_float(self.hud_section, "scope_grenade_zoom_rotate_x")
+		res[5] = config:r_float(self.hud_section, "scope_grenade_zoom_rotate_y")
+		self.offsets.scope_grenade = res
+	end
+end
+
+function weapon_manager:update_zoom_offsets(status, grenade_mode)
+	self.zoom_mode = status
+	self.grenade_mode = grenade_mode
+
+	if not self.offsets then return end
+	local scope, arr = get_weapon_data(self.item, "scope_enabled")
+
+	if self.item:is_weapon_gl() then
+		if grenade_mode then
+			arr = scope and self.offsets.scope_grenade or self.offsets.grenade
+		elseif self.gl_status == 1 or get_weapon_data(self.item, "is_attached_grenade_launcher") then
+			arr = scope and self.offsets.scope_grenade_normal or self.offsets.grenade_normal
+		end
+	end
+	if not arr then
+		arr = scope and self.offsets.scope or self.offsets.normal
+	end
+
+	for i = 1, #hud_zoom_offsets do
+		self.item:set_hud_float(nil, arr[i], hud_zoom_offsets[i])
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Dynamic zoom rotate time
+--]]---------------------------------------------------------------------------
+
+function weapon_manager:read_rotate_params()
+	if not self.item:is_weapon() or not config:r_bool_ex(self.section, "zoom_enabled") then
+		self.rotate_params = nil
+		return
+	end
+
+	local base = self.item:get_inventory_item_float(164)
+	local flags, var, sect = self.item:get_wpn_int(nil, 936)
+
+	if config:r_float_ex(self.section, "scope_status", 0) == 2 and bit_and(flags, 1) ~= 0 then
+		set_int_arg0(952)
+		var = self.item:get_wpn_shared_str()
+
+		sect = var
+		base = base + config:r_float(var, "inv_weight")
+	end
+
+	if config:r_float_ex(self.section, "silencer_status", 0) == 2 and bit_and(flags, 4) ~= 0 then
+		set_int_arg0(956)
+		var = self.item:get_wpn_shared_str()
+
+		base = base + config:r_float(var, "inv_weight")
+	end
+
+	if self.gl_status == 2 and bit_and(flags, 2) ~= 0 then
+		set_int_arg0(960)
+		var = self.item:get_wpn_shared_str()
+
+		base = base + config:r_float(var, "inv_weight")
+	end
+
+	var = config:r_float(sect or self.section, "scope_zoom_factor")
+	sect = config:r_list(self.section, "ammo_class")[get_weapon_data(self.item, "ammo_type") + 1]
+
+	self.rotate_params = {
+		base	= (base + (var >= 2 and 1 or (var - 1))) / 10,
+		bullet	= config:r_float(sect, "inv_weight") / config:r_u32(sect, "box_size")
+	}
+end
+
+function weapon_manager:update_rotate_time()
+	local val = self.item:get_ammo_in_magazine() * self.rotate_params.bullet / 10 +
+		    self.rotate_params.base
+	if val < 0.15 then
+		val = 0.15
+	elseif val > 1 then
+		val = 1
+	end
+
+	self.item:set_wpn_float(nil, val, 996)
+end
+
+--[[---------------------------------------------------------------------------
+ * Hotkeys
+--]]---------------------------------------------------------------------------
+
+function weapon_manager:on_key_press(bind)
+	if not self.item or not self.item:is_weapon() then return end
+
+	if bind == key_bindings.kWPN_RELOAD then
+		if self.item:get_ammo_in_magazine() ~= get_weapon_data(self.item, "mag_size") then
+			self.animation = NO_ANIM
+		end
+	elseif bind == key_bindings.kUSE then
+		local target_obj = level.get_target_obj()
+		if target_obj and target_obj:is_holder() then
+			self.animation = NO_ANIM
+		end
+	elseif bind == key_bindings.kWPN_FIREMODE_PREV or
+	       bind == key_bindings.kWPN_FIREMODE_NEXT then
+		if self.firemode_sound then
+			say(self.firemode_sound)
+		end
+	end
+end
+
+function weapon_manager:on_key_release(bind)
+	if not self.item or not self.item:is_weapon() then return end
+
+	if bind == key_bindings.kWPN_FIRE then
+		if self.item:get_ammo_in_magazine() == 0 then
+			self.animation = NO_ANIM
+		end
+	elseif bind == key_bindings.kWPN_FUNC then
+		if self.gl_status == 2 and
+		   not get_weapon_data(self.item, "is_attached_grenade_launcher") then
+			self.animation = NO_ANIM
+		end
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Exports
+--]]---------------------------------------------------------------------------
+
+local wm
+
+function get_weapon_manager()
+	if not wm then
+		wm = weapon_manager()
+	end
+
+	return wm
+end

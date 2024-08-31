@@ -4,6 +4,7 @@
 
 local game_get_game_time = game.get_game_time
 local math_floor = math.floor
+local math_random = math.random
 local table_add = table.add
 local table_sub = table.sub
 
@@ -41,6 +42,10 @@ table.clear = function(t, keep)
 	end
 
 	return t
+end
+
+table.fastrand = function(t)
+	return t[math_random(#t)]
 end
 
 table.list_add = function(hash, list)
@@ -273,6 +278,7 @@ local methods = {
 	"is_btr",
 	"is_capsule",
 	"is_car",
+	"is_detector",
 	"is_grenade",
 	"is_helicopter",
 	"is_knife",
@@ -280,7 +286,9 @@ local methods = {
 	"is_monster_part",
 	"is_stalker",
 	"is_trader",
-	"is_weapon"
+	"is_weapon",
+	"is_weapon_addon",
+	"is_weapon_pistol"
 }
 
 for i = 1, #methods do
@@ -314,10 +322,14 @@ game_object.modify_netpk = function(obj, ...)
 end
 
 methods = {
+	"is_binoculars",
 	"is_btr",
 	"is_capsule",
+	"is_detector",
 	"is_monster_part",
-	"is_stalker"
+	"is_stalker",
+	"is_weapon_addon",
+	"is_weapon_pistol"
 }
 
 for i = 1, #methods do

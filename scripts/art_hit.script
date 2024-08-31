@@ -305,7 +305,7 @@ function hit_by_art(obj)
 	h.power = s.power * propusk
 
 	local cameffs ={"hit_front","hit_back","hit_front_left","hit_back_left","hit_front_right","hit_back_right"}
-	level.add_cam_effector("camera_effects\\" .. table.random(cameffs) .. ".anm", 999, false, "")
+	level.add_cam_effector("camera_effects\\" .. table.fastrand(cameffs) .. ".anm", 999, false, "")
 	actor:hit(h)
 	actor:drop_item(obj)
 end

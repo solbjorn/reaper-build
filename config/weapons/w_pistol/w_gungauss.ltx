@@ -1,0 +1,113 @@
+[wpn_gungauss]: WP_PM
+min_radius              = 0
+max_radius              = 10
+description				= enc_weapons1_wpn-gungauss
+
+ef_weapon_type			 = 5
+
+news_weapon_type			= 15
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0; 2.85           ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0; 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost			 			= 25000
+
+ammo_elapsed		 		= 12
+ammo_mag_size		 		= 1
+ammo_class		 			= ammo_super_gauss
+
+slot 					= 1		; // secondary
+animation_slot			= 1		; type of the animation that will be used
+
+inv_name				= wpn-gungauss
+inv_weight				= 3
+
+inv_grid_width				= 2
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 13
+;базовая дисперсия
+fire_dispersion_base		= 0.20 ;0.01 ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.4f
+
+;отдача
+cam_dispertion_frac 		= 1.0;
+cam_relax_speed         	= 3;0.05	;скорость возврата в исходное положение
+cam_dispersion          	= 0.01	;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle				= 1.0	;максимальный угол отдачи
+cam_max_angle_horz			= 5.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz			= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.0001 ;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.00001
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.148, 0.180
+flame_particles				= weapons\generic_weapon_gauss
+smoke_particles				= weapons\generic_weapon07
+
+;;;;;;  Для Народной солянки 2009
+hit_power                   = 0.7, 0.7, 0.7, 0.8
+hit_impulse				= 10
+hit_rate	= 1.85
+fire_distance           	= 25
+bullet_speed		 	    = 4000
+rpm                     	= 50
+
+disp_rate = 1.85
+
+hud					= wpn_gungauss_hud
+position				= -0.021, -0.10, -0.0011
+visual					= weapons\gungauss\wpn_gungauss
+
+light_color		 		= 1.3,1.5,2     ;1.3,1.5,2
+light_range		 		= 3.0			;4.0
+light_var_color		 	= 0.05  		;0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.5
+
+ph_mass					= 1
+
+scope_zoom_factor			= 1.2
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+;звуки
+snd_draw				= weapons\gauss_pistol\gauss_pistol_draw
+snd_holster				= weapons\gauss_pistol\gauss_pistol_holster
+snd_shoot				= weapons\gauss_pistol\gauss_pistol_shoot
+snd_empty				= weapons\gauss_pistol\gauss_pistol_empty
+snd_reload				= weapons\gauss_pistol\gauss_pistol_reload
+snd_close				= weapons\gauss_pistol\gauss_pistol_close
+;------------------------------------------------------------------------------------------
+
+[wpn_gungauss_hud]: wpn_hud
+shell_point				= 0, 0, -0.45
+fire_point				= 0, -0.0225, -0.38
+fire_bone				= muzzle
+
+position				= 0.030, -0.1800, 0.039
+orientation				= 2, 2, 0
+visual					= weapons\gungauss\wpn_gungauss_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle
+anim_idle_moving			= idle
+anim_idle_moving_empty			= idle
+anim_reload				= reload
+anim_reload_empty			= reload
+anim_draw				= draw
+anim_draw_empty				= draw
+anim_shoot				= shoot
+anim_shot_last				= shoot
+anim_close				= holster
+anim_idle_aim				= aim
+anim_idle_sprint			= sprint
+anim_idle_sprint_empty			= sprint
+
+zoom_offset				= -0.1540, 0.0850, -0.055
+zoom_rotate_x				= 0.0618
+zoom_rotate_y				= 0.0420

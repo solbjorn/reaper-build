@@ -1,0 +1,235 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_aps]: WP_PM
+class					= WP_LR300
+min_radius          		= 30
+max_radius          		= 100
+description			= enc_weapons1_wpn-aps
+
+ef_main_weapon_type			= 0
+ef_weapon_type				= 5
+
+allow_military				= true
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier		= 1.0
+holder_fov_modifier		= 1.0
+;-----------------------------------------------------------------------------------
+
+cost				= 500
+
+ammo_elapsed				= 20
+ammo_mag_size		= 20
+fire_modes			= 1, -1
+ammo_class				= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
+
+slot 				= 1
+animation_slot			= 1
+
+inv_name	        		= wpn-aps
+inv_weight			= 1.22
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 75
+inv_grid_y				= 25
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.15
+
+;отдача
+cam_relax_speed         		= 0
+cam_relax_speed_ai         	= 6
+cam_dispersion          		= 1.5
+cam_dispersion_inc		= 0.0
+cam_dispertion_frac		= 1.0
+cam_max_angle			= 20.0
+cam_max_angle_horz		= 10.0
+cam_step_angle_horz		= 0.6
+
+fire_dispersion_condition_factor 	= 5
+misfire_probability 		= 0.003
+condition_shot_dec			= 0.001
+;--------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.133, 0.200
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_07
+smoke_particles				= amik\weapons\smoke_particles\smoke_particles_00
+
+shell_point				= 0, 0.133, 0.047
+shell_dir				= 0.0, 0.0, 0.4
+shell_particles				= amik\weapons\9x18\9x18_r_00
+
+PDM_disp_base 			    = 2.0
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 0.42, 0.45, 0.47, 0.49
+hit_impulse				= 3
+hit_rate	        = 1.85
+fire_distance       = 60
+bullet_speed		= 310
+rpm                      		= 600
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+silencer_hit_power       	= 0.39
+silencer_hit_impulse			= 2
+silencer_fire_distance   		= 50
+silencer_bullet_speed	 	= 220
+
+hud					= wpn_aps_hud
+position				= -0.021, -0.085, 0
+visual					= weapons\aps\wpn_aps
+
+light_color			= 0.6,0.5,0.3
+light_range			= 5
+light_var_color			= 0.05
+light_var_range			= 0.5
+light_time 			= 0.2
+
+ph_mass					= 1
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_9x18
+silencer_x				= 87
+silencer_y				= -17
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ---------------
+snd_draw				= weapons\pistol_draw
+snd_holster				= weapons\pistol_holster
+snd_shoot				= weapons\aps\aps_shoot
+snd_empty				= weapons\aps\aps_empty
+snd_reload				= weapons\aps\aps_reload
+snd_close				= weapons\aps\aps_close
+snd_silncer_shot			= weapons\aps\aps_shot_sil
+;--------------------------------------------------------------------------------------------
+
+silencer_smoke_particles		= amik\weapons\smoke_particles\silencer_smoke_particles_02
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time 		= 0.2
+
+;-----------------------------------------------------------------------------
+;-- HUD DESCRIPTION
+;-----------------------------------------------------------------------------
+
+[wpn_aps_hud]: wpn_hud
+shell_point				= 0.05, 0, -0.2
+fire_point				= 0, 0.040, -0.2
+
+position				= -0.031, -0.17, 0
+orientation				= -0.5, 1, 1.15
+visual					= weapons\aps\wpn_aps_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= idle_empty
+anim_reload				= reload_empty
+anim_reload_empty			= reload_empty
+anim_draw				= draw
+anim_draw_empty				= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle_moving
+anim_idle_moving_empty			= idle_moving_empty
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint_empty
+
+zoom_offset				= -0.102100, 0.049350, 0
+zoom_rotate_x				= 0.012500
+zoom_rotate_y				= 0.012400
+
+scope_zoom_offset			= -0.102100, 0.029350, 0
+scope_zoom_rotate_x			= 0.012500
+scope_zoom_rotate_y			= 0.012400
+
+ignore_scope_texture			= true
+scope_zoom_hide_indicators		= false
+
+[wpn_aps_sk2]: wpn_aps
+inv_name				= wpn-apb
+description				= enc_weapons1_wpn-apb
+inv_grid_y				= 26
+
+fire_point				= 0.0, 0.134, 0.235
+shell_point				= 0.00, 0.127, 0.025
+shell_dir				= 0.0, 0.0, 0.4
+
+hud					= wpn_aps_sk2_hud
+position				= -0.020, -0.084, -0.0085
+orientation				= 0, 0, 1
+visual					= weapons\aps\wpn_aps_sk2
+
+silencer_x				= 83
+
+snd_draw				= weapons\aps\aps_sk2_draw
+snd_holster				= weapons\aps\aps_sk2_holster
+snd_shoot				= weapons\aps\aps_sk2_shoot
+snd_reload				= weapons\aps\aps_sk2_reload
+snd_reload_partly			= weapons\aps\aps_sk2_reload_partly, 1.0, 0.18
+snd_silncer_shot			= weapons\aps\aps_sk2_shot_sil, 0.4
+
+[wpn_aps_sk2_hud]: wpn_hud
+shell_point				= 0.0355, 0.375, -0.050
+fire_point				= 0.0000, 0.2000, -0.0200
+
+position				= 0.155, -0.090, -0.075
+orientation				= 2.0, 1.35, 0
+visual					= weapons\aps\wpn_aps_sk2_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_empty				= empty
+anim_reload				= reload
+anim_reload_empty			= reload_empty
+anim_draw				= draw
+anim_draw_empty				= draw_v2_emty
+anim_shoot				= shoot_auto
+anim_shot_last				= shoot_last
+anim_close				= holster_v3
+anim_idle_aim				= idle_aim
+anim_idle_moving			= idle
+anim_idle_moving_empty			= empty
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+zoom_offset				= -0.15278, 0.08255, -0.0330
+zoom_rotate_x				= 0.01725
+zoom_rotate_y				= 0.03500
+
+; АПС (NATO)
+[wpn_aps_m1]: wpn_aps
+inv_name				= wpn-apb_m1
+description				= enc_weapons1_wpn-apb_m1
+
+inv_grid_height				= 2
+inv_grid_x				= 79
+inv_grid_y				= 15
+
+allow_military				= false
+
+ammo_class				= ammo_9x19_fmj, ammo_9x19_pbp
+condition_shot_dec			= 0.0003
+
+shell_particles				= amik\weapons\9x19\9x19_shells_r
+
+hit_impulse				= 4
+silencer_hit_impulse			= 3
+
+scope_status				= 1
+scope_zoom_factor			= 1.2
+scope_texture				=
+
+silencer_name				= wpn_addon_silencer_9x19
+silencer_y				= 13

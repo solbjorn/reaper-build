@@ -10,7 +10,7 @@ function on_item_take(obj)
 	local sect = obj:section()
 	if sect == "fake_bolt" then
 		if get_value("b_dr", false, true) then
-			create("bolt", xyz(), 0, 0, 0)
+			got_item("bolt")
 			release(obj)
 		end
 
@@ -21,7 +21,7 @@ function on_item_take(obj)
 			reap.load_del_bolt = true
 		end
 		if not Actor:is_in_slot(obj) then
-			create("fake_bolt", xyz(), 0, 0, 0)
+			got_item("fake_bolt")
 			Actor:drop_item_and_teleport(obj, xyz())
 		end
 

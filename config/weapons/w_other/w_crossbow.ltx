@@ -1,0 +1,123 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_crossbow]: WP_PM
+min_radius      	        = 10
+max_radius      	        = 75
+description	= enc_weapons_wpn-arb
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+holder_range_modifier  = 1.0
+holder_fov_modifier  = 1.0
+
+ef_weapon_type		= 8
+
+news_weapon_type			= 10
+
+cost			= 1200
+ammo_elapsed		= 5
+
+ammo_mag_size	= 1
+ammo_class		= ammo_arbolt
+
+;тип анимации
+single_handed = 0
+slot = 2
+animation_slot = 2
+
+;иконка в инвентаре
+inv_name		= wpn-arb
+inv_weight		= 3.44
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 65
+inv_grid_y				= 8
+
+;базовая дисперсия
+fire_dispersion_base        = 0.021
+control_inertion_factor      = 2.2f
+disp_rate		 = 1.85
+
+;отдача
+cam_relax_speed         		= 2.5
+cam_dispersion        		= 0.22
+cam_dispersion_inc		= 0.15
+cam_dispertion_frac		= 0.6
+cam_max_angle			= 18.0
+cam_max_angle_horz		= 20.0
+cam_step_angle_horz		= 1.5
+
+fire_dispersion_condition_factor   = 25
+misfire_probability 		= 0.05
+condition_shot_dec			= 0.0003
+
+PDM_disp_base 		= 2.0
+PDM_disp_vel_factor 		= 1.8
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		= 3.8
+PDM_crouch_no_acc 		= 1.0
+
+;партиклы (от 3 лица)
+fire_point          	    = 0.0, 0.104, 0.273
+
+shell_point = 0.0, 0.104, 0.03
+shell_dir = 0.0, 0.0, 0.4
+
+;;;;;;  Для Народной солянки 2009
+hit_power      = 0.5
+hit_impulse				= 3
+hit_rate	   = 2.0
+fire_distance  = 50
+bullet_speed = 300
+rpm = 60
+
+;насторойки для камеры от 3 лица
+hud					= wpn_crossbow_hud
+position         	        = -0.021, -0.09, 0.05
+visual					= weapons\crossbow\wpn_crossbow
+
+light_disabled = true
+ph_mass = 5
+
+scope_status				= 1
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\crossbow
+
+;звуки
+snd_draw				= weapons\crossbow\crossbow_draw
+snd_holster				= weapons\crossbow\crossbow_holster
+snd_shoot				= weapons\crossbow\crossbow_shoot
+snd_empty				= weapons\crossbow\crossbow_empty
+snd_reload				= weapons\crossbow\crossbow_reload
+snd_close				= $no_sound
+
+[wpn_crossbow_hud]: wpn_hud
+shell_point		= 1.0, -0.06, 0.07
+fire_point				= -0.140000, -0.001, -30.030000
+
+fire_bone				= wpn_silencer
+
+position				= 0.18, -0.02, 0.43
+visual					= weapons\crossbow\wpn_crossbow_hud
+
+;анимации
+anim_holster = holster
+anim_idle = idle
+anim_idle_moving			= idle
+anim_idle_moving_empty			= empty
+anim_empty = empty
+anim_reload = xbow_reload
+anim_reload_empty = xbow_reload
+anim_draw = draw
+anim_draw_empty = draw_empty
+anim_shoot = shoot
+anim_shot_last = shoot
+anim_close = holster
+anim_idle_aim = idle
+anim_idle_sprint			= idle_sprint
+anim_idle_sprint_empty			= idle_sprint
+
+zoom_offset		= -0.132600,0.0000,-0.178000
+zoom_rotate_x		= -0.009300
+zoom_rotate_y		= 0.000600
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (c) eNdimiOn

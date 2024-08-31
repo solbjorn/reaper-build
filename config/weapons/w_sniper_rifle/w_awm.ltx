@@ -1,0 +1,208 @@
+[wpn_awm]: WP_SVD
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-awm
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 2.15               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 0.3              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					= 25500
+weapon_class			= sniper_rifle
+
+ammo_mag_size			= 5
+ammo_class			= ammo_7.62x51_fmj, ammo_7.62x51_ap
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+inv_name				= wpn-awm
+inv_weight				= 6.8
+
+inv_grid_width				= 6
+inv_grid_height				= 2
+inv_grid_x				= 42
+inv_grid_y				= 8
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.03	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 2.2f
+disp_rate                   = 0.50
+
+;отдача
+cam_relax_speed         	= 2.5	;скорость возврата в исходное положение
+cam_dispersion          	= 1.1	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.5	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 15.0	;максимальный угол отдачи
+cam_max_angle_horz		= 3.0	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.25	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 		= 0.005 ;вероятность осечки при максимальном износе
+condition_shot_dec			= 0.0008
+;-----------------------------------------------------------------------------------
+
+fire_point				= 0.0, 0.139, 0.935
+
+flame_particles				= amik\weapons\flame_particles\flame_particles_06
+smoke_particles				= amik\weapons\smoke_particles\big_smoke_particles_01
+
+shell_point				= 0.0, 0.129, 0.192
+shell_dir				= 0.0, 0.0, 0.4
+
+PDM_disp_base           = 4.5
+PDM_disp_vel_factor     = 0.6
+PDM_disp_accel_factor   = 0.9
+PDM_crouch              = 7.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power           = 0.68, 0.73, 0.76, 0.80
+hit_impulse				= 9
+hit_rate	        = 2.0
+fire_distance           	= 210
+bullet_speed		 	= 850
+rpm                     	= 30
+
+hud					= wpn_awm_hud
+
+position				= -0.025, -0.067, -0.010
+strap_position				= -0.155, -0.15, 0.467
+strap_orientation			= -25, -189, 65
+
+visual					= weapons\awm\wpn_awm
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+ph_mass					= 6
+
+scope_status				= 1
+scope_zoom_factor			= 6
+scope_texture				= wpn\crosshairs\awm
+
+silencer_status				= 2
+silencer_name				= wpn_addon_silencer_762
+silencer_x				= 260
+silencer_y				= 23
+
+;------------------------------ S.T.A.L.K.E.R`s sound remake ------------------------------
+snd_draw				= weapons\sniper_draw
+snd_holster				= weapons\sniper_holster
+snd_shoot				= weapons\awm\awm_shoot
+snd_empty				= weapons\awm\awm_empty
+snd_reload				= weapons\awm\awm_reload
+snd_silncer_shot			= weapons\awm\awm_shot_sil
+;------------------------------------------------------------------------------------------
+
+[wpn_awm_hud]: wpn_hud
+shell_point				= -0.140000, -0.030000, 0.080000
+fire_point				= 0.0, 0.0575, 0.257
+
+orientation				= 1.75, 1.75, 0.1499993
+position				= -0.0485, -0.1675, 0.1275
+visual					= weapons\awm\wpn_awm_hud
+
+anim_holster				= holster
+anim_idle				= idle
+anim_idle_aim				= idle_aim
+anim_reload				= reload
+anim_draw				= draw
+anim_shoot				= shoot
+anim_idle_moving			= idle
+anim_idle_sprint			= idle_sprint
+
+zoom_offset				= -0.10500, 0.0500, -0.17500
+zoom_rotate_x				= 0.017500
+zoom_rotate_y				= 0.030000
+
+[wpn_awm_sk2]: wpn_awm
+description				= wpn_awm_sk2_desc
+inv_grid_y				= 10
+
+fire_point				= 0.0, 0.129, 0.942
+shell_point				= 0.0, 0.129, 0.192
+
+hud					= wpn_awm_sk2_hud
+position				= -0.026, -0.172, 0
+strap_position				= -0.15, -0.15, 0.45
+visual					= weapons\awm\wpn_awm_sk2
+
+silencer_status				= 0
+
+snd_shoot				= weapons\awm\awm_sk2_shoot, 0.5
+snd_reload				= weapons\awm\awm_sk2_reload, 0.7
+
+[wpn_awm_sk2_hud]: wpn_awm_hud
+shell_point				= 0.0, 0.0, 0.0
+fire_point				= 0.380000, -0.401000, 2.829999
+
+orientation				= 0, 0, 0
+position				= 0.000000, -0.015000, -0.105000
+visual					= weapons\awm\wpn_awm_sk2_hud
+
+zoom_offset				= -0.107570, 0.019920, -0.197199
+zoom_rotate_x				= 0
+zoom_rotate_y				= 0
+
+ignore_scope_texture			= true
+
+[wpn_msr]: wpn_awm
+inv_name				= wpn-awm_m1
+description				= enc_weapons1_wpn-awm_m1
+inv_grid_x				= 48
+
+ammo_mag_size				= 10
+ammo_class				= ammo_338_lapua
+
+cost					= 40000
+condition_shot_dec 			= 0.0003
+
+fire_point				= 0, 0.238, 0.792
+shell_point				= 0, 0.232, 0.084
+shell_dir				= 0.0, 1.0, 0.0
+
+fire_distance				= 250
+bullet_speed				= 1002
+
+hud					= wpn_msr_hud
+
+position				= -0.022, -0.08, -0.00015
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+
+visual					= weapons\msr\wpn_msr
+
+scope_zoom_factor			= 8
+scope_texture				= wpn\crosshairs\msr
+
+silencer_x				= 271
+silencer_y				= 19
+
+snd_shoot				= weapons\msr\msr_shoot
+snd_reload				= weapons\msr\msr_reload
+snd_silncer_shot			= weapons\msr\msr_shot_sil
+
+[wpn_msr_hud]: wpn_awm_hud
+shell_point				= -0.010000, -0.290000, -0.380000
+fire_point				= 0.000000, 0.06700, 0.360000
+
+position				= -0.0505, -0.1695, 0.1270
+orientation				= 1.75, 1.75, 0.1499993
+visual					= weapons\msr\wpn_msr_hud
+
+anim_idle_sprint 			= idle_sprint1
+anim_idle_moving			= idle_moving
+
+zoom_offset				= -0.108000, 0.022000, -0.220
+zoom_rotate_x				= 0.004000
+zoom_rotate_y				= 0.020000

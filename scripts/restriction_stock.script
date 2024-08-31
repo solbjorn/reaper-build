@@ -24,17 +24,10 @@ local msg = {
 	------------------------------------------------------------------------------
 }
 
-local overrides = {
-	arc_ballast	= 1
-}
-
 function restriction_of_stock(ItemObj,Fix)
 	local sect = ItemObj:section()
-	local size = overrides[sect]
-	if not size then
-		local t = get_icon_info(sect)
-		size = t.w * t.h
-	end
+	local size = get_icon_info(sect)
+	size = size.w * size.h
 
 	if Fix == 0 then
 		InvStat = InvStat + size
@@ -55,8 +48,7 @@ function ammo_discharge(wpn)
 	local elapsed = wpn:get_ammo_in_magazine()
 	if elapsed <= 0 then return end
 
-	local ammo_list = string.explode(read_line(wpn:section(), "ammo_class", "string"), ",", true)
-	local ammo_sect = ammo_list[get_weapon_data(wpn, "ammo_type") + 1]
+	local ammo_sect = config:r_list(wpn:section(), "ammo_class")[get_weapon_data(wpn, "ammo_type") + 1]
 
 	wpn:set_ammo_elapsed(0)
 	amk.spawn_ammo_in_inv(ammo_sect, elapsed, Actor)
