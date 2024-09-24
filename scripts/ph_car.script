@@ -312,7 +312,8 @@ end
 function action_car:at_target_walkpoint()
     if self.target_walk_pt == -2 then return true end
 
-    local curVel = self.car:CurrentVel():magnitude()
+	local vel = self.car:CurrentVel()
+	local curVel = math.sqrt(vel.x * vel.x + vel.y * vel.y)
 	local dist = self.object:position():distance_to(self.path_walk:point(self.target_walk_pt))
 
 	local arrived = false
@@ -365,7 +366,9 @@ function action_car:go_to_walkpoint(pt)
 
     local diff_angle = angle_xz(self.object, self.path_walk:point(pt))
     local accel = move.none
-    local curVel = self.car:CurrentVel():magnitude()
+	local vel = self.car:CurrentVel()
+	local curVel = math.sqrt(vel.x * vel.x + vel.y * vel.y)
+
     if curVel < self.speed then
         accel = move.fwd
     elseif curVel > self.speed * 1.15 or diff_angle >= math.pi then

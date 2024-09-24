@@ -32,8 +32,8 @@ end
 
 function dots:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallbackEx("btn_1", ui_events.BUTTON_CLICKED, self.dots1)
-	self:AddCallbackEx("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:Connect("btn_1", ui_events.BUTTON_CLICKED, self.dots1)
+	self:Connect("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
 end
 
 function dots:OnKeyboard(dik, keyboard_action)

@@ -22,7 +22,7 @@ function on_item_take(obj)
 		end
 		if not Actor:is_in_slot(obj) then
 			got_item("fake_bolt")
-			Actor:drop_item_and_teleport(obj, xyz())
+			del_bolt()
 		end
 
 		del_value("b_dr")
@@ -52,7 +52,7 @@ function on_item_belt(obj)
 					    actor:game_vertex_id(), 0, 1)
 		level.client_spawn_manager():add(sobj.id, 0, bolt_to_belt)
 	elseif sect == "bolt_box" then
-		local size = get_ammo_data(obj, "box_size")
+		local size = obj:get_current_ammo()
 		boxes[obj:id()] = obj
 
 		if not Actor:object("bolt") and get_value("b_dr") then
@@ -73,7 +73,7 @@ function on_item_drop_from_belt(obj, drop)
 	local sobj = server_object(obj)
 	if not sobj then return end
 
-	local num = get_ammo_data(obj, "box_size")
+	local num = obj:get_current_ammo()
 	release(sobj)
 
 	for i = 1, num do
@@ -86,7 +86,7 @@ end
 
 function use_one(box, left)
 	if left > 1 then
-		set_ammo_data(box, "box_size", left - 1)
+		box:set_ammo_box_curr(left - 1)
 	else
 		release(box)
 	end
@@ -96,7 +96,7 @@ function remove_bolt()
 	local box, left, size = nil, 20
 
 	for id, obj in pairs(boxes) do
-		size = get_ammo_data(obj, "box_size")
+		size = obj:get_current_ammo()
 		if size < left then
 			box = obj
 			left = size
@@ -107,14 +107,16 @@ function remove_bolt()
 end
 
 function del_bolt()
-	Actor:drop_item_and_teleport(Actor:object("bolt"), xyz(0, 0, 0))
+	local obj = Actor:object("bolt")
+	if obj then
+		Actor:drop_item_and_teleport(obj, xyz())
+	end
 end
 
 function drop_bolt()
-	local actor = Actor
 	del_bolt()
-	AI:create("fake_bolt", random_position(actor:position(), 1),
-		       actor:level_vertex_id(), actor:game_vertex_id())
+	create("fake_bolt", random_position(Actor:position(), 1),
+	       Actor:level_vertex_id(), Actor:game_vertex_id())
 end
 
 function net_spawn()

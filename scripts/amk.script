@@ -1401,23 +1401,6 @@ function get_ammo_params(sobj)
   return t
 end
 
-function set_ammo_data(t,sobj)
-  local stpk=net_packet()
-  local uppk=net_packet()
-
-  fill_object_packet(t,stpk,uppk)
-  fill_visual_packet(t,stpk,uppk)
-  fill_item_packet(t,stpk,uppk)
-  fill_item_ammo_packet(t,stpk,uppk)
-
-  local size=stpk:w_tell()
-  local size1=uppk:w_tell()
-  stpk:r_seek(0)
-  uppk:r_seek(0)
-  sobj:STATE_Read(stpk,size)
-  sobj:UPDATE_Read(uppk)
-end
-
 function cfg_get_string(ini,sect,name,def)
 	if ini and ini:line_exist(sect,name) then
 		return ini:r_string(sect,name)

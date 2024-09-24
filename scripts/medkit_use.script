@@ -13,12 +13,12 @@ local med_data = {
 	mr_time			= 0,
 	mr_affect		= 0,
 
-	eat_health		= 220,
-	eat_power		= 224,
-	eat_satiety		= 228,
-	eat_radiation		= 232,
+	eat_health		= 1,
+	eat_power		= 1,
+	eat_satiety		= 1,
+	eat_radiation		= 1,
 	eat_alcohol		= 0,
-	wounds_heal_perc	= 240
+	wounds_heal_perc	= 1
 }
 
 local medkit_table = table.tohash({
@@ -46,8 +46,8 @@ function init_med_data(sect)
 
 	local val
 	for line, _ in pairs(med_data) do
-		val = config:r_float_ex(sect, line)
-		if val and val ~= 0 then
+		val = config:r_float_ex(sect, line, 0)
+		if val ~= 0 then
 			data[line] = val
 		end
 	end
@@ -64,9 +64,11 @@ function before_use_item(obj)
 		data = init_med_data(sect)
 	end
 
+	obj = obj:get_eatable_item()
+
 	for line, _ in pairs(data) do
 		if med_data[line] > 0 then
-			obj:set_inventory_item_float(nil, 0, med_data[line])
+			obj[line] = 0
 		end
 	end
 
@@ -95,7 +97,7 @@ function used_med(obj)
 	if not level.main_input_receiver() then
 		local st_item_used = hud:AddCustomStatic("item_used", true)
 		st_item_used:wnd():SetText(translate("st_item_used") .. ": " ..
-					   get_inventory_item_data(obj, "inv_name"))
+					   obj:get_inventory_item().inv_name)
 		st_item_used.m_endTime = time_real_ms / 1000 + 3
 	end
 

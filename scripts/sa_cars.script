@@ -18,7 +18,6 @@
  - звук поворота башни БТР (turret_movement_sound)
  - звук изменения зума в БТР (zoom_inc_sound и zoom_dec_sound)
  - работающий пулемет (параметр weapon_enabled)
- - переключение позиции камеры при виде от первого и третьего лица (параметры camera_pos, camera_pos_look, camera_pos_free)
  - работающие двери у машин и зависимость багажника от них (секция bone_groups и параметр trunk_bone_group)
  - звуки открытия и закрытия двери (door_open и door_close)
  - изменение текущего fov при входе в машину (параметр camera_fov)
@@ -88,7 +87,7 @@ function CCarBinder:net_destroy()
 	object_binder.net_destroy(self)
 	self.object:set_callback(callback.use_object, nil)
 	self.object:set_callback(callback.death, nil)
-	self.se_obj.fuel = self.object:get_fuel()
+	self.se_obj.fuel = self.object:get_car():GetFuel()
 	-- call detach in CCarMgr
 	if car_mgr then
 		car_mgr:detach()
@@ -101,7 +100,7 @@ function CCarBinder:update(delta)
 	if self.first_update then
 		-- restore fuel
 		if self.fuel and self.fuel ~= -1 then
-			self.object:set_fuel(self.fuel)
+			self.object:get_car():SetFuel(self.fuel)
 		end
 		-- create CCarDoorMgr
 		if self.ini:section_exist("bone_groups") then
@@ -151,7 +150,7 @@ function CCarBinder:use_callback(obj, who)
 			if trunk then
 				open_trunk(self.trunk_id, trunk)
 			else
-				AI:teleport_object(nil, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id(), self.trunk_id)
+				AI:teleport_object(self.trunk_id, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id())
 				level.client_spawn_manager():add(self.trunk_id, 0, open_trunk)
 			end
 		end
@@ -163,7 +162,7 @@ function CCarBinder:death_callback(victim, who)
 	if self.trunk_id ~= 0 then
 		local trunk = level_object(self.trunk_id)
 		if not trunk then
-			AI:teleport_object(nil, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id(), self.trunk_id)
+			AI:teleport_object(self.trunk_id, self.object:position(), self.object:level_vertex_id(), self.object:game_vertex_id())
 			level.client_spawn_manager():add(self.trunk_id, 0, remove_trunk)
 		else
 			remove_trunk(self.trunk_id, trunk)
@@ -199,9 +198,6 @@ function CCarMgr:__init(obj, ini)
 	self.object = obj
 	self.car = self.object:get_car()
 	-- init params
-	self.camera_pos = ini:r_vector_ex("car_definition", "camera_pos")
-	self.camera_pos_look = ini:r_vector_ex("car_definition", "camera_pos_look")
-	self.camera_pos_free = ini:r_vector_ex("car_definition", "camera_pos_free")
 	self.camera_fov = ini:r_float_ex("car_definition", "camera_fov")
 	self.hide_crosshair = ini:r_bool_ex("car_definition", "hide_crosshair")
 	self.weapon_enabled = ini:r_bool_ex("car_definition", "weapon_enabled")
@@ -217,8 +213,6 @@ function CCarMgr:__init(obj, ini)
 end
 ---------------------------------------------------------------------------------------------------
 function CCarMgr:attach()
-	-- set default camera
-	set_car_data(self.object, "camera_position", self.camera_pos)
 	-- set new fov
 	if self.camera_fov then
 		Actor:set_camera_fov(self.camera_fov)
@@ -296,8 +290,9 @@ function CCarMgr:speedometer_static()
 		self.strans = hud:AddCustomStatic("car_speedometer_transmission", true):wnd()
 		self.sptr = hud:AddCustomStatic("car_speedometer_pointer", true):wnd()
 	end
-	local speed = self.car:CurrentVel():magnitude() or 0
-	local transmission_num = get_car_data(self.object, "current_transmission_num")
+	local vel = self.car:CurrentVel()
+	local speed = math.sqrt(vel.x * vel.x + vel.y * vel.y)
+	local transmission_num = self.car.transmission
 	if transmission_num == 0 then
 		transmission_num = "R"
 	end
@@ -315,7 +310,7 @@ function CCarMgr:fuel_indicator()
 		xml:ParseFile("car_panel.xml")
 		self.pb_car_fuel = xml:InitProgressBar("car_fuel_progress_bar", self.st_car_fuel)
 	end
-	self.pb_car_fuel:SetProgressPos(refactor * self.object:get_fuel() / self.object:get_fuel_tank() * 100)
+	self.pb_car_fuel:SetProgressPos(refactor * self.car:GetFuel() / self.car:GetFuelTank() * 100)
 end
 ---------------------------------------------------------------------------------------------------
 function CCarMgr:clear_statics()
@@ -403,16 +398,20 @@ function CCarMgr:update_relation_registry(victim, who)
 end
 ---------------------------------------------------------------------------------------------------
 function CCarMgr:zoom_factor(vol)
-	if self.btr_crosshair and actor_flags.alive and not level.main_input_receiver() then
-		local step, snd_name = 0
+	if not self.btr_crosshair or not actor_flags.alive or level.main_input_receiver() then
+		return
+	end
+	local step, snd_name
+	if vol > 0 then
+		step = ZOOM_FACTOR_STEP
+		snd_name = self.zoom_inc_snd_name
+	else
+		step = -ZOOM_FACTOR_STEP
+		snd_name = self.zoom_dec_snd_name
+	end
+	local iter = math.abs(vol) / 120
+	for i = 1, iter do
 		local last_fov = Actor:get_camera_fov()
-		if vol == 99880 then
-			step = ZOOM_FACTOR_STEP
-			snd_name = self.zoom_inc_snd_name
-		elseif vol == 100120 then
-			step = -ZOOM_FACTOR_STEP
-			snd_name = self.zoom_dec_snd_name
-		end
 		Actor:set_camera_fov(math.clamp(last_fov + step, ZOOM_FACTOR_MIN, ZOOM_FACTOR_MAX))
 		if snd_name and Actor:get_camera_fov() ~= last_fov then
 			play_safe_sound_object(snd_name)
@@ -434,12 +433,6 @@ function CCarMgr:on_keyboard(dik, keyboard_action)
 				-- remove car weapon static
 				hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(0)
 				self.btr_crosshair = false
-				-- set new camera position
-				if dik == bind_to_dik(key_bindings.kCAM_2) then
-					set_car_data(self.object, "camera_position", self.camera_pos_look)
-				else
-					set_car_data(self.object, "camera_position", self.camera_pos_free)
-				end
 			elseif dik == bind_to_dik(key_bindings.kCAM_1) then
 				-- set new fov
 				if self.camera_fov then
@@ -454,10 +447,8 @@ function CCarMgr:on_keyboard(dik, keyboard_action)
 					hud:GetCustomStatic("btr_crosshair"):wnd():SetWidth(1024)
 					self.btr_crosshair = true
 				end
-				-- set new camera position
-				set_car_data(self.object, "camera_position", self.camera_pos)
 			-- engine fail sound
-			elseif dik == bind_to_dik(key_bindings.kENGINE) and self.object:get_fuel() <= 0 then
+			elseif dik == bind_to_dik(key_bindings.kENGINE) and self.car:GetFuel() <= 0 then
 				if self.engine_fail_snd_name then
 					voice(self.engine_fail_snd_name):play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
 				end
@@ -496,11 +487,6 @@ function CCarMgr:on_keyboard(dik, keyboard_action)
 				local door_mgr = car_door_mgrs[self.object:id()]
 				if door_mgr then
 					door_mgr:use_callback()
-				end
-			elseif dik == bind_to_dik(key_bindings.kNIGHT_VISION) then
-				local torch = Actor:item_in_slot(9)
-				if torch then
-					torch:switch_night_vision(level.has_pp_effector(effector_ids.night_vision) == 0)
 				end
 			end
 		elseif keyboard_action == key_events.released then

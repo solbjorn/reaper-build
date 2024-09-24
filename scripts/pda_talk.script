@@ -71,8 +71,7 @@ function onInit(dlg)
 				disable_info = dialog["phrase_list"]["phrase"][i]["disable_info"],
 				action = dialog["phrase_list"]["phrase"][i]["action"],
 				next_id = mytonumber(dialog["phrase_list"]["phrase"][i]["next"]),
-				text = iif(text_id=="",nil,text_id)
-
+				text = text_id ~= "" and text_id or nil
 			}
 		end
 	else
@@ -85,7 +84,7 @@ function onInit(dlg)
 				disable_info = dialog["phrase_list"]["phrase"]["disable_info"],
 				action = dialog["phrase_list"]["phrase"]["action"],
 				next_id = mytonumber(dialog["phrase_list"]["phrase"]["next"]),
-				text = iif(text_id=="",nil,text_id)
+				text = text_id ~= "" and text_id or nil
 		}
 	end
 end
@@ -510,7 +509,7 @@ end
 
 function CustomCPhraseDialog:AddPhrase(ttext,phrase_id,prev_phrase_id,goodwil_level)
 	phrase_id=tonumber(phrase_id)
-	tblInitDialogTbl[phrase_id] = { ["text"]=ttext }
+	tblInitDialogTbl[phrase_id] = { text = ttext ~= "" and ttext or nil }
 	if (prev_phrase_id~="") then
 		prev_phrase_id=tonumber(prev_phrase_id)
 		local next_id=tblInitDialogTbl[prev_phrase_id].next_id

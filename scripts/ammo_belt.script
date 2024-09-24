@@ -22,7 +22,7 @@ function on_inventory_open()
 		function(npc,item)
 			local sect = ammo_fake_types[item:section()]
 			if sect then
-				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
+				t[sect] = item:get_current_ammo() + (t[sect] or 0)
 				AI:release(AI:object(item:id()), true)
 			end
 		end
@@ -42,7 +42,7 @@ function on_inventory_close()
 			local sect = item:section()
 			if ammo_section[sect] and Actor:is_in_ruck(item) then
 				sect = sect .. "_fake"
-				t[sect] = get_ammo_data(item, "box_size") + (t[sect] or 0)
+				t[sect] = item:get_current_ammo() + (t[sect] or 0)
 				AI:release(AI:object(item:id()), true)
 			end
 		end
@@ -57,7 +57,7 @@ end
 function on_item_ruck(item)
 	local section = item:section()
 	if ammo_section[section] and need_convert == true then
-		local cnt = get_ammo_data(item, "box_size")
+		local cnt = item:get_current_ammo()
 
 		AI:release(AI:object(item:id()), true)
 		se_respawn_create_ammo(section .. "_fake", Actor:position(),

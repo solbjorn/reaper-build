@@ -33,12 +33,6 @@ for _, item in ipairs({
 end
 
 function item_take(obj)
-	local sect = obj:section()
-	if screen.precache_frame <= 1 and not Actor:is_in_ruck(obj) and
-	   config:r_bool_cache(sect, "default_to_ruck", true) then
-		Actor:move_to_ruck(obj)
-	end
-
 	Inventory:on_item_take(obj)
 	bolt_ending.on_item_take(obj)
 
@@ -46,7 +40,7 @@ function item_take(obj)
 		art_hit.hit_by_art(obj)
 	end
 
-	local fn = item_take_fn[sect]
+	local fn = item_take_fn[obj:section()]
 	if not fn then return end
 
 	if type(fn) == "string" then
@@ -108,31 +102,38 @@ local torch_snd = { voice([[interface\inv_torch_on]]), voice([[interface\inv_tor
 local tmp
 
 local hotkeys = {
-	[key_bindings.kQUICK_SAVE] = function()
+	[key_bindings.kQUICK_SAVE] = function(binded, bind, kbd)
+		kbd.ignore = true
 		if level.main_input_receiver() then return end
 
 		screen:pause(true)
-		console:execute("save " .. user_name() .. "_quicksave")
-		screen:pause(false)
+		level.parked_call(function()
+			console:execute("save " .. user_name() .. "_quicksave")
+			screen:pause(false)
+		end)
 	end,
 	[key_bindings.kTORCH] = function()
-		local torch = Actor:item_in_slot(9)
+		local torch = Actor:item_in_slot(inventory_slots.TORCH)
 		if not torch then return end
 
-		say(torch_snd[torch:is_torch_enabled() and 2 or 1])
+		say(torch_snd[torch:get_torch().on and 2 or 1])
 	end,
-	[key_bindings.kUSE_BANDAGE] = function()
+	[key_bindings.kUSE_BANDAGE] = function(binded, bind, kbd)
 		local item = Actor:object("bandage")
 		if item then
 			Actor:eat(item)
 		end
+
+		kbd.ignore = true
 	end,
-	[key_bindings.kUSE_MEDKIT] = function()
+	[key_bindings.kUSE_MEDKIT] = function(binded, bind, kbd)
 		local item = Actor:object("medkit") or Actor:object("medkit_army") or
 			     Actor:object("medkit_scientic")
 		if item then
 			Actor:eat(item)
 		end
+
+		kbd.ignore = true
 	end
 }
 
@@ -140,44 +141,19 @@ tmp = function(binded, bind)
 	binded.weapon_manager:on_key_press(bind)
 end
 for _, key in ipairs({
-	"kUSE",
 	"kWPN_FIREMODE_NEXT",
-	"kWPN_FIREMODE_PREV",
-	"kWPN_RELOAD"
+	"kWPN_FIREMODE_PREV"
 }) do
 	hotkeys[key_bindings[key]] = tmp
 end
 
-local relkeys = { }
-
-tmp = function(binded, bind)
-	binded.weapon_manager:on_key_release(bind)
-end
-for _, key in ipairs({
-	"kWPN_FIRE",
-	"kWPN_FUNC"
-}) do
-	relkeys[key_bindings[key]] = tmp
-end
-
 tmp = nil
 
-function key_press(binded, dik)
+function key_press(binded, dik, bind, kbd)
 	if not actor_flags.alive then return end
 
-	local bind = dik_to_bind(dik)
 	local fn = hotkeys[bind]
 	if fn then
-		fn(binded, bind)
-	end
-end
-
-function key_release(binded, dik)
-	if not actor_flags.alive then return end
-
-	local bind = dik_to_bind(dik)
-	local fn = relkeys[bind]
-	if fn then
-		fn(binded, bind)
+		fn(binded, bind, kbd)
 	end
 end

@@ -36,6 +36,8 @@ exclusives = {}
 class "se_smart_terrain" ( cse_alife_smart_zone )
 
 function se_smart_terrain:__init( section ) super( section )
+	if not graph then before_objs_load_callback() end
+
   self.initialized = false
   self.registred = false
 end

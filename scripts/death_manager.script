@@ -408,7 +408,7 @@ function create_release_item(npc)
 		end
 
 		if not quest_section[section] then
-			local from = get_inventory_item_data(item, "slot") == 2 and 95 or 90
+			local from = item:get_slot() == 2 and 95 or 90
 
 			--' Тут надо уменьшить кондишн оружия
 			item:set_condition((math_random(from-cond)+cond)*item:condition()/100)

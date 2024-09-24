@@ -15,6 +15,10 @@
 --[[-----------------------------------------------------------------------------------------------
  * CONSTANTS
 --]]-----------------------------------------------------------------------------------------------
+local imm_names = {
+	"burn_immunity", "shock_immunity", "strike_immunity", "wound_immunity", "radiation_immunity",
+	"telepatic_immunity", "chemical_burn_immunity", "explosion_immunity", "fire_wound_immunity"
+}
 local max_belt_af = config:r_u32("inventory", "max_belt_af")
 local af_imm_limit = { 98, 82, 66, 50 }
 --[[-----------------------------------------------------------------------------------------------
@@ -23,15 +27,20 @@ local af_imm_limit = { 98, 82, 66, 50 }
 local curr_imms = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 local curr_belt_af = 0
 ---------------------------------------------------------------------------------------------------
+function set_inventory_item_flag(obj, mask, value)
+	local flags = obj:get_inventory_item_flags()
+	flags:set(mask, value)
+	obj:set_inventory_item_flags(flags)
+end
+---------------------------------------------------------------------------------------------------
 function update_artefacts_lock_to_belt(obj)
 	if not obj:is_artefact() then
 		return
 	end
 	curr_belt_af = curr_belt_af + 1
-	local byte = 580
-	for i = 1, #curr_imms do
-		curr_imms[i] = curr_imms[i] + (1 - obj:get_go_float(byte)) * 100
-		byte = byte + 4
+	local imm = obj.immunities
+	for i = 1, #imm_names do
+		curr_imms[i] = curr_imms[i] + (1 - imm[imm_names[i]]) * 100
 	end
 	Actor:iterate_inventory(
 		function(dummy, obj)
@@ -47,10 +56,9 @@ function update_artefacts_lock_from_belt(obj)
 		return
 	end
 	curr_belt_af = curr_belt_af - 1
-	local byte = 580
-	for i = 1, #curr_imms do
-		curr_imms[i] = curr_imms[i] - (1 - obj:get_go_float(byte)) * 100
-		byte = byte + 4
+	local imm = obj.immunities
+	for i = 1, #imm_names do
+		curr_imms[i] = curr_imms[i] - (1 - imm[imm_names[i]]) * 100
 	end
 	Actor:iterate_inventory(
 		function(dummy, obj)
@@ -66,19 +74,18 @@ function update_artefacts_belt_lock(obj)
 		return
 	end
 	if curr_belt_af == max_belt_af then
-		set_inventory_item_flag(obj, inventory_item_flags.belt, false)
+		set_inventory_item_flag(obj, global_flags.Fbelt, false)
 		return
 	end
-	local ceil = af_imm_limit[level.get_game_difficulty() + 1] + 0.5
-	local byte = 580
-	for i = 1, #curr_imms do
-		if curr_imms[i] ~= 0 and curr_imms[i] + (1 - obj:get_go_float(byte)) * 100 > ceil then
-			set_inventory_item_flag(obj, inventory_item_flags.belt, false)
+	local _ceil = af_imm_limit[level.get_game_difficulty() + 1] + 0.5
+	local imm = obj.immunities
+	for i = 1, #imm_names do
+		if curr_imms[i] ~= 0 and curr_imms[i] + (1 - imm[imm_names[i]]) * 100 > _ceil then
+			set_inventory_item_flag(obj, global_flags.Fbelt, false)
 			return
 		end
-		byte = byte + 4
 	end
-	set_inventory_item_flag(obj, inventory_item_flags.belt, not obj:is_capsule())
+	set_inventory_item_flag(obj, global_flags.Fbelt, not obj:is_capsule())
 end
 --[[-----------------------------------------------------------------------------------------------
  * Control inventory cells
@@ -93,24 +100,17 @@ end
 ---------------------------------------------------------------------------------------------------
 function update_item_tradability_flags(obj, cond)
 	if not cond then
-		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
-		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, false)
-		set_inventory_item_flag(obj, inventory_item_flags.ungroupable, false)
-		set_inventory_item_flag(obj, inventory_item_flags.highlighting, false)
+		set_inventory_item_flag(obj, global_flags.FIAlwaysUntradable, false)
+		set_inventory_item_flag(obj, global_flags.FIUngroupable, false)
 	elseif cond ~= true and not is_item_tradable(obj, cond) then
-		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
-		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, true)
-		set_inventory_item_flag(obj, inventory_item_flags.ungroupable, true)
+		set_inventory_item_flag(obj, global_flags.FIAlwaysUntradable, true)
+		set_inventory_item_flag(obj, global_flags.FIUngroupable, true)
 	else
-		set_inventory_item_flag(obj, inventory_item_flags.always_tradable, false)
-		set_inventory_item_flag(obj, inventory_item_flags.always_untradable, false)
+		set_inventory_item_flag(obj, global_flags.FIAlwaysUntradable, false)
 		if Actor:is_on_belt(obj) or (Actor:is_in_slot(obj) and not obj:is_grenade()) then
-			set_inventory_item_flag(obj, inventory_item_flags.ungroupable, true)
-			set_inventory_item_flag(obj, inventory_item_flags.highlighting, true)
-			set_item_tradability_highlight_color(obj, tradability_highlight_colors.green)
+			set_inventory_item_flag(obj, global_flags.FIUngroupable, true)
 		else
-			set_inventory_item_flag(obj, inventory_item_flags.ungroupable, false)
-			set_inventory_item_flag(obj, inventory_item_flags.highlighting, false)
+			set_inventory_item_flag(obj, global_flags.FIUngroupable, false)
 		end
 	end
 end
@@ -137,7 +137,7 @@ function artefacts_statistic(obj)
 	if obj:is_artefact() and not obj:is_capsule() then
 		local se_obj = AI:object(obj:id())
 		if not se_obj.already_taken then
-			actor_stats.add_points("artefacts", get_inventory_item_data(obj, "inv_name"), 1, 1)
+			actor_stats.add_points("artefacts", obj:get_inventory_item().inv_name, 1, 1)
 			Actor:set_character_rank(Actor:character_rank() + 1)
 			se_obj.already_taken = true
 		end
@@ -149,11 +149,25 @@ end
 local ammo_sections = {}
 local need_to_repack = false
 ---------------------------------------------------------------------------------------------------
+function get_item_place(obj, npc)
+	if not npc then
+		npc = Actor
+	end
+	if npc:is_in_slot(obj) then
+		return item_place.slot
+	elseif npc:is_on_belt(obj) then
+		return item_place.belt
+	elseif npc:is_in_ruck(obj) then
+		return item_place.ruck
+	end
+	return item_place.undefined
+end
+---------------------------------------------------------------------------------------------------
 function check_ammo(obj)
 	if obj:is_ammo() then
 		local section = obj:section()
-		local box_size = config:r_u32_cache(section, "box_size")
-		if box_size > 1 and get_ammo_data(obj, "box_size") < box_size then
+		local box_size = obj:get_ammo_box_size()
+		if box_size > 1 and obj:get_current_ammo() < box_size then
 			ammo_sections[section] = {}
 			ammo_sections[section].box_size = box_size
 			if get_item_place(obj) == item_place.ruck then
@@ -174,7 +188,7 @@ function repack_ammo()
 			Actor:iterate_inventory(
 				function(dummy, obj)
 					if obj:section() == section and get_item_place(obj) == place then
-						local current_size = get_ammo_data(obj, "box_size")
+						local current_size = obj:get_current_ammo()
 						if current_size ~= box_size then
 							ammo[#ammo + 1] = obj
 							total_size = total_size + current_size
@@ -184,12 +198,12 @@ function repack_ammo()
 			)
 			for i, v in ipairs(ammo) do
 				if total_size == 0 then
-					AI:release(AI:object(v:id()), true)
+					release(v)
 				elseif total_size >= box_size then
-					set_ammo_data(v, "box_size", box_size)
+					v:set_ammo_box_curr(box_size)
 					total_size = total_size - box_size
 				else
-					set_ammo_data(v, "box_size", total_size)
+					v:set_ammo_box_curr(total_size)
 					total_size = 0
 				end
 			end

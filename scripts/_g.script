@@ -1,5 +1,32 @@
+--*********************************************************************************************************
+--==============================================================================================
+log1("--LUA version: ["..(jit.version or _VERSION).."]")
+--==============================================================================================
+FFI = require('ffi') --Делать только здесь и только один раз!
+--==============================================================================================
+math.randomseed(os.time())
+--=================================[CUIScriptWnd Extension]=====================================
+-- Вызов обычный, как и в AddCallback, но после последнего аргумента можно передавать множество дополнительных.
+function CUIScriptWnd:Connect(name, event, func, ...)
+	if ... ~= nil then
+		local args = { ... }
+		return self:AddCallback(name, event, function() func(self, unpack(args)) end)
+	else
+		return self:AddCallback(name, event, func, self)
+	end
+end
+--==============================================================================================
+function cmd(scmd, ...)
+	local args = {...}
+	if #args > 0 then
+		scmd = scmd..' '..table.concat(args, ' ')
+	end
+	console:execute(scmd)
+end
+--==============================================================================================
+
 local early_modules = {
-	[1]	= { "jit", "sa_init", "xr_extensions" },
+	[1]	= { "sa_init", "xr_extensions" },
 	[2]	= { "lua_ext", "reap_lua" }
 }
 
@@ -24,8 +51,6 @@ refactor = 1
 
 do_early(1)
 
-math.randomseed(os.time())
-
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типы схем
 
@@ -44,13 +69,15 @@ end
 -- Глобальные singletone классы
 config = system_ini()
 console = get_console()
-graph = game_graph()
 
 -- Следующие singletone классы задаются в start_game_callback
 AI = nil
 netpacket = nil
 
--- В init_container
+-- before_objs_load_callback
+graph = nil
+
+-- В after_objs_load_callback
 container = nil
 freeplay_stats = nil
 random_task = nil
@@ -59,6 +86,7 @@ Variable = nil
 
 -- В bind_actor.net_spawn
 Actor = nil
+AObj = nil
 Inventory = nil
 hud = nil
 Arena = nil
@@ -104,22 +132,25 @@ function start_game_callback()
 	--AMK UTILS--
 	amk.on_game_start()
 	--AMK UTILS--
+
+	start_game_callback = nil
 end
 
--- Чтение контейнера и создание классов из его данных
-function init_container()
-	if not container then
-		container = keyvals()
-		Variable = xr_logic.CVariable()
-		freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
-		random_task = task_manager.CRandomTask()
-		Treasure = treasure_manager.CTreasure()
-	end
+function before_objs_load_callback()
+	graph = game_graph()
+
+	before_objs_load_callback = nil
 end
 
 function after_objs_load_callback() --калбек вызывается после загрузки объектов из сейва
-	init_container()
-	level.show_indicators()
+	-- Чтение контейнера и создание классов из его данных
+	container = keyvals()
+	Variable = xr_logic.CVariable()
+	freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
+	random_task = task_manager.CRandomTask()
+	Treasure = treasure_manager.CTreasure()
+
+	after_objs_load_callback = nil
 end
 
 -- запущена ли игра
@@ -447,7 +478,7 @@ function abort(fmt, ...)
 
 	log1("FATAL ERROR: " .. reason)
 	log1(debug.traceback())
-	fail(reason)
+	error(reason)
 
 	console:execute("quit")
 end

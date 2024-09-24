@@ -1714,7 +1714,7 @@ end
 function create_newitem(obj, pos, lvi, gvi, pid)
 	if not obj then return nil end
 	if obj:is_ammo() then
-		local cnt = get_ammo_data(obj, "box_size")
+		local cnt = obj:get_netpk("ammo_left")
 		if cnt > 0 then
 			return AI:create_ammo(obj:section_name(), pos, lvi, gvi, pid, cnt)
 		end

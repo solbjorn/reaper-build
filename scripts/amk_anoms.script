@@ -233,12 +233,16 @@ end
 
 -- Создаёт набор аномалий на уровне со статусом status
 function generate_anoms(status)
-	local lname=level.name()
-	local v=level_anoms[lname]
-	if v then
-		local cnt, mxx = 0,math_random(v[1],v[2])
-		while cnt<mxx do
-			if generate_anomaly(status) then cnt = cnt+1 end
+	local v = level_anoms[level.name()]
+	if not v then return end
+
+	local cnt = math_random(v[1], v[2])
+	local retries = cnt
+	while cnt > 0 and retries > 0 do
+		if generate_anomaly(status) then
+			cnt = cnt - 1
+		else
+			retries = retries - 1
 		end
 	end
 end
@@ -806,7 +810,9 @@ end
 
 	local status=get_anomaly_status(sobj)
 	if status=="del" or status=="off" then
-		self.object:disable_anomaly()
+		level.parked_call(function()
+			self.object:disable_anomaly()
+		end)
 	else
 		add_anomaly(sobj.id, sobj.position, self.object:get_shape_radius())
 	end

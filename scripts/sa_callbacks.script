@@ -21,9 +21,6 @@ function __init()
 	if not sa_utils then
 		abort("sa_utils is nil")
 	end
-	set_trade_filtration_on()
-	set_manual_grouping_on()
-	set_manual_highlight_on()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_update(delta)
@@ -42,7 +39,6 @@ function actor_update(delta)
 	end
 	hud_interface_mgr:update()
 	sa_inventory_items_mgr.repack_ammo()
-	sa_main.overweight_power_fix()
 	if next_500 < time_real_ms then
 		sa_main.bunker_cooling_sound()
 		next_500 = time_real_ms + 500
@@ -58,18 +54,11 @@ function actor_net_spawn()
 	pda_talk.init()
 end
 ---------------------------------------------------------------------------------------------------
-local last_mob_type
-local last_health
----------------------------------------------------------------------------------------------------
 function actor_hit(binded, obj, amount, local_direction, who, bone_index)
-	if last_mob_type then
-		sa_main.hit_effectors(last_mob_type, who)
-		last_mob_type = nil
+	if who and who:is_entity_alive() and not who:is_actor() then
+		sa_main.hit_effectors(who)
 	end
-	if last_health then
-		reap.hit_effectors(last_health - Actor.health)
-		last_health = nil
-	end
+	reap.actor_hit()
 end
 ---------------------------------------------------------------------------------------------------
 function actor_death(binded, victim, who)
@@ -182,16 +171,6 @@ function select_pda_contact(binded, id)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function hit_effector(binded, mob_type)
-	last_mob_type = mob_type
-end
----------------------------------------------------------------------------------------------------
-function actor_before_hit()
-	if not last_health then
-		last_health = Actor.health
-	end
-end
----------------------------------------------------------------------------------------------------
 function attach_vehicle(binded, car)
 	local binder = car:binded_object()
 	if binder then
@@ -211,7 +190,7 @@ function detach_vehicle(binded, car)
 	end
 end
 ---------------------------------------------------------------------------------------------------
-function key_press(binded, dik)
+function key_press(binded, dik, bind, kbd)
 	if pda_contacts_dialog then
 		local pda_talk_dialog = sa_pda.get_pda_talk_dialog()
 		if pda_talk_dialog then
@@ -225,7 +204,7 @@ function key_press(binded, dik)
 		sa_main.pda_info_fix(dik)
 	end
 	sa_main.zoom_effect(dik, key_events.pressed)
-	reap_callback.key_press(binded, dik)
+	reap_callback.key_press(binded, dik, bind, kbd)
 	pressed_keys[dik] = true
 end
 ---------------------------------------------------------------------------------------------------
@@ -234,7 +213,6 @@ function key_release(binded, dik)
 		car_mgr:on_keyboard(dik, key_events.released)
 	end
 	sa_main.zoom_effect(dik, key_events.released)
-	reap_callback.key_release(binded, dik)
 	pressed_keys[dik] = nil
 end
 ---------------------------------------------------------------------------------------------------

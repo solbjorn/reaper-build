@@ -1594,7 +1594,7 @@ function get_npc_current_visual_level(id)
 			if vis == "stalker_france_killer_antigas" then sect = "stalker_france_killer_gaz" end
 		end
 	end
-	local vis_suit = config:section_exist(sect) and config:r_string(sect, "visual")
+	local vis_suit = sect and config:section_exist(sect) and config:r_string(sect, "visual")
 	if vis_suit then
 		vis_suit = string.explode(vis_suit, "\\")
 		vis_suit = string.explode(vis_suit[2], ".")

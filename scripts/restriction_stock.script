@@ -48,7 +48,7 @@ function ammo_discharge(wpn)
 	local elapsed = wpn:get_ammo_in_magazine()
 	if elapsed <= 0 then return end
 
-	local ammo_sect = config:r_list(wpn:section(), "ammo_class")[get_weapon_data(wpn, "ammo_type") + 1]
+	local ammo_sect = config:r_list(wpn:section(), "ammo_class")[wpn:get_ammo_type() + 1]
 
 	wpn:set_ammo_elapsed(0)
 	amk.spawn_ammo_in_inv(ammo_sect, elapsed, Actor)

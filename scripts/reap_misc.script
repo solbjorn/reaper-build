@@ -5,28 +5,6 @@
 local clsid_controller_s = clsid.controller_s
 
 --[[---------------------------------------------------------------------------
- * AMK
---]]---------------------------------------------------------------------------
-
-function hit_effectors(amount)
-	if amount <= 0.05 or not actor_flags.alive then
-		return
-	end
-
-	level.add_pp_effector("amk_shoot.ppe", 2011, false)
-	level.set_pp_effector_factor(2011, amount * 100)
-
-	if amount <= 0.3 then return end
-
-	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
-	say([[actor\pain_3]])
-
-	if math.random() < amount / 2 then
-		reap.drop_weapon()
-	end
-end
-
---[[---------------------------------------------------------------------------
  * dsh
 --]]---------------------------------------------------------------------------
 
@@ -107,9 +85,7 @@ function intro_dream()
 	give_info("intro_dream_done")
 
 	xr_effects.disable_ui()
-
 	level.add_pp_effector("deadcity_wake_old.ppe", 2001, false)
-	game.start_tutorial("intro_dream")
 end
 
 function intro_dream_stop()

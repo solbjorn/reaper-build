@@ -27,8 +27,7 @@ local cbs = {
 	[callback.on_belt]			= "on_item_belt",
 	[callback.on_ruck]			= "on_item_ruck",
 	[callback.on_slot]			= "on_item_slot",
-	[callback.pda_contact]			= "select_pda_contact",
-	[callback.on_mob_hit_to_actor]		= "hit_effector_callback",
+	[callback.select_pda_contact]		= "select_pda_contact",
 	[callback.on_attach_vehicle]		= "attach_vehicle",
 	[callback.on_detach_vehicle]		= "detach_vehicle",
 	[callback.entity_alive_before_hit]	= "before_hit_callback",
@@ -50,12 +49,12 @@ local cbs_sa = {
 	select_pda_contact			= "select_pda_contact",
 	hit_effector_callback			= "hit_effector",
 	attach_vehicle				= "attach_vehicle",
-	detach_vehicle				= "detach_vehicle",
-	before_hit_callback			= "actor_before_hit"
+	detach_vehicle				= "detach_vehicle"
 }
 
 local cbs_reap = {
 	on_item_use				= "item_use",
+	before_hit_callback			= "actor_before_hit",
 	on_before_use_item			= "before_use_item"
 }
 
@@ -131,6 +130,7 @@ function actor_binder:net_spawn(data)
 	biodetector.add_obj(self.object)
 
 	_G.Actor = self.object
+	_G.AObj = get_actor_obj()
 	_G.Inventory = inventory.CInventory()
 	_G.hud = get_hud()
 	_G.Arena = aem_manager.CArenaext()
@@ -154,9 +154,6 @@ function actor_binder:net_spawn(data)
 	sa_callbacks.actor_net_spawn()
 	reap.net_spawn(self)
 
-	set_extensions_flags(extensions_flags.key_press + extensions_flags.key_release +
-			     extensions_flags.mouse_wheel + extensions_flags.mouse_move)
-
   -- added by xStream for AMK miniSDK
   xrs_ai.actor_net_spawn(self)
   amk.on_game_load(obj)
@@ -177,6 +174,7 @@ function actor_binder:net_destroy()
 	actor_stats.remove_from_ranking(0)
 
 	_G.Actor = nil
+	_G.AObj = nil
 	_G.Inventory = nil
 	_G.Arena = nil
 	_G.Dream = nil
@@ -197,7 +195,6 @@ function actor_binder:net_destroy()
   xr_sound.stop_all_sound_object()
 
 	reap_callback.net_destroy(self)
-	set_extensions_flags(0)
 
   object_binder.net_destroy(self)
 end
@@ -494,7 +491,6 @@ function actor_binder:save(packet)
 
 	freeplay_stats:save(packet)
 	sa_callbacks.actor_save(packet)
-	reap.actor_save(packet)
 
 	local flags = 0
 	if self.in_rad_zone then
@@ -537,7 +533,6 @@ function actor_binder:load(reader)
 
 	freeplay_stats:load(reader)
 	sa_callbacks.actor_load(reader)
-	reap.actor_load(reader)
 
 	local flags = reader:r_u8()
 	self.in_rad_zone = bit_and(flags, 1) ~= 0

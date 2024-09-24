@@ -3,9 +3,8 @@
 --]]---------------------------------------------------------------------------
 
 local start = true
-local pause_menu_init = true
+local first_frame = true
 
-local load_slot_act
 load_del_bolt = nil
 
 local next_update_200 = 0
@@ -13,7 +12,7 @@ local next_update_1000 = 0
 local next_update_5000 = 0
 
 function net_spawn(self)
-	if pause_menu_init then
+	if first_frame then
 		give_info("paused_on_load")
 	end
 
@@ -34,11 +33,12 @@ function update(self)
 		start = false
 	end
 
-	if pause_menu_init and screen.precache_frame <= 1 then
+	if first_frame and screen.precache_frame <= 1 then
 		load_slot_restore()
+		reap_misc.intro_dream()
 
-		console:execute("main_menu 1")
-		pause_menu_init = false
+		disable_info("paused_on_load")
+		first_frame = false
 	end
 
 	update_timers()
@@ -184,44 +184,16 @@ function new_game()
 	trade_manager.new_game()
 end
 
-function actor_save(packet)
-	local flags = 0
-	if Actor:active_slot() < 10 then
-		flags = bit_or(flags, 1)
-	end
-
-	packet:w_u8(flags)
-end
-
-function actor_load(reader)
-	local flags = reader:r_u8()
-
-	if bit_and(flags, 1) ~= 0 then
-		load_slot_act = true
-	end
-end
-
 --[[---------------------------------------------------------------------------
 * Active slot management
 --]]---------------------------------------------------------------------------
 
 local vars = container:get("reap", { })
-local load_slot_item
 
 function load_slot_hide()
 	if load_del_bolt then
 		bolt_ending.del_bolt()
 		load_del_bolt = nil
-
-		if Actor:active_slot() == inventory_slots.BOLT then
-			return
-		end
-	end
-
-	load_slot_item = Actor:active_item()
-	if load_slot_item then
-		Actor:move_to_ruck(load_slot_item)
-		load_slot_item = load_slot_item:id()
 	end
 end
 
@@ -229,18 +201,6 @@ function load_slot_restore()
 	if vars.wpn_refcnt then
 		Actor:hide_weapon()
 	end
-
-	if not load_slot_item then return end
-	load_slot_item = level_object(load_slot_item)
-	if not load_slot_item then return end
-
-	if load_slot_act and not vars.wpn_refcnt then
-		Actor:move_to_slot_and_activate(load_slot_item)
-	else
-		Actor:move_to_slot(load_slot_item)
-	end
-	load_slot_item = nil
-	load_slot_act = nil
 end
 
 function drop_weapon(punch)
@@ -249,7 +209,7 @@ function drop_weapon(punch)
 		local active_sect = active_item:section()
 		if active_sect == "wpn_knife" then
 			if punch == true then
-				Actor:activate_slot(-1)
+				Actor:activate_slot(inventory_slots.NO_ACTIVE)
 			else
 				Actor:drop_item(active_item)
 			end
@@ -261,15 +221,10 @@ function drop_weapon(punch)
 	end
 end
 
-function wpn_show_enable(info_id)
+function wpn_show_enable()
 	if screen.precache_frame > 0 then
-		timer(wpn_show_enable, 400, true, info_id)
+		timer(wpn_show_enable, 400, true)
 		return
-	end
-
-	if info_id then
-		ammo_belt.on_info(info_id)
-		grenade_belt.on_info(info_id)
 	end
 
 	if not vars.wpn_refcnt then return end
@@ -290,9 +245,9 @@ function wpn_show_enable(info_id)
 	end
 end
 
-function wpn_hide_disable(info_id)
+function wpn_hide_disable()
 	if screen.precache_frame > 0 then
-		timer(wpn_hide_disable, 400, true, info_id)
+		timer(wpn_hide_disable, 400, true)
 		return
 	end
 
@@ -300,60 +255,37 @@ function wpn_hide_disable(info_id)
 	if vars.wpn_refcnt == 1 then
 		local act = Actor:active_slot()
 		if act < 10 then
-			Actor:activate_slot(-1)
+			Actor:activate_slot(inventory_slots.NO_ACTIVE)
 			vars.last_slot = act
 		end
 
 		Actor:hide_weapon()
 	end
+end
 
-	if info_id then
-		ammo_belt.on_info(info_id)
-		grenade_belt.on_info(info_id)
+function wpn_ui_info(info_id)
+	if screen.precache_frame > 0 then
+		timer(wpn_ui_info, 400, true, info_id)
+		return
 	end
+
+	ammo_belt.on_info(info_id)
+	grenade_belt.on_info(info_id)
 end
 
 local info_fn = {
-	ui_car_body		= wpn_hide_disable,
-	ui_car_body_hide	= wpn_show_enable,
-	ui_pda			= wpn_hide_disable,
-	ui_pda_hide		= wpn_show_enable,
+	ui_car_body		= wpn_ui_info,
+	ui_car_body_hide	= wpn_ui_info,
 
 	ui_inventory = function(info_id)
 		Inventory:on_inventory_info(info_id)
-		wpn_hide_disable(info_id)
+		wpn_ui_info(info_id)
 	end,
-	ui_inventory_hide = function(info_id)
-		Inventory:on_inventory_info(info_id)
-		wpn_show_enable(info_id)
-	end,
-	ui_talk = function()
-		if has_info("ui_trade_hide") then
-			wpn_hide_disable()
-		end
-	end,
-	ui_talk_hide = function()
-		if not level.main_input_receiver() then
-			wpn_show_enable()
-		end
-	end,
-	ui_trade = function(info_id)
-		if Actor:is_talking() then
-			ammo_belt.on_info(info_id)
-			grenade_belt.on_info(info_id)
-		else
-			wpn_hide_disable(info_id)
-		end
-	end,
-	ui_trade_hide = function(info_id)
-		if has_info("ui_talk") then
-			ammo_belt.on_info(info_id)
-			grenade_belt.on_info(info_id)
-		else
-			wpn_show_enable(info_id)
-		end
-	end
+
+	ui_trade		= wpn_ui_info,
+	ui_trade_hide		= wpn_ui_info
 }
+info_fn.ui_inventory_hide = info_fn.ui_inventory
 
 function process_ui_info(info_id)
 	local fn = info_fn[info_id]
@@ -369,8 +301,6 @@ end
 --]]---------------------------------------------------------------------------
 
 local sleep_cs, hide
-
-hit_effectors = reap_misc.hit_effectors
 
 function safe_place()
 	local need_hit, khit
@@ -436,7 +366,7 @@ function belt_item(obj)
 
 	if obj:is_ammo() then
 		ret.width = config:r_u32_cache(sect, "inv_grid_width")
-		ret.box = config:r_u32_cache(sect, "box_size")
+		ret.box = obj:get_ammo_box_size()
 		ret.pri = 3
 	elseif obj:is_artefact() then
 		ret.pri = 5
@@ -507,6 +437,40 @@ function belt_redraw()
 		hud:AddDialogToRender(static)
 
 		belt_ui[i] = static
+	end
+end
+
+--[[---------------------------------------------------------------------------
+ * Hit effectors
+--]]---------------------------------------------------------------------------
+
+local last_health
+
+function actor_before_hit()
+	last_health = last_health or Actor.health
+end
+
+function actor_hit()
+	local delta = (last_health or 0) - Actor.health
+	if delta > 0 then
+		hit_effectors(delta)
+		last_health = nil
+	end
+end
+
+function hit_effectors(amount)
+	if amount <= 0.05 or not actor_flags.alive then return end
+
+	level.add_pp_effector("amk_shoot.ppe", 2011, false)
+	level.set_pp_effector_factor(2011, amount * 100)
+
+	if amount <= 0.3 then return end
+
+	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
+	say([[actor\pain_3]])
+
+	if math.random() < amount / 2 then
+		reap.drop_weapon()
 	end
 end
 

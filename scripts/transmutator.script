@@ -244,7 +244,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonClear:SetStretchTexture(true)
 	self.oButtonClear:Init(coords[2], 62, 23 * refactor, 39)
 	self:AttachChild(self.oButtonClear)
-	self:AddCallbackEx("oButtonClear", ui_events.BUTTON_CLICKED, self.ClearSlots)
+	self:Connect("oButtonClear", ui_events.BUTTON_CLICKED, self.ClearSlots)
 
 	--	Прикрепляем текстовый индикатор аномалии
 	self.oaAnomaly = CUIStatic()
@@ -268,7 +268,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonQuit:SetStretchTexture(true)
 	self.oButtonQuit:Init(coords[4], 302, 92 * refactor, 25)
 	self:AttachChild(self.oButtonQuit)
-	self:AddCallbackEx("oButtonQuit", ui_events.BUTTON_CLICKED, self.Quit)
+	self:Connect("oButtonQuit", ui_events.BUTTON_CLICKED, self.Quit)
 
 	--	Прикрепляем кнопку на старт трансмутации 'старт'
 	self.oButtonStart = CUIButton()
@@ -282,7 +282,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonStart:SetStretchTexture(true)
 	self.oButtonStart:Init(coords[5], 302, 92 * refactor, 25)
 	self:AttachChild(self.oButtonStart)
-	self:AddCallbackEx("oButtonStart", ui_events.BUTTON_CLICKED, self.Start)
+	self:Connect("oButtonStart", ui_events.BUTTON_CLICKED, self.Start)
 
 	--	Прикрепляем кнопку управления СкроллБаром 'налево'
 	self.oButtonPrevLeft = CUIButton()
@@ -293,7 +293,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonPrevLeft:SetStretchTexture(true)
 	self.oButtonPrevLeft:Init(coords[6], 167, 39 * refactor, 23)
 	self:AttachChild(self.oButtonPrevLeft)
-	self:AddCallbackEx("oButtonPrevLeft", ui_events.BUTTON_CLICKED, self.PreviewScrollLeft)
+	self:Connect("oButtonPrevLeft", ui_events.BUTTON_CLICKED, self.PreviewScrollLeft)
 
 	--	Прикрепляем кнопку управления СкроллБаром 'направо'
 	self.oButtonPrevRight = CUIButton()
@@ -304,7 +304,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonPrevRight:SetStretchTexture(true)
 	self.oButtonPrevRight:Init(coords[7], 167, 39 * refactor, 23)
 	self:AttachChild(self.oButtonPrevRight)
-	self:AddCallbackEx("oButtonPrevRight", ui_events.BUTTON_CLICKED, self.PreviewScrollRight)
+	self:Connect("oButtonPrevRight", ui_events.BUTTON_CLICKED, self.PreviewScrollRight)
 
 	--	Прикрепляем кнопку управления РецептБаром 'налево'
 	self.oButtonRecLeft = CUIButton()
@@ -315,7 +315,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonRecLeft:SetStretchTexture(true)
 	self.oButtonRecLeft:Init(coords[6], 246, 39 * refactor, 23)
 	self:AttachChild(self.oButtonRecLeft)
-	self:AddCallbackEx("oButtonRecLeft", ui_events.BUTTON_CLICKED, self.ReceptScrollLeft)
+	self:Connect("oButtonRecLeft", ui_events.BUTTON_CLICKED, self.ReceptScrollLeft)
 
 	--	Прикрепляем кнопку управления РецептБаром 'направо'
 	self.oButtonRecRight = CUIButton()
@@ -326,7 +326,7 @@ function CAmkDeviceTransmutator:InitInterface()
 	self.oButtonRecRight:SetStretchTexture(true)
 	self.oButtonRecRight:Init(coords[7], 246, 39 * refactor, 23)
 	self:AttachChild(self.oButtonRecRight)
-	self:AddCallbackEx("oButtonRecRight", ui_events.BUTTON_CLICKED, self.ReceptScrollRight)
+	self:Connect("oButtonRecRight", ui_events.BUTTON_CLICKED, self.ReceptScrollRight)
 end
 
 --	Инициализируем элементы нашего псевдо СкроллБара.
@@ -373,7 +373,7 @@ function CAmkDeviceTransmutator:UpdScrollBar(iStartIndex, iFinalIndex, iBarName)
 		end
 		oScrollButton:Init(aButton.x, aButton.y, aButton.wt * refactor, aButton.hg)
 		self:AttachChild(oScrollButton)
-		self:AddCallbackEx("oScrollButton"..iSectIndex..iBarName, ui_events.BUTTON_CLICKED, self.AddArtefact, iSectIndex, iBarName)
+		self:Connect("oScrollButton"..iSectIndex..iBarName, ui_events.BUTTON_CLICKED, self.AddArtefact, iSectIndex, iBarName)
 		aButton.oSlot = oScrollButton
 	end
 end
@@ -437,7 +437,7 @@ function CAmkDeviceTransmutator:InitResultButton(sArtSection)
 		oRes:SetStretchTexture(true)
 		oRes:Init(coords[8], 69, 50 * refactor, 50)
 		self:AttachChild(oRes)
-		self:AddCallbackEx("oButtonResult", ui_events.BUTTON_CLICKED, self.UpdateDevice)
+		self:Connect("oButtonResult", ui_events.BUTTON_CLICKED, self.UpdateDevice)
 	end
 end
 
@@ -517,7 +517,7 @@ function CAmkDeviceTransmutator:AddArtefact(iSectIndex, iBarName)
 				oCmpnSlot:SetStretchTexture(true)
 				oCmpnSlot:Init(aButton.x, aButton.y, aButton.wt * refactor, aButton.hg)
 				self:AttachChild(oCmpnSlot)
-				self:AddCallbackEx("oCmpnSlot"..iKey, ui_events.BUTTON_CLICKED, self.DelArtefact, iKey)
+				self:Connect("oCmpnSlot"..iKey, ui_events.BUTTON_CLICKED, self.DelArtefact, iKey)
 
 				--	Сохраняем данные
 				aButton.oSlot = oCmpnSlot

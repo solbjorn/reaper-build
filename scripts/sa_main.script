@@ -9,68 +9,9 @@
 --[[-----------------------------------------------------------------------------------------------
  * Hit effectors
 --]]-----------------------------------------------------------------------------------------------
-function hit_effectors(mob_type, obj)
-	if mob_type == 0 or mob_type == 1 then
-		local attack_effector = config:r_string_cache(obj:section(), "attack_effector")
-		if attack_effector then
-			local ce_time = config:r_float_cache(attack_effector, "ce_time")
-			local ce_amplitude = config:r_float_cache(attack_effector, "ce_amplitude")
-			local ce_period_number = config:r_float_cache(attack_effector, "ce_period_number")
-			local ce_power = config:r_float_cache(attack_effector, "ce_power")
-			level.add_cam_effector3(ce_time, ce_amplitude, ce_period_number, ce_power)
-		else
-			level.add_cam_effector3(0.3, 4.0, 2.0, 0.7)
-		end
-	end
-end
---[[-----------------------------------------------------------------------------------------------
- * Overweight power fix
---]]-----------------------------------------------------------------------------------------------
-function overweight_power_fix()
-	local outfit = Actor:get_current_outfit()
-	if outfit then
-		local state = Actor:actor_body_state()
-		local function check_actor_state(flag)
-			return bit_and(state, flag) ~= 0
-		end
-		local any_move = check_actor_state(EMoveCommand.mcForward + EMoveCommand.mcBack + EMoveCommand.mcLeftStrafe + EMoveCommand.mcRightStrafe)
-		if not any_move then
-			return
-		end
-		local additional_max_weight = get_outfit_data(outfit, "additional_inventory_weight2")
-		if additional_max_weight > 0 then
-			local function is_actor_accelerated()
-				local res = bit_and(get_actor_flags(), psActorFlags.afAlwaysRun) ~= 0
-				if check_actor_state(EMoveCommand.mcAccel) then
-					res = not res
-				end
-				if check_actor_state(EMoveCommand.mcCrouch + EMoveCommand.mcClimb + EMoveCommand.mcJump + EMoveCommand.mcLanding + EMoveCommand.mcLanding2) then
-					return res
-				elseif check_actor_state(EMoveCommand.mcLeftLookout + EMoveCommand.mcRightLookout) or get_actor_data("zoom_mode") then
-					return false
-				end
-				return res
-			end
-			local function condition_walk(weight)
-				local accel = is_actor_accelerated()
-				local sprint = check_actor_state(EMoveCommand.mcSprint)
-				local walk_power = get_actor_data("walk_power")
-				local walk_weight_power = get_actor_data("walk_weight_power")
-				local overweight_walk_k = get_actor_data("overweight_walk_k")
-				local sprint_k = get_actor_data("sprint_k")
-				local accel_k = get_actor_data("accel_k")
-				local delta_time = get_actor_data("delta_time")
-				-- calc
-				local power = walk_power + (walk_weight_power * weight * (weight > 1 and overweight_walk_k or 1))
-				power = power * (delta_time * (accel and (sprint and sprint_k or accel_k) or 1))
-				return power * get_outfit_data(outfit, "power_loss")
-			end
-			local total_weight = Actor:get_inventory_weight()
-			local max_weight = Actor:get_actor_max_weight()
-			local old_power = condition_walk(total_weight / max_weight)
-			local new_power = condition_walk(total_weight / (max_weight + additional_max_weight))
-			Actor.power = old_power - new_power
-		end
+function hit_effectors(obj)
+	if not obj:is_monster() or not config:r_string_cache(obj:section(), "attack_effector") then
+		level.add_monster_cam_effector(0.3, 4.0, 2.0, 0.7)
 	end
 end
 --[[-----------------------------------------------------------------------------------------------
@@ -164,7 +105,7 @@ function light_death_callback(obj, who)
 	if obj:is_hanging_lamp() and not xr_logic.pstor_retrieve(obj, "death_light") then
 		level.parked_call(
 			function()
-				if not is_light_alive(obj) then
+				if obj:get_hanging_lamp().health == 0 then
 					obj:binded_object():death_callback(obj, who)
 					xr_logic.pstor_store(obj, "death_light", true)
 				end
@@ -272,7 +213,7 @@ local last_cam_fov
 function zoom_effect(dik, keyboard_action)
 	if dik == bind_to_dik(key_bindings.kWPN_ZOOM) then
 		if keyboard_action == key_events.pressed then
-			if get_actor_data("camera_type") ~= EActorCameras.eacLookAt or level.main_input_receiver() then
+			if AObj.active_cam ~= EActorCameras.eacLookAt or level.main_input_receiver() then
 				return
 			end
 			local active_slot = Actor:active_slot()
@@ -291,8 +232,8 @@ end
 --]]-----------------------------------------------------------------------------------------------
 function restore_torch(victim)
 	if sr_light.check_light(victim) then
-		local torch = victim:item_in_slot(9)
-		if torch and torch:is_torch_enabled() then
+		local torch = victim:item_in_slot(inventory_slots.TORCH)
+		if torch and torch:get_torch().on then
 			victim:transfer_item(torch, victim)
 			local id = torch:id()
 			level.parked_call(

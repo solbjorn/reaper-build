@@ -43,7 +43,7 @@ function bloodsucker_vampire(self)
 	if bloodsucker_vampire_check_conditions(self) then
 		local state = bloodsucker_vampire_states.prepare
 		local fire_time = 0
-		local last_camera_type = get_actor_data("camera_type")
+		local last_camera_type = AObj.active_cam
 		-- run vampire
 		Actor:set_fastcall(
 			function()
@@ -51,7 +51,7 @@ function bloodsucker_vampire(self)
 					-- actor effects
 					xr_effects.disable_ui()
 					level.add_complex_effector("effector_bloodsucker_vampire_grasp", effector_ids.vampire_grasp)
-					set_actor_data("camera_type", EActorCameras.eacFirstEye)
+					AObj:set_active_cam(EActorCameras.eacFirstEye)
 					camera_rotate_on_position(obj:position(), 15)
 					-- bloodsucker effects
 					xr_logic.mob_capture(obj, true)
@@ -76,7 +76,7 @@ function bloodsucker_vampire(self)
 						-- actor effects
 						xr_effects.enable_ui()
 						level.add_complex_effector("effector_head_shot", effector_ids.head_shot)
-						set_actor_data("camera_type", last_camera_type)
+						AObj:set_active_cam(last_camera_type)
 						make_hit(Actor, config:r_float_cache(obj:section(), "Vampire_Wound"), 5000, hit.wound, obj:direction(), obj)
 						-- bloodsucker effects
 						obj.health = config:r_float_cache(obj:section(), "Vampire_Gain_Health")
@@ -128,11 +128,11 @@ function bloodsucker_vampire_check_conditions(self)
 		return false
 	end
 	-- check bloodsucker movement
-	if get_monster_data(obj, "speed") ~= 0 then
+	if obj:get_custom_monster().curr_speed ~= 0 then
 		return false
 	end
 	-- check actor state
-	if not (Actor:is_actor_normal() or Actor:is_actor_walking() or Actor:is_actor_running()) then
+	if not (AObj:is_actor_normal() or AObj:is_actor_walking() or AObj:is_actor_running()) then
 		return false
 	end
 	-- check actor in car
@@ -163,7 +163,7 @@ function pseudodog_psy_effect(self)
 			-- sound effect
 			say("monsters\\pseudodog\\psy_affect_0")
 			-- camera move
-			if get_actor_data("camera_type") == EActorCameras.eacFirstEye then
+			if AObj.active_cam == EActorCameras.eacFirstEye then
 				local h = -screen.cam_dir:getH()
 				local p = -screen.cam_dir:getP()
 				h = math.random() > 0.5 and h + PDOG_PSY_EFFECT_TURN_ANGLE or h - PDOG_PSY_EFFECT_TURN_ANGLE
@@ -174,7 +174,7 @@ function pseudodog_psy_effect(self)
 				reap.drop_weapon()
 			end
 			-- camera effector
-			level.add_cam_effector3(1.0, -30.0, 4.0, 2.0)
+			level.add_monster_cam_effector(1.0, -30.0, 4.0, 2.0)
 			level.add_pp_effector("attack_effects\\monsters\\special\\pseudodog_psy.ppe", effector_ids.psy_effect, false)
 			-- make hit
 			Actor.psy_health = -0.08
@@ -209,9 +209,10 @@ end
 --]]-----------------------------------------------------------------------------------------------
 function poltergeist_particles(self)
 	local obj = self.object
+	local cond = obj:alive() and obj:get_base_monster().state_invisible
 	for k, v in pairs(self.particles_obj_by_bone) do
 		if v then
-			if obj:alive() and get_monster_data(obj, "invisible") then
+			if cond then
 				if v:playing() then
 					v:move_to(obj:bone_position(k), xyz())
 				else

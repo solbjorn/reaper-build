@@ -38,7 +38,7 @@ function se_car:STATE_Write(packet)
 
 	local obj = level_object(self.id)
 	if obj then
-		self.fuel = obj:get_fuel()
+		self.fuel = obj:get_car():GetFuel()
 	end
 
 	if self.fuel ~= -1 or self.trunk_id ~= 0 then

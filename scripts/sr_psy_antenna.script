@@ -135,7 +135,7 @@ function PsyAntenna:update_sound()
 end
 function PsyAntenna:update_postprocess(pp)
 	-- Ray Twitty aka Shadows: если движок уже удалил постпроцесс, то при входе в зону его надо будет восстановить
-	if level.has_pp_effector(pp.idx) == 0 then
+	if not level.has_pp_effector(pp.idx) then
 		self.postprocess_count = self.postprocess_count - 1
 		return false
 	end

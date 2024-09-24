@@ -36,7 +36,7 @@ end
 function CHudInterfaceMgr:reload_static()
 	local active_slot = Actor:active_slot()
 	local active_item = Actor:active_item()
-	if active_item and (active_slot == 1 or active_slot == 2) and active_item:get_ammo_in_magazine() <= (get_weapon_data(active_item, "mag_size") + 0.5) / 5 then
+	if active_item and (active_slot == 1 or active_slot == 2) and active_item:get_ammo_in_magazine() <= (active_item:get_weapon().ammo_mag_size + 0.5) / 5 then
 		hud:AddCustomStatic("gun_reload", true)
 	else
 		hud:RemoveCustomStatic("gun_reload")
@@ -54,7 +54,11 @@ function CHudInterfaceMgr:date_static()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:night_vision_static()
-	if level.has_pp_effector(effector_ids.night_vision) ~= 0 and get_actor_data("camera_type") == EActorCameras.eacFirstEye then
+	local nv = Actor:item_in_slot(inventory_slots.TORCH)
+	if nv then
+		nv = nv:get_torch().nvd_on
+	end
+	if nv and AObj.active_cam == EActorCameras.eacFirstEye then
 		if not self.night_vision_active then
 			local rect = amk_mod.get_hud_rect()
 			self.night_vision:SetWndRect(rect.x, rect.y, rect.w, rect.h)
@@ -67,7 +71,10 @@ function CHudInterfaceMgr:night_vision_static()
 end
 ---------------------------------------------------------------------------------------------------
 function CHudInterfaceMgr:actor_death()
-	level.remove_pp_effector(effector_ids.night_vision)
+	local torch = Actor:item_in_slot(inventory_slots.TORCH)
+	if torch then
+		torch:get_torch():enable_nvd(false)
+	end
 	self.night_vision:SetWidth(0)
 	self.night_vision_active = false
 end

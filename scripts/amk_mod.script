@@ -936,8 +936,7 @@ local last_rect = {
 
 function get_hud_rect()
 	if last_rect.width ~= screen.width or last_rect.height ~= screen.height then
-		set_static_rescale_factor(screen.height / screen.width / 0.75)
-		_G.refactor = get_static_rescale_factor()
+		_G.refactor = screen.height / screen.width / 0.75
 
 		last_rect.width = screen.width
 		last_rect.height = screen.height

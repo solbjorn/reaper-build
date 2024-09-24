@@ -5,6 +5,12 @@
  Author     : Artos (по материалам: bardak, Red75, Sokol_jack, KD87 (uACDC), xStream (xs_netpk))
  Last edit  : 08.01.2018 (включены исправления авторов: Charsi, Kirgudu, naxac, dsh)
 --]] ----------------------------------------------------------------------------------------------
+--[[ ----------------------------------------------------------------------------------------------
+KRodin: В этом скрипте включена OGSR-специфичная правка для поддержки более 64 костей в моделях.
+Для работы скрипта требуются функции log3 и table.copy из _G, и конфиг m_netpk.ltx
+Подключение скрипта: добавить в _G.start_game_callback():
+	m_netpk.attach()
+--]] ----------------------------------------------------------------------------------------------
 
 --/ -----------------------------------------------------------------
 --/ VARIABLEs (not to change!)
@@ -172,7 +178,7 @@ local table_size = table.size
 local _parse_custom_data = function(str)
 	if type(str) == 'string' then
 		local tbl = {}
-		str = str:gsub(";.-\n", "\n"):gsub("\n+", "\n"):match("^%s*(.-)%s*$") --/ cleanup comments, symbol ';' is denied in sections names and keys/values!
+		str = str:gsub(";.-\n", "\n"):trim() --/ cleanup comments, symbol ';' is denied in sections names and keys/values!
 		for section,section_data in str:gmatch('%s*%[([^%]]*)%]%s*([^%[%z]*)%s*') do --/ get sections names and their's data
 			section = section:trim() --/#!# use trim
 			section_data = section_data:trim()
@@ -1808,7 +1814,8 @@ function net_cse_ph_skeleton:__init(obj,mode)
 		{ name = 'root_bone',      type = 'u16',   default = 0                 },
 		{ name = 'bbox_min',       type = 'f32v3', default = vector():set( 0, 0, 0 ) },
 		{ name = 'bbox_max',       type = 'f32v3', default = vector():set( 0, 0, 0 ) },
-		{ name = 'bones_count',    type = 'u16',   default = 0                 } --/#~# changed name ('bone_count')
+		{ name = 'bones_count',    type = 'u16',   default = 0                 }, --/#~# changed name ('bone_count')
+		{ name = 'bones_mask_ex',  type = 'u8v8',  default = {0,0,0,0,0,0,0,0} }
 	}
 	self.st_props_bone = { --/#+#
 		{ name = 'ph_position',    type = 'q8v3',  default = {0,0,0},  },
@@ -1824,7 +1831,15 @@ function net_cse_ph_skeleton:_read_st_props(ret,pk)
 	--/ hooks 'bones'
 	if bit_and(ret.skeleton_flags, 4) ~= 0 then --/ check 'skeleton'
 		for _,prop in ipairs(self.st_props_bones) do --/ read 'bones'
-			ret[prop.name] = this["_r_"..prop.type](pk)
+                  if prop.name == "bones_mask_ex" then
+                    if ret.bones_count > 64 then
+                      ret[ prop.name ] = this[ "_r_" .. prop.type ]( pk )
+                    else
+                      ret[ prop.name ] = table.copy( prop.default )
+                    end
+                  else
+                    ret[prop.name] = this["_r_"..prop.type](pk)
+                  end
 		end
 		if ret.bones_count > 0 then --/ read 'bone': ...
 			ret["bones"] = {}
@@ -1851,9 +1866,14 @@ function net_cse_ph_skeleton:_write_st_props(data,pk)
 	--/ hooks 'bones'
 	if bit_and(data.skeleton_flags, 4) ~= 0 and data.bones_count then --/ check 'bones'
 		for _,prop in ipairs(self.st_props_bones) do --/ write 'bones'
+                  if
+                    prop.name ~= "bones_mask_ex"
+                    or data.bones_count > 64
+                  then
                     this[ "_w_" .. prop.type ](
                       pk, data[ prop.name ] or prop.default or 0
                     )
+                  end
                 end
 		if data.bones then --/ write 'bone' ...
 			for _,bone in ipairs(data.bones) do

@@ -38,13 +38,13 @@ end
 
 function cheat:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.cheat1, self)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.cheat2, self)
-	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.cheat3, self)
+	self:Connect("btn_1", ui_events.BUTTON_CLICKED, self.cheat1)
+	self:Connect("btn_2", ui_events.BUTTON_CLICKED, self.cheat2)
+	self:Connect("btn_3", ui_events.BUTTON_CLICKED, self.cheat3)
 	if Actor.health < 0.9 then
-		self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.cheat4, self)
+		self:Connect("btn_4", ui_events.BUTTON_CLICKED, self.cheat4)
 	end
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+	self:Connect("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
 end
 
 function cheat:on_quit()

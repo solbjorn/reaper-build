@@ -1,22 +1,24 @@
--- file:		UI_MM_OPT_MAIN.script
--- created:		01.07.2005
--- description:	options dialog
--- author:		Serge Vynnychenko
---
+-- Меню настроек для Теней Чернобыля.
+-- KRodin (c) 2018
+-- Вырезал поддержку загрузки патчей, первого рендера (т.к. он не поддерживается движком) и прочий мусор.
+-- Сделано специально для использования с движком OGSR.
 
 class "options_dialog" (CUIScriptWnd)
 
-function options_dialog:__init() super()
-   self:SetFont(GetFontMedium()) --set base font for dialog.
+function options_dialog:__init()
+	super()
+	self:SetFont(GetFontMedium())
 
-	self.m_preconditions	= {}
+	self.hint_name = nil
+	self.hint_caption = nil
+	self.current_view = nil
 
-    self:InitControls()
-    self:InitCallBacks()
+	self:InitControls()
+	self:InitCallBacks()
+	self:UpdateOptValues()
 end
 
 function options_dialog:__finalize()
-
 end
 
 function options_dialog:InitControls()
@@ -26,40 +28,43 @@ function options_dialog:InitControls()
 	local xml = CScriptXmlInit()
 	xml:ParseFile("ui_mm_opt.xml")
 
-	--xml:InitStatic("back_video", self)
 	xml:InitStatic("background", self)
-	--xml:InitStatic("rug_video", self)
 	self.dialog = xml:InitStatic("main_dialog:dialog", self)
+
+	xml:InitFrame("frame_hint", self)
+	self.hint_name = xml:InitStatic("hint_name", self)
+	self.hint_caption = xml:InitStatic("hint_caption", self)
+	self.current_view = 1
 
 	xml:InitStatic("main_dialog:cap_options", self.dialog)
 
 	self.dlg_video = ui_mm_opt_video.opt_video()
-	self.dlg_video:InitControls(55,74, xml, self)
+	self.dlg_video:InitControls(55, 74, xml, self)
 	self.dialog:AttachChild(self.dlg_video)
 
 	self.dlg_sound = ui_mm_opt_sound.opt_sound()
-	self.dlg_sound:InitControls(55,74, xml, self)
+	self.dlg_sound:InitControls(55, 74, xml, self)
 	self.dlg_sound:Show(false)
 	self.dialog:AttachChild(self.dlg_sound)
 
 	self.dlg_gameplay = ui_mm_opt_gameplay.opt_gameplay()
-	self.dlg_gameplay:InitControls(55,74, xml, self)
+	self.dlg_gameplay:InitControls(55, 74, xml, self)
 	self.dlg_gameplay:Show(false)
 	self.dialog:AttachChild(self.dlg_gameplay)
 
 	self.dlg_controls = ui_mm_opt_controls.opt_controls()
-	self.dlg_controls:InitControls(55,74, xml, self)
+	self.dlg_controls:InitControls(55, 74, xml, self)
 	self.dlg_controls:Show(false)
 	self.dialog:AttachChild(self.dlg_controls)
 
 	self.dlg_video_adv = ui_mm_opt_video_adv.opt_video_adv()
-	self.dlg_video_adv:InitControls(55,74, xml, self)
+	self.dlg_video_adv:InitControls(55, 74, xml, self)
 	self.dlg_video_adv:Show(false)
 	self.dialog:AttachChild(self.dlg_video_adv)
 
-	local btn
-	btn = xml:Init3tButton("main_dialog:btn_accept", self.dialog)
+	local btn = xml:Init3tButton("main_dialog:btn_accept", self.dialog)
 	self:Register(btn, "btn_accept")
+
 	btn = xml:Init3tButton("main_dialog:btn_cancel", self.dialog)
 	self:Register(btn, "btn_cancel")
 
@@ -67,134 +72,98 @@ function options_dialog:InitControls()
 	self:Register(self.tab, "tab")
 
 	self.message_box = CUIMessageBoxEx()
-
-	self.b_r2_restart_shown		= false
+	self.message_box:Init("message_box_restart_game")
 end
 
-function options_dialog:UpdateControls()
-	local opt = COptionsManager()
-
-	opt:SetCurrentValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video_preset")
-
-	opt:SetCurrentValues("mm_opt_video")
-	opt:SaveBackupValues("mm_opt_video")
-
-	opt:SetCurrentValues("mm_opt_video_adv")
-	opt:SaveBackupValues("mm_opt_video_adv")
-
-	opt:SetCurrentValues("mm_opt_gameplay")
-	opt:SaveBackupValues("mm_opt_gameplay")
-
-	opt:SetCurrentValues("mm_opt_sound")
-	opt:SaveBackupValues("mm_opt_sound")
-
-	opt:SetCurrentValues("mm_opt_controls")
-
-	opt:SetCurrentValues("key_binding")
-
-	if not xrRender_test_r2_hw() then
-		self.combo_r2:SetCurrentID		(0)
-		self.combo_r2:Enable			(false)
+function options_dialog:UpdateOptValues(flag) --true - применить настройки, false - отменить настройки, nil - просто обновить дефолтные значения
+	local OptMgr = COptionsManager()
+	local opt_tbl = {"mm_opt_video_preset", "mm_opt_video", "mm_opt_video_adv", "mm_opt_gameplay", "mm_opt_sound", "mm_opt_controls", "key_binding"}
+	for _, opt_name in ipairs(opt_tbl) do
+		if flag == true then
+			OptMgr:SaveValues(opt_name)
+		elseif flag == false then
+			OptMgr:UndoGroup(opt_name)
+		end
 	end
-
-	self:UpdateDependControls()
-end
-
-function options_dialog:UpdateDependControls()
-
-	local _current_id	= self.combo_r2:CurrentID()
-
-	for i,j in pairs(self.m_preconditions) do
-		j				(i, _current_id)
+	if flag == true then
+		OptMgr:OptionsPostAccept()
+	end
+	for _, opt_name in ipairs(opt_tbl) do
+		OptMgr:SetCurrentValues(opt_name)
+		OptMgr:SaveBackupValues(opt_name)
 	end
 end
 
 function options_dialog:InitCallBacks()
-	self:AddCallbackEx("tab",					ui_events.TAB_CHANGED,		self.OnTabChange)
-	self:AddCallbackEx("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic)
-	self:AddCallbackEx("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept)
-	self:AddCallbackEx("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel)
-	self:AddCallbackEx("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph)
-	self:AddCallbackEx("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound)
-	self:AddCallbackEx("combo_r2",			ui_events.LIST_ITEM_SELECT,	self.OnR2changed)
-	self:AddCallbackEx("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged)
-	self:AddCallbackEx("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic)
-	self:AddCallbackEx("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault)
+	self:Connect("tab", ui_events.TAB_CHANGED, self.OnTabChange)
+	self:Connect("btn_advanced_graphic", ui_events.BUTTON_CLICKED, self.OnBtnAdvGraphic)
+	self:Connect("btn_accept", ui_events.BUTTON_CLICKED, self.OnBtnAccept)
+	self:Connect("btn_cancel", ui_events.BUTTON_CLICKED, self.OnBtnCancel)
+	self:Connect("combo_preset", ui_events.LIST_ITEM_SELECT, self.OnPresetChanged)
+	self:Connect("btn_simply_graphic", ui_events.BUTTON_CLICKED, self.OnSimplyGraphic)
+	self:Connect("btn_keyb_default", ui_events.BUTTON_CLICKED, self.Onbtn_keyb_default)
+	self:Connect("btn_advanced_graphic", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
+	self:Connect("btn_accept", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
+	self:Connect("btn_cancel", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
+	self:Connect("btn_default_graphic", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
+	self:Connect("btn_default_sound", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
+	self:Connect("btn_simply_graphic", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh)
 end
 
-function options_dialog:OnBtnDefault()
-	console:execute			("unbindall")
+function options_dialog:HintRefresh()
+	self.hint_name:SetText(game.translate_string("hint_name_text"))
+	if self.current_view == 1 then
+		self.hint_caption:SetText(game.translate_string("hint_caption_text"))
+	else
+		self.hint_caption:SetText(game.translate_string("hint_caption_adv_text"))
+	end
+end
 
-	local opt				= COptionsManager()
-	opt:SetCurrentValues	("mm_opt_controls")
-	opt:SetCurrentValues	("key_binding")
+function options_dialog:Onbtn_keyb_default()
+	cmd("unbindall")
+
+	local opt = COptionsManager()
+	opt:SetCurrentValues("mm_opt_controls")
+	opt:SetCurrentValues("key_binding")
 end
 
 function options_dialog:OnPresetChanged()
-	local opt					= COptionsManager()
-	opt:SetCurrentValues		("mm_opt_video")
-	opt:SetCurrentValues		("mm_opt_video_adv")
-end
-
-function options_dialog:OnR2changed()
-
-	self:UpdateDependControls				()
-
-	if false==self.b_r2_restart_shown then
-		self.b_r2_restart_shown			 = true
-		self.message_box:Init			("message_box_restart_game")
-		self:GetHolder():start_stop_menu(self.message_box,true)
-	end
-
-end
-
-function options_dialog:OnBtnDefGraph()
 	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_video","set_default_value")
-end
+	opt:SetCurrentValues("mm_opt_video")
+	opt:SetCurrentValues("mm_opt_video_adv")
 
-function options_dialog:OnBtnDefSound()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_sound","set_default_value")
+	self:show_need_restart_wnd()
 end
 
 function options_dialog:OnBtnAccept()
-	local opt = COptionsManager()
+	self:UpdateOptValues(true)
 
-	opt:SaveValues("mm_opt_video_preset")
-	opt:SaveValues("key_binding")
-	opt:SaveValues("mm_opt_video")
-	opt:SaveValues("mm_opt_video_adv")
-	opt:SaveValues("mm_opt_gameplay")
-	opt:SaveValues("mm_opt_sound")
-	opt:SaveValues("mm_opt_controls")
-	opt:OptionsPostAccept()
+	self:GetHolder():start_stop_menu(self, true)
+	self.owner:Show(true)
 
-	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
-	self:GetHolder():start_stop_menu	(self,true)
-	self.owner:Show						(true)
+	self:HintRefresh()
+
+	cmd("cfg_save") -- сохраняем файл настроек на диск
 end
 
 function options_dialog:OnBtnCancel()
-	local opt = COptionsManager()
-	opt:UndoGroup("mm_opt_video_preset")
-	opt:UndoGroup("mm_opt_video")
-	opt:UndoGroup("mm_opt_video_adv")
-	opt:UndoGroup("mm_opt_sound")
-	opt:OptionsPostAccept()
+	self:UpdateOptValues(false)
 
-	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
-	self:GetHolder():start_stop_menu	(self,true)
-	self.owner:Show						(true)
+	self:GetHolder():start_stop_menu(self, true)
+	self.owner:Show(true)
+
+	self:HintRefresh()
 end
 
 function options_dialog:OnTabChange()
-	self.dlg_video:Show		(false)
-	self.dlg_sound:Show		(false)
-	self.dlg_gameplay:Show	(false)
-	self.dlg_controls:Show	(false)
-	self.dlg_video_adv:Show	(false)
+	self.dlg_video:Show(false)
+	self.dlg_sound:Show(false)
+	self.dlg_gameplay:Show(false)
+	self.dlg_controls:Show(false)
+	self.dlg_video_adv:Show(false)
+	self.current_view = 1
+
+	self:HintRefresh()
 
 	local i = self.tab:GetActiveIndex()
 	if i == 0 then
@@ -209,40 +178,51 @@ function options_dialog:OnTabChange()
 end
 
 function options_dialog:OnBtnAdvGraphic()
-	self.dlg_video:Show		(false)
-	self.dlg_video_adv:Show	(true)
+	self.dlg_video:Show(false)
+	self.dlg_video_adv:Show(true)
+
+	self.current_view = 2
+	self:HintRefresh()
 end
 
 function options_dialog:OnSimplyGraphic()
-	self.dlg_video:Show		(true)
-	self.dlg_video_adv:Show	(false)
+	self.dlg_video:Show(true)
+	self.dlg_video_adv:Show(false)
+
+	self.current_view = 1
+	self:HintRefresh()
 end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
-	local res = CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-
-	if res==false then
-		if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-			if dik == DIK_keys.DIK_ESCAPE then
-				if self.dlg_video_adv:IsShown() then
-					self.dlg_video_adv:Show	(false)
-					self.dlg_video:Show		(true)
-				else
-					self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
-					self:GetHolder():start_stop_menu	(self,true)
-					self.owner:Show						(true)
-				end
-			elseif dik == DIK_keys.DIK_RETURN then
-				self:OnBtnAccept()
-			elseif dik == DIK_keys.DIK_TAB then
-				local i = self.tab:GetActiveIndex() + 1
-				if i > self.tab:GetTabsCount() - 1 then
-					i = 0
-				end
-				self.tab:SetNewActiveTab(i)
+	if CUIScriptWnd.OnKeyboard( self, dik, keyboard_action ) then
+		return true
+	end
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik_to_bind(dik) == key_bindings.kQUIT then
+			if self.dlg_video_adv:IsShown() then
+				self.dlg_video_adv:Show(false)
+				self.dlg_video:Show(true)
+				self.current_view = 1
+			else
+				self:GetHolder():start_stop_menu(self, true)
+				self.owner:Show(true)
 			end
+			self:HintRefresh()
+		elseif dik == DIK_keys.DIK_RETURN or dik == DIK_keys.DIK_NUMPADENTER then
+			self:OnBtnAccept()
+		elseif dik == DIK_keys.DIK_TAB then
+			local i = self.tab:GetActiveIndex() + 1
+			if i > self.tab:GetTabsCount() - 1 then
+				i = 0
+			end
+			self.tab:SetNewActiveTab(i)
 		end
+		return true
 	end
 
-	return res
+	return false
+end
+
+function options_dialog:show_need_restart_wnd()
+	self:GetHolder():start_stop_menu(self.message_box, true)
 end
