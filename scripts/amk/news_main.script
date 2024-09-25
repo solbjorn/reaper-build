@@ -189,7 +189,7 @@ end
 
 function on_death(victim, killer)
 	if (victim ~= nil) then
-		if victim:is_stalker() or victim:is_trader() then
+		if victim:is_human() then
 			local m_obj
 			if (isGameObject(victim)) then
 				m_obj = victim
@@ -1456,7 +1456,7 @@ function check_news()
 end
 
 function add_spawned_object(obj)
-	if (obj and (obj:is_stalker() or obj:is_monster() or obj:is_trader())) then
+	if obj and obj:is_entity_alive() then
 		if obj.can_switch_online and obj:can_switch_online() == false then return end
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "stranger" or s_comm == "trader" or s_comm == "arena_enemy" or s_comm == "actor_dolg" or s_comm == "actor_freedom" or s_comm == "ecolog" or s_comm == "green") then
@@ -1468,7 +1468,7 @@ function add_spawned_object(obj)
 		local pos = get_object_position(obj)
 		local lev = get_object_levelname(obj)
 		local obj_type = 0
-		if obj:is_stalker() or obj:is_trader() then
+		if obj:is_human() then
 			obj_type = 1
 		elseif obj:is_monster() then
 			obj_type = 2
@@ -1534,7 +1534,7 @@ function add_spawned_object(obj)
 end
 
 function add_killed_by_actor(obj)
-	if (obj and (obj:is_stalker() or obj:is_monster() or obj:is_trader())) then
+	if obj and obj:is_entity_alive() then
 		local s_comm = get_npc_community(obj)
 		if (s_comm and s_comm == "actor" or s_comm == "stalker" or s_comm == "dolg" or s_comm == "freedom" or s_comm == "trader" or s_comm == "ecolog" or s_comm == "green") then
 			return -- это сталкер
@@ -1549,7 +1549,7 @@ function add_killed_by_actor(obj)
 		end
 		local b_added = false
 		local obj_type = 0
-		if obj:is_stalker() or obj:is_trader() then
+		if obj:is_human() then
 			obj_type = 1
 		elseif obj:is_monster() then
 			obj_type = 2
@@ -2321,7 +2321,7 @@ function on_news()
 					amk.oau_reason="cn on_news check author obj"
 					if (obj) then
 						amk.oau_reason="cn on_news author obj exists"
-						if obj:is_stalker() or obj:is_trader() then
+						if obj:is_human() then
 							amk.oau_reason="cn on_news author obj is NPC"
 							if IsNpcStalker(obj) then
 								amk.oau_reason="cn on_news check author alive"
@@ -2373,7 +2373,7 @@ end
 -- Кого-то грохнули в оффлайн.
 function on_offline_death(victim, killer, weapon)
 	if (victim and killer) then
-		if victim:is_stalker() or victim:is_trader() then
+		if victim:is_human() then
 			if (IsNpcStalker(victim)) then
 				on_offline_stalker_death(victim, killer, weapon)
 			else
@@ -2539,11 +2539,11 @@ end
 
 function on_offline_corpse_found(who, object)
 	if (who and object) then
-		if who:is_stalker() and IsNpcStalker(who) then
+		if who:is_human() and IsNpcStalker(who) then
 			local s_corpse = ""
 			if object:is_monster() then
 				s_corpse = format_template_corpse_monster(object)
-			elseif object:is_stalker() then
+			elseif object:is_human() then
 				if (IsNpcStalker(object)) then
 					s_corpse = format_template_corpse_stalker(object)
 				else

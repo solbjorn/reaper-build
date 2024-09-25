@@ -38,7 +38,7 @@ end
 function getNpcType(npc)
 	if not npc then return nil, nil end
 
-	if npc:is_stalker() or npc:is_trader() then
+	if npc:is_human() then
 		local community = comms[npc:character_community()] or "neutral"
 		local rank = ranks.get_obj_rank_name(npc)
 		return "stalkerkills", community.."_"..rank

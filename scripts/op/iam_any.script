@@ -269,6 +269,12 @@ function is_detector(obj)
 	return obj:clsid() == clsid_device_detector_simple
 end
 
+function is_entity_alive(obj)
+	local cls = obj:clsid()
+
+	return (iAmHuman[cls] or iAmMonster[cls]) == true
+end
+
 function is_grenade(obj)
 	return iAmGrenade[obj:clsid()] == true
 end

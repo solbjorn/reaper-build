@@ -59,10 +59,6 @@ function send_tip(news_text, header, timeout, showtime, sender, sound)
   return true
 end
 
-function IsHuman(object)
-	return object:is_stalker() or object:is_trader()
-end
-
 function IsGameObject(obj)
 	local bResult = false
 	if (obj and obj.fov) then
@@ -345,7 +341,7 @@ function update_gps(item, box, boxId, is_new_metka)
 		return
 	end
 
-	if IsHuman(box) then
+	if box:is_human() then
 		update_gps_stalker(box, boxId, is_new_metka)
 	else
 		update_gps_habar(boxId)
@@ -653,7 +649,7 @@ function show_dlg_dots_npc(obj)
 	if not box then
 		return
 	end
-	if not IsHuman(box) or labels[boxId] then
+	if not box:is_human() or labels[boxId] then
 		return
 	end
 
