@@ -1,0 +1,46 @@
+local level2vertexes = {
+	l01_escape		= { _min = 0,    _max = 251,  lvl = 595499 },
+	l02_garbage		= { _min = 252,  _max = 415,  lvl = 382663 },
+	l03_agroprom		= { _min = 416,  _max = 702,  lvl = 437421 },
+	l03u_agr_underground	= { _min = 703,  _max = 810,  lvl = 4932,  indoor = true },
+	l04_darkvalley		= { _min = 811,  _max = 1108, lvl = 390125 },
+	l04u_labx18		= { _min = 1109, _max = 1167, lvl = 7581,  indoor = true },
+	l05_bar			= { _min = 1168, _max = 1307, lvl = 99539  },
+	l06_rostok		= { _min = 1308, _max = 1437, lvl = 67713  },
+	l08_yantar		= { _min = 1438, _max = 1528, lvl = 141471 },
+	l08u_brainlab		= { _min = 1529, _max = 1544, lvl = 8008,  indoor = true },
+	l07_military		= { _min = 1545, _max = 1861, lvl = 418268 },
+	l10_radar		= { _min = 1862, _max = 2116, lvl = 227189 },
+	l11_pripyat		= { _min = 2117, _max = 2272, lvl = 261219 },
+	l12_stancia		= { _min = 2273, _max = 2401, lvl = 477923 },
+	l12u_sarcofag		= { _min = 2402, _max = 2466, lvl = 10672, indoor = true },
+	l12u_control_monolith	= { _min = 2467, _max = 2516, lvl = 3982,  indoor = true },
+	l12_stancia_2		= { _min = 2517, _max = 2660, lvl = 264577 },
+	l10u_bunker		= { _min = 2661, _max = 2791, lvl = 8821,  indoor = true }
+}
+
+local current_vertexes
+
+function init()
+	current_vertexes = level2vertexes[curr_level]
+end
+
+function get_max_level_vertex()
+	return current_vertexes.lvl
+end
+
+function get_nearest_gv(pos)
+	local min_dist = math.huge
+	local gv = 0
+	local dist
+
+	for a = current_vertexes._min, current_vertexes._max do
+		dist = graph:vertex(a):level_point():distance_to(pos)
+		if dist < min_dist then
+			min_dist = dist
+			gv = a
+		end
+	end
+
+	return gv
+end

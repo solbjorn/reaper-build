@@ -1784,7 +1784,7 @@ function pda_hide_hideouts()
 end
 
 function zone_hideout(t)
-	local max_lv = reap_misc.get_max_level_vertex()
+	local max_lv = n_vertexes.get_max_level_vertex()
 	local v2 = vector():set(unpack(t.p3 or t.p2))
 	local v1 = vector():set(unpack(t.p1))
 	local pos = v1:sub(v2):div(2):add(v2)
@@ -1799,7 +1799,7 @@ function zone_hideout(t)
 		end
 	end
 
-	return create("space_restrictor", pos, lv, reap_misc.get_nearest_gv(pos))
+	return create("space_restrictor", pos, lv, n_vertexes.get_nearest_gv(pos))
 end
 
 function pda_show_hideouts()
@@ -1816,7 +1816,7 @@ function pda_show_hideouts()
 		if hideout.center then
 			pos = level.vertex_position(hideout.center)
 			zone = create("space_restrictor", pos, hideout.center,
-				      reap_misc.get_nearest_gv(pos))
+				      n_vertexes.get_nearest_gv(pos))
 
 			map_spot(zone.id, spot_type[hideout.spot or 1], "st_hideout_spot_hint")
 			spots[#spots + 1] = zone.id

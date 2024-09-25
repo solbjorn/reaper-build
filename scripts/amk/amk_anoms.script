@@ -157,8 +157,16 @@ local anoms_off_per_hour=1
 -------------------------------------------
 
 function init()
-	local lname=level.name()
+	n_vertexes.init()
 
+	collect_info()
+	spawn_anoms()
+
+	initialized = true
+end
+
+function collect_info()
+	local lname=level.name()
 	local sini = ini_file("scripts\\amk\\anoms.ltx")
 	if sini:section_exist(lname) then
 		local result, id, value = nil, nil, nil
@@ -173,12 +181,9 @@ function init()
 			end
 		end
 	end
-
-	collect_info()
-	initialized=true
 end
 
-function collect_info()
+function spawn_anoms()
 	local lname=level.name()
 	on_anoms_per_level={}
 	local psy_list = { }
