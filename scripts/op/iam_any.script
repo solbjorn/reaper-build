@@ -133,9 +133,15 @@ function iAmWeaponInit()
 end
 
 local clsid_script_trader
+local iAmHuman
 local iAmStalker
+
 function iAmStalkerInit()
 	clsid_script_trader = clsid.script_trader
+
+	iAmHuman = table.tohash({
+		clsid.actor, clsid_script_stalker, clsid_script_trader
+	})
 	iAmStalker = {
 		[clsid.actor]			= true,
 		[clsid.script_stalker]	= true
@@ -269,6 +275,10 @@ end
 
 function is_helicopter(obj)
 	return obj:clsid() == clsid_script_heli
+end
+
+function is_human(obj)
+	return iAmHuman[obj:clsid()] == true
 end
 
 function is_knife(obj)

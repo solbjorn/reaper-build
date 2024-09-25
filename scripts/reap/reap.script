@@ -672,9 +672,11 @@ function dynamic_fire:update(delta)
 		end
 	end
 
+	local pos = self.object:position()
 	local active = false
+
 	for k, v in pairs(db.creatures) do
-		if v:is_stalker() and v:alive() and (v:position()):distance_to(self.object:position()) < 4 then
+		if v:is_human() and v:alive() and v:position():distance_to(pos) < 4 then
 			active = true
 			break
 		end
@@ -688,7 +690,8 @@ function dynamic_fire:update(delta)
 		self.active = false
 	end
 
-	self.nextup = time_real_ms + 1000
+	pos = self.object:position():distance_to(Actor:position())
+	self.nextup = time_real_ms + ((pos <= 10 and 500) or (pos > 100 and 5000) or (pos * 50))
 end
 
 function dynamic_fire:net_spawn(data)
