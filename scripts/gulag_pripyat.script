@@ -29,7 +29,7 @@ end
 --------------------------------------------------------------------------
 
 --------------------------------------------------------------------------
--- Followers (группа сталеров идущая с нами с начала уровня)
+-- Followers (РіСЂСѓРїРїР° СЃС‚Р°Р»РµСЂРѕРІ РёРґСѓС‰Р°СЏ СЃ РЅР°РјРё СЃ РЅР°С‡Р°Р»Р° СѓСЂРѕРІРЅСЏ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function f_predicate(npc_info)
@@ -125,7 +125,7 @@ pri_followers_switcher[state_wave8] = function(actor, delta_time)
 end
 
 --------------------------------------------------------------------------
--- Wave (засады в первой половине Припяти: на крышах, в окнах, на земле)
+-- Wave (Р·Р°СЃР°РґС‹ РІ РїРµСЂРІРѕР№ РїРѕР»РѕРІРёРЅРµ РџСЂРёРїСЏС‚Рё: РЅР° РєСЂС‹С€Р°С…, РІ РѕРєРЅР°С…, РЅР° Р·РµРјР»Рµ)
 --------------------------------------------------------------------------
 -- Additional functions --------------------------------------------------
 local function process_range(str, def_val_min, def_val_max)
@@ -148,7 +148,7 @@ local function process_num(str, def_val)
 end
 
 --------------------------------------------------------------------------
--- Depot (автовокзал)
+-- Depot (Р°РІС‚РѕРІРѕРєР·Р°Р»)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function z_predicate_c(npc_info)
@@ -160,7 +160,7 @@ function z_predicate_pd(npc_info)
 end
 
 --------------------------------------------------------------------------
--- Monolith (главная база монолита)
+-- Monolith (РіР»Р°РІРЅР°СЏ Р±Р°Р·Р° РјРѕРЅРѕР»РёС‚Р°)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function m_predicate_l(npc_info)
@@ -240,7 +240,7 @@ local gulags = {
 
 			local res_t
 			for i = 1, 3 do
-				-- задаем стандартные этапы
+				-- Р·Р°РґР°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЌС‚Р°РїС‹
 				for j, v in ipairs({1, 2, 4, 5, 6}) do
 					--- NAP: WAVE<j> --------------------------------------------------------------------------------
 					res_t = {
@@ -263,7 +263,7 @@ local gulags = {
 					ltx = ltx .. table_concat(res_t)
 				end
 
-				-- нестандартные этапы
+				-- РЅРµСЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЌС‚Р°РїС‹
 				--- NAP: KAMP ----------------------------------------------------------------------------------
 				res_t = {
 					"[logic@pri_followers_nap",
@@ -279,7 +279,7 @@ local gulags = {
 					i,"_wait_na]\npath_walk = wait_stalker",
 					i,"_walk\nanim = guard_na\ntarget = logic@pri_followers_leader_wait\nmeet = no_meet\ndanger = danger@ignore\n",
 
-					--- NAP: WAVE3 (БТР) --------------------------------------------------------------------------
+					--- NAP: WAVE3 (Р‘РўР ) --------------------------------------------------------------------------
 					"[logic@pri_followers_nap",
 					i,"_wave3]\nactive = walker@pri_followers_nap",
 					i,"_wave3_wait\ncombat_ignore = combat_ignore\non_hit = followers_hit\non_death = followers_death\n",
@@ -303,7 +303,7 @@ local gulags = {
 					math_random(47, 55), "00 | walker@pri_followers_nap",
 					i,"_wave3\nwounded = wounded@ignore\nmeet = no_meet\ndanger = danger@ignore\ncombat_ignore_cond = {!fighting_actor}\n",
 
-					--- NAP: WAVE7 (перед подземкой) ---------------------------------------------------------------
+					--- NAP: WAVE7 (РїРµСЂРµРґ РїРѕРґР·РµРјРєРѕР№) ---------------------------------------------------------------
 					"[logic@pri_followers_nap",
 					i,"_wave7]\nactive = walker@pri_followers_nap",
 					i,"_wave7_wait\non_hit = followers_hit\non_death = followers_death\n",
@@ -338,12 +338,12 @@ local gulags = {
 			local state = gulag.state
 			local actor = Actor
 
-			-- проверка не убежал ли актер далеко
+			-- РїСЂРѕРІРµСЂРєР° РЅРµ СѓР±РµР¶Р°Р» Р»Рё Р°РєС‚РµСЂ РґР°Р»РµРєРѕ
 			if has_alife_info("pri_followers_mission_accept") and not has_alife_info("pri_followers_actor_leave") then
 			-- check min distance to actor
 			local actor_leave = true
 			local npc_id, npc = 0, 0
-			-- проверка дистанции до каждого члена гулага
+			-- РїСЂРѕРІРµСЂРєР° РґРёСЃС‚Р°РЅС†РёРё РґРѕ РєР°Р¶РґРѕРіРѕ С‡Р»РµРЅР° РіСѓР»Р°РіР°
 			    for npc_id, npc in pairs(gulag.Object) do
 				    if npc ~= true and level.object_by_id(npc_id) ~= nil then
 					    if npc:position():distance_to_sqr(actor:position()) <= 3600 then -- 60*60
@@ -358,7 +358,7 @@ local gulags = {
 				end
 			end
 
-			-- переключение состояния гулага через массив функций состояний
+			-- РїРµСЂРµРєР»СЋС‡РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° С‡РµСЂРµР· РјР°СЃСЃРёРІ С„СѓРЅРєС†РёР№ СЃРѕСЃС‚РѕСЏРЅРёР№
 			return pri_followers_switcher[state](actor, game.get_game_time():diffSec(gulag.stateBegin))
 		end,
 		check = function(npc_community)
@@ -416,15 +416,15 @@ local gulags = {
 	},
 	["pri_wave"] = {
 		job = function(sj, gname, squad, groups)
-			-- Снайперы в окнах.
+			-- РЎРЅР°Р№РїРµСЂС‹ РІ РѕРєРЅР°С….
 			local i = 1
 			local way_name = table_concat({gname,"_wsniper_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				local ptr = patrol(way_name)
 				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = table_concat({"logic@",gname,"_wsniper_", i}),
 					prior = 1, squad = squad, group = groups[1],
@@ -435,15 +435,15 @@ local gulags = {
 				way_name = table_concat({gname,"_wsniper_",i,"_walk"})
 			end
 
-			-- Снайперы на крышах.
+			-- РЎРЅР°Р№РїРµСЂС‹ РЅР° РєСЂС‹С€Р°С….
 			i = 1
 			way_name = table_concat({gname,"_rsniper_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				local ptr = patrol(way_name)
 				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = table_concat({"logic@",gname,"_rsniper_", i}),
 					prior = 1, squad = squad, group = groups[2],
@@ -454,17 +454,17 @@ local gulags = {
 				way_name = table_concat({gname,"_rsniper_",i,"_walk"})
 			end
 
-			-- Свободные волкеры в кемпах.
+			-- РЎРІРѕР±РѕРґРЅС‹Рµ РІРѕР»РєРµСЂС‹ РІ РєРµРјРїР°С….
 			i = 1
 			way_name = table_concat({gname,"_free_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				local ptr = patrol(way_name)
 				local wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
 				local kampi = process_num(wp_prop.kampi, 1) -- kamp index
 
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = table_concat({"logic@",gname,"_free_", i}),
 					prior = 1, squad = squad, group = groups[2 + kampi],
@@ -487,11 +487,11 @@ local gulags = {
 				"[danger@kamp]\nignore_types = corpse\nignore_distance = 0\n" }
 			local ltx = table_concat(res_t)
 
-			-- Снайперы в окнах.
+			-- РЎРЅР°Р№РїРµСЂС‹ РІ РѕРєРЅР°С….
 			local i = 1
 			local way_name = table_concat({gname,"_wsniper_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
@@ -502,7 +502,7 @@ local gulags = {
 				starti = wp_prop.starti -- start infoportion
 				deathi = wp_prop.deathi -- death infoportion
 
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				res_t = {"[logic@",gname,"_wsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
 				ltx = ltx .. table_concat(res_t)
 
@@ -557,11 +557,11 @@ local gulags = {
 				way_name = table_concat({gname,"_wsniper_",i,"_walk"})
 			end
 
-			-- Снайперы на крышах.
+			-- РЎРЅР°Р№РїРµСЂС‹ РЅР° РєСЂС‹С€Р°С….
 			i = 1
 			way_name = table_concat({gname,"_rsniper_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
@@ -574,7 +574,7 @@ local gulags = {
 				starti = wp_prop.starti -- start infoportion
 				deathi = wp_prop.deathi -- death infoportion
 
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				res_t = {"[logic@",gname,"_rsniper_", i, "]\ncombat_ignore = combat_ignore\n" }
 				ltx = ltx .. table_concat(res_t)
 
@@ -622,11 +622,11 @@ local gulags = {
 				way_name = table_concat({gname,"_rsniper_",i,"_walk"})
 			end
 
-			-- Свободные волкеры в кемпах.
+			-- РЎРІРѕР±РѕРґРЅС‹Рµ РІРѕР»РєРµСЂС‹ РІ РєРµРјРїР°С….
 			i = 1
 			way_name = table_concat({gname,"_free_",i,"_walk"})
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
@@ -638,7 +638,7 @@ local gulags = {
 				starti = wp_prop.starti -- start infoportion
 				deathi = wp_prop.deathi -- death infoportion
 
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				res_t = {"[logic@",gname,"_free_", i, "]\ncombat_ignore = combat_ignore\n" }
 				ltx = ltx .. table_concat(res_t)
 
@@ -793,7 +793,7 @@ local gulags = {
 				predicate = m_predicate_l
 			}
 
-			-- walkers (одиночные патрули вокруг базы)
+			-- walkers (РѕРґРёРЅРѕС‡РЅС‹Рµ РїР°С‚СЂСѓР»Рё РІРѕРєСЂСѓРі Р±Р°Р·С‹)
 			prior = {8, 7, 8, 12, 12, 7}
 			state1_restr = {"", "_kolos_restr", "_base_restr", "", "", ""}
 			local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
@@ -817,7 +817,7 @@ local gulags = {
 				}
 			end
 
-			-- followers (парные патрули перед базой)
+			-- followers (РїР°СЂРЅС‹Рµ РїР°С‚СЂСѓР»Рё РїРµСЂРµРґ Р±Р°Р·РѕР№)
 			prior = {8, 8, 8, 8}
 			state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
 			state1_restr = {"_kolos_restr",    ""}
@@ -843,7 +843,7 @@ local gulags = {
 				end
 			end
 
-			-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
+			-- rpg, svd, machine-gun (РіСЂР°РЅР°С‚РѕРјРµС‚С‡РёРєРё Рё СЃРЅР°Р№РїРµСЂ РЅР° С†РµРЅС‚СЂР°Р»СЊРЅРѕРј РїСЂРѕС…РѕРґРµ РЅР° Р±Р°Р·Сѓ)
 			pred = {m_predicate_s, m_predicate_s_sniper, m_predicate_s}
 			local prior_arr = {14, 16, 14}
 			for i, v in ipairs({"rpg", "svd", "machine_gun"}) do
@@ -857,7 +857,7 @@ local gulags = {
 				}
 			end
 
-			-- prayers (молящиеся вокруг алтаря)
+			-- prayers (РјРѕР»СЏС‰РёРµСЃСЏ РІРѕРєСЂСѓРі Р°Р»С‚Р°СЂСЏ)
 			for i, v in ipairs({14, 14, 14, 13, 8, 8}) do
 				sj[#sj + 1] = {
 					section = table_concat({"logic@pri_monolith_prayer", i}),
@@ -903,7 +903,7 @@ local gulags = {
 				end
 			end
 
-			-- snipers (снайперы на большом балконе главной базы)
+			-- snipers (СЃРЅР°Р№РїРµСЂС‹ РЅР° Р±РѕР»СЊС€РѕРј Р±Р°Р»РєРѕРЅРµ РіР»Р°РІРЅРѕР№ Р±Р°Р·С‹)
 			for i = 1, 2 do
 				sj[#sj + 1] = {
 					section =  table_concat({"logic@pri_monolith_sniper", i}),
@@ -918,12 +918,12 @@ local gulags = {
 			local res_t = {
 				"[danger@monolith]\nignore_distance_sound = 150\n",
 
-				-- кемп в гостиннице при атаке
+				-- РєРµРјРї РІ РіРѕСЃС‚РёРЅРЅРёС†Рµ РїСЂРё Р°С‚Р°РєРµ
 				"[logic@pri_monolith_fight_in_hotel]\nactive = kamp@pri_monolith_fight_in_hotel\ncombat_ignore = combat_ignore\n",
 
 				"[kamp@pri_monolith_fight_in_hotel]\ncenter_point = kamp6\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
 
-				-- кемп в "Колосе" при атаке
+				-- РєРµРјРї РІ "РљРѕР»РѕСЃРµ" РїСЂРё Р°С‚Р°РєРµ
 				"[logic@pri_monolith_fight_in_kolos]\nactive = kamp@pri_monolith_fight_in_kolos\ncombat_ignore = combat_ignore\n",
 
 				"[kamp@pri_monolith_fight_in_kolos]\ncenter_point = kamp4\ndef_state_moving = assault\ndanger = danger@monolith\ncombat_ignore_cond = {=pri_monolith_combat_ignore}\n",
@@ -942,7 +942,7 @@ local gulags = {
 			}
 			local ltx = table_concat(res_t)
 
-			-- walkers (одиночные патрули вокруг базы)
+			-- walkers (РѕРґРёРЅРѕС‡РЅС‹Рµ РїР°С‚СЂСѓР»Рё РІРѕРєСЂСѓРі Р±Р°Р·С‹)
 			for i, v in ipairs({1, 3, 4, 5, 6, 8}) do
 				res_t = {
 					"[logic@pri_monolith_patrol",
@@ -965,7 +965,7 @@ local gulags = {
 				ltx = ltx .. table_concat(res_t)
 			end
 
-			-- followers (парные патрули перед базой)
+			-- followers (РїР°СЂРЅС‹Рµ РїР°С‚СЂСѓР»Рё РїРµСЂРµРґ Р±Р°Р·РѕР№)
 			for i, v in ipairs({7, 10}) do
 				res_t = {
 					"[logic@pri_monolith_group_patrol",
@@ -980,7 +980,7 @@ local gulags = {
 				ltx = ltx .. table_concat(res_t)
 			end
 
-			-- rpg, svd, machine-gun (гранатометчики и снайпер на центральном проходе на базу)
+			-- rpg, svd, machine-gun (РіСЂР°РЅР°С‚РѕРјРµС‚С‡РёРєРё Рё СЃРЅР°Р№РїРµСЂ РЅР° С†РµРЅС‚СЂР°Р»СЊРЅРѕРј РїСЂРѕС…РѕРґРµ РЅР° Р±Р°Р·Сѓ)
 			local id = {11, 12, 14}
 			for i, v in ipairs({"rpg", "svd", "machine_gun"}) do
 				res_t = {
@@ -995,7 +995,7 @@ local gulags = {
 				ltx = ltx .. table_concat(res_t)
 			end
 
-			-- prayers (молящиеся вокруг алтаря)
+			-- prayers (РјРѕР»СЏС‰РёРµСЃСЏ РІРѕРєСЂСѓРі Р°Р»С‚Р°СЂСЏ)
 			for i, v in ipairs({14, 14, 14, 13, 8, 8}) do
 				res_t = {
 					"[logic@pri_monolith_prayer",
@@ -1036,7 +1036,7 @@ local gulags = {
 				ltx = ltx .. table_concat(res_t)
 			end
 
-			-- snipers (снайперы на большом балконе главной базы)
+			-- snipers (СЃРЅР°Р№РїРµСЂС‹ РЅР° Р±РѕР»СЊС€РѕРј Р±Р°Р»РєРѕРЅРµ РіР»Р°РІРЅРѕР№ Р±Р°Р·С‹)
 			for i = 1, 2 do
 				res_t = {
 					"[logic@pri_monolith_sniper",
@@ -1083,9 +1083,9 @@ local gulags = {
 		job = function(sj, gname, squad, groups)
 			local i = 1
 			local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
-			-- Проверяем наличие снайперов в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = table_concat({"logic@", way_name}),
 					prior = 1, squad = squad, group = groups[1],
@@ -1102,9 +1102,9 @@ local gulags = {
 			local res_t
 			local i, ltx = 1, ""
 			local way_name =  table_concat({"pri_stadium_sniper_", i, "_walk"})
-			-- Проверяем наличие снайперов в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				res_t = {
 					"[logic@", way_name, "]\nactive = camper@", way_name, "\ncombat_ignore = combat_ignore\n",
 

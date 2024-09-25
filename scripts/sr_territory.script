@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------------
--- Схема котроля за территорией
+-- РЎС…РµРјР° РєРѕС‚СЂРѕР»СЏ Р·Р° С‚РµСЂСЂРёС‚РѕСЂРёРµР№
 ----------------------------------------------------------------------------------------------------
 
 territory = nil
@@ -20,7 +20,7 @@ function action_territory:hit_callback(obj, amount, local_direction, who, bone_i
 	if obj:relation(Actor) == game_object.enemy then
 		return
 	end
-  xr_logic.pstor_store(obj,"wasenemy",false) -- выстрел в нейтрала или друга. запомним
+  xr_logic.pstor_store(obj,"wasenemy",false) -- РІС‹СЃС‚СЂРµР» РІ РЅРµР№С‚СЂР°Р»Р° РёР»Рё РґСЂСѓРіР°. Р·Р°РїРѕРјРЅРёРј
 	xr_logic.pick_section_from_condlist(obj, self.st.territory_hit)
 end
 function action_territory:death_callback(victim, who)
@@ -28,7 +28,7 @@ function action_territory:death_callback(victim, who)
 		return
 	end
   if xr_logic.pstor_retrieve(victim,"wasenemy",true) then
-    return -- ГГ убил врага. Не будем обижаться
+    return -- Р“Р“ СѓР±РёР» РІСЂР°РіР°. РќРµ Р±СѓРґРµРј РѕР±РёР¶Р°С‚СЊСЃСЏ
   end
 	xr_logic.pick_section_from_condlist(victim, self.st.territory_death)
 end
@@ -36,7 +36,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder(obj, storage)
 	local new_action = action_territory(obj, storage)
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	storage.actions[ new_action ] = true
 
 	if territory == nil then

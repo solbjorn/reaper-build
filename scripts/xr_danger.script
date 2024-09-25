@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---'	Схема кемпер. Чудак с бальшой пушкой ходит и отстреливает живность.
---'	автор: Диденко Руслан (Stohe)
+--'	РЎС…РµРјР° РєРµРјРїРµСЂ. Р§СѓРґР°Рє СЃ Р±Р°Р»СЊС€РѕР№ РїСѓС€РєРѕР№ С…РѕРґРёС‚ Рё РѕС‚СЃС‚СЂРµР»РёРІР°РµС‚ Р¶РёРІРЅРѕСЃС‚СЊ.
+--'	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -28,15 +28,15 @@ local game_object_enemy = game_object.enemy
 
 local db_storage = db.storage
 
-local engage_after_update 	= 5 	-- С какого апдейта схема начинает работать. Нельзя чтобы схема стартовала включенной сразу же, иначе будут застранцы без вариантов
-local count_update 			= {}		-- Счетчик апдейтов
+local engage_after_update 	= 5 	-- РЎ РєР°РєРѕРіРѕ Р°РїРґРµР№С‚Р° СЃС…РµРјР° РЅР°С‡РёРЅР°РµС‚ СЂР°Р±РѕС‚Р°С‚СЊ. РќРµР»СЊР·СЏ С‡С‚РѕР±С‹ СЃС…РµРјР° СЃС‚Р°СЂС‚РѕРІР°Р»Р° РІРєР»СЋС‡РµРЅРЅРѕР№ СЃСЂР°Р·Сѓ Р¶Рµ, РёРЅР°С‡Рµ Р±СѓРґСѓС‚ Р·Р°СЃС‚СЂР°РЅС†С‹ Р±РµР· РІР°СЂРёР°РЅС‚РѕРІ
+local count_update 			= {}		-- РЎС‡РµС‚С‡РёРє Р°РїРґРµР№С‚РѕРІ
 
 local always_ignore_danger_from = { m_car = "true" }
 
 ----------------------------------------------------------------------------------------------------------------------
 -- EVALUATORS
 ----------------------------------------------------------------------------------------------------------------------
--- true - есть danger, false - нет danger
+-- true - РµСЃС‚СЊ danger, false - РЅРµС‚ danger
 class "evaluator_danger" (property_evaluator)
 function evaluator_danger:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -57,13 +57,13 @@ function evaluator_danger:evaluate()
 	if not self_obj:alive() then return false end
 
 	local best_danger = self_obj:best_danger()
-	-- проверка на денжер.
+	-- РїСЂРѕРІРµСЂРєР° РЅР° РґРµРЅР¶РµСЂ.
 	if best_danger == nil then
 		self.danger_time = nil
 		return false
 	end
 
-	-- проверка не находится ли денжер в списке вечнозапрещенных.(БТР, Вертолеты и тд)
+	-- РїСЂРѕРІРµСЂРєР° РЅРµ РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РґРµРЅР¶РµСЂ РІ СЃРїРёСЃРєРµ РІРµС‡РЅРѕР·Р°РїСЂРµС‰РµРЅРЅС‹С….(Р‘РўР , Р’РµСЂС‚РѕР»РµС‚С‹ Рё С‚Рґ)
 	local best_danger_section_name
 	local best_danger_object
 	if best_danger:dependent_object() ~= nil then
@@ -84,7 +84,7 @@ function evaluator_danger:evaluate()
 	end
 
 	local bd_type = best_danger:type()
-	-- Проверка на запрещенный денжер от актера
+	-- РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°РїСЂРµС‰РµРЅРЅС‹Р№ РґРµРЅР¶РµСЂ РѕС‚ Р°РєС‚РµСЂР°
 	if best_danger_object ~= nil and
 	   best_danger_object:id() == 0 and
 	   (bd_type == danger_object_attack_sound or
@@ -99,12 +99,12 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	-- фикс агра на звуки от трупов
+	-- С„РёРєСЃ Р°РіСЂР° РЅР° Р·РІСѓРєРё РѕС‚ С‚СЂСѓРїРѕРІ
 	if best_danger_object ~= nil and best_danger_object:alive() == false and bd_type ~= danger_object_entity_death and bd_type ~= danger_object_grenade then
 		return false
 	end
 
-	-- Проверка, не находится ли данжер в списке запрещенных.
+	-- РџСЂРѕРІРµСЂРєР°, РЅРµ РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РґР°РЅР¶РµСЂ РІ СЃРїРёСЃРєРµ Р·Р°РїСЂРµС‰РµРЅРЅС‹С….
 	if bd_type == danger_object_grenade then
 		if self.a.ignore_types["grenade"] == true then
 			return false
@@ -126,7 +126,7 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	-- отсеиваем по настройке combat_ignore/danger
+	-- РѕС‚СЃРµРёРІР°РµРј РїРѕ РЅР°СЃС‚СЂРѕР№РєРµ combat_ignore/danger
 	local bd_obj = best_danger:object()
 	local npc_storage = db_storage[npc_id]
 	npc_storage.enemy = bd_obj
@@ -139,11 +139,11 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	-- инерция возврата. Только не для кемпера.
+	-- РёРЅРµСЂС†РёСЏ РІРѕР·РІСЂР°С‚Р°. РўРѕР»СЊРєРѕ РЅРµ РґР»СЏ РєРµРјРїРµСЂР°.
 	if self.danger_time then
 		self.danger_time = best_danger:time()
 		local passed_time = time_global() - self.danger_time
-		-- и еще небольшой фикс
+		-- Рё РµС‰Рµ РЅРµР±РѕР»СЊС€РѕР№ С„РёРєСЃ
 		if passed_time < 0 and bd_type == danger_object_entity_death then
 			return false
 		end
@@ -154,27 +154,27 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	-- Отсеиваем по дистанции
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ РґРёСЃС‚Р°РЅС†РёРё
 	if check_danger_distance(self_obj, best_danger) == false then
 		return false
 	end
 
-	-- Отсеиваем по зоне
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ Р·РѕРЅРµ
 	if sr_danger.territory ~= nil and sr_danger.check_danger_position(best_danger:position()) then
 		return false
 	end
 
-	-- Отсеиваем по информационным рестрикторам
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рј СЂРµСЃС‚СЂРёРєС‚РѕСЂР°Рј
 	if xr_gulag.is_info_restricted(npc_id, best_danger:position()) then
 		return false
 	end
 
-	-- Отсеиваем тяжелораненых
+	-- РћС‚СЃРµРёРІР°РµРј С‚СЏР¶РµР»РѕСЂР°РЅРµРЅС‹С…
 	if xr_wounded.is_heavy_wounded_by_id(npc_id) then
 		return false
 	end
 
-	-- Денжер для снайпера
+	-- Р”РµРЅР¶РµСЂ РґР»СЏ СЃРЅР°Р№РїРµСЂР°
 	if npc_storage.active_scheme == "camper" then
 		if bd_type == danger_object_grenade then
 			self.danger_time = best_danger:time()

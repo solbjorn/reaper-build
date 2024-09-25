@@ -9,22 +9,22 @@ function predicate_sniper(npc_info)
 end
 
 local gulags = {
-	-- УНИВЕРСАЛЬНЫЙ ЛАГЕРЬ СТАЛКЕРОВ
+	-- РЈРќРР’Р•Р РЎРђР›Р¬РќР«Р™ Р›РђР“Р•Р Р¬ РЎРўРђР›РљР•Р РћР’
 	["general_lager"] = {
 		job = function(sj, gname, squad, groups)
 			local ptr, wp_prop, job_count
 
-			-- Проверяем наличие кампов.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєР°РјРїРѕРІ.
 			local it = 1
 			local way_name = string_format("%s_kamp_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 				job_count = wp_prop.count or 5
 
 				for i = 1, job_count do
-					-- добавляем должность
+					-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 					sj[#sj + 1] = {
 						section = "logic@"..way_name,
 						prior = 8-i, state = {0,1}, squad = squad, group = groups[1],
@@ -36,11 +36,11 @@ local gulags = {
 				way_name = string_format("%s_kamp_%d",gname,it)
 			end
 
-			-- Проверяем наличие путей для сна.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ РґР»СЏ СЃРЅР°.
 			it = 1
 			way_name = string_format("%s_sleep_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = "logic@"..way_name,
 					prior = 4, state = {0,1}, squad = squad, group = groups[1],
@@ -51,11 +51,11 @@ local gulags = {
 				way_name = string_format("%s_sleep_%d",gname,it)
 			end
 
-			-- Проверяем наличие путей брожения внутри лагеря.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ.
 			it = 1
 			way_name = string_format("%s_walker_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = "logic@"..way_name,
 					idle = math_random(40,60)*60*1000, timeout = math_random(10,20)*60*1000,
@@ -67,11 +67,11 @@ local gulags = {
 				way_name = string_format("%s_walker_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие путей брожения внутри лагеря(без таймаута).
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ(Р±РµР· С‚Р°Р№РјР°СѓС‚Р°).
 			it = 1
 			way_name = string_format("%s_walker2_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = "logic@"..way_name,
 					state = {0,1}, squad = squad, group = groups[1],
@@ -82,17 +82,17 @@ local gulags = {
 				way_name = string_format("%s_walker2_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие патрулей обхода в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїР°С‚СЂСѓР»РµР№ РѕР±С…РѕРґР° РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_patrol_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 				job_count = wp_prop.count or 3
 
 				for i = 1, job_count do
-					-- добавляем должность
+					-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 					sj[#sj + 1] = {
 						section = "logic@"..way_name,
 						idle = math_random(60,120)*60*1000,
@@ -105,11 +105,11 @@ local gulags = {
 				way_name = string_format("%s_patrol_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие часовых в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‡Р°СЃРѕРІС‹С… РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_guard_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = "logic@"..way_name,
 					prior = 7, state = {0,1}, squad = squad, group = groups[1],
@@ -120,11 +120,11 @@ local gulags = {
 				way_name = string_format("%s_guard_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие снайперов в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_sniper_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				sj[#sj + 1] = {
 					section = "logic@"..way_name,
 					prior = 10, state = {0,1}, squad = squad, group = groups[1],
@@ -136,17 +136,17 @@ local gulags = {
 				way_name = string_format("%s_sniper_%d_walk",gname,it)
 			end
 
-			-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+			-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 			it = 1
 			way_name = string_format("%s_raid_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 				job_count = wp_prop.count or 5
 
 				for i = 1, job_count do
-					-- добавляем должность
+					-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 					sj[#sj + 1] = {
 						section = "logic@"..way_name,
 						prior = 10, state = {1}, squad = squad, group = groups[1],
@@ -163,14 +163,14 @@ local gulags = {
 			local ltx = "[meet@generic_lager_guard]\nmeet_state = 10|wait@wait\nmeet_state_wpn = 4|backoff@threat_weap\nvictim = 10|actor\nvictim_wpn = 10|actor\nuse = true\nuse_wpn = false\nsyndata = backoff@threat_weap\nprecond = visibility\n[meet@generic_lager_patrol]\nmeet_state = 5|wait@wait\nmeet_state_wpn = 10|backoff@threat_weap\nvictim = 5|actor\nvictim_wpn = 10|actor\nuse = true\nuse_wpn = false\nsyndata = backoff@threat_weap\nprecond = visibility\n"
 			local ptr, wp_prop, job_ltx
 
-			-- Проверяем наличие кампов.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєР°РјРїРѕРІ.
 			local it = 1
 			local way_name = string_format("%s_kamp_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = kamp@",way_name,"\n[kamp@",way_name,
 					"]\ncenter_point = kamp_",it,"\nsoundgroup = ",way_name,"\n"}
 				if wp_prop.radius ~= nil then
@@ -189,11 +189,11 @@ local gulags = {
 				way_name = string_format("%s_kamp_%d",gname,it)
 			end
 
-			-- Проверяем наличие путей для сна.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ РґР»СЏ СЃРЅР°.
 			it = 1
 			way_name = string_format("%s_sleep_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = sleeper@",way_name,"\n[sleeper@",way_name,
 					"]\npath_main = sleep_",it,"\n"}
 				ltx = ltx..table_concat(job_ltx)
@@ -202,11 +202,11 @@ local gulags = {
 				way_name = string_format("%s_sleep_%d",gname,it)
 			end
 
-			-- Проверяем наличие путей брожения внутри лагеря.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ.
 			it = 1
 			way_name = string_format("%s_walker_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = walker@",way_name,"\n[walker@",way_name,
 					"]\nsound_idle = state\npath_walk = walker_",it,"_walk\n"}
 				if level_patrol_path_exists(string_format("%s_walker_%d_look",gname,it)) then
@@ -220,11 +220,11 @@ local gulags = {
 				way_name = string_format("%s_walker_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие путей брожения внутри лагеря(без таймаута).
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ(Р±РµР· С‚Р°Р№РјР°СѓС‚Р°).
 			it = 1
 			way_name = string_format("%s_walker2_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = walker@",way_name,"\n[walker@",way_name,
 					"]\nsound_idle = state\npath_walk = walker2_",it,"_walk\n"}
 				if level_patrol_path_exists(string_format("%s_walker2_%d_look",gname,it)) then
@@ -238,11 +238,11 @@ local gulags = {
 				way_name = string_format("%s_walker2_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие патрулей обхода в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїР°С‚СЂСѓР»РµР№ РѕР±С…РѕРґР° РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_patrol_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = patrol@",way_name,"\n[patrol@",way_name,
 					"]\nmeet = meet@generic_lager_patrol\nformation = back\npath_walk = patrol_",it,
 					"_walk\non_signal = end| %=search_gulag_job%\n"}
@@ -257,11 +257,11 @@ local gulags = {
 				way_name = string_format("%s_patrol_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие часовых в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‡Р°СЃРѕРІС‹С… РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_guard_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = camper@",way_name,"\n[camper@",way_name,
 					"]\nmeet = meet@generic_lager_guard\npath_walk = guard_",it,"_walk\n"}
 				if level_patrol_path_exists(string_format("%s_guard_%d_look",gname,it)) then
@@ -275,11 +275,11 @@ local gulags = {
 				way_name = string_format("%s_guard_%d_walk",gname,it)
 			end
 
-			-- Проверяем наличие снайперов в лагере.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
 			it = 1
 			way_name = string_format("%s_sniper_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = camper@",way_name,"\n[camper@",way_name,
 					"]\npath_walk = sniper_",it,"_walk\npath_look = sniper_",it,"_look\n"}
 				ltx = ltx..table_concat(job_ltx)
@@ -288,11 +288,11 @@ local gulags = {
 				way_name = string_format("%s_sniper_%d_walk",gname,it)
 			end
 
-			-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+			-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 			it = 1
 			way_name = string_format("%s_raid_%d_walk",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = patrol@",way_name,"\n[patrol@",way_name,
 					"]\nmeet = meet@generic_lager_patrol\nformation = around\npath_walk = raid_",it,"_walk\n"}
 				if level_patrol_path_exists(string_format("%s_raid_%d_look",gname,it)) then
@@ -318,9 +318,9 @@ local gulags = {
 				end
 				return 0
 			elseif gulag.state == 1 then
-				-- Если гулаг не на этой локации, то остальное проверять бессмысленно, так как
-				-- 1) упомянутые в switch_0 гулаги элементарно не найдутся по имени;
-				-- 2) пришедшее население может оказаться равным нулю из-за другой схемы его подсчёта.
+				-- Р•СЃР»Рё РіСѓР»Р°Рі РЅРµ РЅР° СЌС‚РѕР№ Р»РѕРєР°С†РёРё, С‚Рѕ РѕСЃС‚Р°Р»СЊРЅРѕРµ РїСЂРѕРІРµСЂСЏС‚СЊ Р±РµСЃСЃРјС‹СЃР»РµРЅРЅРѕ, С‚Р°Рє РєР°Рє
+				-- 1) СѓРїРѕРјСЏРЅСѓС‚С‹Рµ РІ switch_0 РіСѓР»Р°РіРё СЌР»РµРјРµРЅС‚Р°СЂРЅРѕ РЅРµ РЅР°Р№РґСѓС‚СЃСЏ РїРѕ РёРјРµРЅРё;
+				-- 2) РїСЂРёС€РµРґС€РµРµ РЅР°СЃРµР»РµРЅРёРµ РјРѕР¶РµС‚ РѕРєР°Р·Р°С‚СЊСЃСЏ СЂР°РІРЅС‹Рј РЅСѓР»СЋ РёР·-Р·Р° РґСЂСѓРіРѕР№ СЃС…РµРјС‹ РµРіРѕ РїРѕРґСЃС‡С‘С‚Р°.
 				if not db.zone_by_name[gulag.name] then
 					return 1
 				end
@@ -344,17 +344,17 @@ local gulags = {
 		job = function(sj, gname, squad, groups)
 			local ptr, wp_prop, job_count
 
-			-- Проверяем наличие моб_хом.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РјРѕР±_С…РѕРј.
 			local it = 1
 			way_name = string_format("%s_home_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 				job_count = wp_prop.count or 10
 
 				for i = 1, job_count do
-					-- добавляем должность
+					-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 					t = { section = "logic@"..way_name,
 						idle = 0,
 						prior = 5, state = {0,1}, squad = squad, group = groups[1],
@@ -368,20 +368,20 @@ local gulags = {
 				way_name = string_format("%s_home_%d",gname,it)
 			end
 
-			-- Необходим fake_death с патрульным путем
+			-- РќРµРѕР±С…РѕРґРёРј fake_death СЃ РїР°С‚СЂСѓР»СЊРЅС‹Рј РїСѓС‚РµРј
 
-			-- Необходима атака в лице mob_home с agressive
-			-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+			-- РќРµРѕР±С…РѕРґРёРјР° Р°С‚Р°РєР° РІ Р»РёС†Рµ mob_home СЃ agressive
+			-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 			it = 1
 			way_name = string_format("%s_raid_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- Необходимо вычитать количество работ из названия точки пути.
+				-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 				ptr = patrol(way_name)
 				wp_prop = utils_parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
 				job_count = wp_prop.count or 5
 
 				for i = 1, job_count do
-					-- добавляем должность
+					-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 					t = { section = "logic@"..way_name,
 						idle = 0,
 						prior = 10, state = {1}, squad = squad, group = groups[1],
@@ -400,11 +400,11 @@ local gulags = {
 			local ltx = ""
 			local job_ltx
 
-			-- Проверяем наличие моб_хом.
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РјРѕР±_С…РѕРј.
 			local it = 1
 			way_name = string_format("%s_home_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = mob_home@",way_name,"\n[mob_combat@",way_name,"]\non_timer = ",math_random(30000,60000)," | mob_home@",way_name,"\n[mob_home@",way_name,"]\non_signal = sig_attacked | mob_combat@",way_name,"\npath_home = home_",it,"\n"}
 				ltx = ltx..table_concat(job_ltx)
 
@@ -412,14 +412,14 @@ local gulags = {
 				way_name = string_format("%s_home_%d",gname,it)
 			end
 
-			-- Необходим fake_death с патрульным путем
+			-- РќРµРѕР±С…РѕРґРёРј fake_death СЃ РїР°С‚СЂСѓР»СЊРЅС‹Рј РїСѓС‚РµРј
 
-			-- Необходима атака в лице mob_home с agressive
-			-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+			-- РќРµРѕР±С…РѕРґРёРјР° Р°С‚Р°РєР° РІ Р»РёС†Рµ mob_home СЃ agressive
+			-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 			it = 1
 			way_name = string_format("%s_raid_%d",gname,it)
 			while level_patrol_path_exists(way_name) do
-				-- добавляем описание должности в лтх.
+				-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 				job_ltx = {"[logic@",way_name,"]\nactive = mob_home@",way_name,"\n[mob_home@",way_name,"]\npath_home = raid_",it,"\naggressive_home\n"}
 				ltx = ltx..table_concat(job_ltx)
 

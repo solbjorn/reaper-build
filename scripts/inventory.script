@@ -1,4 +1,4 @@
--- Инвентарь ГГ
+-- РРЅРІРµРЅС‚Р°СЂСЊ Р“Р“
 -- Refactored by RanHum
 
 local cond_threshold = 0.95
@@ -9,13 +9,13 @@ function CInventory:__init()
 	self.need_update_ruck = true
 	self.inventory_open = false
 
-	self.sack = {}				-- Инвентарь ГГ
-	self.good = {}				-- Исправное оружие/броня ГГ
+	self.sack = {}				-- РРЅРІРµРЅС‚Р°СЂСЊ Р“Р“
+	self.good = {}				-- РСЃРїСЂР°РІРЅРѕРµ РѕСЂСѓР¶РёРµ/Р±СЂРѕРЅСЏ Р“Р“
 	self.belt_by_sect = { }
 	self.belt_by_id = { }
 end
 
--- Имеем ли предметы?
+-- РРјРµРµРј Р»Рё РїСЂРµРґРјРµС‚С‹?
 function CInventory:has(sect, count)
 	return (self.sack[sect] or 0) >= (count or 1)
 end
@@ -24,7 +24,7 @@ function CInventory:has_good(sect, count)
 	return (self.good[sect] or 0) >= (count or 1)
 end
 
--- Получаем предметы
+-- РџРѕР»СѓС‡Р°РµРј РїСЂРµРґРјРµС‚С‹
 function CInventory:got(sect, count)
 	if not count or count < 1 then count = 1 end
 
@@ -34,7 +34,7 @@ function CInventory:got(sect, count)
 	news_manager.relocate_item("in", sect, count)
 end
 
--- Теряем предметы
+-- РўРµСЂСЏРµРј РїСЂРµРґРјРµС‚С‹
 function CInventory:lost_fast(sect, count)
 	local cnt = 0
 
@@ -93,7 +93,7 @@ function CInventory:lost(sect, count, cond)
 	end
 end
 
--- Передаем один предмет
+-- РџРµСЂРµРґР°РµРј РѕРґРёРЅ РїСЂРµРґРјРµС‚
 function CInventory:actor_object(sect, cond)
 	if not condition_item(sect) then
 		return Actor:object(sect)
@@ -335,7 +335,7 @@ function CInventory:update()
 	self.need_update_ruck = false
 end
 
--- Калбек на поднятие предмета
+-- РљР°Р»Р±РµРє РЅР° РїРѕРґРЅСЏС‚РёРµ РїСЂРµРґРјРµС‚Р°
 function CInventory:on_item_take(item)
 	table.add(self.sack, item:section())
 	restriction_stock.restriction_of_stock(item, 0)
@@ -345,7 +345,7 @@ function CInventory:on_item_take(item)
 	end
 end
 
--- Калбек на потерю предмета
+-- РљР°Р»Р±РµРє РЅР° РїРѕС‚РµСЂСЋ РїСЂРµРґРјРµС‚Р°
 function CInventory:on_item_drop(item)
 	table.sub(self.sack, item:section())
 	restriction_stock.restriction_of_stock(item, 1)
@@ -355,19 +355,19 @@ function CInventory:on_item_drop(item)
 	end
 end
 
--- Калбек на надевание на пояс
+-- РљР°Р»Р±РµРє РЅР° РЅР°РґРµРІР°РЅРёРµ РЅР° РїРѕСЏСЃ
 function CInventory:on_item_belt(item)
 	table.add(self.belt_by_sect, item:section())
 	self.belt_by_id[item:id()] = item
 end
 
--- Калбек на снятие с пояса
+-- РљР°Р»Р±РµРє РЅР° СЃРЅСЏС‚РёРµ СЃ РїРѕСЏСЃР°
 function CInventory:on_item_move_from_belt(item)
 	table.sub(self.belt_by_sect, item:section())
 	self.belt_by_id[item:id()] = nil
 end
 
--- Открытие/закрытие инвентаря
+-- РћС‚РєСЂС‹С‚РёРµ/Р·Р°РєСЂС‹С‚РёРµ РёРЅРІРµРЅС‚Р°СЂСЏ
 function CInventory:on_inventory_info(info)
 	if info == "ui_inventory" then
 		self.inventory_open = true
@@ -377,7 +377,7 @@ function CInventory:on_inventory_info(info)
 	end
 end
 
--- предмет на поясе
+-- РїСЂРµРґРјРµС‚ РЅР° РїРѕСЏСЃРµ
 function CInventory:on_belt(sect)
 	return self.belt_by_sect[sect]
 end

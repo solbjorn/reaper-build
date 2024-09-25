@@ -1,11 +1,11 @@
-------------- ÁÈÎÐÀÄÀÐ ------------------------------------------
--- Dåòåêòîð æèâûõ ôîðì, áóäü îí íåëàäåí.
--- Àâòîð Charsi 29.11.2012
--- Àäàïòàöèÿ Charsi 25.12.2012; äîïîëíåíèå alen-fantom 29.12.2012
+------------- Ð‘Ð˜ÐžÐ ÐÐ”ÐÐ  ------------------------------------------
+-- DÐµÑ‚ÐµÐºÑ‚Ð¾Ñ€ Ð¶Ð¸Ð²Ñ‹Ñ… Ñ„Ð¾Ñ€Ð¼, Ð±ÑƒÐ´ÑŒ Ð¾Ð½ Ð½ÐµÐ»Ð°Ð´ÐµÐ½.
+-- ÐÐ²Ñ‚Ð¾Ñ€ Charsi 29.11.2012
+-- ÐÐ´Ð°Ð¿Ñ‚Ð°Ñ†Ð¸Ñ Charsi 25.12.2012; Ð´Ð¾Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ alen-fantom 29.12.2012
 -----------------------------------------------------------------
--------------- íàñòðîéêè -----------
-local biomap_sweep_enabled = true -- âêëþ÷èòü âîëíó
-local fading = true               -- çàòóõàíèå òî÷åê
+-------------- Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ -----------
+local biomap_sweep_enabled = true -- Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð²Ð¾Ð»Ð½Ñƒ
+local fading = true               -- Ð·Ð°Ñ‚ÑƒÑ…Ð°Ð½Ð¸Ðµ Ñ‚Ð¾Ñ‡ÐµÐº
 ------------------------------------
 
 local colors = {
@@ -48,11 +48,11 @@ local parts = {
 	[clsid.fracture_s]	= "mutant_fracture_hand"
 }
 
-local max_dist = 50 -- ìàêñ ðàññòîÿíèå äî öåëè
-local screen_max_dist = 84 -- ìàêñ ðàññòîÿíèå â ïèêñåëÿõ ðàäàðà
-local biomap_width = 210 -- ïèêñåëüíàÿ øèðèíà áèîðàäàðà
-local biomap_sweep_width = 222 --øèðèíà ñòàòèêà âîëíû
-local step_angle = 3/180 -- øàã çà àïäåéò (ñêîðîñòü ïîâîðîòà)
+local max_dist = 50 -- Ð¼Ð°ÐºÑ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð´Ð¾ Ñ†ÐµÐ»Ð¸
+local screen_max_dist = 84 -- Ð¼Ð°ÐºÑ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð² Ð¿Ð¸ÐºÑÐµÐ»ÑÑ… Ñ€Ð°Ð´Ð°Ñ€Ð°
+local biomap_width = 210 -- Ð¿Ð¸ÐºÑÐµÐ»ÑŒÐ½Ð°Ñ ÑˆÐ¸Ñ€Ð¸Ð½Ð° Ð±Ð¸Ð¾Ñ€Ð°Ð´Ð°Ñ€Ð°
+local biomap_sweep_width = 222 --ÑˆÐ¸Ñ€Ð¸Ð½Ð° ÑÑ‚Ð°Ñ‚Ð¸ÐºÐ° Ð²Ð¾Ð»Ð½Ñ‹
+local step_angle = 3/180 -- ÑˆÐ°Ð³ Ð·Ð° Ð°Ð¿Ð´ÐµÐ¹Ñ‚ (ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚Ð°)
 -------------------------------------
 local dot_size = 3
 local dots = {}
@@ -70,14 +70,14 @@ local lim_angle = 1000*2*math_pi
 local biomap_sweep = nil
 local enabled, biomap
 
--- âûçûâàåòñÿ èç net_spawn áèíäåðà îáúåêòà
--- ðåãèñòðèðóåò îáúåêò
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· net_spawn Ð±Ð¸Ð½Ð´ÐµÑ€Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
+-- Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€ÑƒÐµÑ‚ Ð¾Ð±ÑŠÐµÐºÑ‚
 function add_obj(obj)
 	creatures[obj:id()] = not obj:is_monster()
 end
 
--- âûçûâàåòñÿ èç net_destroy áèíäåðà îáúåêòà
--- îòðåãèñòðèðóåò îáúåêò
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· net_destroy Ð±Ð¸Ð½Ð´ÐµÑ€Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
+-- Ð¾Ñ‚Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€ÑƒÐµÑ‚ Ð¾Ð±ÑŠÐµÐºÑ‚
 function remove_obj(obj)
 	creatures[obj:id()] = nil
 end
@@ -86,8 +86,8 @@ function switch(val)
 	enabled = val
 end
 
--- âûçûâàåòñÿ èç update áèíäåðà àêòîðà
--- îáíîâëåíèå ïîëîæåíèÿ òî÷åê è/èëè âîëíû
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· update Ð±Ð¸Ð½Ð´ÐµÑ€Ð° Ð°ÐºÑ‚Ð¾Ñ€Ð°
+-- Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ Ñ‚Ð¾Ñ‡ÐµÐº Ð¸/Ð¸Ð»Ð¸ Ð²Ð¾Ð»Ð½Ñ‹
 function update(delta)
 	if not enabled or level.main_input_receiver() then
 		if biomap then bioradar_hide() end
@@ -100,7 +100,7 @@ function update(delta)
 
 		if biomap_sweep_enabled then
 			biomap_sweep = hud:AddCustomStatic("biomap_sweep"):wnd()
-			biomap_sweep:SetColor(GetARGB(100,68,255,96)) -- óñòàíàâëèâàåì öâåò
+			biomap_sweep:SetColor(GetARGB(100,68,255,96)) -- ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ†Ð²ÐµÑ‚
 			biomap_sweep:Init(1024 + x_add - (biomap_width + biomap_sweep_width)/2 + 1, y_add + (biomap_width - biomap_sweep_width)/2,biomap_sweep_width,biomap_sweep_width)
 		end
 	end
@@ -118,7 +118,7 @@ function update(delta)
 	end
 
 	if biomap_sweep_enabled then
-		biomap_sweep:SetHeading(angle) -- ïîâîðà÷èâàåì ñòàòèê
+		biomap_sweep:SetHeading(angle) -- Ð¿Ð¾Ð²Ð¾Ñ€Ð°Ñ‡Ð¸Ð²Ð°ÐµÐ¼ ÑÑ‚Ð°Ñ‚Ð¸Ðº
 	end
 
 	if fading then
@@ -146,7 +146,7 @@ function update(delta)
 	end
 end
 
--- óáèðàåò ðàäàð ñ ýêðàíà
+-- ÑƒÐ±Ð¸Ñ€Ð°ÐµÑ‚ Ñ€Ð°Ð´Ð°Ñ€ Ñ ÑÐºÑ€Ð°Ð½Ð°
 function bioradar_hide()
 	if not biomap then return end
 
@@ -160,7 +160,7 @@ function bioradar_hide()
 	end
 end
 
--- êëàñññ òî÷êè îáúåêòà
+-- ÐºÐ»Ð°ÑÑÑ Ñ‚Ð¾Ñ‡ÐºÐ¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 class "dot"
 function dot:__init(o,is_stalker)
 	self.o_id = o:id()
@@ -179,7 +179,7 @@ function dot:__init(o,is_stalker)
 	self.st:SetColor(GetARGB(self.a,self.color[1],self.color[2],self.color[3]))
 end
 
--- íàðèñîâàòü òî÷êó
+-- Ð½Ð°Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ñ‚Ð¾Ñ‡ÐºÑƒ
 function dot:draw(dir,obj_alive, tick)
 	if self.cnt > 0 then
 		self.cnt = self.cnt - 1
@@ -200,7 +200,7 @@ function dot:draw(dir,obj_alive, tick)
 		local x,y = vx * c - vz * s , vx * s + vz * c
 		self.st:SetWndPos(x_add_d + (x + d)*refactor, y + d)
 		if self.o_id == 0 then self.cnt = 100000 return end
-		-------- óãàñàíèå òî÷åê -------
+		-------- ÑƒÐ³Ð°ÑÐ°Ð½Ð¸Ðµ Ñ‚Ð¾Ñ‡ÐµÐº -------
 		if fading then
 			local u = math_atan2(y, x) * (180 / math_pi) + 180
 			if (xa > u and xa-u or u-xa) < 1.5 then
@@ -217,12 +217,12 @@ function dot:draw(dir,obj_alive, tick)
 	end
 end
 
--- ñêðûòü òî÷êó
+-- ÑÐºÑ€Ñ‹Ñ‚ÑŒ Ñ‚Ð¾Ñ‡ÐºÑƒ
 function dot:hide()
 	self.st:SetWndPos(1024,0)
 end
 
--- ïîëó÷åíèå öâåòà òî÷êè
+-- Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ñ†Ð²ÐµÑ‚Ð° Ñ‚Ð¾Ñ‡ÐºÐ¸
 function dot:get_color(obj, is_stalker)
 	if not obj:alive() then
 		return true, { 127, 127, 127 }

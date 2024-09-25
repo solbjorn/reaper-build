@@ -1,5 +1,5 @@
 -- ----------------------------------------------------------------------------------------------------
--- Общие функции
+-- РћР±С‰РёРµ С„СѓРЅРєС†РёРё
 -- ----------------------------------------------------------------------------------------------------
 
 punch_recovery_time = 30
@@ -216,15 +216,15 @@ function send_tip(actor, npc, p)
 end
 
 --[[
-Дать сталкеру небольшой пинок. Например чтоб скинуть его с возвышения.
-параметры: actor, npc, p[direction,bone,power,impulse,reverse=false]
-    1. direction - если строка, то считается, что это имя пути и в сторону
-        первой точки производится толчек. Если же это число, то оно
-        рассматривается как story_id персонажа от которого должен поступить хит.
-    2. bone - строка. Имя кости, по которой наносится удар.
-    3. power - сила удара
-    4. impulse - импульс
-    5. reverse (true/false) - изменение направления удара. по умолчанию false
+Р”Р°С‚СЊ СЃС‚Р°Р»РєРµСЂСѓ РЅРµР±РѕР»СЊС€РѕР№ РїРёРЅРѕРє. РќР°РїСЂРёРјРµСЂ С‡С‚РѕР± СЃРєРёРЅСѓС‚СЊ РµРіРѕ СЃ РІРѕР·РІС‹С€РµРЅРёСЏ.
+РїР°СЂР°РјРµС‚СЂС‹: actor, npc, p[direction,bone,power,impulse,reverse=false]
+    1. direction - РµСЃР»Рё СЃС‚СЂРѕРєР°, С‚Рѕ СЃС‡РёС‚Р°РµС‚СЃСЏ, С‡С‚Рѕ СЌС‚Рѕ РёРјСЏ РїСѓС‚Рё Рё РІ СЃС‚РѕСЂРѕРЅСѓ
+        РїРµСЂРІРѕР№ С‚РѕС‡РєРё РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ С‚РѕР»С‡РµРє. Р•СЃР»Рё Р¶Рµ СЌС‚Рѕ С‡РёСЃР»Рѕ, С‚Рѕ РѕРЅРѕ
+        СЂР°СЃСЃРјР°С‚СЂРёРІР°РµС‚СЃСЏ РєР°Рє story_id РїРµСЂСЃРѕРЅР°Р¶Р° РѕС‚ РєРѕС‚РѕСЂРѕРіРѕ РґРѕР»Р¶РµРЅ РїРѕСЃС‚СѓРїРёС‚СЊ С…РёС‚.
+    2. bone - СЃС‚СЂРѕРєР°. РРјСЏ РєРѕСЃС‚Рё, РїРѕ РєРѕС‚РѕСЂРѕР№ РЅР°РЅРѕСЃРёС‚СЃСЏ СѓРґР°СЂ.
+    3. power - СЃРёР»Р° СѓРґР°СЂР°
+    4. impulse - РёРјРїСѓР»СЊСЃ
+    5. reverse (true/false) - РёР·РјРµРЅРµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ СѓРґР°СЂР°. РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ false
 --]]
 function hit_npc(actor, npc, p)
   local h = hit()
@@ -255,17 +255,17 @@ function hit_npc(actor, npc, p)
 end
 
 --[[
-Дать обьекту, заданному story_id, хит.
-параметры: actor, npc, p[sid,bone,power,impulse,hit_src=npc:position()]
-    1. sid - story_id обьекта, по которому наносится хит.
-    2. bone - строка. Имя кости, по которой наносится удар.
-    3. power - сила удара
-    4. impulse - импульс
-    5. hit_src - если число, то рассматривается как story_id обьекта, со стороны
-        которого наносится хит (он же является и инициатором хита), иначе это
-        точка (waypoint), из которой по объекту наносится хит.
-        Если не задано, то берется позиция обьекта, из которого была вызвана
-        данная функция.
+Р”Р°С‚СЊ РѕР±СЊРµРєС‚Сѓ, Р·Р°РґР°РЅРЅРѕРјСѓ story_id, С…РёС‚.
+РїР°СЂР°РјРµС‚СЂС‹: actor, npc, p[sid,bone,power,impulse,hit_src=npc:position()]
+    1. sid - story_id РѕР±СЊРµРєС‚Р°, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РЅР°РЅРѕСЃРёС‚СЃСЏ С…РёС‚.
+    2. bone - СЃС‚СЂРѕРєР°. РРјСЏ РєРѕСЃС‚Рё, РїРѕ РєРѕС‚РѕСЂРѕР№ РЅР°РЅРѕСЃРёС‚СЃСЏ СѓРґР°СЂ.
+    3. power - СЃРёР»Р° СѓРґР°СЂР°
+    4. impulse - РёРјРїСѓР»СЊСЃ
+    5. hit_src - РµСЃР»Рё С‡РёСЃР»Рѕ, С‚Рѕ СЂР°СЃСЃРјР°С‚СЂРёРІР°РµС‚СЃСЏ РєР°Рє story_id РѕР±СЊРµРєС‚Р°, СЃРѕ СЃС‚РѕСЂРѕРЅС‹
+        РєРѕС‚РѕСЂРѕРіРѕ РЅР°РЅРѕСЃРёС‚СЃСЏ С…РёС‚ (РѕРЅ Р¶Рµ СЏРІР»СЏРµС‚СЃСЏ Рё РёРЅРёС†РёР°С‚РѕСЂРѕРј С…РёС‚Р°), РёРЅР°С‡Рµ СЌС‚Рѕ
+        С‚РѕС‡РєР° (waypoint), РёР· РєРѕС‚РѕСЂРѕР№ РїРѕ РѕР±СЉРµРєС‚Сѓ РЅР°РЅРѕСЃРёС‚СЃСЏ С…РёС‚.
+        Р•СЃР»Рё РЅРµ Р·Р°РґР°РЅРѕ, С‚Рѕ Р±РµСЂРµС‚СЃСЏ РїРѕР·РёС†РёСЏ РѕР±СЊРµРєС‚Р°, РёР· РєРѕС‚РѕСЂРѕРіРѕ Р±С‹Р»Р° РІС‹Р·РІР°РЅР°
+        РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ.
 --]]
 function hit_obj(actor, npc, p)
   local h = hit()
@@ -301,9 +301,9 @@ function hit_obj(actor, npc, p)
 end
 
 --[[
-Дать сталкеру небольшой пинок после смерти. Аналогично предыдущему, только направление хита теперь
-вычисляется через убийцу. Поэтому параметра direction нет.
-параметры: actor, npc, p[bone,power,impulse]
+Р”Р°С‚СЊ СЃС‚Р°Р»РєРµСЂСѓ РЅРµР±РѕР»СЊС€РѕР№ РїРёРЅРѕРє РїРѕСЃР»Рµ СЃРјРµСЂС‚Рё. РђРЅР°Р»РѕРіРёС‡РЅРѕ РїСЂРµРґС‹РґСѓС‰РµРјСѓ, С‚РѕР»СЊРєРѕ РЅР°РїСЂР°РІР»РµРЅРёРµ С…РёС‚Р° С‚РµРїРµСЂСЊ
+РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ С‡РµСЂРµР· СѓР±РёР№С†Сѓ. РџРѕСЌС‚РѕРјСѓ РїР°СЂР°РјРµС‚СЂР° direction РЅРµС‚.
+РїР°СЂР°РјРµС‚СЂС‹: actor, npc, p[bone,power,impulse]
 FIXME: killer:position() isn't working
 --]]
 function hit_by_killer(actor, npc, p)
@@ -347,7 +347,7 @@ function set_enemies(actor, npc, p)
   end
 end
 
--- играть звук в голове актёра
+-- РёРіСЂР°С‚СЊ Р·РІСѓРє РІ РіРѕР»РѕРІРµ Р°РєС‚С‘СЂР°
 function play_snd(actor, npc, p)
   if p[1] then
     local snd_obj = xr_sound.get_safe_sound_object(p[1])
@@ -355,7 +355,7 @@ function play_snd(actor, npc, p)
   end
 end
 
--- играть звук от указанного объекта
+-- РёРіСЂР°С‚СЊ Р·РІСѓРє РѕС‚ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°
 function play_snd_from_obj(actor, npc, p)
   if p[1] and p[2] then
     local snd_obj = xr_sound.get_safe_sound_object(p[2])
@@ -366,12 +366,12 @@ function play_snd_from_obj(actor, npc, p)
   end
 end
 
--- играть звук от указанного объекта
+-- РёРіСЂР°С‚СЊ Р·РІСѓРє РѕС‚ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°
 function play_snd_now(actor, npc, p)
   xr_sound.set_sound_play(npc, p[1])
 end
 
--- прибавить к указанному счётчику актёра 1
+-- РїСЂРёР±Р°РІРёС‚СЊ Рє СѓРєР°Р·Р°РЅРЅРѕРјСѓ СЃС‡С‘С‚С‡РёРєСѓ Р°РєС‚С‘СЂР° 1
 function inc_counter(actor, npc, p)
 	if p[1] then
 		set_value(p[1], get_value(p[1], 0) + 1)
@@ -384,20 +384,20 @@ function dec_counter(actor, npc, p)
 	end
 end
 
--- переключает камеру на монстра или на актёра
+-- РїРµСЂРµРєР»СЋС‡Р°РµС‚ РєР°РјРµСЂСѓ РЅР° РјРѕРЅСЃС‚СЂР° РёР»Рё РЅР° Р°РєС‚С‘СЂР°
 function alien_control( actor, npc, p )
   npc:set_alien_control( p[1] == "true" )
 end
 
--- сделать актёра врагом персонажам, которые в онлайне под указанным смартом
+-- СЃРґРµР»Р°С‚СЊ Р°РєС‚С‘СЂР° РІСЂР°РіРѕРј РїРµСЂСЃРѕРЅР°Р¶Р°Рј, РєРѕС‚РѕСЂС‹Рµ РІ РѕРЅР»Р°Р№РЅРµ РїРѕРґ СѓРєР°Р·Р°РЅРЅС‹Рј СЃРјР°СЂС‚РѕРј
 function set_gulag_enemy_actor( actor, npc, p )
   if p[1] then
     xr_gulag.setGulagEnemy(p[1], Actor)
   end
 end
 
--- принудительное обновление смарта. Использовать только в КРАЙНИХ случаях!!!
--- каждое использование согласовывать со мной. Чугай.
+-- РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРµ РѕР±РЅРѕРІР»РµРЅРёРµ СЃРјР°СЂС‚Р°. РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РІ РљР РђР™РќРРҐ СЃР»СѓС‡Р°СЏС…!!!
+-- РєР°Р¶РґРѕРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃРѕРіР»Р°СЃРѕРІС‹РІР°С‚СЊ СЃРѕ РјРЅРѕР№. Р§СѓРіР°Р№.
 function smart_terrain_force_update(actor, npc, p)
   if p[1] then
     local gulag = xr_gulag.get_gulag(p[1])
@@ -410,7 +410,7 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 
--- постпроцесс и влияние удара в морду
+-- РїРѕСЃС‚РїСЂРѕС†РµСЃСЃ Рё РІР»РёСЏРЅРёРµ СѓРґР°СЂР° РІ РјРѕСЂРґСѓ
 function actor_punch(npc)
 	if Actor:position():distance_to_sqr(npc:position()) > 4 then
 		return
@@ -435,17 +435,17 @@ function actor_punch(npc)
 	amk_offline_alife.clear_be_enemy(npc:id())
 end
 
--- Принудительное усыпание игрока на радаре.
+-- РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРµ СѓСЃС‹РїР°РЅРёРµ РёРіСЂРѕРєР° РЅР° СЂР°РґР°СЂРµ.
 function force_actor_sleep(npc)
   Actor:actor_sleep(24, 0)
 end
 
--- забывание обиды
+-- Р·Р°Р±С‹РІР°РЅРёРµ РѕР±РёРґС‹
 function clearAbuse(npc)
   xr_abuse.clear_abuse(npc)
 end
 
----Выключение динамической лампочки (hanging_lamp)
+---Р’С‹РєР»СЋС‡РµРЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р»Р°РјРїРѕС‡РєРё (hanging_lamp)
 function turn_off(actor, npc, p)
   local obj = level_object_by_sid(p[1])
 
@@ -459,7 +459,7 @@ function turn_off_object(actor, npc)
   npc:get_hanging_lamp():turn_off()
 end
 
----Включение динамической лампочки (hanging_lamp)
+---Р’РєР»СЋС‡РµРЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р»Р°РјРїРѕС‡РєРё (hanging_lamp)
 function turn_on(actor, npc, p)
   local obj = level_object_by_sid(p[1])
 
@@ -475,7 +475,7 @@ end
 
 ------------------------------------------------------------------------------------------------
 
--- Кто-то из участников сценки вступил в бой - теперь нужно пообижать всех на всех
+-- РљС‚Рѕ-С‚Рѕ РёР· СѓС‡Р°СЃС‚РЅРёРєРѕРІ СЃС†РµРЅРєРё РІСЃС‚СѓРїРёР» РІ Р±РѕР№ - С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїРѕРѕР±РёР¶Р°С‚СЊ РІСЃРµС… РЅР° РІСЃРµС…
 function gar_dm_bandits_fight(actor, npc)
   local novice = level_object_by_sid(104)
   if not novice or not novice:alive() then
@@ -605,10 +605,10 @@ function give_rostok_quests(actor, npc)
   bar_dialogs.rostok_quests()
 end
 
--- Вызов этой функции отключит обработчик [combat] боя для персонажа.
--- Используется в случаях, когда все необходимые действия, такие как переключение на другую секцию,
--- уже выполнены, и повторно выполнять их во время боя нельзя (а условия секции [combat] проверяются на каждом
--- апдейте, когда персонаж в бою, если, конечно, не отключены вызовом этой функции).
+-- Р’С‹Р·РѕРІ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РѕС‚РєР»СЋС‡РёС‚ РѕР±СЂР°Р±РѕС‚С‡РёРє [combat] Р±РѕСЏ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°.
+-- РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ СЃР»СѓС‡Р°СЏС…, РєРѕРіРґР° РІСЃРµ РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґРµР№СЃС‚РІРёСЏ, С‚Р°РєРёРµ РєР°Рє РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РЅР° РґСЂСѓРіСѓСЋ СЃРµРєС†РёСЋ,
+-- СѓР¶Рµ РІС‹РїРѕР»РЅРµРЅС‹, Рё РїРѕРІС‚РѕСЂРЅРѕ РІС‹РїРѕР»РЅСЏС‚СЊ РёС… РІРѕ РІСЂРµРјСЏ Р±РѕСЏ РЅРµР»СЊР·СЏ (Р° СѓСЃР»РѕРІРёСЏ СЃРµРєС†РёРё [combat] РїСЂРѕРІРµСЂСЏСЋС‚СЃСЏ РЅР° РєР°Р¶РґРѕРј
+-- Р°РїРґРµР№С‚Рµ, РєРѕРіРґР° РїРµСЂСЃРѕРЅР°Р¶ РІ Р±РѕСЋ, РµСЃР»Рё, РєРѕРЅРµС‡РЅРѕ, РЅРµ РѕС‚РєР»СЋС‡РµРЅС‹ РІС‹Р·РѕРІРѕРј СЌС‚РѕР№ С„СѓРЅРєС†РёРё).
 function disable_combat_handler(actor, npc)
   if db.storage[npc:id()].combat then
     db.storage[npc:id()].combat.enabled = false
@@ -619,7 +619,7 @@ function disable_combat_handler(actor, npc)
   end
 end
 
--- Вызов этой функции отключит обработчик [combat_ignore] перехвата боя для персонажа.
+-- Р’С‹Р·РѕРІ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РѕС‚РєР»СЋС‡РёС‚ РѕР±СЂР°Р±РѕС‚С‡РёРє [combat_ignore] РїРµСЂРµС…РІР°С‚Р° Р±РѕСЏ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°.
 function disable_combat_ignore_handler(actor, npc)
   if db.storage[npc:id()].combat_ignore then
     db.storage[npc:id()].combat_ignore.enabled = false
@@ -645,10 +645,10 @@ function set_freedom_actor_enemy (actor, npc)
 end
 
 function military_dolg_dead (actor, npc)
-    -- если нет актера, то вылетаем с грохотом и треском
+    -- РµСЃР»Рё РЅРµС‚ Р°РєС‚РµСЂР°, С‚Рѕ РІС‹Р»РµС‚Р°РµРј СЃ РіСЂРѕС…РѕС‚РѕРј Рё С‚СЂРµСЃРєРѕРј
     if Actor == nil then return end
 
-	-- проапдейтим количество мертвых долговцев
+	-- РїСЂРѕР°РїРґРµР№С‚РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ РјРµСЂС‚РІС‹С… РґРѕР»РіРѕРІС†РµРІ
 	local mil_dolg_killed = get_value("mil_dolg_killed", 0) + 1
 	set_value("mil_dolg_killed", mil_dolg_killed)
 	if mil_dolg_killed == 8 or xr_gulag.getGulagPopulation("mil_dolg") <= 1 then
@@ -740,7 +740,7 @@ function rostok_kruglov_attract_1(actor,npc)
   xr_sound.set_sound_play(npc, "kruglov_stop_enemy_1")
   local tips_sound = news_manager.send_tip_nosound("bar_freedom_chase", 0, "ecolog")
   if tips_sound ~= nil then
-    --' Играем звук забитый
+    --' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
     tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
@@ -748,7 +748,7 @@ function rostok_kruglov_attract_2(actor,npc)
   xr_sound.set_sound_play(npc, "kruglov_stop_enemy_2",3)
   local tips_sound = news_manager.send_tip_nosound("rostok_kruglov_follow_2",3000, "ecolog")
   if tips_sound ~= nil then
-    --' Играем звук забитый
+    --' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
     tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
@@ -756,7 +756,7 @@ function rostok_kruglov_ambush(actor,npc)
   xr_sound.set_sound_play(npc, "rostok_kruglov_help_5")
   local tips_sound = news_manager.send_tip_nosound("rostok_kruglov_follow_3", 0, "ecolog")
   if tips_sound ~= nil then
-    --' Играем звук забитый
+    --' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
     tips_sound:play(Actor, 0, sound_object.s2d)
   end
 end
@@ -1218,7 +1218,7 @@ function gar_send_dolg_warning()
 end
 
 -------------------------------------------------------------------------------------
--- Функции для DarkValley
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ DarkValley
 -------------------------------------------------------------------------------------
 function val_escort_guard_death(actor, npc)
     local idx = string.sub(npc:name(), -1)
@@ -1294,7 +1294,7 @@ function kill(actor, npc)
 end
 
 -------------------------------------------------------------------------------------
--- Функции для Агропрома
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ РђРіСЂРѕРїСЂРѕРјР°
 -------------------------------------------------------------------------------------
 
 function agr_krot_sos( actor, npc )
@@ -1379,7 +1379,7 @@ function pri_give_ammo_og7b(actor, npc)
 end
 
 -------------------------------------------------------------------------------------
--- Функции для работы с вертолётами
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РІРµСЂС‚РѕР»С‘С‚Р°РјРё
 -------------------------------------------------------------------------------------
 
 function heli_set_enemy_actor(actor, npc)
@@ -1415,7 +1415,7 @@ function heli_die(actor, npc)
 end
 
 -------------------------------------------------------------------------------------
--- Функции для работы с погодными эффектами
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРѕРіРѕРґРЅС‹РјРё СЌС„С„РµРєС‚Р°РјРё
 -------------------------------------------------------------------------------------
 function start_small_reject (actor, npc)
 	local hr = level.get_time_hours()
@@ -1467,7 +1467,7 @@ function set_sidorovich_animation (npc)
     sidor:play_cycle ("wonder", true)
 end
 
--- постпроцесс и влияние удара в морду
+-- РїРѕСЃС‚РїСЂРѕС†РµСЃСЃ Рё РІР»РёСЏРЅРёРµ СѓРґР°СЂР° РІ РјРѕСЂРґСѓ
 function aes_earthshake (npc)
   local snd_obj = xr_sound.get_safe_sound_object([[ambient\earthquake]])
   snd_obj:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), 1.0)
@@ -1478,7 +1478,7 @@ function vovan_camera_test (npc)
   level.add_cam_effector("camera_effects\\test.anm", "")
 end
 -------------------------------------------------------------------------------------
--- Функции для Янтаря
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ РЇРЅС‚Р°СЂСЏ
 ----------------------------------------------------------------------------------
 function yan_actor_sleep (actor, npc)
   Actor:set_actor_position(patrol("yan_actor_sleep"):point(0))
@@ -1627,7 +1627,7 @@ function aes_final_movie(actor, npc)
   game.start_tutorial("mov_refuse_osoznanie")
 end
 ------------------------------------------------------------------------------------
--- Функции для Радара
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ Р Р°РґР°СЂР°
 ------------------------------------------------------------------------------------
 function rad_psi_hit (actor, npc)
   level.add_pp_effector ("radar_psi.ppe", 2006, false)
@@ -1641,7 +1641,7 @@ function end_radar_dream(actor, npc)
   Actor:give_info_portion("bun_patrol_start")
 end
 ------------------------------------------------------------------------------------
--- Функции для саркофага
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ СЃР°СЂРєРѕС„Р°РіР°
 ------------------------------------------------------------------------------------
 function destroy_monolith_generator(actor, npc)
     local source = nil
@@ -1671,7 +1671,7 @@ function del_mon_counter()
 end
 
 function sar_monolith_miracle(actor, npc)
-  --' Убил лидеров группировок
+  --' РЈР±РёР» Р»РёРґРµСЂРѕРІ РіСЂСѓРїРїРёСЂРѕРІРѕРє
   if has_alife_info("mil_lukash_dead") and
      has_alife_info("bar_voronin_dead")
   then
@@ -1679,19 +1679,19 @@ function sar_monolith_miracle(actor, npc)
     return
   end
 
-  --' Много денег
+  --' РњРЅРѕРіРѕ РґРµРЅРµРі
   if Actor:money() >= 100000 then
     game.start_tutorial("mov_desire_2")
     return
   end
 
-  --' Хорошая репутация
+  --' РҐРѕСЂРѕС€Р°СЏ СЂРµРїСѓС‚Р°С†РёСЏ
   if Actor:character_reputation() >= 1000 then
     game.start_tutorial("mov_desire_1")
     return
   end
 
-  --' плохая репутация
+  --' РїР»РѕС…Р°СЏ СЂРµРїСѓС‚Р°С†РёСЏ
   if Actor:character_reputation() <= -1000 then
     game.start_tutorial("mov_desire_4")
     return
@@ -1741,7 +1741,7 @@ function on_tutor_gameover_stop()
 	console:execute("main_menu on")
 end
 
--- удаление объекта из его логики
+-- СѓРґР°Р»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РёР· РµРіРѕ Р»РѕРіРёРєРё
 function release_obj(actor, npc)
 	release(npc)
 end

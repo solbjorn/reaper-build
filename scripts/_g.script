@@ -2,11 +2,11 @@
 --==============================================================================================
 log1("--LUA version: ["..(jit.version or _VERSION).."]")
 --==============================================================================================
-FFI = require('ffi') --Делать только здесь и только один раз!
+FFI = require('ffi') --Р”РµР»Р°С‚СЊ С‚РѕР»СЊРєРѕ Р·РґРµСЃСЊ Рё С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р·!
 --==============================================================================================
 math.randomseed(os.time())
 --=================================[CUIScriptWnd Extension]=====================================
--- Вызов обычный, как и в AddCallback, но после последнего аргумента можно передавать множество дополнительных.
+-- Р’С‹Р·РѕРІ РѕР±С‹С‡РЅС‹Р№, РєР°Рє Рё РІ AddCallback, РЅРѕ РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ Р°СЂРіСѓРјРµРЅС‚Р° РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РјРЅРѕР¶РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С….
 function CUIScriptWnd:Connect(name, event, func, ...)
 	if ... ~= nil then
 		local args = { ... }
@@ -51,13 +51,13 @@ refactor = 1
 
 do_early(1)
 
-schemes = {} -- соответствие схем модулям
-stypes = {} -- типы схем
+schemes = {} -- СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃС…РµРј РјРѕРґСѓР»СЏРј
+stypes = {} -- С‚РёРїС‹ СЃС…РµРј
 
--- Загружает схему из файла на диске и активирует в мотиваторе.
--- Здесь:
---  filename - имя файла, в котором реализована схема, без расширения
---  scheme - имя схемы
+-- Р—Р°РіСЂСѓР¶Р°РµС‚ СЃС…РµРјСѓ РёР· С„Р°Р№Р»Р° РЅР° РґРёСЃРєРµ Рё Р°РєС‚РёРІРёСЂСѓРµС‚ РІ РјРѕС‚РёРІР°С‚РѕСЂРµ.
+-- Р—РґРµСЃСЊ:
+--  filename - РёРјСЏ С„Р°Р№Р»Р°, РІ РєРѕС‚РѕСЂРѕРј СЂРµР°Р»РёР·РѕРІР°РЅР° СЃС…РµРјР°, Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ
+--  scheme - РёРјСЏ СЃС…РµРјС‹
 function load_scheme(filename, scheme, stype)
   schemes[scheme] = filename
   stypes[scheme] = stype
@@ -66,25 +66,25 @@ function load_scheme(filename, scheme, stype)
 	end
 end
 
--- Глобальные singletone классы
+-- Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ singletone РєР»Р°СЃСЃС‹
 config = system_ini()
 console = get_console()
 
--- Следующие singletone классы задаются в start_game_callback
+-- РЎР»РµРґСѓСЋС‰РёРµ singletone РєР»Р°СЃСЃС‹ Р·Р°РґР°СЋС‚СЃСЏ РІ start_game_callback
 AI = nil
 netpacket = nil
 
 -- before_objs_load_callback
 graph = nil
 
--- В after_objs_load_callback
+-- Р’ after_objs_load_callback
 container = nil
 freeplay_stats = nil
 random_task = nil
 Treasure = nil
 Variable = nil
 
--- В bind_actor.net_spawn
+-- Р’ bind_actor.net_spawn
 Actor = nil
 AObj = nil
 Inventory = nil
@@ -109,7 +109,7 @@ function init_clsids()
 	init_clsids = nil
 end
 
--- Старт игры
+-- РЎС‚Р°СЂС‚ РёРіСЂС‹
 function start_game_callback()
 	init_clsids()
 	xrs_grenade.init_clsids()
@@ -142,8 +142,8 @@ function before_objs_load_callback()
 	before_objs_load_callback = nil
 end
 
-function after_objs_load_callback() --калбек вызывается после загрузки объектов из сейва
-	-- Чтение контейнера и создание классов из его данных
+function after_objs_load_callback() --РєР°Р»Р±РµРє РІС‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РѕР±СЉРµРєС‚РѕРІ РёР· СЃРµР№РІР°
+	-- Р§С‚РµРЅРёРµ РєРѕРЅС‚РµР№РЅРµСЂР° Рё СЃРѕР·РґР°РЅРёРµ РєР»Р°СЃСЃРѕРІ РёР· РµРіРѕ РґР°РЅРЅС‹С…
 	container = keyvals()
 	Variable = xr_logic.CVariable()
 	freeplay_stats = xr_statistic_freeplay.freeplay_statistic()
@@ -153,23 +153,23 @@ function after_objs_load_callback() --калбек вызывается после загрузки объектов 
 	after_objs_load_callback = nil
 end
 
--- запущена ли игра
+-- Р·Р°РїСѓС‰РµРЅР° Р»Рё РёРіСЂР°
 function game_is_running()
 	return level.present() and actor_flags.alive
 end
 
--- Короткие имена для частых функций
+-- РљРѕСЂРѕС‚РєРёРµ РёРјРµРЅР° РґР»СЏ С‡Р°СЃС‚С‹С… С„СѓРЅРєС†РёР№
 voice = xr_sound.get_safe_sound_object
 sms = news_manager.send_tip
 translate = game.translate_string
 
--- метки на карте
+-- РјРµС‚РєРё РЅР° РєР°СЂС‚Рµ
 map_spot = level.map_add_object_spot_ser
 level_map_spot = level.map_add_object_spot
 has_map_spot = level.map_has_object_spot
 del_map_spot = level.map_remove_object_spot
 
--- переменные
+-- РїРµСЂРµРјРµРЅРЅС‹Рµ
 function set_value(var, value)
 	return Variable:set(var, value)
 end
@@ -183,7 +183,7 @@ function has_value(var)
 	return Variable:has(var)
 end
 
--- Инвентарь ГГ, объявляется в bind_actor.net_spawn
+-- РРЅРІРµРЅС‚Р°СЂСЊ Р“Р“, РѕР±СЉСЏРІР»СЏРµС‚СЃСЏ РІ bind_actor.net_spawn
 function has(s, i)
 	return Inventory:has(s, i)
 end
@@ -243,7 +243,7 @@ function condition_item(s)
 	return config:r_bool_cache(s, "degradable") == true
 end
 
--- Спавн секции в инвентарь актора без вывода сообщения
+-- РЎРїР°РІРЅ СЃРµРєС†РёРё РІ РёРЅРІРµРЅС‚Р°СЂСЊ Р°РєС‚РѕСЂР° Р±РµР· РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ
 function got_item(s)
 	return create(s, xyz(), 0, 0, 0)
 end
@@ -252,7 +252,7 @@ function got_item_random(s)
 	return create_random(s, xyz(), 0, 0, 0)
 end
 
--- Деньги
+-- Р”РµРЅСЊРіРё
 function got_money(m)
 	Actor:give_money(m)
 	news_manager.relocate_money("in", m)
@@ -265,29 +265,29 @@ function has_money(m)
 	return Actor:money() >= m
 end
 
--- Проиграть звук
+-- РџСЂРѕРёРіСЂР°С‚СЊ Р·РІСѓРє
 function say(s, vol)
 	if type(s) == "string" then s = voice(s) end
 	s:play_no_feedback(Actor, sound_object.s2d, 0, xyz(), vol or 1)
 end
 
--- Вместо has_alife_info, AI:has_info, Actor:has_info
+-- Р’РјРµСЃС‚Рѕ has_alife_info, AI:has_info, Actor:has_info
 function has_info(i)
 	return AI:has_info(0,i)
 end
 has_alife_info = has_info
 
--- Вместо Actor:give_info_portion
+-- Р’РјРµСЃС‚Рѕ Actor:give_info_portion
 function give_info(i)
 	return Actor:give_info_portion(i)
 end
 
--- Вместо Actor:disable_info_portion
+-- Р’РјРµСЃС‚Рѕ Actor:disable_info_portion
 function disable_info(i)
 	return Actor:disable_info_portion(i)
 end
 
--- Вместо AI:create() все варианты
+-- Р’РјРµСЃС‚Рѕ AI:create() РІСЃРµ РІР°СЂРёР°РЅС‚С‹
 function create(...)
 	return AI:create(...)
 end
@@ -296,8 +296,8 @@ function create_random(sect, ...)
 	return AI:create(table.fastrand(reap.random_skin(sect)), ...)
 end
 
--- Вместо AI:release(), AI:release(AI:object(id|name)) со всеми проверками.
--- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
+-- Р’РјРµСЃС‚Рѕ AI:release(), AI:release(AI:object(id|name)) СЃРѕ РІСЃРµРјРё РїСЂРѕРІРµСЂРєР°РјРё.
+-- Р’ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР° РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚, РєР»РёРµРЅС‚СЃРєРёР№ РѕР±СЉРµРєС‚ Рё РїСЂРѕСЃС‚Рѕ id. Р”Р»СЏ РѕР±СЉРµРєС‚РѕРІ Р°Р»СЃРїР°СѓРЅР° РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ name.
 function release(o)
 	if not o then return end
 
@@ -307,75 +307,75 @@ function release(o)
 	end
 end
 
--- Вместо AI:object(id|name)
--- В качестве параметра можно передавать серверный объект, клиентский объект и просто id. Для объектов алспауна можно передавать name.
+-- Р’РјРµСЃС‚Рѕ AI:object(id|name)
+-- Р’ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР° РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚, РєР»РёРµРЅС‚СЃРєРёР№ РѕР±СЉРµРєС‚ Рё РїСЂРѕСЃС‚Рѕ id. Р”Р»СЏ РѕР±СЉРµРєС‚РѕРІ Р°Р»СЃРїР°СѓРЅР° РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ name.
 function server_object(o)
 	if not o then return nil end
 
-	if type(o) ~= "userdata" then		-- id или name
+	if type(o) ~= "userdata" then		-- id РёР»Рё name
 		return AI:object(o)
-	elseif o.section_name then			-- серверный объект
+	elseif o.section_name then			-- СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚
 		return AI:object(o.id)
-	else								-- клиентский объект
+	else								-- РєР»РёРµРЅС‚СЃРєРёР№ РѕР±СЉРµРєС‚
 		return AI:object(o:id())
 	end
 end
 
--- Вместо AI:story_object()
+-- Р’РјРµСЃС‚Рѕ AI:story_object()
 function story_object(o)
 	return AI:story_object(o)
 end
 
--- Уровень, на котором находится объект
+-- РЈСЂРѕРІРµРЅСЊ, РЅР° РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ РѕР±СЉРµРєС‚
 function object_level(o)
 	return graph:vertex(o.m_game_vertex_id or o:game_vertex_id()):level_id()
 end
 
--- Название уровня, на котором находится объект
+-- РќР°Р·РІР°РЅРёРµ СѓСЂРѕРІРЅСЏ, РЅР° РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ РѕР±СЉРµРєС‚
 function object_level_name(o)
 	return AI:level_name(object_level(o))
 end
 
--- Вместо level.object_by_id()
+-- Р’РјРµСЃС‚Рѕ level.object_by_id()
 level_object = level.object_by_id
 
--- Вместо level_object_by_sid()
+-- Р’РјРµСЃС‚Рѕ level_object_by_sid()
 function level_story_object(sid)
 	local o = story_object(sid)
 	return o and level_object(o.id)
 end
 level_object_by_sid = level_story_object
 
--- Получение id по story_id
+-- РџРѕР»СѓС‡РµРЅРёРµ id РїРѕ story_id
 function id_by_sid(sid)
 	local o = story_object(sid)
 	return o and o.id
 end
 
--- Это использовать только при разовых указаниях позиции для create и т.п. Для всего остального использовать свой экземпляр класса vector().
+-- Р­С‚Рѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРё СЂР°Р·РѕРІС‹С… СѓРєР°Р·Р°РЅРёСЏС… РїРѕР·РёС†РёРё РґР»СЏ create Рё С‚.Рї. Р”Р»СЏ РІСЃРµРіРѕ РѕСЃС‚Р°Р»СЊРЅРѕРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЃРІРѕР№ СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° vector().
 local pos_only = vector()
 function xyz(x,y,z)
 	return pos_only:set(x or 0, y or 0, z or 0)
 end
 
--- Запуск таймера
+-- Р—Р°РїСѓСЃРє С‚Р°Р№РјРµСЂР°
 timer = nil
 
--- Спавн/удаление особых объектов
+-- РЎРїР°РІРЅ/СѓРґР°Р»РµРЅРёРµ РѕСЃРѕР±С‹С… РѕР±СЉРµРєС‚РѕРІ
 
--- Спавн телепортов
+-- РЎРїР°РІРЅ С‚РµР»РµРїРѕСЂС‚РѕРІ
 function create_teleport(section, pos, lv, gv)
 	local o = AI:create(section, pos, lv, gv)
 	set_value(section, o.id)
 	return o
 end
 
--- Удаление телепортов
+-- РЈРґР°Р»РµРЅРёРµ С‚РµР»РµРїРѕСЂС‚РѕРІ
 function release_teleport(section)
 	release(get_value(section, -1, true))
 end
 
--- Вывод в лог
+-- Р’С‹РІРѕРґ РІ Р»РѕРі
 function log(fmt,...)
 	log1(string.format(tostring(fmt), ...))
 end
@@ -410,10 +410,10 @@ function reset_action(npc, name)
 	npc:script(true, name)
 end
 
--- Константа, которую использовать в местах, где нужно задать неограниченное время действия
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°, РєРѕС‚РѕСЂСѓСЋ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ РјРµСЃС‚Р°С…, РіРґРµ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РЅРµРѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІСЂРµРјСЏ РґРµР№СЃС‚РІРёСЏ
 time_infinite = 100000000
 
--- Рандомный выбор из списка параметров
+-- Р Р°РЅРґРѕРјРЅС‹Р№ РІС‹Р±РѕСЂ РёР· СЃРїРёСЃРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 function random_choice(...)
 	return table.fastrand({ ... })
 end
@@ -422,7 +422,7 @@ function is_object_online(obj_id)
 	return level_object(obj_id) ~= nil
 end
 
--- Вычисляет yaw в радианах
+-- Р’С‹С‡РёСЃР»СЏРµС‚ yaw РІ СЂР°РґРёР°РЅР°С…
 function yaw(v1, v2)
 	return math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / math.sqrt((v1.x*v1.x + v1.z*v1.z ) * (v2.x*v2.x + v2.z*v2.z )) )
 end
@@ -438,7 +438,7 @@ function vector_cross (v1, v2)
     return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
--- Вращает вектор вокруг оси y против часовой стрелки
+-- Р’СЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ РІРѕРєСЂСѓРі РѕСЃРё y РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 function vector_rotate_y (v, angle)
     angle = angle * 0.01745329252
     local c = math.cos (angle)
@@ -466,12 +466,12 @@ function switch_offline(npc)
 	AI:set_switch_offline(id, true)
 end
 
--- быстрый if
+-- Р±С‹СЃС‚СЂС‹Р№ if
 function iif(t,t1,t2)
 	return t and t1 or t2
 end
 
--- Крешнуть игру (после вывода сообщения об ошибке в лог)
+-- РљСЂРµС€РЅСѓС‚СЊ РёРіСЂСѓ (РїРѕСЃР»Рµ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ РІ Р»РѕРі)
 function abort(fmt, ...)
 	fmt = tostring(fmt)
 	local reason = ... == nil and fmt or string.format(fmt, ...)
@@ -489,42 +489,42 @@ function set_inactivate_input_time(delta)
 	level.disable_input()
 end
 
--- проверяет целую часть числа на нечётность
+-- РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р° РЅР° РЅРµС‡С‘С‚РЅРѕСЃС‚СЊ
 function odd(x)
 	return math.fmod(x, 2) >= 1
 end
 
---' Усталость
+--' РЈСЃС‚Р°Р»РѕСЃС‚СЊ
 function on_actor_critical_power()
 end
 
 function on_actor_critical_max_power()
 end
 
---' Кровотечение
+--' РљСЂРѕРІРѕС‚РµС‡РµРЅРёРµ
 function on_actor_bleeding()
 end
 
 function on_actor_satiety()
 end
 
---' Радиация
+--' Р Р°РґРёР°С†РёСЏ
 function on_actor_radiation()
 end
 
---' Заклинило оружие
+--' Р—Р°РєР»РёРЅРёР»Рѕ РѕСЂСѓР¶РёРµ
 function on_actor_weapon_jammed()
 end
 
---' не может ходить изза веса
+--' РЅРµ РјРѕР¶РµС‚ С…РѕРґРёС‚СЊ РёР·Р·Р° РІРµСЃР°
 function on_actor_cant_walk_weight()
 end
 
---' пси воздействие
+--' РїСЃРё РІРѕР·РґРµР№СЃС‚РІРёРµ
 function on_actor_psy()
 end
 
---' инвентарное название объекта
+--' РёРЅРІРµРЅС‚Р°СЂРЅРѕРµ РЅР°Р·РІР°РЅРёРµ РѕР±СЉРµРєС‚Р°
 function get_inv_name(section)
 	return translate(config:r_string(section, "inv_name"))
 end

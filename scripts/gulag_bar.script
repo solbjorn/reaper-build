@@ -9,7 +9,7 @@ end
 local neutral = table.tohash({ "dolg", "ecolog", "green", "stalker", "stranger" })
 
 local gulags = {
-	-- Ïîñåòèòåëè Äîëãà
+	-- ÐŸÐ¾ÑÐµÑ‚Ð¸Ñ‚ÐµÐ»Ð¸ Ð”Ð¾Ð»Ð³Ð°
 	["bar_visitors"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -117,7 +117,7 @@ local gulags = {
 				prior = 7, squad = squad, group = groups[1]
 			}
 
-			-- Áîé íà àðåíå
+			-- Ð‘Ð¾Ð¹ Ð½Ð° Ð°Ñ€ÐµÐ½Ðµ
 			sj[#sj + 1] = {
 				section = "logic@bar_visitors_arena_1", timeout = 0,
 				prior = 7, state = {2}, squad = squad, group = groups[1]
@@ -152,7 +152,7 @@ local gulags = {
 			}
 		end,
 		state = function(gulag)
-			-- Ïðîâåðêà áîÿ íà àðåíå
+			-- ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð±Ð¾Ñ Ð½Ð° Ð°Ñ€ÐµÐ½Ðµ
 			if has_alife_info("bar_arena_start") and
 			   not has_alife_info("bar_arena_actor_victory") and
 			   not has_alife_info("bar_arena_actor_lose") and
@@ -171,7 +171,7 @@ local gulags = {
 			return se_obj and neutral[npc_community]
 		end
 	},
-	-- Ãóëàã ëàìåðîâ Äîëãà âíóòðè áàçû Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð»Ð°Ð¼ÐµÑ€Ð¾Ð² Ð”Ð¾Ð»Ð³Ð° Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ð±Ð°Ð·Ñ‹ Ð”Ð¾Ð»Ð³Ð°
 	["bar_dolg_general"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -257,16 +257,16 @@ local gulags = {
 			for k,v in pairs(gulag.Object) do
 				if v ~= true and v:best_enemy() ~= nil then
 					gulag.alarm_start = game.get_game_time()
-					return 2 -- òðåâîãà
+					return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 				end
 			end
 
 			if gulag.alarm_start == nil or
 				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-					return 0  -- äåíü
+					return 0  -- Ð´ÐµÐ½ÑŒ
 				else
-					return 1  -- íî÷ü
+					return 1  -- Ð½Ð¾Ñ‡ÑŒ
 				end
 			else
 				return 2
@@ -274,7 +274,7 @@ local gulags = {
 		end,
 		check = check_dolg
 	},
-	-- Ãóëàã âåòåðàíîâ Äîëãà âíóòðè áàçû Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ð¾Ð² Ð”Ð¾Ð»Ð³Ð° Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ð±Ð°Ð·Ñ‹ Ð”Ð¾Ð»Ð³Ð°
 	["bar_dolg_veterans"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -312,16 +312,16 @@ local gulags = {
 			for k,v in pairs(gulag.Object) do
 				if v ~= true and v:best_enemy() ~= nil then
 					gulag.alarm_start = game.get_game_time()
-					return 2 -- òðåâîãà
+					return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 				end
 			end
 
 			if gulag.alarm_start == nil or
 				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-					return 0  -- äåíü
+					return 0  -- Ð´ÐµÐ½ÑŒ
 				else
-					return 1  -- íî÷ü
+					return 1  -- Ð½Ð¾Ñ‡ÑŒ
 				end
 			else
 				return 2
@@ -329,7 +329,7 @@ local gulags = {
 		end,
 		check = check_dolg
 	},
-	-- Ãóëàã â áóíêåðå Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð² Ð±ÑƒÐ½ÐºÐµÑ€Ðµ Ð”Ð¾Ð»Ð³Ð°
 	["bar_dolg_bunker"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -359,7 +359,7 @@ local gulags = {
 		end,
 		check = check_dolg
 	},
-	-- Ãóëàã ñòàëêåðîâ íà çàñòàâå 1
+	-- Ð“ÑƒÐ»Ð°Ð³ ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð½Ð° Ð·Ð°ÑÑ‚Ð°Ð²Ðµ 1
 	["bar_zastava"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -383,7 +383,7 @@ local gulags = {
 		end,
 		check = check_dolg
 	},
-	-- Ãóëàã ñòàëêåðîâ íà çàñòàâå 2
+	-- Ð“ÑƒÐ»Ð°Ð³ ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð½Ð° Ð·Ð°ÑÑ‚Ð°Ð²Ðµ 2
 	["bar_zastava_2"] = {
 		job = function(sj, gname, squad, groups)
 			for i = 1,3 do
@@ -398,7 +398,7 @@ local gulags = {
 		end,
 		check = check_dolg
 	},
-	-- Ãóëàã íåõîðîøèõ ñòàëêåðîâ âåòåðàíîâ íà Äèêîé òåððèòîðèè
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð½ÐµÑ…Ð¾Ñ€Ð¾ÑˆÐ¸Ñ… ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ð¾Ð² Ð½Ð° Ð”Ð¸ÐºÐ¾Ð¹ Ñ‚ÐµÑ€Ñ€Ð¸Ñ‚Ð¾Ñ€Ð¸Ð¸
 	["bar_evil_veterans"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -461,16 +461,16 @@ local gulags = {
 			for k,v in pairs(gulag.Object) do
 				if v ~= true and v:best_enemy() ~= nil then
 					gulag.alarm_start = game.get_game_time()
-					return 2 -- òðåâîãà
+					return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 				end
 			end
 
 			if gulag.alarm_start == nil or
 				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-					return 0  -- äåíü
+					return 0  -- Ð´ÐµÐ½ÑŒ
 				else
-					return 1  -- íî÷ü
+					return 1  -- Ð½Ð¾Ñ‡ÑŒ
 				end
 			else
 				return 2
@@ -480,7 +480,7 @@ local gulags = {
 			return npc_community == "bandit"
 		end
 	},
-	-- Ó÷åííûå, çàùèùàþùèå èíôó îò ñâîáîäû
+	-- Ð£Ñ‡ÐµÐ½Ð½Ñ‹Ðµ, Ð·Ð°Ñ‰Ð¸Ñ‰Ð°ÑŽÑ‰Ð¸Ðµ Ð¸Ð½Ñ„Ñƒ Ð¾Ñ‚ ÑÐ²Ð¾Ð±Ð¾Ð´Ñ‹
 	["bar_ecolog_crush"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {
@@ -516,10 +516,10 @@ local gulags = {
 			return npc_community == "ecolog"
 		end
 	},
-	-- Ñâîáîäà, àòàêóþùàÿ ó÷åííûõ ñ öåëüþ îòíèìàíèÿ èíôû
+	-- Ð¡Ð²Ð¾Ð±Ð¾Ð´Ð°, Ð°Ñ‚Ð°ÐºÑƒÑŽÑ‰Ð°Ñ ÑƒÑ‡ÐµÐ½Ð½Ñ‹Ñ… Ñ Ñ†ÐµÐ»ÑŒÑŽ Ð¾Ñ‚Ð½Ð¸Ð¼Ð°Ð½Ð¸Ñ Ð¸Ð½Ñ„Ñ‹
 	["bar_freedom_attack"] = {
 		job = function(sj, gname, squad, groups)
-			--íà÷àëî ñöåíû {0}
+			--Ð½Ð°Ñ‡Ð°Ð»Ð¾ ÑÑ†ÐµÐ½Ñ‹ {0}
 			sj[#sj + 1] = {
 				section = "logic@bar_freedom_attack_sniper_1",
 				squad = squad, group = groups[0],
@@ -666,7 +666,7 @@ local gulags = {
 				position_threshold = 150
 			}
 
-			-- ïîãîíÿ çà Êðóãëîâûì	{2}
+			-- Ð¿Ð¾Ð³Ð¾Ð½Ñ Ð·Ð° ÐšÑ€ÑƒÐ³Ð»Ð¾Ð²Ñ‹Ð¼	{2}
 			sj[#sj + 1] = {
 				section = "logic@bar_freedom_attack_chaser_1",
 				state = {2}, squad = squad, group = groups[0],
@@ -736,7 +736,7 @@ local gulags = {
 					    end
 			}
 
-			-- îòäûõ ñâîáîäû {3}
+			-- Ð¾Ñ‚Ð´Ñ‹Ñ… ÑÐ²Ð¾Ð±Ð¾Ð´Ñ‹ {3}
 			sj[#sj + 1] = {
 				section = "logic@bar_freedom_attack_camper_1_relax",
 				prior = 8, state = {3}, squad = squad, group = groups[0],
@@ -858,7 +858,7 @@ local gulags = {
 		end,
 		check = check_killer
 	},
-	-- Çàñàäà áîåâèêîâ Íàåìíèêîâ íà ñòðîéêå
+	-- Ð—Ð°ÑÐ°Ð´Ð° Ð±Ð¾ÐµÐ²Ð¸ÐºÐ¾Ð² ÐÐ°ÐµÐ¼Ð½Ð¸ÐºÐ¾Ð² Ð½Ð° ÑÑ‚Ñ€Ð¾Ð¹ÐºÐµ
 	["bar_killers_ambush"] = {
 		job = function(sj, gname, squad, groups)
 			sj[#sj + 1] = {

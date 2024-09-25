@@ -21,27 +21,27 @@ function init_random_treasures()
 	init_random_treasures = nil
 end
 
--- проверка, является ли тайник именным. Если да, то его наполнение не меняется
+-- РїСЂРѕРІРµСЂРєР°, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С‚Р°Р№РЅРёРє РёРјРµРЅРЅС‹Рј. Р•СЃР»Рё РґР°, С‚Рѕ РµРіРѕ РЅР°РїРѕР»РЅРµРЅРёРµ РЅРµ РјРµРЅСЏРµС‚СЃСЏ
 local named_treasures = {
-	["agr_secret_0000_name"]	= true, --Тайник Серого
-	["bar_secret_0011_name"]	= true, --Тайник Арни
-	["esc_secret_0013_name"]	= true, --Тайник Ворпала
-	["gar_secret_0002_name"]	= true, --Вещи Гризли
-	["gar_secret_0011_name"]	= true, --Склад группы Стрелка
-	["gar_secret_0021_name"]	= true, --Рюкзак Дохляка
-	["pri_secret_0003_name"]	= true, --Хабар Клыка
-	["pri_secret_0004_name"]	= true, --Запасы лидера Свободы
-	["rad_secret_0000_name"]	= true, --Клад Угрюмого
-	["rad_secret_0004_name"]	= true, --Запас группы отчаянных
-	["ros_secret_0015_name"]	= true, --Тайник Счастливчика
-	["ros_secret_0018_name"]	= true, --Ящик с медикаментами
-	["val_secret_0028_name"]	= true, --Тайник Борова
-	["x18_secret_0000_name"]	= true, --Тайник Копченого
-	["yan_secret_0011_name"]	= true, --Тайник учёного
+	["agr_secret_0000_name"]	= true, --РўР°Р№РЅРёРє РЎРµСЂРѕРіРѕ
+	["bar_secret_0011_name"]	= true, --РўР°Р№РЅРёРє РђСЂРЅРё
+	["esc_secret_0013_name"]	= true, --РўР°Р№РЅРёРє Р’РѕСЂРїР°Р»Р°
+	["gar_secret_0002_name"]	= true, --Р’РµС‰Рё Р“СЂРёР·Р»Рё
+	["gar_secret_0011_name"]	= true, --РЎРєР»Р°Рґ РіСЂСѓРїРїС‹ РЎС‚СЂРµР»РєР°
+	["gar_secret_0021_name"]	= true, --Р СЋРєР·Р°Рє Р”РѕС…Р»СЏРєР°
+	["pri_secret_0003_name"]	= true, --РҐР°Р±Р°СЂ РљР»С‹РєР°
+	["pri_secret_0004_name"]	= true, --Р—Р°РїР°СЃС‹ Р»РёРґРµСЂР° РЎРІРѕР±РѕРґС‹
+	["rad_secret_0000_name"]	= true, --РљР»Р°Рґ РЈРіСЂСЋРјРѕРіРѕ
+	["rad_secret_0004_name"]	= true, --Р—Р°РїР°СЃ РіСЂСѓРїРїС‹ РѕС‚С‡Р°СЏРЅРЅС‹С…
+	["ros_secret_0015_name"]	= true, --РўР°Р№РЅРёРє РЎС‡Р°СЃС‚Р»РёРІС‡РёРєР°
+	["ros_secret_0018_name"]	= true, --РЇС‰РёРє СЃ РјРµРґРёРєР°РјРµРЅС‚Р°РјРё
+	["val_secret_0028_name"]	= true, --РўР°Р№РЅРёРє Р‘РѕСЂРѕРІР°
+	["x18_secret_0000_name"]	= true, --РўР°Р№РЅРёРє РљРѕРїС‡РµРЅРѕРіРѕ
+	["yan_secret_0011_name"]	= true, --РўР°Р№РЅРёРє СѓС‡С‘РЅРѕРіРѕ
 	["agr_krysyk_secret_name"]	= true,
 	["val_krysyk_secret_name"]	= true,
 	["mil_borov_secret_name"]	= true,
-	["esc_secret_0010_name"]	= true  --Тайник с пивом
+	["esc_secret_0010_name"]	= true  --РўР°Р№РЅРёРє СЃ РїРёРІРѕРј
 }
 local def_comms = table.tohash({ "stalker", "bandit", "dolg", "freedom", "green" })
 
@@ -56,7 +56,7 @@ function parse_items(line)
 		return {}
 	end
 
-	--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+	--' РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 	local t = string.parse_names(line)
 	local n = #t
 
@@ -66,16 +66,16 @@ function parse_items(line)
 	while k <= n do
 		local spawn = {}
 		spawn.section = t[k]
-		-- Проверяем что это не последняя запись
+		-- РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ
 		if t[k+1] ~= nil then
 			local p = tonumber(t[k+1])
-			-- проверяем что вторым числом задана вероятность, а не другая секция спавну
+			-- РїСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РІС‚РѕСЂС‹Рј С‡РёСЃР»РѕРј Р·Р°РґР°РЅР° РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ, Р° РЅРµ РґСЂСѓРіР°СЏ СЃРµРєС†РёСЏ СЃРїР°РІРЅСѓ
 			if p then
-				-- забиваем число
+				-- Р·Р°Р±РёРІР°РµРј С‡РёСЃР»Рѕ
 				spawn.prob = p
 				k = k + 2
 			else
-				-- забиваем дефолт 1
+				-- Р·Р°Р±РёРІР°РµРј РґРµС„РѕР»С‚ 1
 				spawn.prob = 1
 				k = k + 1
 			end
@@ -90,18 +90,18 @@ end
 
 class "CTreasure"
 function CTreasure:__init()
-	--' На конструкторе вычитываем LTX и создаем заготовки квестов.
+	--' РќР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РІС‹С‡РёС‚С‹РІР°РµРј LTX Рё СЃРѕР·РґР°РµРј Р·Р°РіРѕС‚РѕРІРєРё РєРІРµСЃС‚РѕРІ.
 	local self_ini = ini_file("misc\\treasure_manager.ltx")
 
-	--' Итерируемся по всем настройкам фраз
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РЅР°СЃС‚СЂРѕР№РєР°Рј С„СЂР°Р·
 	if not self_ini:section_exist("list") then
 		abort("There is no section [list] in treasure_manager.ltx")
 		return
 	end
 
-	--' начальная установка
+	--' РЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 	self.treasure_info = {}
-	--' Вспомогательные таблицы для облегчения поиска
+	--' Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С‚Р°Р±Р»РёС†С‹ РґР»СЏ РѕР±Р»РµРіС‡РµРЅРёСЏ РїРѕРёСЃРєР°
 	self.treasure_by_target = {}
 
 	self_ini:iterate_lines("list", function(result, id, value)
@@ -115,7 +115,7 @@ function CTreasure:__init()
 			name	= self_ini:r_string(id, "name"),
 			named	= named_treasures[result] or false,
 
-			--' Отметим тайник как новый
+			--' РћС‚РјРµС‚РёРј С‚Р°Р№РЅРёРє РєР°Рє РЅРѕРІС‹Р№
 			active	= false,
 			done	= false
 		}
@@ -146,13 +146,13 @@ function CTreasure:offline_give_treasure(npc)
 	return false
 end
 
---' Юзание инициатора (возможность выдать тайник)
+--' Р®Р·Р°РЅРёРµ РёРЅРёС†РёР°С‚РѕСЂР° (РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹РґР°С‚СЊ С‚Р°Р№РЅРёРє)
 function CTreasure:use(npc)
 	local npc_id = npc:id()
 	if self.used_npc[npc_id] then return end
 	self.used_npc[npc_id] = true
 
-	--' Проверим, не вызывались ли мы уже для этого объекта.
+	--' РџСЂРѕРІРµСЂРёРј, РЅРµ РІС‹Р·С‹РІР°Р»РёСЃСЊ Р»Рё РјС‹ СѓР¶Рµ РґР»СЏ СЌС‚РѕРіРѕ РѕР±СЉРµРєС‚Р°.
 	local se_obj = server_object(npc_id)
 	if se_obj.treasure_processed == true then return end
 	se_obj.treasure_processed = true
@@ -167,7 +167,7 @@ function CTreasure:use(npc)
 	if self:offline_give_treasure(npc) then return end
 	local rarets
 
-	-- если выбран редкий тип тайников, то снизим овероятность его выпадения
+	-- РµСЃР»Рё РІС‹Р±СЂР°РЅ СЂРµРґРєРёР№ С‚РёРї С‚Р°Р№РЅРёРєРѕРІ, С‚Рѕ СЃРЅРёР·РёРј РѕРІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РµРіРѕ РІС‹РїР°РґРµРЅРёСЏ
 	if amk.load_variable("option_treasure", 0) == 2 then
 	  rarets = 97
 	else
@@ -181,7 +181,7 @@ end
 function CTreasure:pick_one(npc)
 	n_rank = npc:character_rank()
 
-	--' Нужно рандомно выбрать один из тайников.
+	--' РќСѓР¶РЅРѕ СЂР°РЅРґРѕРјРЅРѕ РІС‹Р±СЂР°С‚СЊ РѕРґРёРЅ РёР· С‚Р°Р№РЅРёРєРѕРІ.
 	local avail = {}
 	local tr_sum = 0
 	local treasure_prob, value
@@ -227,37 +227,37 @@ function CTreasure:pick_one(npc)
 	for _,v in ipairs(avail) do
 		tr_w = tr_w - v.prob
 		if tr_w <= 0 then
-			--' Выдать тайник
+			--' Р’С‹РґР°С‚СЊ С‚Р°Р№РЅРёРє
 			self:give_treasure(v.k)
 			break
 		end
 	end
 end
 
---' Сохранение
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ
 function CTreasure:check(hide)
-	--' Проверка тайников
+	--' РџСЂРѕРІРµСЂРєР° С‚Р°Р№РЅРёРєРѕРІ
 	for k,v in pairs(self.treasure_info) do
-		--' Выдать тайник
+		--' Р’С‹РґР°С‚СЊ С‚Р°Р№РЅРёРє
 		if not v.active and not v.done then
 			self:give_treasure(k, hide)
 		end
 	end
 end
---' Выдача тайника
+--' Р’С‹РґР°С‡Р° С‚Р°Р№РЅРёРєР°
 function CTreasure:give_treasure(k, hide)
 	local v = self.treasure_info[k]
 	local obj = story_object(v.target)
 	if obj ~= nil then
-        -- проверка, какой тип тайника выбран
-		-- если тайник не классический и не именной, то заменим содержимое
+        -- РїСЂРѕРІРµСЂРєР°, РєР°РєРѕР№ С‚РёРї С‚Р°Р№РЅРёРєР° РІС‹Р±СЂР°РЅ
+		-- РµСЃР»Рё С‚Р°Р№РЅРёРє РЅРµ РєР»Р°СЃСЃРёС‡РµСЃРєРёР№ Рё РЅРµ РёРјРµРЅРЅРѕР№, С‚Рѕ Р·Р°РјРµРЅРёРј СЃРѕРґРµСЂР¶РёРјРѕРµ
 		if amk.load_variable("option_treasure", 0) ~= 0 and v.named == false then
 			v.items = self:give_item_list()
 		else
 			v.items = parse_items(self.ini:r_string(k, "items"))
 		end
 
-		--' Сгенерить вещи
+		--' РЎРіРµРЅРµСЂРёС‚СЊ РІРµС‰Рё
 		local pos, lvid, gvid, pid = obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id
 		for kk,vv in pairs(v.items) do
 			if ammo_section[vv.section] == true then
@@ -270,7 +270,7 @@ function CTreasure:give_treasure(k, hide)
 		end
 
 		if not hide and has_map_spot(obj.id, "treasure") == 0 then
-			--' Пометить на карте
+			--' РџРѕРјРµС‚РёС‚СЊ РЅР° РєР°СЂС‚Рµ
 			local text = "%c[255,238,155,23]" .. translate(v.name) .. "\\n" ..
 				     "%c[default]" .. translate(self.ini:r_string(k, "description"))
 
@@ -278,19 +278,19 @@ function CTreasure:give_treasure(k, hide)
 			map_spot(pid, "treasure", text)
 		end
 
-		--' Пометим тайник как выданный
+		--' РџРѕРјРµС‚РёРј С‚Р°Р№РЅРёРє РєР°Рє РІС‹РґР°РЅРЅС‹Р№
 		v.active = true
-		-- Отправим тайник в оффлайн
+		-- РћС‚РїСЂР°РІРёРј С‚Р°Р№РЅРёРє РІ РѕС„С„Р»Р°Р№РЅ
 		if obj.online then
 			AI:set_switch_online(obj.id, false)
 			AI:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id] = 1 -- ставим в очередь на вывод в онлайн
+			amk.convert_npc[obj.id] = 1 -- СЃС‚Р°РІРёРј РІ РѕС‡РµСЂРµРґСЊ РЅР° РІС‹РІРѕРґ РІ РѕРЅР»Р°Р№РЅ
 		end
 	else
 		abort("TREASURE %s, target doesnt exist", k)
 	end
 end
---' Снимаем отметку с тайника
+--' РЎРЅРёРјР°РµРј РѕС‚РјРµС‚РєСѓ СЃ С‚Р°Р№РЅРёРєР°
 function CTreasure:treasure_empty(box, box_story_id)
 	if not (tonumber(has_map_spot(box:id(), "treasure")) > 0) then return end
 
@@ -304,21 +304,21 @@ function CTreasure:treasure_empty(box, box_story_id)
 		Actor:set_character_rank(Actor:character_rank() + 1)
 		amk_offline_alife.empty_treasure(box:id())
 
-		-- если тайник не именной, то переведен его в онлайн для следующей выдачи
+		-- РµСЃР»Рё С‚Р°Р№РЅРёРє РЅРµ РёРјРµРЅРЅРѕР№, С‚Рѕ РїРµСЂРµРІРµРґРµРЅ РµРіРѕ РІ РѕРЅР»Р°Р№РЅ РґР»СЏ СЃР»РµРґСѓСЋС‰РµР№ РІС‹РґР°С‡Рё
 		v.active = false
 		v.done = v.named
 	end
 
 	del_map_spot(box:id(), "treasure")
 end
---' Сохранение
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ
 function CTreasure:save(p)
 	amk_offline_alife.save(p)
 
-	--' Сохраняем размер таблицы
+	--' РЎРѕС…СЂР°РЅСЏРµРј СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 	local tmp = {}
 	for k,v in pairs(self.treasure_info) do
-		-- пишем состояние только активных тайников
+		-- РїРёС€РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ С‚РѕР»СЊРєРѕ Р°РєС‚РёРІРЅС‹С… С‚Р°Р№РЅРёРєРѕРІ
 		if v.active or v.done then
 			tmp[#tmp + 1] = v.target
 		end
@@ -328,7 +328,7 @@ function CTreasure:save(p)
 		p:w_u16(tmp[i])
 	end
 end
---' Загрузка
+--' Р—Р°РіСЂСѓР·РєР°
 function CTreasure:load(p)
 	amk_offline_alife.load(p)
 
@@ -346,7 +346,7 @@ end
 function CTreasure:give_item_list()
  local rank = 1
  local tabla = {}
- -- сколько наименований предметов будет в тайнике
+ -- СЃРєРѕР»СЊРєРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёР№ РїСЂРµРґРјРµС‚РѕРІ Р±СѓРґРµС‚ РІ С‚Р°Р№РЅРёРєРµ
  local i = math_random(1, 2)
 	local iper = freeplay_stats:get_found_secrets_ranks()
  if iper < math_random(100) then i=i-1 end
@@ -354,10 +354,10 @@ function CTreasure:give_item_list()
 		return freeplay_stats:give_crap_item()
  end
 
--- считаем настройку пользователя
+-- СЃС‡РёС‚Р°РµРј РЅР°СЃС‚СЂРѕР№РєСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
  local opt = amk.load_variable("option_treasure", 0)
 
-  --~ -- определим ранг непися
+  --~ -- РѕРїСЂРµРґРµР»РёРј СЂР°РЅРі РЅРµРїРёСЃСЏ
    if n_rank == nil then n_rank = math_random(1, 9)*100 end
    if n_rank <= 300 then
      rank = 1
@@ -374,7 +374,7 @@ function CTreasure:give_item_list()
  for j = 1, i, 1 do
    local cnt = 0
    local spawn = {}
-  -- определим, из какой секции брать предметы, и какие именно
+  -- РѕРїСЂРµРґРµР»РёРј, РёР· РєР°РєРѕР№ СЃРµРєС†РёРё Р±СЂР°С‚СЊ РїСЂРµРґРјРµС‚С‹, Рё РєР°РєРёРµ РёРјРµРЅРЅРѕ
    if  opt == 1 then
 		if rank == 1 then
 			spawn.section = solid_list.novice_section[math_random(#solid_list.novice_section)]
@@ -397,11 +397,11 @@ function CTreasure:give_item_list()
 		end
    end
 
-  -- установка кол-ва предметов в зависимости от секции
+  -- СѓСЃС‚Р°РЅРѕРІРєР° РєРѕР»-РІР° РїСЂРµРґРјРµС‚РѕРІ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃРµРєС†РёРё
    if ammo_section[spawn.section] == true then
 			local num_in_box = config:r_u32_cache(spawn.section, "box_size")
       local h = math_random(1, 5)
-	  -- патроны выдаем не штуками, а пачками
+	  -- РїР°С‚СЂРѕРЅС‹ РІС‹РґР°РµРј РЅРµ С€С‚СѓРєР°РјРё, Р° РїР°С‡РєР°РјРё
 	  cnt = math_random(1, h) * num_in_box
    else
       local s = tostring(spawn.section)
@@ -414,7 +414,7 @@ function CTreasure:give_item_list()
 	  end
    end
 
-  -- сохраняем инфу о текущем предмете
+  -- СЃРѕС…СЂР°РЅСЏРµРј РёРЅС„Сѓ Рѕ С‚РµРєСѓС‰РµРј РїСЂРµРґРјРµС‚Рµ
   spawn.prob = cnt
   tabla[#tabla + 1] = spawn
  end

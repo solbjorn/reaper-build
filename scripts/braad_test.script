@@ -78,8 +78,8 @@ function checking_use_item(obj)
 end
 
 local nepis = {
-	9613,	-- Захар
-	9622	-- Дэн
+	9613,	-- Р—Р°С…Р°СЂ
+	9622	-- Р”СЌРЅ
 }
 
 function dead_npc()
@@ -243,7 +243,7 @@ function new_comp()
 	AI:create("computer_new",vector():set(27.945556640625,-6.619695186615,-14.894629478455),6746,1140)
 end
 
--- вещи исключения
+-- РІРµС‰Рё РёСЃРєР»СЋС‡РµРЅРёСЏ
 local items = {
         ["af_blood_tutorial"] = true,
         ["new_book"] = true,
@@ -348,12 +348,12 @@ local items = {
 function release_actor_items()
     local obj
     local actor = Actor
-    -- перебор вещей инвентаря
+    -- РїРµСЂРµР±РѕСЂ РІРµС‰РµР№ РёРЅРІРµРЅС‚Р°СЂСЏ
     local cnt = actor:object_count()
     for i=0, cnt-1 do
         obj = actor:object(i)
         if not items[obj:section()] then
-            -- удаление вещи
+            -- СѓРґР°Р»РµРЅРёРµ РІРµС‰Рё
             AI:release(AI:object(obj:id()), true)
 		Dream:sleep(5+amk.load_variable("gg_need_sleep_nrg",0))
         end

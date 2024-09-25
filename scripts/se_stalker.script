@@ -1,8 +1,8 @@
 --[[
-Изменения script_version:
-  3 - сохранение поля job_online
-  5 - сохранение поля was_in_smart_terrain
-  6 - сохранение поля death_droped
+РР·РјРµРЅРµРЅРёСЏ script_version:
+  3 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+  5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
+  6 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ death_droped
 ]]
 
 local no_ranks_comm = table.tohash({ "arena_enemy", "military", "monolith", "zombied" })
@@ -16,26 +16,26 @@ function se_stalker:__init (section) super (section)
   self.smart_terrain_conditions = nil
   self.smart_terrain_conditions_initialized = false
 
-  -- этот флаг берётся из работы смарта
-  -- true     = всегда в онлайне
-  -- false    = всегда в офлайне
-  -- condlist = условие, которое отпределяет true или false
-  -- nil      = смарту всё равно
+  -- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+  -- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+  -- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+  -- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+  -- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
   self.job_online          = nil
   self.job_online_condlist = nil
 
-  -- посещал ли сталкер хоть один smart_terrain
+  -- РїРѕСЃРµС‰Р°Р» Р»Рё СЃС‚Р°Р»РєРµСЂ С…РѕС‚СЊ РѕРґРёРЅ smart_terrain
   self.was_in_smart_terrain = false
 
-  self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
+  self.death_droped = false --'Р“РµРЅРµСЂРёР» Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РІС‹РїР°РґР°РµРјС‹Рµ РїСЂРµРґРјРµС‚С‹ РёР»Рё РЅРµС‚.
 
   --' Test for dima
   self.dont_spawn_online = false
 
-	--' Вызывался ли генератор ссылок на тайники.
+	--' Р’С‹Р·С‹РІР°Р»СЃСЏ Р»Рё РіРµРЅРµСЂР°С‚РѕСЂ СЃСЃС‹Р»РѕРє РЅР° С‚Р°Р№РЅРёРєРё.
 	self.treasure_processed = false
 
-	-- включенность фонаря в момент смерти
+	-- РІРєР»СЋС‡РµРЅРЅРѕСЃС‚СЊ С„РѕРЅР°СЂСЏ РІ РјРѕРјРµРЅС‚ СЃРјРµСЂС‚Рё
 	self.death_light = false
 
 	-- Trade
@@ -120,7 +120,7 @@ function se_stalker:STATE_Write (packet)
 
   packet:w_bool(self.was_in_smart_terrain)
 
-  -- Запишем состояние раненности.
+  -- Р—Р°РїРёС€РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЂР°РЅРµРЅРЅРѕСЃС‚Рё.
 	local flags = 0
 	if self.death_droped then flags = bit_or(flags, 1) end
 	if self.wounded then flags = bit_or(flags, 2) end
@@ -138,7 +138,7 @@ function se_stalker:STATE_Read (packet, size)
   cse_alife_human_stalker.STATE_Read (self, packet, size)
 
 	local t = packet:r_u8()
-	t=bit_and(t,3) -- Задел на будущее
+	t=bit_and(t,3) -- Р—Р°РґРµР» РЅР° Р±СѓРґСѓС‰РµРµ
 	if t == 0 then
 		self.job_online = true
 	elseif t == 1 then
@@ -154,7 +154,7 @@ function se_stalker:STATE_Read (packet, size)
 
 	self.was_in_smart_terrain = packet:r_bool()
 
-  -- Прочитаем состояние раненности.
+  -- РџСЂРѕС‡РёС‚Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЂР°РЅРµРЅРЅРѕСЃС‚Рё.
 	local flags = packet:r_u8()
 	self.death_droped = bit_and(flags, 1) ~= 0
 	self.wounded = bit_and(flags, 2) ~= 0
@@ -171,7 +171,7 @@ function se_stalker:on_before_register()
 end
 --------------------
 function se_stalker:on_register()
-	-- Чистим рестрикторы
+	-- Р§РёСЃС‚РёРј СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local tbl=amk.read_stalker_params(self)
 	tbl.crvu32u16u2={}
 	amk.write_stalker_params(tbl,self)
@@ -182,14 +182,14 @@ function se_stalker:on_register()
 		actor_stats.add_to_ranking(self.id)
 	end
 
-	--' Регистрация в таскменеджере
+	--' Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	random_task:register_stalker(self)
 
 	if self:alive() and self:smart_terrain_id() == 65535 then
 		self:brain():update()
 	end
-	-- dsh: Принудительно установим мобам flInteractive
-	-- Есть подозрение, что те, у кого этот флаг сброшен, а таких полно в all.spawn, не обходят аномалии.
+	-- dsh: РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ СѓСЃС‚Р°РЅРѕРІРёРј РјРѕР±Р°Рј flInteractive
+	-- Р•СЃС‚СЊ РїРѕРґРѕР·СЂРµРЅРёРµ, С‡С‚Рѕ С‚Рµ, Сѓ РєРѕРіРѕ СЌС‚РѕС‚ С„Р»Р°Рі СЃР±СЂРѕС€РµРЅ, Р° С‚Р°РєРёС… РїРѕР»РЅРѕ РІ all.spawn, РЅРµ РѕР±С…РѕРґСЏС‚ Р°РЅРѕРјР°Р»РёРё.
 	AI:set_interactive( self, true )
 end
 --------------------
@@ -198,7 +198,7 @@ function se_stalker:on_unregister()
 
   smart_terrain.unregister_npc(self)
 
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	random_task:unregister_stalker(self)
 
 	if not no_ranks_comm[self:community()] then
@@ -225,7 +225,7 @@ function se_stalker:fill_exclusives()
   end
 end
 
---'Торговец
+--'РўРѕСЂРіРѕРІРµС†
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
 	self.resupply_time = 0

@@ -1,8 +1,8 @@
 --/amk_rel_1/
 --[[------------------------------------------------------------------------------------------------------------------
-автор: Диденко Руслан (Stohe)
+Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 
-порядок вызова методов биндера:
+РїРѕСЂСЏРґРѕРє РІС‹Р·РѕРІР° РјРµС‚РѕРґРѕРІ Р±РёРЅРґРµСЂР°:
 reload
 reinit
 load
@@ -57,12 +57,12 @@ function motivator_binder:reinit()
     object_binder.reinit(self)
 
 ----------------------------------------------------------------------------------------------------------------------
--- Общие скрипты
+-- РћР±С‰РёРµ СЃРєСЂРёРїС‚С‹
 ----------------------------------------------------------------------------------------------------------------------
 	self.st = { followers = {} }
 	db_storage[self.object:id()] = self.st
 
-    --' Создание менеджера контроля положений тела
+    --' РЎРѕР·РґР°РЅРёРµ РјРµРЅРµРґР¶РµСЂР° РєРѕРЅС‚СЂРѕР»СЏ РїРѕР»РѕР¶РµРЅРёР№ С‚РµР»Р°
   self.st.state_mgr = state_mgr.bind_manager(self.object)
 
   self.st.move_mgr = move_mgr.move_mgr(self.object)
@@ -94,16 +94,16 @@ function motivator_binder:net_spawn(sobject)
 	end
 
   db.add_obj(self_object)
-	-- регистрация в схеме биорадара
+	-- СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ СЃС…РµРјРµ Р±РёРѕСЂР°РґР°СЂР°
 	biodetector.add_obj(self_object)
 
-  -- Все CALLBACK-и ставить здесь:
+  -- Р’СЃРµ CALLBACK-Рё СЃС‚Р°РІРёС‚СЊ Р·РґРµСЃСЊ:
   self_object:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
   self_object:set_callback(callback_hit, motivator_binder.hit_callback, self)
   self_object:set_callback(callback_death, motivator_binder.death_callback, self)
   self_object:set_callback(callback_use_object, motivator_binder.use_callback, self)
 
-    --' Загрузка историй для лагеря.
+    --' Р—Р°РіСЂСѓР·РєР° РёСЃС‚РѕСЂРёР№ РґР»СЏ Р»Р°РіРµСЂСЏ.
   if self.loaded == false then
 		xr_info.loadInfo(self_object, self_object:spawn_ini() or def_ini_file)
   end
@@ -112,12 +112,12 @@ function motivator_binder:net_spawn(sobject)
     return true
   end
 
-  --' Для зомбированных чуваков говорим что аномалий не существует
+  --' Р”Р»СЏ Р·РѕРјР±РёСЂРѕРІР°РЅРЅС‹С… С‡СѓРІР°РєРѕРІ РіРѕРІРѕСЂРёРј С‡С‚Рѕ Р°РЅРѕРјР°Р»РёР№ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 	local manager = self_object:motivation_action_manager()
 	manager:remove_evaluator	(stalker_ids_property_anomaly)
 	manager:add_evaluator		(stalker_ids_property_anomaly, property_evaluator_const(false))
 
-    --' загрузка озвучки
+    --' Р·Р°РіСЂСѓР·РєР° РѕР·РІСѓС‡РєРё
 	sound_theme.load_sound(self_object)
 
   xr_gulag.setup_gulag_and_logic_on_spawn( self_object, self.st, sobject, modules.stype_stalker, self.loaded )
@@ -172,7 +172,7 @@ function motivator_binder:net_destroy()
   end
 
   db.del_obj(self_object)
-	-- отрегистрация в схеме биорадара
+	-- РѕС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ СЃС…РµРјРµ Р±РёРѕСЂР°РґР°СЂР°
 	biodetector.remove_obj(self_object)
 
   self:clear_callbacks()
@@ -180,7 +180,7 @@ function motivator_binder:net_destroy()
 
   object_binder.net_destroy(self)
 
-	-- АМК. Очистка рестрикторов
+	-- РђРњРљ. РћС‡РёСЃС‚РєР° СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ
 	local sobj = server_object(obj_id)
 	if sobj then
                 local tbl=amk.read_stalker_params(sobj)
@@ -203,8 +203,8 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 	if self_object == nil then
 		return
 	end
-  -- FIXME: коллбеки неплохо было бы регистрировать в общем storage, а не посхемно...
-  -- просто всегда ставить их при включении схемы и снимать при отключении.
+  -- FIXME: РєРѕР»Р»Р±РµРєРё РЅРµРїР»РѕС…Рѕ Р±С‹Р»Рѕ Р±С‹ СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІ РѕР±С‰РµРј storage, Р° РЅРµ РїРѕСЃС…РµРјРЅРѕ...
+  -- РїСЂРѕСЃС‚Рѕ РІСЃРµРіРґР° СЃС‚Р°РІРёС‚СЊ РёС… РїСЂРё РІРєР»СЋС‡РµРЅРёРё СЃС…РµРјС‹ Рё СЃРЅРёРјР°С‚СЊ РїСЂРё РѕС‚РєР»СЋС‡РµРЅРёРё.
 
   if self_st.active_section then
     xr_logic.issue_event(self_object, self_st[self_st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
@@ -389,7 +389,7 @@ function motivator_binder:update(delta)
                                         end
                         end
 
-		-- Ray Twitty aka Shadows: если НПС зажмурился, то нас уже не интересуют условия, важно лишь состояние фонарика в момент смерти
+		-- Ray Twitty aka Shadows: РµСЃР»Рё РќРџРЎ Р·Р°Р¶РјСѓСЂРёР»СЃСЏ, С‚Рѕ РЅР°СЃ СѓР¶Рµ РЅРµ РёРЅС‚РµСЂРµСЃСѓСЋС‚ СѓСЃР»РѕРІРёСЏ, РІР°Р¶РЅРѕ Р»РёС€СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ С„РѕРЅР°СЂРёРєР° РІ РјРѕРјРµРЅС‚ СЃРјРµСЂС‚Рё
 		if npc_alive then
 			sr_light.check_light(self_object)
 			self.update_time = time_real_ms + 1000
@@ -418,7 +418,7 @@ function motivator_binder:update(delta)
 		self.prev_ammo = ammo
 	end
 
-	--' Апдейт саундменеджера
+	--' РђРїРґРµР№С‚ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂР°
 	if npc_alive then
 		xr_sound_update(self_object)
 		if self.can_talk then
@@ -485,7 +485,7 @@ local wp_evid_preblowout_false = world_property(blowout_scheme.evid_preblowout, 
 local wp_evid_anomaly_false = world_property(blowout_scheme.evid_anomaly, false)
 local wp_evid_see_stuff_false = world_property(watcher_act.evid_see_stuff, false)
 
--- Эвалюаторы, которые имеют высший приоритет, и, соответственно, перебивают остальные скрипты собой
+-- Р­РІР°Р»СЋР°С‚РѕСЂС‹, РєРѕС‚РѕСЂС‹Рµ РёРјРµСЋС‚ РІС‹СЃС€РёР№ РїСЂРёРѕСЂРёС‚РµС‚, Рё, СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ, РїРµСЂРµР±РёРІР°СЋС‚ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃРєСЂРёРїС‚С‹ СЃРѕР±РѕР№
 function addCommonPrecondition(action)
 	action:add_precondition (wp_meet_false)
 	action:add_precondition (wp_wounded_false)

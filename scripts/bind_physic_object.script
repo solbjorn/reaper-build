@@ -1,24 +1,24 @@
 ----------------------------------------------------------------------------------------------------
 -- Physic objects binding
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
--- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- Р”РѕСЂР°Р±РѕС‚РєРё: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
 local clsid_projector = clsid.projector
 
 function init(obj)
 	----------------------------------------------------------------------------------------
-	-- Новые схемы
+	-- РќРѕРІС‹Рµ СЃС…РµРјС‹
 	----------------------------------------------------------------------------------------
 
 	local ini = obj:spawn_ini()
 	if not ini then
 		return
 	end
-	-- Биндить предмет нет смысла, если у него нет секции logic
+	-- Р‘РёРЅРґРёС‚СЊ РїСЂРµРґРјРµС‚ РЅРµС‚ СЃРјС‹СЃР»Р°, РµСЃР»Рё Сѓ РЅРµРіРѕ РЅРµС‚ СЃРµРєС†РёРё logic
 	if not (ini:section_exist("logic") or ini:section_exist("drop_box")) and
-	-- Прожектор нужно биндить даже без logic
+	-- РџСЂРѕР¶РµРєС‚РѕСЂ РЅСѓР¶РЅРѕ Р±РёРЅРґРёС‚СЊ РґР°Р¶Рµ Р±РµР· logic
 	   obj:clsid() ~= clsid_projector then
 		return
 	end
@@ -78,14 +78,14 @@ function generic_physics_binder:update(delta)
 				return ini:line_exist(section, field) and ini:r_string(section, field)
 			end
 
-			--' Запускаем ассоциированный с объектом партикл.
+			--' Р—Р°РїСѓСЃРєР°РµРј Р°СЃСЃРѕС†РёРёСЂРѕРІР°РЅРЅС‹Р№ СЃ РѕР±СЉРµРєС‚РѕРј РїР°СЂС‚РёРєР».
 			local particle = get_field_string("particle")
 			if particle then
 				self.particle = particles_object(particle)
 				self.particle:play_at_pos(self.object:position())
 			end
 
-			--' Дизаблим ассоциированный с объектом граф
+			--' Р”РёР·Р°Р±Р»РёРј Р°СЃСЃРѕС†РёРёСЂРѕРІР°РЅРЅС‹Р№ СЃ РѕР±СЉРµРєС‚РѕРј РіСЂР°С„
 			local graph_point_marker = get_field_string("graph_point_marker")
 			if graph_point_marker then
 				self.disable_graph_point = patrol(graph_point_marker):game_vertex_id(0)
@@ -100,7 +100,7 @@ function generic_physics_binder:update(delta)
 	if self.st.active_section ~= nil then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
 
-		-- для бтра hit_callback и death_callback не вызывается. заткнём эти дырки.
+		-- РґР»СЏ Р±С‚СЂР° hit_callback Рё death_callback РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ. Р·Р°С‚РєРЅС‘Рј СЌС‚Рё РґС‹СЂРєРё.
 		if self.health and not self.nofixonhit then
 			local health = self.car:GetfHealth()
 			local amount = self.health - health

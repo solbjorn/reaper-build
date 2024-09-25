@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------
--- Проверка, имеется ли у гулага враг
+-- РџСЂРѕРІРµСЂРєР°, РёРјРµРµС‚СЃСЏ Р»Рё Сѓ РіСѓР»Р°РіР° РІСЂР°Рі
 -------------------------------------------------------------------------------------------
 function check_enemy (gulag)
 	for k,v in pairs(gulag.Object) do
@@ -33,13 +33,13 @@ end
 local gulags = {
 	["mil_freedom"] = {
 		-------------------------------------------------------------------------------------------
-		-- Загрузка работ для Свободы
+		-- Р—Р°РіСЂСѓР·РєР° СЂР°Р±РѕС‚ РґР»СЏ РЎРІРѕР±РѕРґС‹
 		-------------------------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
 		    -----------------------------------------------------------------------
-		    -- Нормальное состояние базы
+		    -- РќРѕСЂРјР°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ Р±Р°Р·С‹
 		    -----------------------------------------------------------------------
-		    -- Лукаш
+		    -- Р›СѓРєР°С€
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_lukash",
 				prior = 20, state = {0, 3},
@@ -50,7 +50,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_leader" and info.story_id == 707
 					    end
 				}
-		    -- Повар
+		    -- РџРѕРІР°СЂ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_cook",
 				prior = 20, state = {0, 2, 3, 4},
@@ -61,7 +61,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_cook"
 					    end
 				}
-		    -- Снайпер №1
+		    -- РЎРЅР°Р№РїРµСЂ в„–1
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper1",
 				prior = 20, state = {0, 2, 3},
@@ -73,7 +73,7 @@ local gulags = {
 				end
 			}
 
-		    -- Снайпер №2
+		    -- РЎРЅР°Р№РїРµСЂ в„–2
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper2",
 				prior = 20, state = {0, 2, 3},
@@ -85,7 +85,7 @@ local gulags = {
 				end
 			}
 
-		    -- Снайпер №3
+		    -- РЎРЅР°Р№РїРµСЂ в„–3
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper5",
 				prior = 20, state = {0, 2, 3},
@@ -97,7 +97,7 @@ local gulags = {
 				end
 			}
 
-		    -- Снайпер №4
+		    -- РЎРЅР°Р№РїРµСЂ в„–4
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper4",
 				prior = 19, state = {0, 2, 3},
@@ -107,7 +107,7 @@ local gulags = {
 				predicate = predicate_mil_sniper
 			}
 
-		    -- Снайпер №5
+		    -- РЎРЅР°Р№РїРµСЂ в„–5
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper3",
 				prior = 20, state = {0, 2, 3},
@@ -119,7 +119,7 @@ local gulags = {
 				end
 			}
 
-		    -- Скряга
+		    -- РЎРєСЂСЏРіР°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_trader",
 				prior = 20, state = {0, 3, 4},
@@ -131,7 +131,7 @@ local gulags = {
 					    end
 				}
 
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_guard1",
 				prior = 15, state = {0, 3 ,4},
@@ -142,7 +142,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_specnaz"
 					    end
 				}
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_bodyguard1",
 				prior = 19, state = {0, 3, 4},
@@ -153,7 +153,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_bodyguard"
 					    end
 				}
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_bodyguard2",
 				prior = 19, state = {0, 3, 4},
@@ -164,7 +164,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_bodyguard"
 					    end
 				}
-			-- Охранник арсенала
+			-- РћС…СЂР°РЅРЅРёРє Р°СЂСЃРµРЅР°Р»Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_aguard",
 				prior = 15, state = {0, 3, 4},
@@ -199,7 +199,7 @@ local gulags = {
 					end
 			}
 			------
-			-- мужик у костра 1
+			-- РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker1",
 				prior = 2, state = {0, 3, 4},
@@ -208,7 +208,7 @@ local gulags = {
 				in_rest = "mil_freedom_wall_restrictor"
 				}
 
-		    -- мужик у костра 2
+		    -- РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker2",
 				prior = 2, state = {0, 3, 4},
@@ -217,7 +217,7 @@ local gulags = {
 				in_rest = "mil_freedom_wall_restrictor"
 				}
 
-		    -- одиночный патрульный на базе
+		    -- РѕРґРёРЅРѕС‡РЅС‹Р№ РїР°С‚СЂСѓР»СЊРЅС‹Р№ РЅР° Р±Р°Р·Рµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker4",
 				prior = 10, state = {0, 3, 4},
@@ -229,7 +229,7 @@ local gulags = {
 					    end
 				}
 
-		    -- патрульный на базе
+		    -- РїР°С‚СЂСѓР»СЊРЅС‹Р№ РЅР° Р±Р°Р·Рµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker5",
 				prior = 10, state = {0, 4},
@@ -241,7 +241,7 @@ local gulags = {
 					    end
 				}
 
-		    --охранник у входа
+		    --РѕС…СЂР°РЅРЅРёРє Сѓ РІС…РѕРґР°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker8",
 				prior = 13, state = {0, 3, 4},
@@ -252,7 +252,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_zoneguard"
 					    end
 				}
-			-- просто мужик на входе
+			-- РїСЂРѕСЃС‚Рѕ РјСѓР¶РёРє РЅР° РІС…РѕРґРµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker9",
 				prior = 10, state = {0, 3, 4},
@@ -260,7 +260,7 @@ local gulags = {
 				position_threshold = 600,
 				in_rest = "mil_freedom_wall_restrictor"
 				}
-			-- просто мужик на входе
+			-- РїСЂРѕСЃС‚Рѕ РјСѓР¶РёРє РЅР° РІС…РѕРґРµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker10",
 				prior = 10, state = {0, 3, 4},
@@ -334,7 +334,7 @@ local gulags = {
 			}
 
 			-------------------------------- combat state 1-----------------------------
-		    -- Лукаш
+		    -- Р›СѓРєР°С€
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_lukash_combat1",
 				prior = 11, state = {2},
@@ -345,7 +345,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_leader"
 					    end
 				}
-		    -- Скряга
+		    -- РЎРєСЂСЏРіР°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_trader_combat1",
 				prior = 11, state = {2},
@@ -356,7 +356,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_trader"
 					    end
 				}
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_guard_combat1",
 				prior = 11, state = {2},
@@ -367,7 +367,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_specnaz"
 					    end
 				}
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_bodyguard1_combat1",
 				prior = 11, state = {2},
@@ -378,7 +378,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_bodyguard"
 					    end
 				}
-		    -- Охранник Лукаша
+		    -- РћС…СЂР°РЅРЅРёРє Р›СѓРєР°С€Р°
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_bodyguard2_combat1",
 				prior = 11, state = {2},
@@ -405,8 +405,8 @@ local gulags = {
 			    sj[#sj+1] = t
 		    end
 
-			-------------------------------- Атака хутора Долга-----------------------------
-			-- Макс
+			-------------------------------- РђС‚Р°РєР° С…СѓС‚РѕСЂР° Р”РѕР»РіР°-----------------------------
+			-- РњР°РєСЃ
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_max_attack",
 				prior = 18, state = {3},
@@ -419,7 +419,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_master_Max"
 					    end
 				}
-			-- Мужик у костра 1
+			-- РњСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker1_attack",
 				prior = 15, state = {3},
@@ -429,7 +429,7 @@ local gulags = {
 				idle_after_death = 36000,
 				online = true
 				}
-			-- Мужик у костра 2
+			-- РњСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_stalker2_attack",
 				prior = 15, state = {3},
@@ -500,8 +500,8 @@ local gulags = {
 				in_rest = "mil_freedom_wall_restrictor"
 				}
 
-		-- четвертое состояние гулага Свободы
-		    -- Лукаш
+		-- С‡РµС‚РІРµСЂС‚РѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РіСѓР»Р°РіР° РЎРІРѕР±РѕРґС‹
+		    -- Р›СѓРєР°С€
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_commander",
 				prior = 20, state = {4},
@@ -514,7 +514,7 @@ local gulags = {
 					    end
 				}
 
-		    -- Снайпер №1
+		    -- РЎРЅР°Р№РїРµСЂ в„–1
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper14",
 				prior = 20, state = {4},
@@ -524,7 +524,7 @@ local gulags = {
 				predicate = predicate_mil_sniper
 			}
 
-		    -- Снайпер №2
+		    -- РЎРЅР°Р№РїРµСЂ в„–2
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper24",
 				prior = 20, state = {4},
@@ -534,7 +534,7 @@ local gulags = {
 				predicate = predicate_mil_sniper
 			}
 
-		    -- Снайпер №3
+		    -- РЎРЅР°Р№РїРµСЂ в„–3
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper54",
 				prior = 20, state = {4},
@@ -544,7 +544,7 @@ local gulags = {
 				predicate = predicate_mil_sniper
 			}
 
-		    -- Снайпер №4
+		    -- РЎРЅР°Р№РїРµСЂ в„–4
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper44",
 				prior = 19, state = {4},
@@ -554,7 +554,7 @@ local gulags = {
 				predicate = predicate_mil_sniper
 			}
 
-		    -- Снайпер №5
+		    -- РЎРЅР°Р№РїРµСЂ в„–5
 		    sj[#sj + 1] = {
 				section = "logic@mil_freedom_sniper34",
 				prior = 20, state = {4},
@@ -565,13 +565,13 @@ local gulags = {
 			}
 		end,
 		-------------------------------------------------------------------------------------------
-		-- Проверка состояния гулага Свободы
+		-- РџСЂРѕРІРµСЂРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° РЎРІРѕР±РѕРґС‹
 		-------------------------------------------------------------------------------------------
 		state = function(gulag)
-		    -- отсеиваем четвертое состояние.
+		    -- РѕС‚СЃРµРёРІР°РµРј С‡РµС‚РІРµСЂС‚РѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ.
 		    if has_alife_info("mil_lukash_dead") then
 		       if check_enemy (gulag) == true then
-			  -- поскольку вопрос об отношении к актеру решаться не собирается, то выход будет именно таким.
+			  -- РїРѕСЃРєРѕР»СЊРєСѓ РІРѕРїСЂРѕСЃ РѕР± РѕС‚РЅРѕС€РµРЅРёРё Рє Р°РєС‚РµСЂСѓ СЂРµС€Р°С‚СЊСЃСЏ РЅРµ СЃРѕР±РёСЂР°РµС‚СЃСЏ, С‚Рѕ РІС‹С…РѕРґ Р±СѓРґРµС‚ РёРјРµРЅРЅРѕ С‚Р°РєРёРј.
 			  if gulag:npc_is_enemy_to_anybody (Actor) == true then
 			     relation_registry.set_community_goodwill ("freedom", 0, -5000)
 			     xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, Actor)
@@ -586,7 +586,7 @@ local gulags = {
 		    if gulag.state == 3 then
 		       if has_alife_info("mil_dolg_after_explode") or gulag:npc_is_enemy_to_anybody (Actor) == true then
 			  Actor:disable_info_portion ("mil_freedom_attack")
-			  -- поскольку вопрос об отношении к актеру решаться не собирается, то выход будет именно таким.
+			  -- РїРѕСЃРєРѕР»СЊРєСѓ РІРѕРїСЂРѕСЃ РѕР± РѕС‚РЅРѕС€РµРЅРёРё Рє Р°РєС‚РµСЂСѓ СЂРµС€Р°С‚СЊСЃСЏ РЅРµ СЃРѕР±РёСЂР°РµС‚СЃСЏ, С‚Рѕ РІС‹С…РѕРґ Р±СѓРґРµС‚ РёРјРµРЅРЅРѕ С‚Р°РєРёРј.
 			  if gulag:npc_is_enemy_to_anybody (Actor) == true then
 			     relation_registry.set_community_goodwill ("freedom", 0, -5000)
 			     xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, Actor)
@@ -616,45 +616,45 @@ local gulags = {
 	},
 	["mil_fblockpost"] = {
 		-------------------------------------------------------------------------------------------
-		-- Загрузка работ для блокпоста Свободы у выхода на Радар
+		-- Р—Р°РіСЂСѓР·РєР° СЂР°Р±РѕС‚ РґР»СЏ Р±Р»РѕРєРїРѕСЃС‚Р° РЎРІРѕР±РѕРґС‹ Сѓ РІС‹С…РѕРґР° РЅР° Р Р°РґР°СЂ
 		-------------------------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
-		    -- состояние 0
-		    --мужик у костра 1
+		    -- СЃРѕСЃС‚РѕСЏРЅРёРµ 0
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_stalker",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 2
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_stalker",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 3
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 3
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_stalker",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 4
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 4
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_stalker",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 5
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 5
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_stalker",
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --командир
+		    --РєРѕРјР°РЅРґРёСЂ
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_commander",
 				prior = 10, state = {0, 1},
@@ -664,78 +664,78 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_blockpost_leader"
 					    end
 				}
-		    --патрульный 1
+		    --РїР°С‚СЂСѓР»СЊРЅС‹Р№ 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_patrol1",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --патрульный 2
+		    --РїР°С‚СЂСѓР»СЊРЅС‹Р№ 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_patrol2",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 1
+		    --РєСЌРјРїРµСЂ 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper3",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 2
+		    --РєСЌРјРїРµСЂ 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper6",
 				state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-			-- состояние 2
-		    --кэмпер 1
+			-- СЃРѕСЃС‚РѕСЏРЅРёРµ 2
+		    --РєСЌРјРїРµСЂ 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper1",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 2
+		    --РєСЌРјРїРµСЂ 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper2",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 3
+		    --РєСЌРјРїРµСЂ 3
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper3",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 4
+		    --РєСЌРјРїРµСЂ 4
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper4",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 5
+		    --РєСЌРјРїРµСЂ 5
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper5",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 6
+		    --РєСЌРјРїРµСЂ 6
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper6",
 				state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 7
+		    --РєСЌРјРїРµСЂ 7
 		    sj[#sj + 1] = {
 				section = "logic@mil_fblockpost_camper7",
 				state = {2},
@@ -744,7 +744,7 @@ local gulags = {
 			}
 		end,
 		--------------------------------------------------------------------------
-		-- Функция проверки состояния гулага Свободы у выхода на Радар
+		-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° РЎРІРѕР±РѕРґС‹ Сѓ РІС‹С…РѕРґР° РЅР° Р Р°РґР°СЂ
 		--------------------------------------------------------------------------
 		state = function(gulag)
 			if gulag:npc_is_enemy_to_anybody (Actor) == true then
@@ -766,89 +766,89 @@ local gulags = {
 	},
 	["mil_fneutral"] = {
 		-------------------------------------------------------------------------------------------
-		-- Загрузка работ для блокпоста нейтралов у выхода на Радар
+		-- Р—Р°РіСЂСѓР·РєР° СЂР°Р±РѕС‚ РґР»СЏ Р±Р»РѕРєРїРѕСЃС‚Р° РЅРµР№С‚СЂР°Р»РѕРІ Сѓ РІС‹С…РѕРґР° РЅР° Р Р°РґР°СЂ
 		-------------------------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
-		    -- состояние 0
-		    --мужик у костра 1
+		    -- СЃРѕСЃС‚РѕСЏРЅРёРµ 0
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_stalker",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 2
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_stalker",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 3
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 3
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_stalker",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 4
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 4
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_stalker",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --мужик у костра 5
+		    --РјСѓР¶РёРє Сѓ РєРѕСЃС‚СЂР° 5
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_stalker",
 				prior = 1,
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 1
+		    --РєСЌРјРїРµСЂ 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper3",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 2
+		    --РєСЌРјРїРµСЂ 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper5",
 				prior = 1, state = {0, 1},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-			-- состояние 2
-		    --кэмпер 1
+			-- СЃРѕСЃС‚РѕСЏРЅРёРµ 2
+		    --РєСЌРјРїРµСЂ 1
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper1",
 				prior = 1, state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 2
+		    --РєСЌРјРїРµСЂ 2
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper2",
 				prior = 1, state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 3
+		    --РєСЌРјРїРµСЂ 3
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper3",
 				prior = 1, state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 4
+		    --РєСЌРјРїРµСЂ 4
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper4",
 				prior = 1, state = {2},
 				squad = squad, group = groups[0],
 				position_threshold = 100
 				}
-		    --кэмпер 5
+		    --РєСЌРјРїРµСЂ 5
 		    sj[#sj + 1] = {
 				section = "logic@mil_fneutral_camper5",
 				prior = 1, state = {2},
@@ -857,7 +857,7 @@ local gulags = {
 				}
 		end,
 		--------------------------------------------------------------------------
-		-- Функция проверки состояния гулага нейтралов у выхода на Радар
+		-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° РЅРµР№С‚СЂР°Р»РѕРІ Сѓ РІС‹С…РѕРґР° РЅР° Р Р°РґР°СЂ
 		--------------------------------------------------------------------------
 		state = function(gulag)
 		    if gulag:npc_is_enemy_to_anybody (Actor) == true then
@@ -879,10 +879,10 @@ local gulags = {
 	},
 	["mil_village"] = {
 		--------------------------------------------------------------------------
-		-- Функция загрузки работ для деревни
+		-- Р¤СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё СЂР°Р±РѕС‚ РґР»СЏ РґРµСЂРµРІРЅРё
 		--------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
-		    --Угрюмый
+		    --РЈРіСЂСЋРјС‹Р№
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_ugrumy",
 				prior = 1,
@@ -891,7 +891,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_master_Ugrumiy"
 					    end
 				}
-		    --Спецназовец
+		    --РЎРїРµС†РЅР°Р·РѕРІРµС†
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_soldier1",
 				prior = 1,
@@ -900,7 +900,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_specnaz"
 					    end
 				}
-		    --Рядовой
+		    --Р СЏРґРѕРІРѕР№
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_soldier2",
 				prior = 1,
@@ -909,7 +909,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_regular"
 					    end
 				}
-		    --Угрюмый
+		    --РЈРіСЂСЋРјС‹Р№
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_ugrumy_search",
 				prior = 1, state = {1},
@@ -918,7 +918,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_master_Ugrumiy"
 					    end
 				}
-		    --Спецназовец
+		    --РЎРїРµС†РЅР°Р·РѕРІРµС†
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_specnaz_search",
 				prior = 1, state = {1},
@@ -927,7 +927,7 @@ local gulags = {
 						     return info.profile_name == "mil_Svoboda_specnaz"
 					    end
 				}
-		    --Рядовой
+		    --Р СЏРґРѕРІРѕР№
 		    sj[#sj + 1] = {
 				section = "logic@mil_village_regular_search",
 				prior = 1, state = {1},
@@ -938,7 +938,7 @@ local gulags = {
 			}
 		end,
 		--------------------------------------------------------------------------
-		-- Функция проверки состояния гулага деревни
+		-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° РґРµСЂРµРІРЅРё
 		--------------------------------------------------------------------------
 		state = function(gulag)
 			if has_alife_info("mil_miser_task_complete") or
@@ -951,10 +951,10 @@ local gulags = {
 	},
 	["mil_dolg"] = {
 		--------------------------------------------------------------------------
-		-- Функция загрузки работ для Долга
+		-- Р¤СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё СЂР°Р±РѕС‚ РґР»СЏ Р”РѕР»РіР°
 		--------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
-		    -- первое состояние
+		    -- РїРµСЂРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_dolg_skull",
 				prior = 13,
@@ -1034,7 +1034,7 @@ local gulags = {
 						     return info.community == "dolg"
 					    end
 				}
-		    -- второе состояние
+		    -- РІС‚РѕСЂРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_dolg_skull_attack",
 				prior = 13, state = {1},
@@ -1116,7 +1116,7 @@ local gulags = {
 						     return info.community == "dolg"
 					    end
 				}
-		    -- третье состояние
+		    -- С‚СЂРµС‚СЊРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		    sj[#sj + 1] = {
 				section = "logic@mil_dolg_skull_return",
 				prior = 13, state = {2},
@@ -1200,11 +1200,11 @@ local gulags = {
 				}
 		end,
 		--------------------------------------------------------------------------
-		-- Функция проверки состояния гулага Долга
-		-- Возвращаемые значения:
-		--              0 - первое состояние (убийство патруля и сбор в сарае)
-		--              1 - снайпер умер, атака на базу Свободы
-		--              2 - Лукаш убит - возвращение на хутор
+		-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° Р”РѕР»РіР°
+		-- Р’РѕР·РІСЂР°С‰Р°РµРјС‹Рµ Р·РЅР°С‡РµРЅРёСЏ:
+		--              0 - РїРµСЂРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ (СѓР±РёР№СЃС‚РІРѕ РїР°С‚СЂСѓР»СЏ Рё СЃР±РѕСЂ РІ СЃР°СЂР°Рµ)
+		--              1 - СЃРЅР°Р№РїРµСЂ СѓРјРµСЂ, Р°С‚Р°РєР° РЅР° Р±Р°Р·Сѓ РЎРІРѕР±РѕРґС‹
+		--              2 - Р›СѓРєР°С€ СѓР±РёС‚ - РІРѕР·РІСЂР°С‰РµРЅРёРµ РЅР° С…СѓС‚РѕСЂ
 		--------------------------------------------------------------------------
 		state = function(gulag)
 			if has_alife_info("mil_lukash_dead") == true then
@@ -1223,7 +1223,7 @@ local gulags = {
 	},
 	["mil_monolit"] = {
 		--------------------------------------------------------------------------
-		-- Функция загрузки работ гулага у выхода на Радар Монолита
+		-- Р¤СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё СЂР°Р±РѕС‚ РіСѓР»Р°РіР° Сѓ РІС‹С…РѕРґР° РЅР° Р Р°РґР°СЂ РњРѕРЅРѕР»РёС‚Р°
 		--------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
 		    for a = 1, 3, 1 do
@@ -1294,7 +1294,7 @@ local gulags = {
 	},
 	["mil_monster"] = {
 		-------------------------------------------------------------------------------------------
-		-- Загрузка работ для мутантов
+		-- Р—Р°РіСЂСѓР·РєР° СЂР°Р±РѕС‚ РґР»СЏ РјСѓС‚Р°РЅС‚РѕРІ
 		-------------------------------------------------------------------------------------------
 		job = function(sj, gname, squad, groups)
 		    for a = 1, 10, 1 do
@@ -1315,14 +1315,14 @@ local gulags = {
 		    end
 		end,
 		-------------------------------------------------------------------------------------------
-		-- Проверка состояния гулага мутантов
+		-- РџСЂРѕРІРµСЂРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ РіСѓР»Р°РіР° РјСѓС‚Р°РЅС‚РѕРІ
 		-------------------------------------------------------------------------------------------
 		state = function(gulag)
-		    --создадим переменную, которая отвечает за то, что мутанты не попрут назад, когда кто-то
-		    --из них помрет
+		    --СЃРѕР·РґР°РґРёРј РїРµСЂРµРјРµРЅРЅСѓСЋ, РєРѕС‚РѕСЂР°СЏ РѕС‚РІРµС‡Р°РµС‚ Р·Р° С‚Рѕ, С‡С‚Рѕ РјСѓС‚Р°РЅС‚С‹ РЅРµ РїРѕРїСЂСѓС‚ РЅР°Р·Р°Рґ, РєРѕРіРґР° РєС‚Рѕ-С‚Рѕ
+		    --РёР· РЅРёС… РїРѕРјСЂРµС‚
 		    if gulag.state == 0 then
-		       --считаем только тех, кто уже пришёл, иначе создастся ситуация, когда гулаг
-		       --формально наполнен, но все новосёлы ещё гуляют по соседним локациям
+		       --СЃС‡РёС‚Р°РµРј С‚РѕР»СЊРєРѕ С‚РµС…, РєС‚Рѕ СѓР¶Рµ РїСЂРёС€С‘Р», РёРЅР°С‡Рµ СЃРѕР·РґР°СЃС‚СЃСЏ СЃРёС‚СѓР°С†РёСЏ, РєРѕРіРґР° РіСѓР»Р°Рі
+		       --С„РѕСЂРјР°Р»СЊРЅРѕ РЅР°РїРѕР»РЅРµРЅ, РЅРѕ РІСЃРµ РЅРѕРІРѕСЃС‘Р»С‹ РµС‰С‘ РіСѓР»СЏСЋС‚ РїРѕ СЃРѕСЃРµРґРЅРёРј Р»РѕРєР°С†РёСЏРј
 		       if gulag:get_population_comed () > 9 then
 			  return 1
 		       end
@@ -1334,7 +1334,7 @@ local gulags = {
 		    return 0
 		end,
 		-------------------------------------------------------------------------------------------
-		-- Проверка на принадлежность мутантов нам
+		-- РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ РјСѓС‚Р°РЅС‚РѕРІ РЅР°Рј
 		-------------------------------------------------------------------------------------------
 		check = function(npc_community, se_obj)
 			return not se_obj

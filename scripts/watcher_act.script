@@ -13,7 +13,7 @@ actid_reach_item=evid_see_stuff
 actid_grab_item=evid_see_stuff+1
 actid_grab_body=evid_see_stuff+2
 
--- Вызывает closure раз в period, obj[var] хранит время следующего срабатывания
+-- Р’С‹Р·С‹РІР°РµС‚ closure СЂР°Р· РІ period, obj[var] С…СЂР°РЅРёС‚ РІСЂРµРјСЏ СЃР»РµРґСѓСЋС‰РµРіРѕ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ
 function timed(obj,var,period,closure)
 	if obj[var] and obj[var]<time_global() then
 		obj[var]=time_global()+period
@@ -328,13 +328,13 @@ function ev_near_stuff:evaluate()
 	local npc=self.object
 	local gi=getGObject(self.st)
 	if gi then
-		-- Если во время движения к трупу его кто-то обшмонал (ГГ, кто ж ещё),
-		-- то прекращаем движение
+		-- Р•СЃР»Рё РІРѕ РІСЂРµРјСЏ РґРІРёР¶РµРЅРёСЏ Рє С‚СЂСѓРїСѓ РµРіРѕ РєС‚Рѕ-С‚Рѕ РѕР±С€РјРѕРЅР°Р» (Р“Р“, РєС‚Рѕ Р¶ РµС‰С‘),
+		-- С‚Рѕ РїСЂРµРєСЂР°С‰Р°РµРј РґРІРёР¶РµРЅРёРµ
 		local is_stalker = gi:is_stalker()
 		if is_stalker or gi:is_monster() then
 			local cnt = gi:object_count()
 			if cnt==0
-				-- движковый болт всегда появляется после save/load
+				-- РґРІРёР¶РєРѕРІС‹Р№ Р±РѕР»С‚ РІСЃРµРіРґР° РїРѕСЏРІР»СЏРµС‚СЃСЏ РїРѕСЃР»Рµ save/load
 				or ( is_stalker and cnt==1 and gi:object(0):section()=="bolt" )
 			then
 				self.st.dest_lvid=nil
@@ -404,7 +404,7 @@ function act_grab_item:execute()
 			gi:transfer_item(gi,npc)
 			npc:enable_memory_object(gi,false)
 		end
-		-- Тут нельзя освобождать объект. transfer_item выполняется асинхронно. Поэтому делаем clearGObject
+		-- РўСѓС‚ РЅРµР»СЊР·СЏ РѕСЃРІРѕР±РѕР¶РґР°С‚СЊ РѕР±СЉРµРєС‚. transfer_item РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ Р°СЃРёРЅС…СЂРѕРЅРЅРѕ. РџРѕСЌС‚РѕРјСѓ РґРµР»Р°РµРј clearGObject
 		clearGObject(self.st)
 	end
 end
@@ -414,7 +414,7 @@ function act_grab_item:finalize()
 	self.st.block_search=nil
 	npc:set_sight(look.danger,nil,0)
 	trigger_timed(self.st,"tm1")
-  self.st.dest_lvid=nil -- Очищаем скорректированную точку назначения
+  self.st.dest_lvid=nil -- РћС‡РёС‰Р°РµРј СЃРєРѕСЂСЂРµРєС‚РёСЂРѕРІР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ РЅР°Р·РЅР°С‡РµРЅРёСЏ
 	action_base.finalize(self)
 end
 
@@ -432,7 +432,7 @@ function act_grab_body:initialize()
 	if gi then
  		self.tt=time_global()+6000
     state_mgr.set_state(npc,"search",nil,nil,{look_object=gi})
-		-- Осматриваем тело, говорим что-то вроде "тааак, посмотрим..."
+		-- РћСЃРјР°С‚СЂРёРІР°РµРј С‚РµР»Рѕ, РіРѕРІРѕСЂРёРј С‡С‚Рѕ-С‚Рѕ РІСЂРѕРґРµ "С‚Р°Р°Р°Рє, РїРѕСЃРјРѕС‚СЂРёРј..."
 		if gi:is_stalker() and self.st.need_loot_snd==nil then
 			xr_sound.set_sound_play(npc, "loot_begin")
 			self.st.need_loot_snd = true
@@ -453,7 +453,7 @@ function act_grab_body:execute()
   end
 	if self.tt<time_global() then
 		if gi and gi:parent()==nil then
-			-- Посчитаем примерную стоимость хабара
+			-- РџРѕСЃС‡РёС‚Р°РµРј РїСЂРёРјРµСЂРЅСѓСЋ СЃС‚РѕРёРјРѕСЃС‚СЊ С…Р°Р±Р°СЂР°
 			local isstalker = gi:is_stalker()
 			local num, item_cond = 0, 0
 			gi:iterate_inventory(function (d,item)
@@ -481,13 +481,13 @@ function act_grab_body:execute()
 					gi:give_money(-m)
 				end
 
-				-- По стоимости награбленного определяем, что будем говорить
+				-- РџРѕ СЃС‚РѕРёРјРѕСЃС‚Рё РЅР°РіСЂР°Р±Р»РµРЅРЅРѕРіРѕ РѕРїСЂРµРґРµР»СЏРµРј, С‡С‚Рѕ Р±СѓРґРµРј РіРѕРІРѕСЂРёС‚СЊ
 				self.st.loot_snd = "loot_"..(num > 7000 and "good" or "bad")
 			end
 			corpse_checked[gi:id()]=false
 			amk_offline_alife.set_body_trap(npc:id(), gi:id())
 		end
-		-- Тут нельзя освобождать объект. transfer_item выполняется асинхронно. Поэтому делаем clearGObject
+		-- РўСѓС‚ РЅРµР»СЊР·СЏ РѕСЃРІРѕР±РѕР¶РґР°С‚СЊ РѕР±СЉРµРєС‚. transfer_item РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ Р°СЃРёРЅС…СЂРѕРЅРЅРѕ. РџРѕСЌС‚РѕРјСѓ РґРµР»Р°РµРј clearGObject
 		clearGObject(self.st)
 	end
 end
@@ -496,24 +496,24 @@ function act_grab_body:finalize()
 	local npc=self.object
 	self.st.block_search=nil
 	trigger_timed(self.st,"tm1")
-	-- говорим, как хабар: хорошо или не очень
+	-- РіРѕРІРѕСЂРёРј, РєР°Рє С…Р°Р±Р°СЂ: С…РѕСЂРѕС€Рѕ РёР»Рё РЅРµ РѕС‡РµРЅСЊ
 	if self.st.need_loot_snd and self.st.loot_snd then
 		xr_sound.set_sound_play(npc, self.st.loot_snd)
 		self.st.need_loot_snd = nil
 		self.st.loot_snd = nil
 	end
-	self.st.dest_lvid=nil -- Очищаем скорректированную точку назначения
+	self.st.dest_lvid=nil -- РћС‡РёС‰Р°РµРј СЃРєРѕСЂСЂРµРєС‚РёСЂРѕРІР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ РЅР°Р·РЅР°С‡РµРЅРёСЏ
 
 	action_base.finalize(self)
 end
 
 function correct_position(gi,npc)
 	if gi:is_stalker() then
-    -- Вычисляем вектор разницы между координатами кости и level vertex. Пытаемся найти level vertex наиболее близкий к кости
+    -- Р’С‹С‡РёСЃР»СЏРµРј РІРµРєС‚РѕСЂ СЂР°Р·РЅРёС†С‹ РјРµР¶РґСѓ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РєРѕСЃС‚Рё Рё level vertex. РџС‹С‚Р°РµРјСЃСЏ РЅР°Р№С‚Рё level vertex РЅР°РёР±РѕР»РµРµ Р±Р»РёР·РєРёР№ Рє РєРѕСЃС‚Рё
     local diff=gi:bone_position("bip01_head"):sub(level.vertex_position(gi:level_vertex_id()))
     local len=diff:magnitude()
     local diffp=vector():set(diff.z,0,-diff.x):mul(0.5)
-    -- Сдвигаем целевую точку вбок, чтобы непись не залазил ногами в труп
+    -- РЎРґРІРёРіР°РµРј С†РµР»РµРІСѓСЋ С‚РѕС‡РєСѓ РІР±РѕРє, С‡С‚РѕР±С‹ РЅРµРїРёСЃСЊ РЅРµ Р·Р°Р»Р°Р·РёР» РЅРѕРіР°РјРё РІ С‚СЂСѓРї
     diff:add(diffp)
     return npc:vertex_in_direction(gi:level_vertex_id(),diff,len)
   else
@@ -564,13 +564,13 @@ function act_reach_item:execute()
 	local npc=self.object
 	local gi=getGObject(self.st)
 	if gi and gi:parent()~=nil then
-		-- ГГ забрал вкусность. Можно добавить наезд на ГГ.
+		-- Р“Р“ Р·Р°Р±СЂР°Р» РІРєСѓСЃРЅРѕСЃС‚СЊ. РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РЅР°РµР·Рґ РЅР° Р“Р“.
     self.st.dest_lvid=nil
 		freeGObject(self.st)
 	elseif gi then
 		if self.clvid==npc:level_vertex_id() then
 			if time_global()-self.ct>10000 then
-			-- не можем добраться до нняки
+			-- РЅРµ РјРѕР¶РµРј РґРѕР±СЂР°С‚СЊСЃСЏ РґРѕ РЅРЅСЏРєРё
 				self.st.disabled_objects[gi:id()]=true
         self.st.dest_lvid=nil
 				freeGObject(self.st)
@@ -596,8 +596,8 @@ function add_to_binder(object, st)
 	local zombi = ( comm=="zombied"
 					or comm=="trader"
 					or comm=="arena_enemy"
-					or npc:section() == "stalker_sakharov"	-- отсекаем бессмертных квестовиков
-					or npc:name()=="mil_stalker0012"		-- сумасшедший на милитари
+					or npc:section() == "stalker_sakharov"	-- РѕС‚СЃРµРєР°РµРј Р±РµСЃСЃРјРµСЂС‚РЅС‹С… РєРІРµСЃС‚РѕРІРёРєРѕРІ
+					or npc:name()=="mil_stalker0012"		-- СЃСѓРјР°СЃС€РµРґС€РёР№ РЅР° РјРёР»РёС‚Р°СЂРё
 					or npc:name()=="mil_freedom_member0021")
 
 	local prop_idlecombat=xr_evaluators_id.state_mgr + 3
@@ -622,10 +622,10 @@ function add_to_binder(object, st)
 	  action:add_precondition(world_property(evid_see_stuff,true))
 	  action:add_precondition(world_property(evid_near_stuff,true))
 	  action:add_precondition(world_property(evid_see_body,false))
-	  action:add_precondition(world_property(prop_idlecombat,true)) -- отключим стэйт менеджер
+	  action:add_precondition(world_property(prop_idlecombat,true)) -- РѕС‚РєР»СЋС‡РёРј СЃС‚СЌР№С‚ РјРµРЅРµРґР¶РµСЂ
 	  action:add_effect(world_property(evid_near_stuff, false))
 	  action:add_effect(world_property(evid_see_stuff, false))
-	  action:add_effect(world_property(evid_see_body,true)) -- для переключения на обыск трупа
+	  action:add_effect(world_property(evid_see_body,true)) -- РґР»СЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РЅР° РѕР±С‹СЃРє С‚СЂСѓРїР°
 	  manager:add_action (actid_grab_item, action)
 
 	  action = act_grab_body(st)
@@ -640,7 +640,7 @@ function add_to_binder(object, st)
 	  action:add_precondition(world_property(evid_near_stuff,true))
 	  action:add_effect(world_property(evid_near_stuff, false))
 	  action:add_effect(world_property(evid_see_stuff, false))
-	  action:add_effect(world_property(evid_see_body,false)) -- переключаемся на подъём вещички
+	  action:add_effect(world_property(evid_see_body,false)) -- РїРµСЂРµРєР»СЋС‡Р°РµРјСЃСЏ РЅР° РїРѕРґСЉС‘Рј РІРµС‰РёС‡РєРё
 	  manager:add_action (actid_grab_body, action)
 
 	  action = act_reach_item("act_reach_item", st)

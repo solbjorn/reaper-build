@@ -9,7 +9,7 @@ function random_reward(level, count)
 	end
 end
 
---20 БУТЫЛОК ВОДКИ
+--20 Р‘РЈРўР«Р›РћРљ Р’РћР”РљР
 function prines_vodku()
 	return has("vodka", 20)
 end
@@ -18,7 +18,7 @@ function otdal_vodku()
 	random_reward(1)
 end
 
----10 БУТЫЛОК ВОДКИ
+---10 Р‘РЈРўР«Р›РћРљ Р’РћР”РљР
 function malo_vodki()
 	return has("vodka", 10)
 end
@@ -27,27 +27,27 @@ function otdal_malo_vodki()
 	random_reward(2, math.random(2, 3))
 end
 
---награда за три арта
+--РЅР°РіСЂР°РґР° Р·Р° С‚СЂРё Р°СЂС‚Р°
 function prines_art()
 	got_money(20000)
 	got("treasure_item")
 end
 
---проверяем наличие артов у ГГ артов
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Р°СЂС‚РѕРІ Сѓ Р“Р“ Р°СЂС‚РѕРІ
 function est_li_art()
 	return has("banderos_art", 3)
 end
---отдаём арты Сахару
+--РѕС‚РґР°С‘Рј Р°СЂС‚С‹ РЎР°С…Р°СЂСѓ
 function otdat_art()
 	lost("banderos_art", 3)
 end
 
---вызываем функцию из таска при появлении (взятии) арта в инвентаре
+--РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РёР· С‚Р°СЃРєР° РїСЂРё РїРѕСЏРІР»РµРЅРёРё (РІР·СЏС‚РёРё) Р°СЂС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂРµ
 function vzial_art()
 	return has("banderos_art")
 end
 
---награда за РГ-6
+--РЅР°РіСЂР°РґР° Р·Р° Р Р“-6
 function prines_rg()
 	got_money(10000)
 
@@ -55,22 +55,22 @@ function prines_rg()
 	got("af_babka_1")
 end
 
---проверяем наличие РГ у ГГ
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Р Р“ Сѓ Р“Р“
 function est_li_rg_u_gg()
 	return has("wpn_rg-6_sk2_m1")
 end
 
---отдаём РГ
+--РѕС‚РґР°С‘Рј Р Р“
 function otdat_rg(first_speaker, second_speaker)
 	transfer_good(second_speaker, "wpn_rg-6_sk2_m1", "out")
 end
 
---вызываем функцию из таска при появлении (взятии) РГ в инвентаре
+--РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РёР· С‚Р°СЃРєР° РїСЂРё РїРѕСЏРІР»РµРЅРёРё (РІР·СЏС‚РёРё) Р Р“ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 function vzial_rg()
 	return has("wpn_rg-6_sk2_m1")
 end
 
---вступление в Свободу
+--РІСЃС‚СѓРїР»РµРЅРёРµ РІ РЎРІРѕР±РѕРґСѓ
 function actor_set_freedom(actor, npc)
 	if Actor then
 		Actor:set_character_community("actor_freedom", 0, 0)
@@ -78,7 +78,7 @@ function actor_set_freedom(actor, npc)
 	return true
 end
 
--- Вручает Лукаш при вступлении в Свободу
+-- Р’СЂСѓС‡Р°РµС‚ Р›СѓРєР°С€ РїСЂРё РІСЃС‚СѓРїР»РµРЅРёРё РІ РЎРІРѕР±РѕРґСѓ
 function novobranets()
 	got("svoboda_heavy_gaz_outfit_m1")
 	got_random("wpn_lr300")
@@ -87,26 +87,26 @@ function novobranets()
 end
 
 --###################################################################################
---#				КВЕСТЫ С КПК ДЛЯ ДОЛГА			    	    #
+--#				РљР’Р•РЎРўР« РЎ РљРџРљ Р”Р›РЇ Р”РћР›Р“Рђ			    	    #
 --###################################################################################
----ПРИНЁС ТРИ КПК ДОЛГУ
---проверяем наличие КПК у ГГ
+---РџР РРќРЃРЎ РўР Р РљРџРљ Р”РћР›Р“РЈ
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РљРџРљ Сѓ Р“Р“
 function have_pda_svoboda()
 	return has("device_freedom_pda", 3)
 end
---отдаём КПК и получаем награду
+--РѕС‚РґР°С‘Рј РљРџРљ Рё РїРѕР»СѓС‡Р°РµРј РЅР°РіСЂР°РґСѓ
 function out_pda_svoboda()
 	lost("device_freedom_pda", 3)
 	random_reward(4)
 	relation_registry.set_community_goodwill("dolg", Actor, 70)
 end
---ПРИНЁС ОДИН КПК ДОЛГУ
---проверяем наличие КПК у ГГ
+--РџР РРќРЃРЎ РћР”РРќ РљРџРљ Р”РћР›Р“РЈ
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РљРџРљ Сѓ Р“Р“
 function have_a_one_pda_svoboda()
 	return has("device_freedom_pda")
 end
 
---отдаём КПК и получаем награду
+--РѕС‚РґР°С‘Рј РљРџРљ Рё РїРѕР»СѓС‡Р°РµРј РЅР°РіСЂР°РґСѓ
 function out_one_pda_svoboda()
 	lost("device_freedom_pda")
 	random_reward(3)
@@ -114,9 +114,9 @@ function out_one_pda_svoboda()
 end
 
 --###################################################################################
---#				КВЕСТЫ С КПК ДЛЯ ФРИМЕНОВ			    #
+--#				РљР’Р•РЎРўР« РЎ РљРџРљ Р”Р›РЇ Р¤Р РРњР•РќРћР’			    #
 --###################################################################################
----ПРИНЁС ТРИ КПК ФРИМЕНАМ
+---РџР РРќРЃРЎ РўР Р РљРџРљ Р¤Р РРњР•РќРђРњ
 function have_pda_dolg()
 	return has("device_dolg_pda", 3)
 end
@@ -126,13 +126,13 @@ function out_pda_dolg()
 	relation_registry.set_community_goodwill("freedom", Actor, 70)
 end
 
---ПРИНЁС ОДИН КПК СВОБОДЕ
---проверяем наличие КПК у ГГ
+--РџР РРќРЃРЎ РћР”РРќ РљРџРљ РЎР’РћР‘РћР”Р•
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РљРџРљ Сѓ Р“Р“
 function have_a_one_pda_dolg()
 	return has("device_dolg_pda")
 end
 
---отдаём КПК и получаем награду
+--РѕС‚РґР°С‘Рј РљРџРљ Рё РїРѕР»СѓС‡Р°РµРј РЅР°РіСЂР°РґСѓ
 function out_one_pda_dolg()
 	lost("device_dolg_pda")
 	random_reward(3)
@@ -140,52 +140,52 @@ function out_one_pda_dolg()
 end
 
 --###################################################################################
---#				КПК ТИРАНА					    #
+--#				РљРџРљ РўРР РђРќРђ					    #
 --###################################################################################
 
---награда за КПК
+--РЅР°РіСЂР°РґР° Р·Р° РљРџРљ
 function prines_kpk_tirana()
 	got_random("wpn_groza_sk2_m1")
 	got("treasure_item")
 	got("ammo_5.45x39_ap", 2)
 end
 
---проверяем наличие РГ PDA у ГГ
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Р Р“ PDA Сѓ Р“Р“
 	function est_li_kpk_tirana(stalker, player)
   		return stalker:object ("device_tiran_pda") ~= nil
 	end
 
---отдаём КПК
+--РѕС‚РґР°С‘Рј РљРџРљ
 	function otdat_kpk_tirana(first_speaker, second_speaker)
 		dialogs.relocate_item_section(second_speaker, "device_tiran_pda", "out")
 	end
 
---вызываем функцию из таска при появлении (взятии) КПК в инвентаре
+--РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РёР· С‚Р°СЃРєР° РїСЂРё РїРѕСЏРІР»РµРЅРёРё (РІР·СЏС‚РёРё) РљРџРљ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 function vzial_kpk_tirana()
 	return has("device_tiran_pda")
 end
 
 --###################################################################################
---#				Документы из Х10				    #
+--#				Р”РѕРєСѓРјРµРЅС‚С‹ РёР· РҐ10				    #
 --###################################################################################
 
---награда за документы из Х10
+--РЅР°РіСЂР°РґР° Р·Р° РґРѕРєСѓРјРµРЅС‚С‹ РёР· РҐ10
 function prines_documenty()
 	got_random("wpn_pkm")
 	got("ammo_7.62x54r", 2)
 end
 
---проверяем наличие документов у ГГ
+--РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РґРѕРєСѓРјРµРЅС‚РѕРІ Сѓ Р“Р“
 function est_li_documenty()
 	return has("banderos_documents")
 end
 
---отдаём документы
+--РѕС‚РґР°С‘Рј РґРѕРєСѓРјРµРЅС‚С‹
 	function otdat_documenty(first_speaker, second_speaker)
 		dialogs.relocate_item_section(second_speaker, "banderos_documents", "out")
 	end
 
---вызываем функцию из таска при появлении (взятии) документов в инвентаре
+--РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РёР· С‚Р°СЃРєР° РїСЂРё РїРѕСЏРІР»РµРЅРёРё (РІР·СЏС‚РёРё) РґРѕРєСѓРјРµРЅС‚РѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 function vzial_documenty()
 	return has("banderos_documents")
 end

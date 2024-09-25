@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------------------------------------------------
---	Схема озвучки
---	автор:  Диденко Руслан  (Stohe)
---	update: Чугай Александр (Chugai)
+--	РЎС…РµРјР° РѕР·РІСѓС‡РєРё
+--	Р°РІС‚РѕСЂ:  Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ  (Stohe)
+--	update: Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ (Chugai)
 ----------------------------------------------------------------------------------------------------------------------
 
 local snd_type_talk = snd_type.talk
@@ -37,7 +37,7 @@ function combat_class(avail_types, npc)
 end
 
 -------------------------------------------------------------------------
--- ЗВУКИ СТАЛКЕРОВ
+-- Р—Р’РЈРљР РЎРўРђР›РљР•Р РћР’
 -------------------------------------------------------------------------
 local sounds_base = stalker_ids.sound_script + 10000
 
@@ -47,18 +47,18 @@ local function id()
 end
 
 theme = {
-	-- погода
+	-- РїРѕРіРѕРґР°
 	weather = {	exec = sound_theme.weather_class,
 				types = {weather_bad	= {rmk_type = rmk_sporadic, min_snd=25, max_snd=60, rnd_id = id(), max_ids = {}},
 						 weather_good	= {rmk_type = rmk_sporadic, min_snd=25, max_snd=60, rnd_id = id(), max_ids = {}} }},
 
-	-- состояния тела
+	-- СЃРѕСЃС‚РѕСЏРЅРёСЏ С‚РµР»Р°
 	state = {	exec = sound_theme.combat_class,
 				types = {state	= {rmk_type = rmk_sporadic, min_snd=25, max_snd=60, rnd_id=id(), max_ids={}, rnd = 75}} },
 
 	sleep				= {rmk_type = rmk_sporadic, min_snd = 10, max_snd = 15, rnd_id = id(), max_ids = {}, rnd = 75},
 
-	-- просьба о помощи
+	-- РїСЂРѕСЃСЊР±Р° Рѕ РїРѕРјРѕС‰Рё
 	help				= {rmk_type = rmk_muse, rnd_id = id(), into_id = id(), max_ids = {}},
 	help_see			= {rmk_type = rmk_sporadic, min_snd = 5, max_snd = 10, rnd_id = id(), into_id = id(), max_ids = {}},
 	help_see_tutor		= {rmk_type = rmk_chatter, rnd_id = id(), max_ids = {}},
@@ -67,10 +67,10 @@ theme = {
 	wounded_psy			= {rmk_type = rmk_muse, rnd_id = id(), into_id = id(), max_ids = {}},
 	wounded_psy_shoot	= {rmk_type = rmk_muse, into_id = id(), max_ids = {}},
 
-	-- окрик
+	-- РѕРєСЂРёРє
 	hail				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- ожидание
+	-- РѕР¶РёРґР°РЅРёРµ
 	wait				= {rmk_type = rmk_chatter, into_id = id(), max_ids = {}},
 	moveout				= {rmk_type = rmk_chatter, into_id = id(), max_ids = {}},
 
@@ -78,12 +78,12 @@ theme = {
     speech				= {rmk_type = rmk_once, rnd_id = id(), into_id = id(), max_ids = {}},
     speech1				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- угрозы
+	-- СѓРіСЂРѕР·С‹
 	threat_weap			= {rmk_type = rmk_muse, into_id = id(), max_ids = {}},
 	threat_back			= {rmk_type = rmk_muse, into_id = id(), max_ids = {}},
 	threat_stop			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- реакции
+	-- СЂРµР°РєС†РёРё
 	reac_hear				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	reac_see				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 	reac_crps_monstr		= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
@@ -95,7 +95,7 @@ theme = {
 	reac_music				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 	reac_joke				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 
-	-- болтовня
+	-- Р±РѕР»С‚РѕРІРЅСЏ
 	talk_hello				= {rmk_type = rmk_greet, min_snd = 5, max_snd = 7, into_id = id(), max_ids = {}},
 	talk_hello_friend		= {rmk_type = rmk_muse, into_id = id(), max_ids = {}},
 	talk_bye				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
@@ -103,12 +103,12 @@ theme = {
 	talk_reject				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	talk_abuse				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- обшаривание трупов
+	-- РѕР±С€Р°СЂРёРІР°РЅРёРµ С‚СЂСѓРїРѕРІ
 	loot_good				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
 	loot_bad				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
 	loot_begin				= { rmk_type = rmk_muse, rnd_id = id(), max_ids = { } },
 
-	-- реакции на юзание
+	-- СЂРµР°РєС†РёРё РЅР° СЋР·Р°РЅРёРµ
 	use_yes_fight			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	use_yes_sleep			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	use_yes_kamp			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
@@ -119,28 +119,28 @@ theme = {
 	use_no_default			= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	use_abuse				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- бой
+	-- Р±РѕР№
 	fight_attack			= {rmk_type = rmk_once, rnd_id = id(), max_ids = {}},
 	zombied_fight_attack	= {rmk_type = rmk_sporadic, min_snd = 5, max_snd = 10, rnd_id = id(), max_ids = {}},
 	fight_search			= {rmk_type = rmk_once, rnd_id = id(), max_ids = {}},
 	fight_enemy				= {rmk_type = rmk_sporadic, min_snd = 5, max_snd = 20, rnd_id = id(), max_ids = {}},
 
-	-- торговля
+	-- С‚РѕСЂРіРѕРІР»СЏ
 	trade_yes				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 	trade_no				= {rmk_type = rmk_muse, rnd_id = id(), max_ids = {}},
 
-	-- игра на губной гармошке
+	-- РёРіСЂР° РЅР° РіСѓР±РЅРѕР№ РіР°СЂРјРѕС€РєРµ
 	intro_music				= {rmk_type = rmk_once, rnd_id = id(), max_ids = {}},
 	harmonica				= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 
-	-- игра на гитаре
+	-- РёРіСЂР° РЅР° РіРёС‚Р°СЂРµ
 	guitar					= {rmk_type = rmk_react, rnd_id = id(), max_ids = {}},
 
-	-- шутки, прибаутки
+	-- С€СѓС‚РєРё, РїСЂРёР±Р°СѓС‚РєРё
 	intro_joke				= {rmk_type = rmk_once, rnd_id = id(), max_ids = {}},
 	joke					= {rmk_type = rmk_once, rnd_id = id(), max_ids = {}},
 
-	-- Истории
+	-- РСЃС‚РѕСЂРёРё
 	story_01				= {rmk_type = rmk_once, into_id = id(), max_ids = {},
 					depence	= {	[2] = {theme = "story_reac_cool_info", min = 1, max = 1},
                 [3] = {theme = "story_reac_continue", min = 2, max = 3},
@@ -216,7 +216,7 @@ theme = {
 	story_reac_yes				= {rmk_type = rmk_chatter, rnd_id = id(), max_ids = {}},
 	story_reac_laughter			= {rmk_type = rmk_chatter, rnd_id = id(), max_ids = {}},
 
-	-- УНИКАЛЬНЫЕ ТЕМЫ
+	-- РЈРќРРљРђР›Р¬РќР«Р• РўР•РњР«
 	-- Escape
 	esc_tolik_help				= {rmk_type = rmk_sporadic, min_snd = 7, max_snd = 10, rnd_id = id(), max_ids = {}},
 	esc_guard_camp				= {rmk_type = rmk_sporadic, min_snd = 7, max_snd = 10, rnd_id = id(), max_ids = {}},
@@ -458,7 +458,7 @@ theme = {
     mil_cherep_hi                  = {rmk_type = rmk_greet, min_snd = 15, max_snd = 30, into_id = id(), max_ids = {}}
 }
 
---' В темах для игрока интервал задается в миллисекундах!!!
+--' Р’ С‚РµРјР°С… РґР»СЏ РёРіСЂРѕРєР° РёРЅС‚РµСЂРІР°Р» Р·Р°РґР°РµС‚СЃСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…!!!
 actor_theme = {
 	level_border_detector = {
 		min_snd		= 10,
@@ -516,7 +516,7 @@ function decache_sound(tbl, section, line)
 end
 
 function select_sound_from_ltx(obj, section, tbl)
---	1. проверка по story_id
+--	1. РїСЂРѕРІРµСЂРєР° РїРѕ story_id
 	local c = obj:story_id()
 	if c <= 1100 then
 		c = tostring(c)
@@ -525,19 +525,19 @@ function select_sound_from_ltx(obj, section, tbl)
 		end
 	end
 
---	2. проверка по npc_profile
+--	2. РїСЂРѕРІРµСЂРєР° РїРѕ npc_profile
 	c = obj:profile_name()
 	if snd_ini:line_exist(section, c) then
 		return decache_sound(tbl, section, c)
 	end
 
---	3. проверка по character_community
+--	3. РїСЂРѕРІРµСЂРєР° РїРѕ character_community
 	local pfx, path = decache_sound(tbl, section, obj:character_community())
 	if path then
 		return pfx, path
 	end
 
---	4. загрузка дефолта
+--	4. Р·Р°РіСЂСѓР·РєР° РґРµС„РѕР»С‚Р°
 	return decache_sound(tbl, section, "stalker")
 end
 
@@ -611,6 +611,6 @@ function load_sound(obj)
 		end
 	end
 
-	-- делаем заготовку в db.sound
+	-- РґРµР»Р°РµРј Р·Р°РіРѕС‚РѕРІРєСѓ РІ db.sound
 	xr_sound_db_sound[obj_id] = {}
 end

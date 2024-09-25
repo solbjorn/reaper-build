@@ -1,8 +1,8 @@
--- Главное меню для Теней Чернобыля.
+-- Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ РґР»СЏ РўРµРЅРµР№ Р§РµСЂРЅРѕР±С‹Р»СЏ.
 -- KRodin (c) 2018
--- Выкинул из скрипта всё что связано с мультиплеером и прочий мусор.
--- Исправил утечки памяти из-за неудаления частей меню после его закрытия (см. main_menu:close_and_delete_menu())
--- Сделано специально для использования с движком OGSR.
+-- Р’С‹РєРёРЅСѓР» РёР· СЃРєСЂРёРїС‚Р° РІСЃС‘ С‡С‚Рѕ СЃРІСЏР·Р°РЅРѕ СЃ РјСѓР»СЊС‚РёРїР»РµРµСЂРѕРј Рё РїСЂРѕС‡РёР№ РјСѓСЃРѕСЂ.
+-- РСЃРїСЂР°РІРёР» СѓС‚РµС‡РєРё РїР°РјСЏС‚Рё РёР·-Р·Р° РЅРµСѓРґР°Р»РµРЅРёСЏ С‡Р°СЃС‚РµР№ РјРµРЅСЋ РїРѕСЃР»Рµ РµРіРѕ Р·Р°РєСЂС‹С‚РёСЏ (СЃРј. main_menu:close_and_delete_menu())
+-- РЎРґРµР»Р°РЅРѕ СЃРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ СЃ РґРІРёР¶РєРѕРј OGSR.
 
 local all_good = db and modules and xr_logic
 if not all_good then
@@ -204,7 +204,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 		if self.alive_on_level and dik_to_bind(dik) == key_bindings.kQUIT then
 			self:close_and_delete_menu()
 		-- OGSE Team on
-		-- Система быстрых сохранений игры
+		-- РЎРёСЃС‚РµРјР° Р±С‹СЃС‚СЂС‹С… СЃРѕС…СЂР°РЅРµРЅРёР№ РёРіСЂС‹
 		elseif self.alive_on_level and dik_to_bind(dik) == key_bindings.kQUICK_SAVE then
 			self:close_and_delete_menu()
 			console:execute("save " .. user_name() .. "_quicksave")
@@ -241,12 +241,12 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 end
 
 function main_menu:amk_options()
--- если еще ни разу не вызывали, то обозначим наш новый скрипт
+-- РµСЃР»Рё РµС‰Рµ РЅРё СЂР°Р·Сѓ РЅРµ РІС‹Р·С‹РІР°Р»Рё, С‚Рѕ РѕР±РѕР·РЅР°С‡РёРј РЅР°С€ РЅРѕРІС‹Р№ СЃРєСЂРёРїС‚
 	if self.amk_options_dlg == nil then
 		self.amk_options_dlg = ui_amk_options.amk_options()
 		self.amk_options_dlg.owner = self
 	end
--- останавливаем родительский элемент, запускаем свой, но родителя показываем.
+-- РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ СЌР»РµРјРµРЅС‚, Р·Р°РїСѓСЃРєР°РµРј СЃРІРѕР№, РЅРѕ СЂРѕРґРёС‚РµР»СЏ РїРѕРєР°Р·С‹РІР°РµРј.
 	self:GetHolder():start_stop_menu(self.amk_options_dlg, true)
 	self:GetHolder():start_stop_menu(self, true)
 	self:Show(false)

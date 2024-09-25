@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---  Схема встречи двух сталкеров
---  автор: Диденко Руслан (Stohe)
+--  РЎС…РµРјР° РІСЃС‚СЂРµС‡Рё РґРІСѓС… СЃС‚Р°Р»РєРµСЂРѕРІ
+--  Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --  TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ local string_gmatch = string.gmatch
 local string_find = string.find
 local string_sub = string.sub
 
---' Возвращает есть ли у нас контакт с другим сталкером
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РµСЃС‚СЊ Р»Рё Сѓ РЅР°СЃ РєРѕРЅС‚Р°РєС‚ СЃ РґСЂСѓРіРёРј СЃС‚Р°Р»РєРµСЂРѕРј
 class "evaluator_contact" (property_evaluator)
 function evaluator_contact:__init(name, storage) super (nil, name)
   self.a = storage
@@ -66,7 +66,7 @@ function evaluator_contact:evaluate()
       return false
     end
 
-    -- Чтобы не стояли и не пялились часами
+    -- Р§С‚РѕР±С‹ РЅРµ СЃС‚РѕСЏР»Рё Рё РЅРµ РїСЏР»РёР»РёСЃСЊ С‡Р°СЃР°РјРё
     local tken=(tostring(meet_manager.state)~="nil")
     local istk=self.object:is_talking()
     if self.begtime==nil and tken then
@@ -74,7 +74,7 @@ function evaluator_contact:evaluate()
     elseif not tken then
       self.begtime=nil
     elseif tken and self.begtime+10000<time_global() and (not istk) and (not meet_manager.wpn_meet) then
-    -- 10 секунд посмотрели на меченного и хватит
+    -- 10 СЃРµРєСѓРЅРґ РїРѕСЃРјРѕС‚СЂРµР»Рё РЅР° РјРµС‡РµРЅРЅРѕРіРѕ Рё С…РІР°С‚РёС‚
       return false
     elseif istk or meet_manager.wpn_meet then
       self.begtime=time_global()
@@ -94,7 +94,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
---' Приглашение к тороговле
+--' РџСЂРёРіР»Р°С€РµРЅРёРµ Рє С‚РѕСЂРѕРіРѕРІР»Рµ
 class "action_meet_wait" (action_base)
 function action_meet_wait:__init (action_name, storage) super (nil, action_name)
 	self.a = storage
@@ -103,10 +103,10 @@ function action_meet_wait:initialize()
   action_base.initialize(self)
   self.object:set_desired_position()
   self.object:set_desired_direction()
-  -- кешируемые данные
+  -- РєРµС€РёСЂСѓРµРјС‹Рµ РґР°РЅРЅС‹Рµ
   self.sound = "nil"
 
-	-- Здороваемся.
+	-- Р—РґРѕСЂРѕРІР°РµРјСЃСЏ.
 	if self.a.init_meet ~= "" then
 		xr_sound.set_sound_play(self.object, self.a.init_meet)
 	end
@@ -136,7 +136,7 @@ function action_meet_wait:execute ()
     self.object:hit(h)
     self.object:set_relation(game_object.enemy, Actor)
   else
-    -- является ли текущий звук синхронным для текущего стейта
+    -- СЏРІР»СЏРµС‚СЃСЏ Р»Рё С‚РµРєСѓС‰РёР№ Р·РІСѓРє СЃРёРЅС…СЂРѕРЅРЅС‹Рј РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СЃС‚РµР№С‚Р°
     for k,v in pairs(self.a.syndata) do
       if v.state == meet_manager.state and
          v.sound == meet_manager.sound
@@ -155,7 +155,7 @@ function action_meet_wait:execute ()
   end
 
   if synsound == nil then
-    -- нужно отыграть фоновый
+    -- РЅСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ С„РѕРЅРѕРІС‹Р№
     if self.sound ~= meet_manager.sound then
       self.sound = meet_manager.sound
       if self.sound == "nil" then
@@ -166,7 +166,7 @@ function action_meet_wait:execute ()
       end
     end
   else
-    -- нужно зарубить фоновый
+    -- РЅСѓР¶РЅРѕ Р·Р°СЂСѓР±РёС‚СЊ С„РѕРЅРѕРІС‹Р№
     if self.sound ~= nil then
       self.sound = "nil"
       xr_sound.set_sound(self.object, nil)
@@ -191,7 +191,7 @@ function Cmeet_manager:__init(npc, storage)
   self.startdialog = nil
 end
 function Cmeet_manager:update()
-	-- стартовый диалог
+	-- СЃС‚Р°СЂС‚РѕРІС‹Р№ РґРёР°Р»РѕРі
 
 	local targets = container:get("kill_targets", { })
 	local id, v, kill_dialog = self.npc:id()
@@ -204,7 +204,7 @@ function Cmeet_manager:update()
 	end
 
   if kill_dialog then
-  -- NPC собрались убивать, поэтому ничего важнее быть не может. Всё остальное потом
+  -- NPC СЃРѕР±СЂР°Р»РёСЃСЊ СѓР±РёРІР°С‚СЊ, РїРѕСЌС‚РѕРјСѓ РЅРёС‡РµРіРѕ РІР°Р¶РЅРµРµ Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚. Р’СЃС‘ РѕСЃС‚Р°Р»СЊРЅРѕРµ РїРѕС‚РѕРј
     if self.startdialog~=kill_dialog then
       self.npc:set_start_dialog(kill_dialog)
       self.startdialog=kill_dialog
@@ -252,8 +252,8 @@ function Cmeet_manager:update()
   else
     self.state,self.sound = self:process_meet()
   end
-	-- Если актер говорит, и говорит не с нами, то мы не должны говорить звуков.
-	-- Ray Twitty aka Shadows: вместо проверки на разговор ГГ добавим проверку на любое открытое меню
+	-- Р•СЃР»Рё Р°РєС‚РµСЂ РіРѕРІРѕСЂРёС‚, Рё РіРѕРІРѕСЂРёС‚ РЅРµ СЃ РЅР°РјРё, С‚Рѕ РјС‹ РЅРµ РґРѕР»Р¶РЅС‹ РіРѕРІРѕСЂРёС‚СЊ Р·РІСѓРєРѕРІ.
+	-- Ray Twitty aka Shadows: РІРјРµСЃС‚Рѕ РїСЂРѕРІРµСЂРєРё РЅР° СЂР°Р·РіРѕРІРѕСЂ Р“Р“ РґРѕР±Р°РІРёРј РїСЂРѕРІРµСЂРєСѓ РЅР° Р»СЋР±РѕРµ РѕС‚РєСЂС‹С‚РѕРµ РјРµРЅСЋ
 	if level.main_input_receiver() and not self.npc:is_talking() then
 		self.sound = "nil"
 	end
@@ -376,7 +376,7 @@ end
 function Cmeet_manager:process_use()
   local is_talking = self.npc:is_talking()
 --  printf("MM1 %s %s", self.npc:name(), tostring(is_talking))
-  -- запрещаем юзать спящих
+  -- Р·Р°РїСЂРµС‰Р°РµРј СЋР·Р°С‚СЊ СЃРїСЏС‰РёС…
   if xr_sleeper.is_npc_asleep(self.npc) then
     self.npc:disable_talk()
     if is_talking then
@@ -392,7 +392,7 @@ function Cmeet_manager:process_use()
   else
     t = xr_logic.pick_section_from_condlist(self.npc, self.a.use)
   end
-  -- проверка по дистанции
+  -- РїСЂРѕРІРµСЂРєР° РїРѕ РґРёСЃС‚Р°РЅС†РёРё
   if (is_talking and self.npc:position():distance_to_sqr(Actor:position()) > 9) and
     t ~= "self"
   then
@@ -407,7 +407,7 @@ function Cmeet_manager:process_use()
       self.npc:stop_talk()
     end
   elseif t == "self" then
-		-- Eсли npc враг (Р.М.А.).
+		-- EСЃР»Рё npc РІСЂР°Рі (Р .Рњ.Рђ.).
 		self.npc:enable_talk()
     if not is_talking then
       Actor:run_talk_dialog(self.npc)
@@ -510,7 +510,7 @@ local def_meet = {
 
 ------------
 
--- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РЅРѕРІСѓСЋ СЃРµРєС†РёСЋ. РџСЂРѕРёР·РІРѕРґРёС‚ РІС‹С‡РёС‚С‹РІР°РЅРёРµ РЅР°СЃС‚СЂРѕРµРє РёР· С‚РµРєСѓС‰РµР№ СЃРµРєС†РёРё.
 function reset_meet(npc, scheme, st, section)
 	local ini = st.ini
 	local meet_section
@@ -529,7 +529,7 @@ function reset_meet(npc, scheme, st, section)
 		init_meet(npc, ini, meet_section, st.meet, scheme)
 	end
 end
--- Функция чтения настроек. В нее передается секция, откуда их нужно читать.
+-- Р¤СѓРЅРєС†РёСЏ С‡С‚РµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє. Р’ РЅРµРµ РїРµСЂРµРґР°РµС‚СЃСЏ СЃРµРєС†РёСЏ, РѕС‚РєСѓРґР° РёС… РЅСѓР¶РЅРѕ С‡РёС‚Р°С‚СЊ.
 function init_meet(npc, ini, section, st, scheme)
 	local function get_field_string(field, default)
 		return (ini:line_exist(section, field) and ini:r_string(section, field)) or default
@@ -545,7 +545,7 @@ function init_meet(npc, ini, section, st, scheme)
 		st.meet_section = section
 	end
 
-  -- Устанавливаем дефолты
+  -- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµС„РѕР»С‚С‹
 	local def
 	scheme = tostring(scheme)
 	if scheme == "nil" or scheme == "kamp" then
@@ -578,7 +578,7 @@ function init_meet(npc, ini, section, st, scheme)
 		st.precond			= "usability"
 		st.abuse			= "false"
 	elseif section == "nil" or not ini:section_exist(section) then
-		-- Загружаем дефолты!
+		-- Р—Р°РіСЂСѓР¶Р°РµРј РґРµС„РѕР»С‚С‹!
 		st.meet_state		= parse_data(def.meet_state)
 		st.meet_state_wpn	= parse_data(def.meet_state_wpn)
 		st.init_meet		= def.init_meet
@@ -606,14 +606,14 @@ function init_meet(npc, ini, section, st, scheme)
 		st.abuse			= get_field_string("abuse", def.abuse)
 	end
 
-  -- Проверяем включать ли обижание на заюзывание
+  -- РџСЂРѕРІРµСЂСЏРµРј РІРєР»СЋС‡Р°С‚СЊ Р»Рё РѕР±РёР¶Р°РЅРёРµ РЅР° Р·Р°СЋР·С‹РІР°РЅРёРµ
   if st.abuse == "true" then
     xr_abuse.enable_abuse(npc)
   else
     xr_abuse.disable_abuse(npc)
   end
 
-  -- флажок, что функция хотя бы раз вызывалась
+  -- С„Р»Р°Р¶РѕРє, С‡С‚Рѕ С„СѓРЅРєС†РёСЏ С…РѕС‚СЏ Р±С‹ СЂР°Р· РІС‹Р·С‹РІР°Р»Р°СЃСЊ
   st.meet_set = true
 end
 
@@ -720,8 +720,8 @@ function parse_syn_data(s)
     return t
 end
 
--- ДИАЛОГИ ПОКА НЕ ТРОГАЕМ!!!
---' Считывание доступных диалогов игрока.
+-- Р”РРђР›РћР“Р РџРћРљРђ РќР• РўР РћР“РђР•Рњ!!!
+--' РЎС‡РёС‚С‹РІР°РЅРёРµ РґРѕСЃС‚СѓРїРЅС‹С… РґРёР°Р»РѕРіРѕРІ РёРіСЂРѕРєР°.
 function set_actor_dialogs(npc, ini, name, dialog_section)
 	local function get_field_string(field)
 		return (ini:line_exist(dialog_section, field) and ini:r_string(dialog_section, field)) or nil
@@ -730,13 +730,13 @@ function set_actor_dialogs(npc, ini, name, dialog_section)
 
 	local actor_dialogs_string = get_field_string("id")
 	if actor_dialogs_string ~= nil then
-		--' Создаем в массиве запись где будут храниться считанные диалоги.
+		--' РЎРѕР·РґР°РµРј РІ РјР°СЃСЃРёРІРµ Р·Р°РїРёСЃСЊ РіРґРµ Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ СЃС‡РёС‚Р°РЅРЅС‹Рµ РґРёР°Р»РѕРіРё.
 		db.storage[npc:id()].actor_dialogs = string.parse_names(actor_dialogs_string)
 	end
 
 	local actor_disable = get_field_string("disable")
 	if actor_disable ~= nil then
-		--' Создаем в массиве запись где будут храниться считанные диалоги.
+		--' РЎРѕР·РґР°РµРј РІ РјР°СЃСЃРёРІРµ Р·Р°РїРёСЃСЊ РіРґРµ Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ СЃС‡РёС‚Р°РЅРЅС‹Рµ РґРёР°Р»РѕРіРё.
 		db.storage[npc:id()].actor_disable = string.parse_names(actor_disable)
 	end
 end
@@ -747,7 +747,7 @@ function disable_scheme(npc, scheme)
 	st.actor_disable = nil
 end
 
---- Находится ли чувак в данный момент в состоянии мита
+--- РќР°С…РѕРґРёС‚СЃСЏ Р»Рё С‡СѓРІР°Рє РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РІ СЃРѕСЃС‚РѕСЏРЅРёРё РјРёС‚Р°
 function is_meet(npc)
 	local manager = npc:motivation_action_manager()
 	if manager and manager:initialized() then
@@ -758,7 +758,7 @@ function is_meet(npc)
 	return false
 end
 
--- Функция проверяет не мешает ли персонажу говорить с нами оружие
+-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚ РЅРµ РјРµС€Р°РµС‚ Р»Рё РїРµСЂСЃРѕРЅР°Р¶Сѓ РіРѕРІРѕСЂРёС‚СЊ СЃ РЅР°РјРё РѕСЂСѓР¶РёРµ
 function cannot_talk_by_weapon(npc)
 	local st = db.storage[npc:id()].meet
 	if st then
@@ -781,10 +781,10 @@ function cannot_talk_by_weapon(npc)
   return false
 end
 
--- Возвращает угол между проекциями векторов vec1 и vec2 на горизонтальную плоскость
--- положительный угол - доворот vec1 до vec2 по часовой.
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРіРѕР» РјРµР¶РґСѓ РїСЂРѕРµРєС†РёСЏРјРё РІРµРєС‚РѕСЂРѕРІ vec1 Рё vec2 РЅР° РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅСѓСЋ РїР»РѕСЃРєРѕСЃС‚СЊ
+-- РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№ СѓРіРѕР» - РґРѕРІРѕСЂРѕС‚ vec1 РґРѕ vec2 РїРѕ С‡Р°СЃРѕРІРѕР№.
 function horz_angle(vec1,vec2)
   local x=vec2.x*vec1.x+vec2.z*vec1.z
-  local y=-vec2.z*vec1.x+vec2.x*vec1.z -- повернули систему координат
-  return math.atan2(y,x) -- угол доворота от -pi до pi
+  local y=-vec2.z*vec1.x+vec2.x*vec1.z -- РїРѕРІРµСЂРЅСѓР»Рё СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚
+  return math.atan2(y,x) -- СѓРіРѕР» РґРѕРІРѕСЂРѕС‚Р° РѕС‚ -pi РґРѕ pi
 end

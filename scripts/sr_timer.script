@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------------
--- Таймер с выводом изображения на экран.
+-- РўР°Р№РјРµСЂ СЃ РІС‹РІРѕРґРѕРј РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЌРєСЂР°РЅ.
 ----------------------------------------------------------------------------------------------------
 
 local math_floor = math.floor
@@ -16,7 +16,7 @@ function action_timer:update(delta)
 	if xr_logic.try_switch_to_another_section(self.object, self.st) then
 		return
 	end
-	-- Ray Twitty aka Shadows: скрываем статики если худ выключен
+	-- Ray Twitty aka Shadows: СЃРєСЂС‹РІР°РµРј СЃС‚Р°С‚РёРєРё РµСЃР»Рё С…СѓРґ РІС‹РєР»СЋС‡РµРЅ
 	if is_hud_draw() then
 		if not hud:GetCustomStatic(self.st.timer_id) then
 			self.st.timer = hud:AddCustomStatic(self.st.timer_id, true):wnd()
@@ -28,10 +28,10 @@ function action_timer:update(delta)
 		self:deactivate()
 		self.st.timer = nil
 	end
-	-- Высчитываем сколько времени уже работает счетчик
+	-- Р’С‹СЃС‡РёС‚С‹РІР°РµРј СЃРєРѕР»СЊРєРѕ РІСЂРµРјРµРЅРё СѓР¶Рµ СЂР°Р±РѕС‚Р°РµС‚ СЃС‡РµС‚С‡РёРє
 	local nn = time_global() - db.storage[self.object:id()].activation_time
 
-	-- Изменяем значение счетчика
+	-- РР·РјРµРЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР°
 	local value_time = 0
 	if self.st.type == "inc" then
 		value_time = self.st.start_value + nn
@@ -41,8 +41,8 @@ function action_timer:update(delta)
 	if value_time <= 0 then
 		value_time = 0
 	end
-	-- Формируем строку счетчика
-	-- Ray Twitty aka Shadows: если статик скрыт, нет смысла и считать
+	-- Р¤РѕСЂРјРёСЂСѓРµРј СЃС‚СЂРѕРєСѓ СЃС‡РµС‚С‡РёРєР°
+	-- Ray Twitty aka Shadows: РµСЃР»Рё СЃС‚Р°С‚РёРє СЃРєСЂС‹С‚, РЅРµС‚ СЃРјС‹СЃР»Р° Рё СЃС‡РёС‚Р°С‚СЊ
 	if self.st.timer then
 		local hours = math_floor(value_time/3600000)
 		local minutes = math_floor(value_time/60000 - hours*60)
@@ -52,12 +52,12 @@ function action_timer:update(delta)
 		self.st.timer:SetTextST(str)
 	end
 
-	-- Определяем нужно ли куда то переходить.
+	-- РћРїСЂРµРґРµР»СЏРµРј РЅСѓР¶РЅРѕ Р»Рё РєСѓРґР° С‚Рѕ РїРµСЂРµС…РѕРґРёС‚СЊ.
 	for k,v in pairs(self.st.on_value) do
 		if (self.st.type == "dec" and value_time <= v.dist) or
 		   (self.st.type == "inc" and value_time >= v.dist)
 		then
-			-- Обработка значения.
+			-- РћР±СЂР°Р±РѕС‚РєР° Р·РЅР°С‡РµРЅРёСЏ.
 			xr_logic.switch_to_section(self.object, self.st, xr_logic.pick_section_from_condlist(self.object, v.state))
 		end
 	end
@@ -99,7 +99,7 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	else
 		st.start_value = utils.cfg_get_number(ini, section, "start_value", obj, false, 0)
 	end
-	-- Вычитываем значения перехода.
+	-- Р’С‹С‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµС…РѕРґР°.
 	st.on_value = parse_data(obj, utils.cfg_get_string(ini, section, "on_value", obj, false, ""))
 	st.timer_id = utils.cfg_get_string( ini, section, "timer_id", obj, false, "", "hud_timer")
 	st.string	= utils.cfg_get_string( ini, section, "string", obj, false, "")

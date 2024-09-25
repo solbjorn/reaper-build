@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
---'	Сумасшедший придурок швыряется гранатами
+--'	РЎСѓРјР°СЃС€РµРґС€РёР№ РїСЂРёРґСѓСЂРѕРє С€РІС‹СЂСЏРµС‚СЃСЏ РіСЂР°РЅР°С‚Р°РјРё
 --' ver: 2.0
---'	автор: xStream
+--'	Р°РІС‚РѕСЂ: xStream
 --'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +150,7 @@ function evaluator_crazy_grenadier:evaluate()
 			end
 			if curr_gr==nil then return false end
 
-			--можно швыряться - вероятность никого не задеть (кроме врагов) достаточно велика
+			--РјРѕР¶РЅРѕ С€РІС‹СЂСЏС‚СЊСЃСЏ - РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РЅРёРєРѕРіРѕ РЅРµ Р·Р°РґРµС‚СЊ (РєСЂРѕРјРµ РІСЂР°РіРѕРІ) РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІРµР»РёРєР°
 			self.a.from_vert = npc:level_vertex_id()
 			self.a.from_pos = npc:position()
 			self.a.target_point = be:position():add(vector_rotate_y(be:position():sub(npc:position()),90):normalize():mul(2))
@@ -180,16 +180,16 @@ function evaluator_crazy_grenadier:check_grenade(section)
 	local bp = be:position()
 	local np = npc:position()
 	local throw_dist=np:distance_to(bp)
-	--далеко кидать никак, мы ж не атлеты...
+	--РґР°Р»РµРєРѕ РєРёРґР°С‚СЊ РЅРёРєР°Рє, РјС‹ Р¶ РЅРµ Р°С‚Р»РµС‚С‹...
 	if throw_dist>grenade_max_dist then return false end
 
-	-- если накроет взрывом - не будем кидать
+	-- РµСЃР»Рё РЅР°РєСЂРѕРµС‚ РІР·СЂС‹РІРѕРј - РЅРµ Р±СѓРґРµРј РєРёРґР°С‚СЊ
 	if throw_dist<self.a.grenades[section].radius then return false
-	-- Дымовые гранаты нет смысла кидать в мутантов
+	-- Р”С‹РјРѕРІС‹Рµ РіСЂР°РЅР°С‚С‹ РЅРµС‚ СЃРјС‹СЃР»Р° РєРёРґР°С‚СЊ РІ РјСѓС‚Р°РЅС‚РѕРІ
 	elseif section=="grenade_gd-05" and not be:is_stalker() then return false
 	end
 
-	--теперь проверим, чтоб не задеть своих и нейтралов
+	--С‚РµРїРµСЂСЊ РїСЂРѕРІРµСЂРёРј, С‡С‚РѕР± РЅРµ Р·Р°РґРµС‚СЊ СЃРІРѕРёС… Рё РЅРµР№С‚СЂР°Р»РѕРІ
 	local function check_item(obj)
 		obj=obj:object()
 		if obj==nil or obj.clsid==nil then return false end
@@ -209,7 +209,7 @@ function evaluator_crazy_grenadier:check_grenade(section)
 		if check_item(o) then return false end
 	end
 ]]
-	--можно использовать эту гранату....
+	--РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЌС‚Сѓ РіСЂР°РЅР°С‚Сѓ....
 	return true
 end
 
@@ -633,7 +633,7 @@ end
 function check_enemy(npc, be)
 	return be and npc:alive() and clsid_enemy[be:clsid()] and
 	       be:alive() and not be:wounded() and npc:see(be) and
-	       -- из-за глюков движка кидать будем только в объекты, недалеко от аи сетки
+	       -- РёР·-Р·Р° РіР»СЋРєРѕРІ РґРІРёР¶РєР° РєРёРґР°С‚СЊ Р±СѓРґРµРј С‚РѕР»СЊРєРѕ РІ РѕР±СЉРµРєС‚С‹, РЅРµРґР°Р»РµРєРѕ РѕС‚ Р°Рё СЃРµС‚РєРё
 	       be:position():distance_to(level.vertex_position(be:level_vertex_id())) < 2
 end
 

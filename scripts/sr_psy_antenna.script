@@ -1,21 +1,21 @@
 --[[------------------------------------------------------------------------------------------------
-Çîíû ïñè-èçëó÷åíèÿ. Îòûãðûâàþò ïîñòïðîöåññ è ôàíòîìîâ ïî íàñòðîéêàì èç custom_data
+Ð—Ð¾Ð½Ñ‹ Ð¿ÑÐ¸-Ð¸Ð·Ð»ÑƒÑ‡ÐµÐ½Ð¸Ñ. ÐžÑ‚Ñ‹Ð³Ñ€Ñ‹Ð²Ð°ÑŽÑ‚ Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑ Ð¸ Ñ„Ð°Ð½Ñ‚Ð¾Ð¼Ð¾Ð² Ð¿Ð¾ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ°Ð¼ Ð¸Ð· custom_data
 --------------------------------------------------------------------------------------------------]]
 
 --[[
 Ray Twitty aka Shadows, 25.05.2023
 
-Êîìïëåêñ èñïðàâëåíèé ñõåìû:
-1. Äîáàâëåíà âîçìîæíîñòü óñòàíîâèòü çîíó êàê óêðûòèå îò ïñè-èçëó÷åíèÿ. Â ýòîé çîíå íå áóäåò íàíîñèòüñÿ óðîí, à âñå äðóãèå ýôôåêòû ïðàêòè÷åñêè ñâåäåíû ê íóëþ.
-Äëÿ íàñòðîéêè óêðûòèÿ íåîáõîäèìî ïðîïèñàòü íîâûé ïàðàìåòð "shelter" â ñåêöèþ ëîãèêè sr_psy_antenna è çàäàòü åìó çíà÷åíèå true. Ïî óìîë÷àíèþ ýòîò ïàðàìåòð óñòàíîâëåí êàê false.
-Äðóãèå ïàðàìåòðû ñõåìû äëÿ óêðûòèÿ ïðîïèñûâàòü íå íóæíî.
-2. Ðàçáëîêèðîâàíî ñîõðàíåíèå è çàãðóçêà èíôîðìàöèè â çîíå î òîì, ÷òî ÃÃ íàõîäèòñÿ âíóòðè.
-Ýòî èñïðàâëÿåò êîñÿê ñ íàêîïëåíèåì ñ÷åò÷èêà ýôôåêòîâ âîçäåéñòâèÿ, åñëè ñîõðàíèòüñÿ â çîíå íåñêîëüêî ðàç.
-3. Âñëåäñòâèå ïðåäûäóùåãî ïóíêòà âîçíèêëà ïðîáëåìà ñ âîçâðàùåíèåì ÃÃ íà óðîâåíü ñ çîíîé, åñëè îíà íå áûëà îòêëþ÷åíà ïî ñþæåòó (ýôôåêòû ïðîñòî íå âêëþ÷àëèñü).
-Ïîýòîìó áûëà äîáàâëåíà ïðîâåðêà çàãðóæåííîé èíôîðìàöèè î íàëè÷èè àêòèâíûõ ýôôåêòîâ â ÃÃ. Åñëè ýôôåêòîâ íåò, îíè ñîçäàþòñÿ çàíîâî.
-4. Èñïðàâëåíî íåîòîáðàæåíèå ïîñòïðîöåññà ïðè ïîÿâëåíèè ÃÃ íåïîñðåäñòâåííî â çîíå (íàïðèìåð, åñëè ïåðåõîä íà ëîêàöèþ íàõîäèòñÿ âíóòðè ýòîé çîíû).
-5. Èñïðàâëåíî íåîòîáðàæåíèå ïîñòïðîöåññà ïðè ïîâòîðíîì âõîäå â çîíó (â íåêîòîðûõ ñëó÷àÿõ, èç-çà îñîáåííîñòåé ñðàâíåíèÿ âåùåñòâåííûõ ÷èñåë â Lua, ïîñòïðîöåññ íå âîññòàíàâëèâàëñÿ).
-6. Òèï óðîíà çàìåíåí íà óäàð ïî ïñè-çäîðîâüþ.
+ÐšÐ¾Ð¼Ð¿Ð»ÐµÐºÑ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ð¹ ÑÑ…ÐµÐ¼Ñ‹:
+1. Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð° Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ÑÑ‚ÑŒ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð·Ð¾Ð½Ñƒ ÐºÐ°Ðº ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ð¾Ñ‚ Ð¿ÑÐ¸-Ð¸Ð·Ð»ÑƒÑ‡ÐµÐ½Ð¸Ñ. Ð’ ÑÑ‚Ð¾Ð¹ Ð·Ð¾Ð½Ðµ Ð½Ðµ Ð±ÑƒÐ´ÐµÑ‚ Ð½Ð°Ð½Ð¾ÑÐ¸Ñ‚ÑŒÑÑ ÑƒÑ€Ð¾Ð½, Ð° Ð²ÑÐµ Ð´Ñ€ÑƒÐ³Ð¸Ðµ ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹ Ð¿Ñ€Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸ ÑÐ²ÐµÐ´ÐµÐ½Ñ‹ Ðº Ð½ÑƒÐ»ÑŽ.
+Ð”Ð»Ñ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð¿Ñ€Ð¾Ð¿Ð¸ÑÐ°Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ð¹ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ "shelter" Ð² ÑÐµÐºÑ†Ð¸ÑŽ Ð»Ð¾Ð³Ð¸ÐºÐ¸ sr_psy_antenna Ð¸ Ð·Ð°Ð´Ð°Ñ‚ÑŒ ÐµÐ¼Ñƒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ true. ÐŸÐ¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ ÑÑ‚Ð¾Ñ‚ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½ ÐºÐ°Ðº false.
+Ð”Ñ€ÑƒÐ³Ð¸Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÑ…ÐµÐ¼Ñ‹ Ð´Ð»Ñ ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ð¿Ñ€Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°Ñ‚ÑŒ Ð½Ðµ Ð½ÑƒÐ¶Ð½Ð¾.
+2. Ð Ð°Ð·Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¾ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð² Ð·Ð¾Ð½Ðµ Ð¾ Ñ‚Ð¾Ð¼, Ñ‡Ñ‚Ð¾ Ð“Ð“ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð²Ð½ÑƒÑ‚Ñ€Ð¸.
+Ð­Ñ‚Ð¾ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÑÐµÑ‚ ÐºÐ¾ÑÑÐº Ñ Ð½Ð°ÐºÐ¾Ð¿Ð»ÐµÐ½Ð¸ÐµÐ¼ ÑÑ‡ÐµÑ‚Ñ‡Ð¸ÐºÐ° ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ð² Ð²Ð¾Ð·Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ, ÐµÑÐ»Ð¸ ÑÐ¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ Ð² Ð·Ð¾Ð½Ðµ Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ñ€Ð°Ð·.
+3. Ð’ÑÐ»ÐµÐ´ÑÑ‚Ð²Ð¸Ðµ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰ÐµÐ³Ð¾ Ð¿ÑƒÐ½ÐºÑ‚Ð° Ð²Ð¾Ð·Ð½Ð¸ÐºÐ»Ð° Ð¿Ñ€Ð¾Ð±Ð»ÐµÐ¼Ð° Ñ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰ÐµÐ½Ð¸ÐµÐ¼ Ð“Ð“ Ð½Ð° ÑƒÑ€Ð¾Ð²ÐµÐ½ÑŒ Ñ Ð·Ð¾Ð½Ð¾Ð¹, ÐµÑÐ»Ð¸ Ð¾Ð½Ð° Ð½Ðµ Ð±Ñ‹Ð»Ð° Ð¾Ñ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð° Ð¿Ð¾ ÑÑŽÐ¶ÐµÑ‚Ñƒ (ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹ Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð½Ðµ Ð²ÐºÐ»ÑŽÑ‡Ð°Ð»Ð¸ÑÑŒ).
+ÐŸÐ¾ÑÑ‚Ð¾Ð¼Ñƒ Ð±Ñ‹Ð»Ð° Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð° Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ð½Ð¾Ð¹ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾ Ð½Ð°Ð»Ð¸Ñ‡Ð¸Ð¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ñ… ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ð² Ð² Ð“Ð“. Ð•ÑÐ»Ð¸ ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ð² Ð½ÐµÑ‚, Ð¾Ð½Ð¸ ÑÐ¾Ð·Ð´Ð°ÑŽÑ‚ÑÑ Ð·Ð°Ð½Ð¾Ð²Ð¾.
+4. Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾ Ð½ÐµÐ¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ° Ð¿Ñ€Ð¸ Ð¿Ð¾ÑÐ²Ð»ÐµÐ½Ð¸Ð¸ Ð“Ð“ Ð½ÐµÐ¿Ð¾ÑÑ€ÐµÐ´ÑÑ‚Ð²ÐµÐ½Ð½Ð¾ Ð² Ð·Ð¾Ð½Ðµ (Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´ Ð½Ð° Ð»Ð¾ÐºÐ°Ñ†Ð¸ÑŽ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð²Ð½ÑƒÑ‚Ñ€Ð¸ ÑÑ‚Ð¾Ð¹ Ð·Ð¾Ð½Ñ‹).
+5. Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾ Ð½ÐµÐ¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ° Ð¿Ñ€Ð¸ Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€Ð½Ð¾Ð¼ Ð²Ñ…Ð¾Ð´Ðµ Ð² Ð·Ð¾Ð½Ñƒ (Ð² Ð½ÐµÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… ÑÐ»ÑƒÑ‡Ð°ÑÑ…, Ð¸Ð·-Ð·Ð° Ð¾ÑÐ¾Ð±ÐµÐ½Ð½Ð¾ÑÑ‚ÐµÐ¹ ÑÑ€Ð°Ð²Ð½ÐµÐ½Ð¸Ñ Ð²ÐµÑ‰ÐµÑÑ‚Ð²ÐµÐ½Ð½Ñ‹Ñ… Ñ‡Ð¸ÑÐµÐ» Ð² Lua, Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑ Ð½Ðµ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°Ð»ÑÑ).
+6. Ð¢Ð¸Ð¿ ÑƒÑ€Ð¾Ð½Ð° Ð·Ð°Ð¼ÐµÐ½ÐµÐ½ Ð½Ð° ÑƒÐ´Ð°Ñ€ Ð¿Ð¾ Ð¿ÑÐ¸-Ð·Ð´Ð¾Ñ€Ð¾Ð²ÑŒÑŽ.
 ]]
 
 class "PsyAntenna"
@@ -29,23 +29,23 @@ function PsyAntenna:__init				()
 	self.phantom_spawn_probability		= 0	-- spawn probability (0..1)
 	self.phantom_spawn_radius			= 30.0	-- average radius 30.0m +-15m
 	self.phantom_spawn_height			= 2.5 --3	-- average height from actor pos +-1.5m
-	self.phantom_fov					= 45   -- øèðèíà ñåêòîðà ïåðåä ãëàçàìè àêò¸ðà, â êîòîðîì ìîãóò ðîæäàòüñÿ ôàíòîìû
+	self.phantom_fov					= 45   -- ÑˆÐ¸Ñ€Ð¸Ð½Ð° ÑÐµÐºÑ‚Ð¾Ñ€Ð° Ð¿ÐµÑ€ÐµÐ´ Ð³Ð»Ð°Ð·Ð°Ð¼Ð¸ Ð°ÐºÑ‚Ñ‘Ñ€Ð°, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð¼Ð¾Ð³ÑƒÑ‚ Ñ€Ð¾Ð¶Ð´Ð°Ñ‚ÑŒÑÑ Ñ„Ð°Ð½Ñ‚Ð¾Ð¼Ñ‹
 	-- antenna
-	self.hit_amplitude					= 1.0	-- ðàçìåð õèòà = self.hit_amplitude*self.hit_intensity
+	self.hit_amplitude					= 1.0	-- Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ…Ð¸Ñ‚Ð° = self.hit_amplitude*self.hit_intensity
 -- ----------------------------------------------------------------------------------------
 -- class variables initialize
 -- ----------------------------------------------------------------------------------------
 	self.hit_time						= 0
 	self.phantom_time                   = 0
-	self.intensity_inertion				= 0.05	-- ñêîðîñòü èçìåíåíèÿ èíòåíñèâíîñòè åä/ñåêóíäó
+	self.intensity_inertion				= 0.05	-- ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ Ð¸Ð½Ñ‚ÐµÐ½ÑÐ¸Ð²Ð½Ð¾ÑÑ‚Ð¸ ÐµÐ´/ÑÐµÐºÑƒÐ½Ð´Ñƒ
 	self.hit_intensity					= 0
 	self.sound_intensity				= 0
-	self.sound_intensity_base			= 0	-- áàçîâàÿ èíòåíñèâíîñòü. ê íåé ñòðåìèòñÿ òåêóùàÿ ñî ñêîðîñòüþ self.intensity_inertion
-	self.postprocess_count				= 0  --'ñ÷åò÷èê çàðåãèñòðèðîâàííûõ ïîñòïðîöåññîâ
-	self.postprocess					= {} --'êîíòåéíåð ïîñòïðîöåññîâ
-	-- Ray Twitty aka Shadows: äîïîëíèòåëüíûå ïàðàìåòðû
-	self.data_loaded					= false -- ìàðêåð ïðîèçâåäåííîé çàãðóçêè äàííûõ ÃÃ
-	self.disabled						= false -- áëîêèðîâêà âîçäåéñòâèÿ íà ÃÃ (ïðåæäå âñåãî äëÿ óêðûòèé)
+	self.sound_intensity_base			= 0	-- Ð±Ð°Ð·Ð¾Ð²Ð°Ñ Ð¸Ð½Ñ‚ÐµÐ½ÑÐ¸Ð²Ð½Ð¾ÑÑ‚ÑŒ. Ðº Ð½ÐµÐ¹ ÑÑ‚Ñ€ÐµÐ¼Ð¸Ñ‚ÑÑ Ñ‚ÐµÐºÑƒÑ‰Ð°Ñ ÑÐ¾ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒÑŽ self.intensity_inertion
+	self.postprocess_count				= 0  --'ÑÑ‡ÐµÑ‚Ñ‡Ð¸Ðº Ð·Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ñ… Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ¾Ð²
+	self.postprocess					= {} --'ÐºÐ¾Ð½Ñ‚ÐµÐ¹Ð½ÐµÑ€ Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ¾Ð²
+	-- Ray Twitty aka Shadows: Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹
+	self.data_loaded					= false -- Ð¼Ð°Ñ€ÐºÐµÑ€ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð½Ð¾Ð¹ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð“Ð“
+	self.disabled						= false -- Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ° Ð²Ð¾Ð·Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ Ð½Ð° Ð“Ð“ (Ð¿Ñ€ÐµÐ¶Ð´Ðµ Ð²ÑÐµÐ³Ð¾ Ð´Ð»Ñ ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ð¹)
 
 -- ----------------------------------------------------------------------------------------
 -- sound
@@ -57,7 +57,7 @@ function PsyAntenna:__init				()
 	self.sound_obj_left.volume			= self.sound_intensity
 	self.sound_obj_right.volume			= self.sound_intensity
 	self.snd_volume						= level.get_snd_volume()
-	self.mute_sound_threshold			= 0 --' Ïðåäåë äî êîòîðîãî ìîæíî çàíèæàòü çâóê óðîâíÿ. 0 - ìîæíî çàãëóøèòü ïîëíîñòüþ
+	self.mute_sound_threshold			= 0 --' ÐŸÑ€ÐµÐ´ÐµÐ» Ð´Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð¼Ð¾Ð¶Ð½Ð¾ Ð·Ð°Ð½Ð¸Ð¶Ð°Ñ‚ÑŒ Ð·Ð²ÑƒÐº ÑƒÑ€Ð¾Ð²Ð½Ñ. 0 - Ð¼Ð¾Ð¶Ð½Ð¾ Ð·Ð°Ð³Ð»ÑƒÑˆÐ¸Ñ‚ÑŒ Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ
 	self.max_mumble_volume				= 10
 end
 function PsyAntenna:destroy				()
@@ -67,7 +67,7 @@ function PsyAntenna:construct			()
 end
 function PsyAntenna:update_psy_hit(dt)
 	local custom_static = hud:GetCustomStatic("cs_psy_danger")
-	if self.hit_intensity > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: óáèðàåì ñòàòèê, åñëè çàáëîêèðîâàíî
+	if self.hit_intensity > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ ÑÑ‚Ð°Ñ‚Ð¸Ðº, ÐµÑÐ»Ð¸ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¾
 		if custom_static == nil then
 			custom_static = hud:AddCustomStatic("cs_psy_danger", true)
 			custom_static:wnd():SetTextST("st_psy_danger")
@@ -81,7 +81,7 @@ function PsyAntenna:update_psy_hit(dt)
 		self.hit_time					= time_global()
 
 		local power						= self.hit_amplitude*self.hit_intensity
-		if power > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: èãíîðèðóåì óðîí, åñëè çàáëîêèðîâàíî
+		if power > 0.01 and not self.disabled then -- Ray Twitty aka Shadows: Ð¸Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÑƒÑ€Ð¾Ð½, ÐµÑÐ»Ð¸ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¾
 			local psy_hit 				= hit()
 			psy_hit.power 				= power
 			psy_hit.direction 			= vector():set( 0, 0, 0 )
@@ -103,7 +103,7 @@ function PsyAntenna:generate_phantoms()
 	if time_global() - self.phantom_time > self.phantom_idle then
 		self.phantom_time				= time_global()
 		self.phantom_idle = math.random(5000,10000)
-		if math.random() < self.phantom_spawn_probability and not self.disabled then -- Ray Twitty aka Shadows: çàïðåùàåì ñïàâí íîâûõ ôàíòîìîâ, åñëè çàáëîêèðîâàíî
+		if math.random() < self.phantom_spawn_probability and not self.disabled then -- Ray Twitty aka Shadows: Ð·Ð°Ð¿Ñ€ÐµÑ‰Ð°ÐµÐ¼ ÑÐ¿Ð°Ð²Ð½ Ð½Ð¾Ð²Ñ‹Ñ… Ñ„Ð°Ð½Ñ‚Ð¾Ð¼Ð¾Ð², ÐµÑÐ»Ð¸ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¾
 			if phantom_manager:phantom_count() < self.phantom_max then
 				local radius = self.phantom_spawn_radius * ( math.random()/2.0+0.5 )
 				local ang    = self.phantom_fov * math.random() - self.phantom_fov * 0.5
@@ -134,7 +134,7 @@ function PsyAntenna:update_sound()
 	self.sound_obj_right.volume = 1 / vol - 1
 end
 function PsyAntenna:update_postprocess(pp)
-	-- Ray Twitty aka Shadows: åñëè äâèæîê óæå óäàëèë ïîñòïðîöåññ, òî ïðè âõîäå â çîíó åãî íàäî áóäåò âîññòàíîâèòü
+	-- Ray Twitty aka Shadows: ÐµÑÐ»Ð¸ Ð´Ð²Ð¸Ð¶Ð¾Ðº ÑƒÐ¶Ðµ ÑƒÐ´Ð°Ð»Ð¸Ð» Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑ, Ñ‚Ð¾ Ð¿Ñ€Ð¸ Ð²Ñ…Ð¾Ð´Ðµ Ð² Ð·Ð¾Ð½Ñƒ ÐµÐ³Ð¾ Ð½Ð°Ð´Ð¾ Ð±ÑƒÐ´ÐµÑ‚ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ
 	if not level.has_pp_effector(pp.idx) then
 		self.postprocess_count = self.postprocess_count - 1
 		return false
@@ -150,13 +150,13 @@ function PsyAntenna:update_postprocess(pp)
 	return true
 end
 function PsyAntenna:update(dt)
-	-- Ray Twitty aka Shadows: â ïåðâûé àïäåéò ÃÃ äåëüòà âñåãäà 0, ÷òî ïðèâîäèëî ê íåêîððåêòíîé ðàáîòå àëãîðèòìà è îòñóòñòâèþ ïîñòïðîöåññà
+	-- Ray Twitty aka Shadows: Ð² Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð°Ð¿Ð´ÐµÐ¹Ñ‚ Ð“Ð“ Ð´ÐµÐ»ÑŒÑ‚Ð° Ð²ÑÐµÐ³Ð´Ð° 0, Ñ‡Ñ‚Ð¾ Ð¿Ñ€Ð¸Ð²Ð¾Ð´Ð¸Ð»Ð¾ Ðº Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾Ð¹ Ñ€Ð°Ð±Ð¾Ñ‚Ðµ Ð°Ð»Ð³Ð¾Ñ€Ð¸Ñ‚Ð¼Ð° Ð¸ Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²Ð¸ÑŽ Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ°
 	if dt == 0 then
 		dt = 1
 	end
 
 	function update_intensity(intensity_base, intensity)
-		-- Ray Twitty aka Shadows: åñëè çàáëîêèðîâàíî, òî óìåíüøàåì ýôôåêò äî ìèíèìàëüíî âîçìîæíîãî, ÷òîáû åãî íå ïîä÷èñòèë äâèæîê
+		-- Ray Twitty aka Shadows: ÐµÑÐ»Ð¸ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¾, Ñ‚Ð¾ ÑƒÐ¼ÐµÐ½ÑŒÑˆÐ°ÐµÐ¼ ÑÑ„Ñ„ÐµÐºÑ‚ Ð´Ð¾ Ð¼Ð¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾Ð³Ð¾, Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÐµÐ³Ð¾ Ð½Ðµ Ð¿Ð¾Ð´Ñ‡Ð¸ÑÑ‚Ð¸Ð» Ð´Ð²Ð¸Ð¶Ð¾Ðº
 		if self.disabled then
 			intensity_base = 0.001
 		end
@@ -205,7 +205,7 @@ function PsyAntenna:save(p)
 		p:w_float(v.intensity_base)
 		p:w_u16(v.idx)
 	end
-	-- Ray Twitty aka Shadows: ñîõðàíÿåì íîâûå äàííûå
+	-- Ray Twitty aka Shadows: ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ð½Ð¾Ð²Ñ‹Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	p:w_bool(self.disabled)
 end
 function PsyAntenna:load(p)
@@ -226,18 +226,18 @@ function PsyAntenna:load(p)
 		level.add_pp_effector(k, idx, true)
 		level.set_pp_effector_factor(idx, ii)
 	end
-	-- Ray Twitty aka Shadows: çàãðóæàåì íîâûå äàííûå è ñòàâèì ìàðêåð
+	-- Ray Twitty aka Shadows: Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ð½Ð¾Ð²Ñ‹Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¸ ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð¼Ð°Ñ€ÐºÐµÑ€
 	self.disabled = p:r_bool()
 	self.data_loaded = true
 end
 
 ----------------------------------------------------------------------------------------------------
--- ëîãè÷åñêàÿ ñõåìà äëÿ space restrictor
+-- Ð»Ð¾Ð³Ð¸Ñ‡ÐµÑÐºÐ°Ñ ÑÑ…ÐµÐ¼Ð° Ð´Ð»Ñ space restrictor
 ----------------------------------------------------------------------------------------------------
 
-local state_outside = 0 -- àêòåð ñíàðóæè
-local state_inside  = 1 -- àêòåð âíóòðè
-local state_void  = 2 -- íåèçâåñòíûé ñòàòóñ
+local state_outside = 0 -- Ð°ÐºÑ‚ÐµÑ€ ÑÐ½Ð°Ñ€ÑƒÐ¶Ð¸
+local state_inside  = 1 -- Ð°ÐºÑ‚ÐµÑ€ Ð²Ð½ÑƒÑ‚Ñ€Ð¸
+local state_void  = 2 -- Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ñ‹Ð¹ ÑÑ‚Ð°Ñ‚ÑƒÑ
 
 psy_antenna = false
 
@@ -245,10 +245,10 @@ class "action_psy_antenna"
 function action_psy_antenna:__init( obj, storage )
 	self.object = obj
 	self.st     = storage
-	self.state  = state_void --' åùå íå ÿñíî, â çîíå îí, èëè íåò
+	self.state  = state_void --' ÐµÑ‰Ðµ Ð½Ðµ ÑÑÐ½Ð¾, Ð² Ð·Ð¾Ð½Ðµ Ð¾Ð½, Ð¸Ð»Ð¸ Ð½ÐµÑ‚
 end
 function action_psy_antenna:reset_scheme( loading )
-	-- Ray Twitty aka Shadows: âêëþ÷àåì çàãðóçêó ñîñòîÿíèÿ çîíû ñ ïðîâåðêîé çàãðóæåííîé èíôîðìàöèè îá ýôôåêòàõ â ÃÃ
+	-- Ray Twitty aka Shadows: Ð²ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð·Ð¾Ð½Ñ‹ Ñ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¾Ð¹ Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ð½Ð¾Ð¹ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾Ð± ÑÑ„Ñ„ÐµÐºÑ‚Ð°Ñ… Ð² Ð“Ð“
 	if loading and psy_antenna.data_loaded then
 		self.state = xr_logic.pstor_retrieve( self.object, "inside"  )
 	else
@@ -293,7 +293,7 @@ function action_psy_antenna:zone_enter()
 	psy_antenna.hit_intensity  = psy_antenna.hit_intensity  + self.st.hit_intensity
 	psy_antenna.phantom_spawn_probability = psy_antenna.phantom_spawn_probability + self.st.phantom_prob
 
-	-- Ray Twitty aka Shadows: çàõîäèì â óêðûòèå
+	-- Ray Twitty aka Shadows: Ð·Ð°Ñ…Ð¾Ð´Ð¸Ð¼ Ð² ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ðµ
 	if self.st.shelter then
 		psy_antenna.disabled = true
 	end
@@ -321,7 +321,7 @@ function action_psy_antenna:zone_leave()
 
 	psy_antenna.phantom_spawn_probability = psy_antenna.phantom_spawn_probability - self.st.phantom_prob
 
-	-- Ray Twitty aka Shadows: âûõîäèì èç óêðûòèÿ
+	-- Ray Twitty aka Shadows: Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ð¼ Ð¸Ð· ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ñ
 	if self.st.shelter then
 		psy_antenna.disabled = false
 	end
@@ -336,7 +336,7 @@ function action_psy_antenna:zone_leave()
 	end
 end
 function action_psy_antenna:save()
-	xr_logic.pstor_store( self.object, "inside", self.state ) -- Ray Twitty aka Shadows: ñîõðàíÿåì èíôîðìàöèþ î òîì, íàõîäèìñÿ â çîíå èëè íåò
+	xr_logic.pstor_store( self.object, "inside", self.state ) -- Ray Twitty aka Shadows: ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð¾ Ñ‚Ð¾Ð¼, Ð½Ð°Ñ…Ð¾Ð´Ð¸Ð¼ÑÑ Ð² Ð·Ð¾Ð½Ðµ Ð¸Ð»Ð¸ Ð½ÐµÑ‚
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -372,7 +372,7 @@ function add_to_binder(npc, storage)
 		psy_antenna:construct()
 	end
 
-	-- Çàðåãèñòðèðîâàòü âñå actions, â êîòîðûõ äîëæåí áûòü âûçâàí ìåòîä reset_scheme ïðè èçìåíåíèè íàñòðîåê ñõåìû:
+	-- Ð—Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð²ÑÐµ actions, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½ Ð¼ÐµÑ‚Ð¾Ð´ reset_scheme Ð¿Ñ€Ð¸ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ð¸ Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº ÑÑ…ÐµÐ¼Ñ‹:
 	storage.actions[ action_psy_antenna( npc, storage ) ] = true
 end
 
@@ -390,7 +390,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.phantom_prob  = get_field_number("phantom_prob", 0) * 0.01
 	st.mute_sound_threshold   = get_field_number("mute_sound_threshold", 0)
 
-	-- Ray Twitty aka Shadows: ÷èòàåì ïàðàìåòðû óêðûòèÿ
+	-- Ray Twitty aka Shadows: Ñ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑƒÐºÑ€Ñ‹Ñ‚Ð¸Ñ
 	st.shelter				= ini:r_bool_ex(section, "shelter", false)
 	if st.shelter then
 		st.intensity		= 0

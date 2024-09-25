@@ -1,10 +1,10 @@
 ----------------------------------------------------------------------------------------------------
 -- Sleeper
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Руслан Диденко (Stohe)
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Р СѓСЃР»Р°РЅ Р”РёРґРµРЅРєРѕ (Stohe)
 ----------------------------------------------------------------------------------------------------
--- 27.12.2004 - [Zmey] Перевел схему на использование move manager.
--- Bak : исправил некорректную работу с путями
+-- 27.12.2004 - [Zmey] РџРµСЂРµРІРµР» СЃС…РµРјСѓ РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ move manager.
+-- Bak : РёСЃРїСЂР°РІРёР» РЅРµРєРѕСЂСЂРµРєС‚РЅСѓСЋ СЂР°Р±РѕС‚Сѓ СЃ РїСѓС‚СЏРјРё
 
 local sounds = {}
 
@@ -14,7 +14,7 @@ local state_sleeping = 1
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Константа
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°
 class "evaluator_need_sleeper" (property_evaluator)
 function evaluator_need_sleeper:__init(name, storage) super (nil, name)
 	self.st = storage
@@ -27,7 +27,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
--- Обычное поведение
+-- РћР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
 class "action_sleeper_activity" (action_base)
 function action_sleeper_activity:__init (npc, action_name, storage) super(nil, action_name)
 	self.st = storage
@@ -61,7 +61,7 @@ function action_sleeper_activity:reset_scheme()
 			self.st.path_look = nil
 			self.st.path_look_info = nil
 		elseif num_wayp == 2 then
-			-- лежим на точке 0, смотрим на точку 1
+			-- Р»РµР¶РёРј РЅР° С‚РѕС‡РєРµ 0, СЃРјРѕС‚СЂРёРј РЅР° С‚РѕС‡РєСѓ 1
 			self.st.path_walk = self.st.path_main
 			self.st.path_walk_info = utils.path_parse_waypoints_from_arglist(self.st.path_main,
 				2, { 1, "wp00" }, { 0, "wp01|ret=1" } )
@@ -75,9 +75,9 @@ function action_sleeper_activity:reset_scheme()
 		end
 	end
 
-	-- Последний параметр (true) отключает валидацию путей, чтобы не возникало ошибки из-за использования
-	-- одноточечного path_walk пути без соответствующего path_look.
-	self.move_mgr.current_point_index = 0	-- не ходить на точку 1!
+	-- РџРѕСЃР»РµРґРЅРёР№ РїР°СЂР°РјРµС‚СЂ (true) РѕС‚РєР»СЋС‡Р°РµС‚ РІР°Р»РёРґР°С†РёСЋ РїСѓС‚РµР№, С‡С‚РѕР±С‹ РЅРµ РІРѕР·РЅРёРєР°Р»Рѕ РѕС€РёР±РєРё РёР·-Р·Р° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+	-- РѕРґРЅРѕС‚РѕС‡РµС‡РЅРѕРіРѕ path_walk РїСѓС‚Рё Р±РµР· СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ path_look.
+	self.move_mgr.current_point_index = 0	-- РЅРµ С…РѕРґРёС‚СЊ РЅР° С‚РѕС‡РєСѓ 1!
 	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,
 		nil, nil, { obj = self, func = self.callback }, true )
 	self.was_reset = true
@@ -86,7 +86,7 @@ function action_sleeper_activity:activate_scheme()
         self.was_reset = false
 end
 function action_sleeper_activity:callback(mode, number, index)
-	-- если таки пришли в точку 1, отправиться в 0
+	-- РµСЃР»Рё С‚Р°РєРё РїСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ 1, РѕС‚РїСЂР°РІРёС‚СЊСЃСЏ РІ 0
 	if index == 1 then
 		self.move_mgr.current_point_index = 0
 		self.object:set_patrol_path(self.st.path_walk,patrol.start,patrol.start,true)
@@ -163,7 +163,7 @@ function add_to_binder(npc, storage)
 	action:add_effect(wp_prop_need_sleeper_false)
 	manager:add_action(operator_action_sleeper, action)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	storage.actions[ action ] = true
 
 	action = manager:action(xr_actions_id_alife)
@@ -176,7 +176,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.path_main = utils.cfg_get_string(ini, section, "path_main", npc, true,  gulag_name)
 	st.wakeable	 = utils.cfg_get_bool(ini, section, "wakeable", npc, false)
 
-	st.path_walk = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще не загружены.
+	st.path_walk = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 	st.path_walk_info = nil
 	st.path_look = nil
 	st.path_look_info = nil

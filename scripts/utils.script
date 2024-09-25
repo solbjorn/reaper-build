@@ -1,21 +1,21 @@
 --[[
-ОПИСАНИЕ ФУНКЦИЙ
+РћРџРРЎРђРќРР• Р¤РЈРќРљР¦РР™
 
--- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
+-- РџРµСЂРµРІРѕРґРёС‚ РїРµСЂРµРјРµРЅРЅСѓСЋ Р»СЋР±РѕРіРѕ С‚РёРїР° (РІРєР»СЋС‡Р°СЏ nil) РІ СЃС‚СЂРѕРєСѓ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё.
 function to_str(what)
 
--- Создает и возвращает копию вектора
+-- РЎРѕР·РґР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РІРµРєС‚РѕСЂР°
 function vector_copy_by_val(vec)
 
--- Настройка параметров игровых объектов:
+-- РќР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµС‚СЂРѕРІ РёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ:
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 function cfg_get_string(char_ini, section, field, object, mandatory, gulag_name, default_val)
 function cfg_get_number(char_ini, section, field, object, mandatory, default_val)
 
--- Проверяет, находится ли stalker рядом с точкой path_point пути patrol_path
+-- РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё stalker СЂСЏРґРѕРј СЃ С‚РѕС‡РєРѕР№ path_point РїСѓС‚Рё patrol_path
 function stalker_at_waypoint(stalker, patrol_path, path_point)
 
--- Послать stalker в заданную точку patrol_path(path_point)
+-- РџРѕСЃР»Р°С‚СЊ stalker РІ Р·Р°РґР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ patrol_path(path_point)
 function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 
 --]]
@@ -26,7 +26,7 @@ local string_sub  = string.sub
 local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 
--- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
+-- РџРµСЂРµРІРѕРґРёС‚ РїРµСЂРµРјРµРЅРЅСѓСЋ Р»СЋР±РѕРіРѕ С‚РёРїР° (РІРєР»СЋС‡Р°СЏ nil) РІ СЃС‚СЂРѕРєСѓ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё.
 function to_str(what)
 	if what == nil then
 		return "<nil>"
@@ -37,32 +37,32 @@ function to_str(what)
 	end
 end
 
---' Сравнивает два вектора
+--' РЎСЂР°РІРЅРёРІР°РµС‚ РґРІР° РІРµРєС‚РѕСЂР°
 function vector_cmp(a, b)
     return a.x == b.x and a.y == b.y and a.z == b.z
 end
 
---' Сравнивает два вектора с заданной погрешностью
+--' РЎСЂР°РІРЅРёРІР°РµС‚ РґРІР° РІРµРєС‚РѕСЂР° СЃ Р·Р°РґР°РЅРЅРѕР№ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊСЋ
 function vector_cmp_prec(a, b, d)
     return math.abs(a.x - b.x) <= d and
            math.abs(a.y - b.y) <= d and
            math.abs(a.z - b.z) <= d
 end
 
--- Создает и возвращает копию вектора
+-- РЎРѕР·РґР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РІРµРєС‚РѕСЂР°
 function vector_copy_by_val(vec)
 	return vector():set(vec)
 end
 
--- Настройка параметра типа bool у игрового объекта.
+-- РќР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµС‚СЂР° С‚РёРїР° bool Сѓ РёРіСЂРѕРІРѕРіРѕ РѕР±СЉРµРєС‚Р°.
 --
--- char_ini - указатель на customdata (обычно object:spawn_ini())
--- section - имя секции в customdata
--- field - имя поля в customdata
--- object - игровой объект, от которого будет взято имя для сообщения об ошибке
--- mandatory - поле обязательно должно быть задано
+-- char_ini - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° customdata (РѕР±С‹С‡РЅРѕ object:spawn_ini())
+-- section - РёРјСЏ СЃРµРєС†РёРё РІ customdata
+-- field - РёРјСЏ РїРѕР»СЏ РІ customdata
+-- object - РёРіСЂРѕРІРѕР№ РѕР±СЉРµРєС‚, РѕС‚ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ РІР·СЏС‚Рѕ РёРјСЏ РґР»СЏ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ
+-- mandatory - РїРѕР»Рµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ Р·Р°РґР°РЅРѕ
 --
--- Возвращает true или false
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ true РёР»Рё false
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 	if mandatory == nil then
 		abort("section '%s': wrong arguments order in call to cfg_get_bool", section)
@@ -119,7 +119,7 @@ function cfg_get_number(char_ini, section, field, object, mandatory, default_val
 	end
 end
 
--- Проверяет, находится ли stalker рядом с точкой path_point пути patrol_path
+-- РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё stalker СЂСЏРґРѕРј СЃ С‚РѕС‡РєРѕР№ path_point РїСѓС‚Рё patrol_path
 function stalker_at_waypoint(stalker, patrol_path, path_point)
 	local stalker_pos = stalker:position()
 	local distance = stalker_pos:distance_to_sqr(patrol_path:point(path_point))
@@ -270,17 +270,17 @@ function no_need_to_rotate_xz(npc, target_pos)
 	return y < 0.3
 end
 
--- Перевод угла из радианов в градусы
+-- РџРµСЂРµРІРѕРґ СѓРіР»Р° РёР· СЂР°РґРёР°РЅРѕРІ РІ РіСЂР°РґСѓСЃС‹
 function rad2deg(r)
 	return r * 180.0 / math.pi
 end
 
--- Перевод угла из градусов в радианы
+-- РџРµСЂРµРІРѕРґ СѓРіР»Р° РёР· РіСЂР°РґСѓСЃРѕРІ РІ СЂР°РґРёР°РЅС‹
 function deg2rad(d)
 	return d * math.pi / 180.0
 end
 
--- угол между двумя векторами в градусах.
+-- СѓРіРѕР» РјРµР¶РґСѓ РґРІСѓРјСЏ РІРµРєС‚РѕСЂР°РјРё РІ РіСЂР°РґСѓСЃР°С….
 function angle_diff(a1, a2)
 	local b1 = a1:normalize()
 	local b2 = a2:normalize()
@@ -289,7 +289,7 @@ function angle_diff(a1, a2)
 	return rad2deg(math.acos(math.abs(dotp)))
 end
 
--- true, если нужно поворачивать влево
+-- true, РµСЃР»Рё РЅСѓР¶РЅРѕ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊ РІР»РµРІРѕ
 function angle_left(dir1, dir2)
 	local dir_res = vector()
 	dir_res:crossproduct(dir1, dir2)
@@ -326,8 +326,8 @@ function npc_in_zone(npc, zone)
 	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
 end
 
--- отослать в ближайшую разрешённую ноду по направлению к заданной.
--- возвращает vertex_id, в которое отправил персонажа
+-- РѕС‚РѕСЃР»Р°С‚СЊ РІ Р±Р»РёР¶Р°Р№С€СѓСЋ СЂР°Р·СЂРµС€С‘РЅРЅСѓСЋ РЅРѕРґСѓ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ Рє Р·Р°РґР°РЅРЅРѕР№.
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ vertex_id, РІ РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂР°РІРёР» РїРµСЂСЃРѕРЅР°Р¶Р°
 function send_to_nearest_accessible_vertex( npc, v_id )
 	if not npc:accessible( v_id ) then
 		v_id = npc:accessible_nearest(level.vertex_position(v_id), vector():set(0, 0, 0))
@@ -338,8 +338,8 @@ function send_to_nearest_accessible_vertex( npc, v_id )
 	return v_id
 end
 
--- происходит ли в данный момент смена уровня?
--- нужно для того, чтобы объекты знали, какую информацию записывать при сохранении, а какую нет
+-- РїСЂРѕРёСЃС…РѕРґРёС‚ Р»Рё РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЃРјРµРЅР° СѓСЂРѕРІРЅСЏ?
+-- РЅСѓР¶РЅРѕ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РѕР±СЉРµРєС‚С‹ Р·РЅР°Р»Рё, РєР°РєСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Р·Р°РїРёСЃС‹РІР°С‚СЊ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё, Р° РєР°РєСѓСЋ РЅРµС‚
 function level_changing()
 	if not alife() then return false end
 

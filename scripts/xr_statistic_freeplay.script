@@ -128,7 +128,7 @@ function freeplay_statistic:get_found_pda_discount()
 	return res
 end
 
---' Функция проверки достижения актёром ранга у свободы(вызывается из bind_actor.script из actor_binder:on_item_take)
+--' Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РґРѕСЃС‚РёР¶РµРЅРёСЏ Р°РєС‚С‘СЂРѕРј СЂР°РЅРіР° Сѓ СЃРІРѕР±РѕРґС‹(РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· bind_actor.script РёР· actor_binder:on_item_take)
 function freeplay_statistic:check_found_pda_count()
 
      self.pda_found = self.pda_found + 1
@@ -220,7 +220,7 @@ function freeplay_statistic:check_monster_killed_count(npc)
     end
 end
 
---' Функция проверки достижения актёром ранга у эколога(вызывается из bind_actor.script из actor_binder:on_item_take)
+--' Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РґРѕСЃС‚РёР¶РµРЅРёСЏ Р°РєС‚С‘СЂРѕРј СЂР°РЅРіР° Сѓ СЌРєРѕР»РѕРіР°(РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· bind_actor.script РёР· actor_binder:on_item_take)
 
 function freeplay_statistic:get_found_artefacts_ranks()
 -- returns found secret rank in %
@@ -295,7 +295,7 @@ function freeplay_statistic:get_actor_trust_ranks()
 	return res
 end
 
---' Функция проверки достижения актёром ранга(вызывается из bind_actor.script из actor_binder:update)
+--' Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РґРѕСЃС‚РёР¶РµРЅРёСЏ Р°РєС‚С‘СЂРѕРј СЂР°РЅРіР°(РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· bind_actor.script РёР· actor_binder:update)
 function freeplay_statistic:check_actor_rank()
     local actor_rank = Actor:character_rank()
     local trader_ranks = {
@@ -337,7 +337,7 @@ function freeplay_statistic:check_found_item(obj)
   end
 end
 
---' Сохранение статистики.
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ СЃС‚Р°С‚РёСЃС‚РёРєРё.
 function freeplay_statistic:save(packet)
     packet:w_u32(self.stalker_killed)
     packet:w_u32(self.secrets_found)
@@ -355,7 +355,7 @@ function freeplay_statistic:save(packet)
     end
 end
 
---' Загрузка статистики.
+--' Р—Р°РіСЂСѓР·РєР° СЃС‚Р°С‚РёСЃС‚РёРєРё.
 
 function freeplay_statistic:load(reader)
     self.loaded = true

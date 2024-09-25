@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Respawner. Схема обновления популяции всего всего всего в симуляции.
-by Stohe (Диденко Руслан)
+Respawner. РЎС…РµРјР° РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕРїСѓР»СЏС†РёРё РІСЃРµРіРѕ РІСЃРµРіРѕ РІСЃРµРіРѕ РІ СЃРёРјСѓР»СЏС†РёРё.
+by Stohe (Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ)
 --------------------------------------------------------------------------------------------------------------------]]
 
 local often_min  = 16
@@ -24,7 +24,7 @@ local idle_spawn_preset_max = {
 	once   =       -100 * 3600
 }
 
--- Список респавнеров, для сбора статистики
+-- РЎРїРёСЃРѕРє СЂРµСЃРїР°РІРЅРµСЂРѕРІ, РґР»СЏ СЃР±РѕСЂР° СЃС‚Р°С‚РёСЃС‚РёРєРё
 local respawners = {}
 local respawners_by_parent = {}
 
@@ -37,7 +37,7 @@ local table_remove = table.remove
 local CTime_0 = game.CTime()
 
 ----------------------------------------------------------------------------------------------------------------------
--- Разные полезные функции
+-- Р Р°Р·РЅС‹Рµ РїРѕР»РµР·РЅС‹Рµ С„СѓРЅРєС†РёРё
 ----------------------------------------------------------------------------------------------------------------------
 function r_bool( spawn_ini, section, line, default )
   if spawn_ini:line_exist( section, line ) then
@@ -57,7 +57,7 @@ end
 
 function r_2nums( spawn_ini, section, line, def1, def2 )
   if spawn_ini:line_exist( section, line ) then
-    -- если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+    -- РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 		local t = string.parse_names( spawn_ini:r_string( section, line ) )
 		return (t[1] or def1), (t[2] or def2)
   else
@@ -75,16 +75,16 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 		local spawn = {}
 		local spawn_section = t[k]
 		spawn.section = spawn_section
-		-- Проверяем что это не последняя запись
+		-- РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ
 		if t[k+1] ~= nil then
 			local p = tonumber(t[k+1])
-			-- проверяем что вторым числом задана вероятность, а не другая секция спавну
+			-- РїСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РІС‚РѕСЂС‹Рј С‡РёСЃР»РѕРј Р·Р°РґР°РЅР° РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ, Р° РЅРµ РґСЂСѓРіР°СЏ СЃРµРєС†РёСЏ СЃРїР°РІРЅСѓ
 			if p then
-				-- забиваем число
+				-- Р·Р°Р±РёРІР°РµРј С‡РёСЃР»Рѕ
 				spawn.prob = p
 				k = k + 2
 			else
-				-- забиваем дефолт 1
+				-- Р·Р°Р±РёРІР°РµРј РґРµС„РѕР»С‚ 1
 				spawn.prob = 1
 				k = k + 1
 			end
@@ -94,7 +94,7 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 		end
 		ret_table[#ret_table+1] = spawn
 
-		-- Вычитываем настройки секций респавна и кешируем их.
+		-- Р’С‹С‡РёС‚С‹РІР°РµРј РЅР°СЃС‚СЂРѕР№РєРё СЃРµРєС†РёР№ СЂРµСЃРїР°РІРЅР° Рё РєРµС€РёСЂСѓРµРј РёС….
 		if not item_spawn and sectSpawnProps[spawn_section] == nil then
 			local check = true
 			local custom_data = config:r_string_cache(spawn_section, "custom_data")
@@ -125,17 +125,17 @@ function r_spawns( namelist, sectSpawnProps, item_spawn)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
--- Серверный объект спавнера
+-- РЎРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ СЃРїР°РІРЅРµСЂР°
 ----------------------------------------------------------------------------------------------------------------------
 class "se_respawn" ( cse_alife_smart_zone )
 function se_respawn:__init( section ) super( section )
   self.spawned_obj = {}
-  -- Таблица для кеширования свойств секций респавна.
+  -- РўР°Р±Р»РёС†Р° РґР»СЏ РєРµС€РёСЂРѕРІР°РЅРёСЏ СЃРІРѕР№СЃС‚РІ СЃРµРєС†РёР№ СЂРµСЃРїР°РІРЅР°.
   self.sectSpawnProps = {}
 
 	self.respawn_time = CTime_0
 end
--- сохранение
+-- СЃРѕС…СЂР°РЅРµРЅРёРµ
 function se_respawn:STATE_Write( packet )
   cse_alife_smart_zone.STATE_Write( self, packet )
 
@@ -153,7 +153,7 @@ function se_respawn:STATE_Write( packet )
 	end
 end
 
--- восстановление
+-- РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ
 function se_respawn:STATE_Read( packet, size )
   cse_alife_smart_zone.STATE_Read( self, packet, size )
 
@@ -164,8 +164,8 @@ function se_respawn:STATE_Read( packet, size )
 	end
 end
 
--- инициализация объекта.
--- вызывается симулятором.
+-- РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р°.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃРёРјСѓР»СЏС‚РѕСЂРѕРј.
 function se_respawn:on_register()
   cse_alife_smart_zone.on_register( self )
 	init_respawn_params(self)
@@ -174,7 +174,7 @@ end
 function init_respawn_params(obj, reset)
 	amk_respawner_control[obj:name()] = obj
 
-	-- Вычитываем настройки спауна
+	-- Р’С‹С‡РёС‚С‹РІР°РµРј РЅР°СЃС‚СЂРѕР№РєРё СЃРїР°СѓРЅР°
 	local ini = obj:spawn_ini()
 	local section_name = "respawn"
 	if not ini:section_exist(section_name) then
@@ -225,7 +225,7 @@ function init_respawn_params(obj, reset)
 		obj.idle_spawn_max = obj.idle_spawn_min
 	end
 
-	--' Вычитка пресетов
+	--' Р’С‹С‡РёС‚РєР° РїСЂРµСЃРµС‚РѕРІ
 	local min_temp = 0
 	if idle_spawn_preset[obj.idle_spawn_min] ~= nil then
 		obj.idle_spawn_min = idle_spawn_preset[obj.idle_spawn_min]
@@ -253,18 +253,18 @@ function init_respawn_params(obj, reset)
 	obj.parent = r_field_num("parent", nil)
 
 	if reset ~= nil and reset == true then
-		-- производим первичную инициализацию
+		-- РїСЂРѕРёР·РІРѕРґРёРј РїРµСЂРІРёС‡РЅСѓСЋ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ
 		obj.respawn_time = game.get_game_time()
 	end
 
-	-- Для сбора статистики сохраняем указатель на респавнер
+	-- Р”Р»СЏ СЃР±РѕСЂР° СЃС‚Р°С‚РёСЃС‚РёРєРё СЃРѕС…СЂР°РЅСЏРµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЂРµСЃРїР°РІРЅРµСЂ
 	respawners[obj:name()] = obj
 	if obj.parent ~= nil then
 		respawners_by_parent[obj.parent] = obj
 	end
 end
 
--- Создаем объект
+-- РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚
 function se_respawn:create(prob)
 	if prob == nil then
 		abort("RESPAWN[%s] - spawn probability is not set", tostring(self:name()))
@@ -281,8 +281,8 @@ function se_respawn:create(prob)
   if math_random(100) <= tonumber(prob) then
     local spawn_section = ""
     local sum = 0
-    -- Производим рандомную взвешенную выборку
-    -- с учетом уже заспавленного количества человек.
+    -- РџСЂРѕРёР·РІРѕРґРёРј СЂР°РЅРґРѕРјРЅСѓСЋ РІР·РІРµС€РµРЅРЅСѓСЋ РІС‹Р±РѕСЂРєСѓ
+    -- СЃ СѓС‡РµС‚РѕРј СѓР¶Рµ Р·Р°СЃРїР°РІР»РµРЅРЅРѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° С‡РµР»РѕРІРµРє.
     for k,v in ipairs(self.respawn_section) do
         sum = sum + v.prob
     end
@@ -339,11 +339,11 @@ function se_respawn:create(prob)
 	end
 	return false
 end
--- Попытка спаунить объекты. Анализируется сколько уже заспавнено и выбирается один из механизмов - либо
--- мы доспавниваем до минимального количества, либо спавним с заданной вероятностью
+-- РџРѕРїС‹С‚РєР° СЃРїР°СѓРЅРёС‚СЊ РѕР±СЉРµРєС‚С‹. РђРЅР°Р»РёР·РёСЂСѓРµС‚СЃСЏ СЃРєРѕР»СЊРєРѕ СѓР¶Рµ Р·Р°СЃРїР°РІРЅРµРЅРѕ Рё РІС‹Р±РёСЂР°РµС‚СЃСЏ РѕРґРёРЅ РёР· РјРµС…Р°РЅРёР·РјРѕРІ - Р»РёР±Рѕ
+-- РјС‹ РґРѕСЃРїР°РІРЅРёРІР°РµРј РґРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°, Р»РёР±Рѕ СЃРїР°РІРЅРёРј СЃ Р·Р°РґР°РЅРЅРѕР№ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊСЋ
 function se_respawn:spawn()
 	if not self.spawn_once then
-		-- Пробегаемся по списку уже заспавненных объектов и удаляем из них мертвые либо уничтоженные.
+		-- РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ СЃРїРёСЃРєСѓ СѓР¶Рµ Р·Р°СЃРїР°РІРЅРµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ Рё СѓРґР°Р»СЏРµРј РёР· РЅРёС… РјРµСЂС‚РІС‹Рµ Р»РёР±Рѕ СѓРЅРёС‡С‚РѕР¶РµРЅРЅС‹Рµ.
 		local parentid = self.parent and id_by_sid(self.parent) or -1
 		local v, obj
 		for i = #self.spawned_obj, 1, -1 do
@@ -372,7 +372,7 @@ function se_respawn:spawn()
 	if self.spawn_once and not self.already_once_spawned then
 		self.already_once_spawned = true
 	end
-  -- экстренный спаун минимального количества объектов
+  -- СЌРєСЃС‚СЂРµРЅРЅС‹Р№ СЃРїР°СѓРЅ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° РѕР±СЉРµРєС‚РѕРІ
   if #self.spawned_obj < self.min_count then
     while #self.spawned_obj < self.min_count do
       if self:create(100) == false then
@@ -382,7 +382,7 @@ function se_respawn:spawn()
     return
   end
 
-  -- делаем несколько попыток заспаунить объект.
+  -- РґРµР»Р°РµРј РЅРµСЃРєРѕР»СЊРєРѕ РїРѕРїС‹С‚РѕРє Р·Р°СЃРїР°СѓРЅРёС‚СЊ РѕР±СЉРµРєС‚.
   for i=1,self.max_spawn do
     if self.max_count ~= -1 and #self.spawned_obj >= self.max_count then
       return
@@ -392,8 +392,8 @@ function se_respawn:spawn()
     end
   end
 end
---' Удаляем уже заспавненный объект из списка заспавненных
---' Используется только  для ящиком со шмотками в смарттеррейнах
+--' РЈРґР°Р»СЏРµРј СѓР¶Рµ Р·Р°СЃРїР°РІРЅРµРЅРЅС‹Р№ РѕР±СЉРµРєС‚ РёР· СЃРїРёСЃРєР° Р·Р°СЃРїР°РІРЅРµРЅРЅС‹С…
+--' РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ  РґР»СЏ СЏС‰РёРєРѕРј СЃРѕ С€РјРѕС‚РєР°РјРё РІ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°С…
 function se_respawn:remove_spawned(id)
 	for i,v in ipairs(self.spawned_obj) do
 		if id == v then
@@ -407,10 +407,10 @@ function se_respawn:set_respawn_time()
 	idle_time:setHMSms(math_random(12, 24), 0, math_random(self.idle_spawn_min, self.idle_spawn_max), 0)
 	self.respawn_time = game.get_game_time() + idle_time
 end
--- Обновление респавнера. В зависимости от настроек обновляется либо только в офлайне, либо и там и там.
+-- РћР±РЅРѕРІР»РµРЅРёРµ СЂРµСЃРїР°РІРЅРµСЂР°. Р’ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°СЃС‚СЂРѕРµРє РѕР±РЅРѕРІР»СЏРµС‚СЃСЏ Р»РёР±Рѕ С‚РѕР»СЊРєРѕ РІ РѕС„Р»Р°Р№РЅРµ, Р»РёР±Рѕ Рё С‚Р°Рј Рё С‚Р°Рј.
 function se_respawn:execute()
 	if self.already_once_spawned==true then return end
-  --' Выходим, если у нас установлен событийный спавн.
+  --' Р’С‹С…РѕРґРёРј, РµСЃР»Рё Сѓ РЅР°СЃ СѓСЃС‚Р°РЅРѕРІР»РµРЅ СЃРѕР±С‹С‚РёР№РЅС‹Р№ СЃРїР°РІРЅ.
   if self.idle_spawn_min == -1 then
     return
   end
@@ -420,18 +420,18 @@ function se_respawn:execute()
 			self:set_respawn_time()
 		else
 			self.respawn_time = CTime_0
-			-- Производим попытку заспаунить объекты
+			-- РџСЂРѕРёР·РІРѕРґРёРј РїРѕРїС‹С‚РєСѓ Р·Р°СЃРїР°СѓРЅРёС‚СЊ РѕР±СЉРµРєС‚С‹
 			self:spawn()
 		end
 	end
 end
--- Обновление в офлайне
+-- РћР±РЅРѕРІР»РµРЅРёРµ РІ РѕС„Р»Р°Р№РЅРµ
 function se_respawn:update()
   cse_alife_smart_zone.update( self )
 
   self:execute()
 end
--- Обновление в онлайне
+-- РћР±РЅРѕРІР»РµРЅРёРµ РІ РѕРЅР»Р°Р№РЅРµ
 function se_respawn:update_online()
 	if self.respawn_radius == -1 then
 		return

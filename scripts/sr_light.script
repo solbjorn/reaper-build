@@ -69,7 +69,7 @@ function check_light(stalker)
 		return nil
 	end
 
-	--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+	--' Р¤РѕРЅР°СЂРёРєРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІС‹РєР»СЋС‡РµРЅС‹ РІ Р±РѕСЋ. РќРѕ РµСЃР»Рё РІ Р±РѕСЋ РёРґРµС‚ РїРѕРёСЃРє РІСЂР°РіР° - С‚Рѕ РІРєР»СЋС‡РµРЅС‹.
 	local enemy = stalker:best_enemy()
 	if enemy ~= nil and enemy:alive() and (enemy:is_actor() or (enemy:is_stalker() and enemy:character_community() ~= "zombied")) then
 		return switch_light(torch, false)
@@ -77,7 +77,7 @@ function check_light(stalker)
 
 	local light, forced
 
-	--' Проверка по лайтзонам
+	--' РџСЂРѕРІРµСЂРєР° РїРѕ Р»Р°Р№С‚Р·РѕРЅР°Рј
 	for k, v in pairs(light_zones) do
 		light, forced = v:check_stalker(stalker)
 		if forced == true then
@@ -85,23 +85,23 @@ function check_light(stalker)
 		end
 	end
 
-	--' Проверка по времени суток (ночью всегда включено)
+	--' РџСЂРѕРІРµСЂРєР° РїРѕ РІСЂРµРјРµРЅРё СЃСѓС‚РѕРє (РЅРѕС‡СЊСЋ РІСЃРµРіРґР° РІРєР»СЋС‡РµРЅРѕ)
 	local htime = level.get_time_hours()
 	light = htime <= 4 or htime >= 22
 
-	--' Проверка на индор-аутдор (внутри всегда включено)
+	--' РџСЂРѕРІРµСЂРєР° РЅР° РёРЅРґРѕСЂ-Р°СѓС‚РґРѕСЂ (РІРЅСѓС‚СЂРё РІСЃРµРіРґР° РІРєР»СЋС‡РµРЅРѕ)
 	if light == false then
 		light = level.indoor() or level.rain_factor() > 0.07
 	end
 
-	--' Проверка по активному действию
+	--' РџСЂРѕРІРµСЂРєР° РїРѕ Р°РєС‚РёРІРЅРѕРјСѓ РґРµР№СЃС‚РІРёСЋ
 	if light == true then
-		--' Фонарики должны быть выключены у костра
+		--' Р¤РѕРЅР°СЂРёРєРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІС‹РєР»СЋС‡РµРЅС‹ Сѓ РєРѕСЃС‚СЂР°
 		local scheme = db.storage[stalker:id()].active_scheme
 		local state = state_mgr.get_state(stalker)
 		if scheme == "kamp" or
 			scheme == "camper" or
-			-- И во время сна
+			-- Р РІРѕ РІСЂРµРјСЏ СЃРЅР°
 			scheme == "sleeper" or
 			state == "sleep" or
 			state == "sleep_sit"

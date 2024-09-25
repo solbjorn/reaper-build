@@ -9,7 +9,7 @@ function vector_cmp_prec(a, b, d)
 				math_abs(a.z - b.z) <= d
 end
 
---' Ñìîòðèì ëè ìû ñåé÷àñ òóäà, êóäà íóæíî èëè íåò?
+--' Ð¡Ð¼Ð¾Ñ‚Ñ€Ð¸Ð¼ Ð»Ð¸ Ð¼Ñ‹ ÑÐµÐ¹Ñ‡Ð°Ñ Ñ‚ÑƒÐ´Ð°, ÐºÑƒÐ´Ð° Ð½ÑƒÐ¶Ð½Ð¾ Ð¸Ð»Ð¸ Ð½ÐµÑ‚?
 class "eva_state_mgr_direction" (property_evaluator)
 function eva_state_mgr_direction:__init(name, st) super (nil, name)
 	self.st = st
@@ -18,7 +18,7 @@ end
 function eva_state_mgr_direction:evaluate()
     local sight_type = self.object:sight_params()
 
-	-- Åñëè çàäàí îáúåêò íà êîòîðûé ñìîòðåòü
+	-- Ð•ÑÐ»Ð¸ Ð·Ð°Ð´Ð°Ð½ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ
 	if self.st.look_object ~= nil then
 		if sight_type.m_object == nil or
 		   sight_type.m_object:id() ~= self.st.look_object or
@@ -31,7 +31,7 @@ function eva_state_mgr_direction:evaluate()
 		return true
 	end
 
-	-- Åñëè çàäàíà ïîçèöèÿ â êîòîðóþ ñìîòðåòü
+	-- Ð•ÑÐ»Ð¸ Ð·Ð°Ð´Ð°Ð½Ð° Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð² ÐºÐ¾Ñ‚Ð¾Ñ€ÑƒÑŽ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ
 	if self.st.look_position ~= nil then
 		if sight_type.m_sight_type ~= look_position_type(self, self.st) then
 			return false
@@ -49,13 +49,13 @@ function eva_state_mgr_direction:evaluate()
 		return true
 	end
 
-	-- Åñëè íå çàäàíî êóäà ñìîòðåòü.
-	-- È åñëè ìû äî ýòîãî êóäà òî ñìîòðåëè
+	-- Ð•ÑÐ»Ð¸ Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð¾ ÐºÑƒÐ´Ð° ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ.
+	-- Ð˜ ÐµÑÐ»Ð¸ Ð¼Ñ‹ Ð´Ð¾ ÑÑ‚Ð¾Ð³Ð¾ ÐºÑƒÐ´Ð° Ñ‚Ð¾ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÐ»Ð¸
 	if sight_type.m_object ~= nil then
 		return false
 	end
 
-	--' Èëè åñëè ìû ñìîòðåëè íå òàê êàê íàäî
+	--' Ð˜Ð»Ð¸ ÐµÑÐ»Ð¸ Ð¼Ñ‹ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÐ»Ð¸ Ð½Ðµ Ñ‚Ð°Ðº ÐºÐ°Ðº Ð½Ð°Ð´Ð¾
 	if sight_type.m_sight_type ~= look_position_type(self, self.st) then
 		return false
 	end
@@ -85,7 +85,7 @@ function eva_state_mgr_direction_search:evaluate()
 	return true
 end
 
---' Ïîâîðà÷èâàåìñÿ ëè ìû ñåé÷àñ
+--' ÐŸÐ¾Ð²Ð¾Ñ€Ð°Ñ‡Ð¸Ð²Ð°ÐµÐ¼ÑÑ Ð»Ð¸ Ð¼Ñ‹ ÑÐµÐ¹Ñ‡Ð°Ñ
 class "eva_state_mgr_direction_turning" (property_evaluator)
 function eva_state_mgr_direction_turning:__init(name, st) super (nil, name)
 	self.st = st
@@ -94,7 +94,7 @@ function eva_state_mgr_direction_turning:evaluate()
 	return self.object:is_body_turning()
 end
 
---' Âêëþ÷àåì ïîâîðîò
+--' Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚
 class "act_state_mgr_direction_turn" (action_base)
 function act_state_mgr_direction_turn:__init(name, st) super (nil, name)
 	self.st = st
@@ -126,7 +126,7 @@ function act_state_mgr_direction_turn:turn()
 	end
 end
 
---' Âêëþ÷àåì ïîâîðîò â íèêóäà
+--' Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚ Ð² Ð½Ð¸ÐºÑƒÐ´Ð°
 class "act_state_mgr_direction_search" (action_base)
 function act_state_mgr_direction_search:__init(name, st) super (nil, name)
 	self.st = st
@@ -161,8 +161,8 @@ local look_direction_states = {
 	}
 
 function look_object_type(npc, st)
-	--' Âîçâðàùàåò true  åñëè íóæíî ñìîòðåòü ïî íàïðàâëåíèþ
-	--' false - íóæíî ñìîòðåòü íà îáúåêò
+	--' Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ true  ÐµÑÐ»Ð¸ Ð½ÑƒÐ¶Ð½Ð¾ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ð¿Ð¾ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸ÑŽ
+	--' false - Ð½ÑƒÐ¶Ð½Ð¾ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ð½Ð° Ð¾Ð±ÑŠÐµÐºÑ‚
 	if look_direction_states[st.target_state] == true then
 		return true
 	end
@@ -174,7 +174,7 @@ function look_position_type(self, st)
 		return look_path_dir
 	end
 
-	--' Äëÿ äâèæåíèÿ
+	--' Ð”Ð»Ñ Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ñ
 	if not self.movement_stand_eval:evaluate() then
 		if st.look_position ~= nil then
 			return look_direction
@@ -182,12 +182,12 @@ function look_position_type(self, st)
 		return look_path_dir
 	end
 
-	--' Ñìîòðèì â ïîçèöèþ
+	--' Ð¡Ð¼Ð¾Ñ‚Ñ€Ð¸Ð¼ Ð² Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ
 	if st.look_position ~= nil then
 		return look_direction
 	end
 
-	--' Íèêóäà íå ñìîòðèì
+	--' ÐÐ¸ÐºÑƒÐ´Ð° Ð½Ðµ ÑÐ¼Ð¾Ñ‚Ñ€Ð¸Ð¼
 	if state_lib.states[st.target_state].direction then
 		return state_lib.states[st.target_state].direction
 	end

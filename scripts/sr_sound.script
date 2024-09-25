@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Проигровка звуков при входе актёра в рестриктор.
-Чугай Александр
+РџСЂРѕРёРіСЂРѕРІРєР° Р·РІСѓРєРѕРІ РїСЂРё РІС…РѕРґРµ Р°РєС‚С‘СЂР° РІ СЂРµСЃС‚СЂРёРєС‚РѕСЂ.
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 
 Sliding sound support: Jim
 --------------------------------------------------------------------------------------------------------------------]]
@@ -57,7 +57,7 @@ function action_sound:update( delta )
 
 	local actor = Actor
 
-	-- если мы ещё нигде, то не считать ни входа, ни выхода
+	-- РµСЃР»Рё РјС‹ РµС‰С‘ РЅРёРіРґРµ, С‚Рѕ РЅРµ СЃС‡РёС‚Р°С‚СЊ РЅРё РІС…РѕРґР°, РЅРё РІС‹С…РѕРґР°
 	if self.is_actor_inside == nil then
 		self.is_actor_inside = self.object:inside( actor:position() )
 		return
@@ -161,7 +161,7 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 	end
 
 	st.delay   = ini:r_u32_ex(section, "delay", 0)
-	st.idle    = ini:r_u32_ex(section, "idle", 0) * 1000 -- секунды->мс
+	st.idle    = ini:r_u32_ex(section, "idle", 0) * 1000 -- СЃРµРєСѓРЅРґС‹->РјСЃ
 	local path = ini:r_string_ex(section, "position")
 	if path == nil then
 		st.pos_type = pos_obj

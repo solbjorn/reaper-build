@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------
 -- Monster binding
 
--- TAG фенечка 1.1
+-- TAG С„РµРЅРµС‡РєР° 1.1
 -----------------------------------------------------------------------------------
 local particles={}
 
@@ -27,7 +27,7 @@ function generic_object_binder:__init(obj, aem)
 	self.next_update_1000 = 0
 	self.death_recorded = false
 
-	if obj:story_id() == 29 then -- учебная плоть блин
+	if obj:story_id() == 29 then -- СѓС‡РµР±РЅР°СЏ РїР»РѕС‚СЊ Р±Р»РёРЅ
 		self.anomaly_evade = function()
 		end
 	else
@@ -78,7 +78,7 @@ function generic_object_binder:update(delta)
 						h.impulse = 0
 						h.draftsman = vv.target
 						h.direction = vv.dir
-						h:bone("bip01_spine") -- чтобы учитывалась броня
+						h:bone("bip01_spine") -- С‡С‚РѕР±С‹ СѓС‡РёС‚С‹РІР°Р»Р°СЃСЊ Р±СЂРѕРЅСЏ
 						h.power = math.random(10,50)/100
 						h.type = hit.strike --chemical_burn
 						vv.target:hit(h)
@@ -130,7 +130,7 @@ function generic_object_binder:update(delta)
 	local blowout = get_value("blowout", 0)
 	if blowout==3 and (not self.control_override) and not string.find(self.object:out_restrictions(), "bar_arena_restrictor") then
 		if not self.object:action() then
-			-- Захватываем зверушку
+			-- Р—Р°С…РІР°С‚С‹РІР°РµРј Р·РІРµСЂСѓС€РєСѓ
 			xr_logic.mob_capture(self.object,true)
 			self.control_override=true
 		end
@@ -141,7 +141,7 @@ function generic_object_binder:update(delta)
 			action(self.object, anim(anim.lie_idle, 0), sound(snd), cond(cond.sound_end))
 		end
 	elseif self.control_override and blowout~=3 then
-		-- отпускаем зверушку
+		-- РѕС‚РїСѓСЃРєР°РµРј Р·РІРµСЂСѓС€РєСѓ
 		self.control_override=nil
 		xr_logic.mob_release(self.object)
 	elseif self.st.active_section ~= nil then
@@ -254,7 +254,7 @@ function generic_object_binder:net_spawn(sobject)
 	end
 
 	db.add_obj(obj)
-	-- регистрация в схеме биорадара
+	-- СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ СЃС…РµРјРµ Р±РёРѕСЂР°РґР°СЂР°
 	biodetector.add_obj(obj)
 
 	xr_gulag.setup_gulag_and_logic_on_spawn( obj, self.st, sobject, modules.stype_mobile, self.loaded )
@@ -305,12 +305,12 @@ function generic_object_binder:net_destroy()
 	end
 
 	db.del_obj(obj)
-	-- отрегистрация в схеме биорадара
+	-- РѕС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ СЃС…РµРјРµ Р±РёРѕСЂР°РґР°СЂР°
 	biodetector.remove_obj(obj)
 
 	object_binder.net_destroy(self)
 
-	-- АМК. Очистка рестрикторов
+	-- РђРњРљ. РћС‡РёСЃС‚РєР° СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ
 	local sobj = server_object(obj_id)
 	if sobj then
 		local tbl=amk.read_monster_params(sobj)

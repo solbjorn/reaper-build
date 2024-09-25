@@ -193,7 +193,7 @@ end
 function send_tip(news_id, timeout, sender, showtime, sender_id)
 	if news_id == nil then return false end
 
-	--' Если задан timeout, то вызываем отложенно для синхронизации озвучки
+	--' Р•СЃР»Рё Р·Р°РґР°РЅ timeout, С‚Рѕ РІС‹Р·С‹РІР°РµРј РѕС‚Р»РѕР¶РµРЅРЅРѕ РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РѕР·РІСѓС‡РєРё
 	if timeout and timeout > 0 then
 		timer("news_manager.send_tip", timeout * 1000, true, news_id, 0, sender, showtime, sender_id)
 		return true
@@ -201,15 +201,15 @@ function send_tip(news_id, timeout, sender, showtime, sender_id)
 
 	if showtime == nil then showtime = 5000 end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_tips:play(Actor, 0, sound_object.s2d)
 	local sound = news[news_id]
 	if sound ~= nil then
 		sound = voice([[characters_voice\scenario\]] .. sound)
-		--' Играем звук забитый
+		--' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
 		sound:play(Actor, 1, sound_object.s2d)
 
-		--' Необходимо поставить время показа по длине сцены
+		--' РќРµРѕР±С…РѕРґРёРјРѕ РїРѕСЃС‚Р°РІРёС‚СЊ РІСЂРµРјСЏ РїРѕРєР°Р·Р° РїРѕ РґР»РёРЅРµ СЃС†РµРЅС‹
 		showtime = sound:length() + 1500
 		if showtime < 5000 then showtime = 5000 end
 	end
@@ -236,7 +236,7 @@ end
 function send_tip_nosound(news_id)
 	if news_id == nil then return end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_tips:play(Actor, 0, sound_object.s2d)
 
 	return news[news_id] and voice([[characters_voice\scenario\]] .. news[news_id])
@@ -245,10 +245,10 @@ end
 function send_task(type, _task, objective)
 	if Actor == nil then return false end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_task:play(Actor, 0, sound_object.s2d)
 
-	-- цвет сообщения
+	-- С†РІРµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ
 	local text_color = type == "fail" and "%c[255,255,0,0]" or "%c[sender]"
 
 	local task_title = _task:get_title()
@@ -270,27 +270,27 @@ function send_task(type, _task, objective)
 			local c_obj
 			local c_idx=objective:get_idx()+1
 			local finished=false
-			while true do --поищем следующую задачу в процессе
+			while true do --РїРѕРёС‰РµРј СЃР»РµРґСѓСЋС‰СѓСЋ Р·Р°РґР°С‡Сѓ РІ РїСЂРѕС†РµСЃСЃРµ
 				c_obj=_task:get_objective(c_idx)
-				if c_obj==nil then --если шагнули совсем куда то далеко
-					c_idx=1 --проверим с самого начала
+				if c_obj==nil then --РµСЃР»Рё С€Р°РіРЅСѓР»Рё СЃРѕРІСЃРµРј РєСѓРґР° С‚Рѕ РґР°Р»РµРєРѕ
+					c_idx=1 --РїСЂРѕРІРµСЂРёРј СЃ СЃР°РјРѕРіРѕ РЅР°С‡Р°Р»Р°
 				else
-					if c_obj:get_state()==task.fail or c_obj:get_state()==task.completed then --если задача на данном шаге выполнена
-						c_idx=c_idx+1 -- смотрим следующую
+					if c_obj:get_state()==task.fail or c_obj:get_state()==task.completed then --РµСЃР»Рё Р·Р°РґР°С‡Р° РЅР° РґР°РЅРЅРѕРј С€Р°РіРµ РІС‹РїРѕР»РЅРµРЅР°
+						c_idx=c_idx+1 -- СЃРјРѕС‚СЂРёРј СЃР»РµРґСѓСЋС‰СѓСЋ
 					end
 				end
-				if c_idx==_task:get_objectives_cnt()-1 then --если подошли к концу заданий и еще не были тут
+				if c_idx==_task:get_objectives_cnt()-1 then --РµСЃР»Рё РїРѕРґРѕС€Р»Рё Рє РєРѕРЅС†Сѓ Р·Р°РґР°РЅРёР№ Рё РµС‰Рµ РЅРµ Р±С‹Р»Рё С‚СѓС‚
 					if not finished then
-						finished=true --второй раз сюда уже не попадем
-						c_idx=1 --проверим с самого начала
-					else --обошли по кругу
+						finished=true --РІС‚РѕСЂРѕР№ СЂР°Р· СЃСЋРґР° СѓР¶Рµ РЅРµ РїРѕРїР°РґРµРј
+						c_idx=1 --РїСЂРѕРІРµСЂРёРј СЃ СЃР°РјРѕРіРѕ РЅР°С‡Р°Р»Р°
+					else --РѕР±РѕС€Р»Рё РїРѕ РєСЂСѓРіСѓ
 						c_idx=_task:get_objectives_cnt()-1
 						break
 					end
 				end
 				local toc=_task:get_objective(c_idx)
 				if toc~=nil then
-					if toc:get_state()==task.in_progress then --ну и если еще в прогрессе - подходит для уведомления
+					if toc:get_state()==task.in_progress then --РЅСѓ Рё РµСЃР»Рё РµС‰Рµ РІ РїСЂРѕРіСЂРµСЃСЃРµ - РїРѕРґС…РѕРґРёС‚ РґР»СЏ СѓРІРµРґРѕРјР»РµРЅРёСЏ
 						break
 					end
 				end
@@ -311,15 +311,15 @@ function send_task(type, _task, objective)
 	if Actor:is_talking() then
 		Actor:give_talk_message(news_text, task_texture, task_rect, "iconed_answer_item")
 	end
-	--выдаем в любом случае чтобы попало в дневник
+	--РІС‹РґР°РµРј РІ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ С‡С‚РѕР±С‹ РїРѕРїР°Р»Рѕ РІ РґРЅРµРІРЅРёРє
 	Actor:give_game_news(news_text, task_texture, task_rect, 0, 10000)
 end
 
 local article_types = {
-	[0]	= "news_article",	-- Справка
-	[1]	= "news_journal",	-- Журнал
-	[2]	= "news_task",		-- Задания
-	[3]	= "news_info"		-- Вырезанный раздел, но пусть будет
+	[0]	= "news_article",	-- РЎРїСЂР°РІРєР°
+	[1]	= "news_journal",	-- Р–СѓСЂРЅР°Р»
+	[2]	= "news_task",		-- Р—Р°РґР°РЅРёСЏ
+	[3]	= "news_info"		-- Р’С‹СЂРµР·Р°РЅРЅС‹Р№ СЂР°Р·РґРµР», РЅРѕ РїСѓСЃС‚СЊ Р±СѓРґРµС‚
 }
 
 function send_encyclopedy(_type, group, name)
@@ -368,7 +368,7 @@ end
 function relocate_item(type, item, count)
 	if Actor == nil then return false end
 	if not count then count = 1 end
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
 		local news_text = "%c[255,105,239,146]"..translate("general_in_item").."\\n".."%c[default]"..iif(count>1,count.."x ","")..get_inv_name(item)
@@ -391,7 +391,7 @@ end
 function relocate_money(type, amount)
 	if Actor == nil then return false end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_money")
 		local news_text = "%c[255,105,239,146]"..translate("general_in_money").."\\n".."%c[default]"..translate(tostring(amount))

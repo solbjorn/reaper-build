@@ -1,4 +1,4 @@
--- Расширения базовых библиотек Lua и движка
+-- Р Р°СЃС€РёСЂРµРЅРёСЏ Р±Р°Р·РѕРІС‹С… Р±РёР±Р»РёРѕС‚РµРє Lua Рё РґРІРёР¶РєР°
 
 local string_gmatch = string.gmatch
 local string_gsub = string.gsub
@@ -6,7 +6,7 @@ local string_match = string.match
 
 -- table
 
--- Инвертирование таблицы - ключ<->значение
+-- РРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ - РєР»СЋС‡<->Р·РЅР°С‡РµРЅРёРµ
 table.invert = function(tbl)
    local result = {}
    for key,value in pairs(tbl) do
@@ -15,7 +15,7 @@ table.invert = function(tbl)
    return result
 end
 
--- Добавление в таблицу вида {[key] = count} подсчитываемого предмета
+-- Р”РѕР±Р°РІР»РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ РІРёРґР° {[key] = count} РїРѕРґСЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ РїСЂРµРґРјРµС‚Р°
 table.add = function(tbl, key,count)
 	if not count then
 		count=1
@@ -27,7 +27,7 @@ table.add = function(tbl, key,count)
 	end
 end
 
--- Удаление из таблицы вида {[key] = count} подсчитываемого предмета
+-- РЈРґР°Р»РµРЅРёРµ РёР· С‚Р°Р±Р»РёС†С‹ РІРёРґР° {[key] = count} РїРѕРґСЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ РїСЂРµРґРјРµС‚Р°
 table.sub = function(tbl, key, count)
 	if not tbl[key] then
 		return
@@ -40,7 +40,7 @@ table.sub = function(tbl, key, count)
 	end
 end
 
--- Выбор случайного элемента таблицы
+-- Р’С‹Р±РѕСЂ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° С‚Р°Р±Р»РёС†С‹
 table.random_key=function(tbl)
 	if not tbl then
 		abort("! ERROR table.random got nil expected table")
@@ -80,7 +80,7 @@ table_copy = table.copy
 
 -- string
 
--- Удаление начальных и конечных пробелов
+-- РЈРґР°Р»РµРЅРёРµ РЅР°С‡Р°Р»СЊРЅС‹С… Рё РєРѕРЅРµС‡РЅС‹С… РїСЂРѕР±РµР»РѕРІ
 string.trim = function(str)
 	--out of bugged scripts code!
 	if not str then
@@ -94,9 +94,9 @@ string.trim = function(str)
 end
 local string_trim = string.trim
 
--- Разбирает cтроку в таблицу по разделителю
+-- Р Р°Р·Р±РёСЂР°РµС‚ cС‚СЂРѕРєСѓ РІ С‚Р°Р±Р»РёС†Сѓ РїРѕ СЂР°Р·РґРµР»РёС‚РµР»СЋ
 -- {"substring1", "substring2", ...}
--- clear = true - обрезать пробелы
+-- clear = true - РѕР±СЂРµР·Р°С‚СЊ РїСЂРѕР±РµР»С‹
 string.explode = function(str, div, clear)
 	local t = {}
 	if clear==nil then
@@ -116,7 +116,7 @@ string.clear = function(str)
 	return string_gsub(str, "%p", function(s) return string_match(s, "[%.%-_]*") end )
 end
 
--- Парсит строку вида "ааа, ббб, ввв..." в таблицу {"ааа", "ббб", "ввв", ...}
+-- РџР°СЂСЃРёС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "Р°Р°Р°, Р±Р±Р±, РІРІРІ..." РІ С‚Р°Р±Р»РёС†Сѓ {"Р°Р°Р°", "Р±Р±Р±", "РІРІРІ", ...}
 string.parse_names = function(s, tohash)
 	local t = {}
 
@@ -131,7 +131,7 @@ string.parse_names = function(s, tohash)
 	return t
 end
 
--- разбирает строку вида "n1, n2, n3..." в таблицу {n1, n2, n3, ...} где n1, n2, n3... - числа
+-- СЂР°Р·Р±РёСЂР°РµС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "n1, n2, n3..." РІ С‚Р°Р±Р»РёС†Сѓ {n1, n2, n3, ...} РіРґРµ n1, n2, n3... - С‡РёСЃР»Р°
 string.parse_nums = function (s)
 	local t = {}
 	for value in string_gmatch(s, "([^,]+)") do
@@ -145,7 +145,7 @@ string.parse_nums = function (s)
 	return t
 end
 
--- разбирает строку key,value,key,value ... в таблицу t = {key = value}, value должно быть числом. Его можно не указывать, тогда будет подставляться дефолт def
+-- СЂР°Р·Р±РёСЂР°РµС‚ СЃС‚СЂРѕРєСѓ key,value,key,value ... РІ С‚Р°Р±Р»РёС†Сѓ t = {key = value}, value РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РёСЃР»РѕРј. Р•РіРѕ РјРѕР¶РЅРѕ РЅРµ СѓРєР°Р·С‹РІР°С‚СЊ, С‚РѕРіРґР° Р±СѓРґРµС‚ РїРѕРґСЃС‚Р°РІР»СЏС‚СЊСЃСЏ РґРµС„РѕР»С‚ def
 string.key_value_num = function (str, def)
 	if not str then return nil end
 	if not def then def = 1 end
@@ -154,18 +154,18 @@ string.key_value_num = function (str, def)
 	local key, value
 	for name in string_gmatch(str, "[%w%_%.%-%+]+") do
 		value = tonumber(name)
-		if key == nil then	-- name это key
+		if key == nil then	-- name СЌС‚Рѕ key
 			key = name
-		elseif value == nil then	-- value не указано, значит это следующий key, ставим def и переносим key
+		elseif value == nil then	-- value РЅРµ СѓРєР°Р·Р°РЅРѕ, Р·РЅР°С‡РёС‚ СЌС‚Рѕ СЃР»РµРґСѓСЋС‰РёР№ key, СЃС‚Р°РІРёРј def Рё РїРµСЂРµРЅРѕСЃРёРј key
 			t[key] = def
 			key = name
-		else	-- name это value
+		else	-- name СЌС‚Рѕ value
 			t[key] = value
 			key = nil
 		end
 	end
 
-	-- цепляем дефолт для последнего key
+	-- С†РµРїР»СЏРµРј РґРµС„РѕР»С‚ РґР»СЏ РїРѕСЃР»РµРґРЅРµРіРѕ key
 	if key then
 		t[key] = def
 	end
@@ -175,7 +175,7 @@ end
 
 -- math
 
--- Выравнивание числа n в пределах от _min до_max
+-- Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ С‡РёСЃР»Р° n РІ РїСЂРµРґРµР»Р°С… РѕС‚ _min РґРѕ_max
 math.clamp = function(n, _min, _max)
 	if _min>_max then
 		_max,_min=_min,_max
@@ -185,7 +185,7 @@ math.clamp = function(n, _min, _max)
 		or n
 end
 
-math.nan = (0/0) -- не число
+math.nan = (0/0) -- РЅРµ С‡РёСЃР»Рѕ
 
 math.isnan = function(value)
 	return value ~= value
@@ -193,10 +193,10 @@ end
 
 -- ini_file, system_ini
 
---[[ Перебирает все строки в секции ini. Использование:
+--[[ РџРµСЂРµР±РёСЂР°РµС‚ РІСЃРµ СЃС‚СЂРѕРєРё РІ СЃРµРєС†РёРё ini. РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ:
 local tbl = {}
 ini:iterate_lines(section, function(result, id, value)
-	tbl[...] = ... -- любой скрипт
+	tbl[...] = ... -- Р»СЋР±РѕР№ СЃРєСЂРёРїС‚
 end)
 --]]
 ini_file.iterate_lines = function (ini, section, f)
@@ -208,7 +208,7 @@ ini_file.iterate_lines = function (ini, section, f)
 end
 config.iterate_lines = ini_file.iterate_lines
 
--- Из всех значений секции возвращает таблицу t[id] = value. tonum = true - преобразовать в число
+-- РР· РІСЃРµС… Р·РЅР°С‡РµРЅРёР№ СЃРµРєС†РёРё РІРѕР·РІСЂР°С‰Р°РµС‚ С‚Р°Р±Р»РёС†Сѓ t[id] = value. tonum = true - РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ С‡РёСЃР»Рѕ
 ini_file.key_value = function (ini, section, tonum)
 	local t = {}
 
@@ -220,7 +220,7 @@ ini_file.key_value = function (ini, section, tonum)
 end
 config.key_value = ini_file.key_value
 
--- Из всех значений секции возвращает список t = {id1, id2 ...}
+-- РР· РІСЃРµС… Р·РЅР°С‡РµРЅРёР№ СЃРµРєС†РёРё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє t = {id1, id2 ...}
 ini_file.list = function (ini, section)
 	local t = {}
 	local i = 1
@@ -234,7 +234,7 @@ ini_file.list = function (ini, section)
 end
 config.list = ini_file.list
 
--- Из всех значений секции возвращает таблицу t[id] = true
+-- РР· РІСЃРµС… Р·РЅР°С‡РµРЅРёР№ СЃРµРєС†РёРё РІРѕР·РІСЂР°С‰Р°РµС‚ С‚Р°Р±Р»РёС†Сѓ t[id] = true
 ini_file.key_true = function (ini, section)
 	local t = {}
 
@@ -250,7 +250,7 @@ config.key_true = ini_file.key_true
 
 local CTime_0 = game.CTime()
 
--- Чтение CTime
+-- Р§С‚РµРЅРёРµ CTime
 net_packet.r_CTime = function(p)
 	local t = game.CTime()
 
@@ -269,7 +269,7 @@ net_packet.r_CTime = function(p)
 end
 reader.r_CTime = net_packet.r_CTime
 
--- Запись CTime. Если t = nil, то запишет один нулевой байт
+-- Р—Р°РїРёСЃСЊ CTime. Р•СЃР»Рё t = nil, С‚Рѕ Р·Р°РїРёС€РµС‚ РѕРґРёРЅ РЅСѓР»РµРІРѕР№ Р±Р°Р№С‚
 net_packet.w_CTime = function(p, t)
 	if t and t ~= CTime_0 then
 		local time_table = t:get_table()
