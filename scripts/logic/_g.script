@@ -74,7 +74,7 @@ console = get_console()
 AI = nil
 netpacket = nil
 
--- before_objs_load_callback
+-- after_graph_load_callback
 graph = nil
 
 -- В after_objs_load_callback
@@ -136,8 +136,8 @@ function start_game_callback()
 	start_game_callback = nil
 end
 
-function before_objs_load_callback()
-	graph = game_graph()
+function after_graph_load_callback(gg)
+	graph = gg
 
 	before_objs_load_callback = nil
 end
