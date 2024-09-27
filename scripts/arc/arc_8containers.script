@@ -147,11 +147,11 @@ function remove_container(cont_index)
   arc.remove_obj(inv_containers[cont_index].id)
 end
 
---[[
-function on_get_container(cont)
-  register_container(cont:id(),cont:section())
+function item_use(obj)
+	-- Контейнер использован. Показать меню
+	arc_ui_8container_menu.show_menu(get_inv_index(obj:id()))
 end
---]]
+
 function on_lose_container(cont_id)
   if not menu_showed then
     if lost_cont_id > 0 then
@@ -166,10 +166,7 @@ function on_actor_update()
   if lost_cont_id > 0 then
     local n = get_inv_index(lost_cont_id)
 
-    if AI:object(lost_cont_id)==nil then
-      -- Контейнер использован. Показать меню
-      arc_ui_8container_menu.show_menu(get_inv_index(lost_cont_id))
-    else
+		if server_object(lost_cont_id) then
       -- Контейнер выброшен. Удалить контейнер и арты в нём из списка
       local arts = inv_containers[n].arts
 
