@@ -12,9 +12,8 @@ local next_update_1000 = 0
 local next_update_5000 = 0
 
 function net_spawn(self)
-	if first_frame then
-		give_info("paused_on_load")
-	end
+	give_info("paused_on_load")
+	fix_all_spawn()
 
 	self.weapon_manager = reap_wpn.get_weapon_manager()
 	reap_af.trans_init()
@@ -175,7 +174,6 @@ function new_game()
 	level_tasks.add_lchanger_location()
 	load_del_bolt = true
 
-	fix_all_spawn()
 	dmx_sleep_binder.place_of_sleep_spawn()
 	ogse_zoneseffect.special_effects_spawn()
 	spawn_dynamic_fires()
@@ -958,9 +956,12 @@ local remove_items = {
 }
 
 function fix_all_spawn()
+	if has_info("storyline_actor_start") then return end
+
 	for i = 1, #remove_items do
 		release(remove_items[i])
 	end
+	remove_items = nil
 end
 
 function hit_by_actor(who)

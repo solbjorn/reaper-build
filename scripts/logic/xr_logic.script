@@ -200,14 +200,17 @@ function determine_section_to_activate(npc, ini, section_logic)
 		end
 	end
 
-	local npc_id = npc:id()
-	if active_section and db_storage[npc_id].stype and db_storage[npc_id].stype <= 1 and
-	   db_storage[npc_id].stype ~= stypes[string_match(active_section, "^[_%a]+")] then
-  -- Блокируем активацию схемы для зверушек в человеческих гулагах. Dirty Hack.
-    return "nil"
-  else
-  return active_section
-  end
+	if active_section then
+		-- Блокируем активацию схемы для зверушек в человеческих гулагах. Dirty Hack.
+		local stype = db_storage[npc:id()].stype
+		if stype and stype ~= stypes[string_match(active_section, "^[_%a]+")] then
+			abort(npc:name() .. " wants to switch to section " .. active_section ..
+			      " of an invalid stype")
+			active_section = "nil"
+		end
+	end
+
+	return active_section
 end
 
 ------------------------------------------------------------------------------------------------------------
