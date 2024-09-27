@@ -63,10 +63,12 @@ function CHudInterfaceMgr:night_vision_static()
 			local rect = amk_mod.get_hud_rect()
 			self.night_vision:SetWndRect(rect.x, rect.y, rect.w, rect.h)
 			self.night_vision_active = true
+			reap.switch_drops(nil, true)
 		end
 	elseif self.night_vision_active then
 		self.night_vision:SetWidth(0)
 		self.night_vision_active = false
+		reap.switch_drops(nil, false)
 	end
 end
 ---------------------------------------------------------------------------------------------------
@@ -77,6 +79,7 @@ function CHudInterfaceMgr:actor_death()
 	end
 	self.night_vision:SetWidth(0)
 	self.night_vision_active = false
+	reap.switch_drops(nil, false)
 end
 --[[-----------------------------------------------------------------------------------------------
  * INIT

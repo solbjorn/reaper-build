@@ -20,6 +20,9 @@ function net_spawn(self)
 
 	bolt_ending.net_spawn()
 	reap_misc.net_spawn()
+
+	switch_drops(false, false)
+	console:execute("ssfx_is_underground " .. (level.indoor() and 1 or 0))
 end
 
 function update(self)
@@ -302,6 +305,7 @@ end
 --]]---------------------------------------------------------------------------
 
 local sleep_cs, hide
+local helm, nv
 
 function safe_place()
 	local need_hit, khit
@@ -337,6 +341,17 @@ function detector_from_belt()
 	end
 
 	ui_rad.switch(false)
+end
+
+function switch_drops(h, n)
+	if h ~= nil then
+		helm = h
+	end
+	if n ~= nil then
+		nv = n
+	end
+
+	console:execute("r2_rain_drops_control " .. ((helm or nv) and "on" or "off"))
 end
 
 --[[---------------------------------------------------------------------------

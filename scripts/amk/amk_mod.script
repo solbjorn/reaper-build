@@ -925,7 +925,7 @@ end
 --'*******************************************************************************
 
 local current_static, curr_sect
-local static_enabled
+local static_enabled, has_blurs
 local current_zoom=1
 
 local last_rect = {
@@ -982,7 +982,7 @@ function set_hud_tex(sect)
 		static = current_static
 	end
 
-	set_blurs(enabled == 2 and static and static ~= "hud_sci", rect)
+	set_blurs(has_blurs and enabled == 2, rect)
 
   if enabled==static_enabled and current_static==static and
       rect.zoom==current_zoom then
@@ -1000,7 +1000,9 @@ function set_hud_tex(sect)
 			hud:AddCustomStatic(static)
 		end
 		sa_main.reattach_statics()
-		current_static=static
+
+		current_static = static
+		has_blurs = static and static ~= "hud_sci"
 	end
 
 	local wnd = hud:GetCustomStatic(current_static)
@@ -1012,7 +1014,9 @@ function set_hud_tex(sect)
 	elseif wnd then
 		wnd:SetWndRect(rect.x,rect.y,rect.w,rect.h)
 	end
-	static_enabled=enabled
+
+	reap.switch_drops(wnd ~= nil and enabled > 0)
+	static_enabled = enabled
 end
 
 local blurs=nil
