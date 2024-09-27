@@ -207,6 +207,12 @@ function on_death(victim, killer)
 	end
 end
 
+function death_cause(wpn)
+	local wpn_type = get_weapon_type(wpn)
+
+	return wpn_type > 0 and translate(news_data.weapon_classes[wpn_type].cause) or ""
+end
+
 -- Погиб сталкер.
 -- Собираем инфу о погибшем
 -- Собираем инфу о виновнике смерти
@@ -216,7 +222,7 @@ function on_stalker_death(victim_, killer_)
 		return
 	end
 	local m_killer = ""
-	local m_killer_s = ""
+	local m_killer_str = ""
 	local m_victim = ""
 	local victim
 	if (isGameObject(victim_)) then
@@ -240,33 +246,10 @@ function on_stalker_death(victim_, killer_)
 		elseif killer:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer)
 			m_killer_str = get_anomaly_name(killer, 1)
-		elseif (IsNpcStalker(killer)) then
-			local m_o_weapon = get_npc_weapon(killer)
-			local m_s_weapon = ""
-			if (m_o_weapon) then
-				m_s_weapon = get_weapon_type(m_o_weapon)
-				if (m_s_weapon < 5) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon == 6) then m_killer_str = "нож" end
-				if (m_s_weapon == 8) then m_killer_str = "ожоги" end
-				if (m_s_weapon == 9) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon == 10) then m_killer_str = "арбалет" end
-				if (m_s_weapon == 7 or m_s_weapon == 5) then m_killer_str = "граната" end
-			end
-			if (IsNpcActor(killer)) then
+		elseif IsNpcStalker(killer) or IsNpcOther(killer) then
+			m_killer_str = death_cause(get_npc_weapon(killer))
+			if IsNpcActor(killer) then
 				add_killed_by_actor(victim) -- Отметим, что это ГГ постарался.
-			end
-			m_killer = format_death_by_stalker(killer)
-		elseif (IsNpcOther(killer)) then
-			local m_o_weapon2 = get_npc_weapon(killer)
-			local m_s_weapon2 = ""
-			if (m_o_weapon2) then
-				m_s_weapon2 = get_weapon_type(m_o_weapon2)
-				if (m_s_weapon2 < 5) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon2 == 6) then m_killer_str = "нож" end
-				if (m_s_weapon == 8) then m_killer_str = "ожоги" end
-				if (m_s_weapon == 9) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon == 10) then m_killer_str = "арбалет" end
-				if (m_s_weapon2 == 7 or m_s_weapon2 == 5) then m_killer_str = "граната" end
 			end
 			m_killer = format_death_by_stalker(killer)
 		elseif killer:is_car() or killer:is_helicopter() then
@@ -2388,7 +2371,7 @@ function on_offline_stalker_death(victim_, killer_, weapon_)
 		return
 	end
 	local m_killer = ""
-	local m_killer_s = ""
+	local m_killer_str = ""
 	local m_victim = ""
 	local aid = nil
 	local m_name  = get_npc_name(victim_)
@@ -2401,27 +2384,8 @@ function on_offline_stalker_death(victim_, killer_, weapon_)
 		elseif killer_:is_anomaly() then
 			m_killer = format_death_by_anomaly(killer_)
 			m_killer_str = get_anomaly_name(killer_, 1)
-		elseif (IsNpcStalker(killer_)) then
-			local m_o_weapon = weapon_
-			local m_s_weapon = ""
-			if (m_o_weapon) then
-				m_s_weapon = get_weapon_type(m_o_weapon)
-				if (m_s_weapon < 5) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon == 6) then m_killer_str = "нож" end
-				if (m_s_weapon == 8) then m_killer_str = "ожоги" end
-				if (m_s_weapon == 7 or m_s_weapon == 5) then m_killer_str = "граната" end
-			end
-			m_killer = format_death_by_weapon(weapon_)
-		elseif (IsNpcOther(killer_)) then
-			local m_o_weapon2 = weapon_
-			local m_s_weapon2 = ""
-			if (m_o_weapon2) then
-				m_s_weapon2 = get_weapon_type(m_o_weapon2)
-				if (m_s_weapon2 < 5) then m_killer_str = "пулевое ранение" end
-				if (m_s_weapon2 == 6) then m_killer_str = "нож" end
-				if (m_s_weapon == 8) then m_killer_str = "ожоги" end
-				if (m_s_weapon2 == 7 or m_s_weapon2 == 5) then m_killer_str = "граната" end
-			end
+		elseif IsNpcStalker(killer_) or IsNpcOther(killer_) then
+			m_killer_str = death_cause(weapon_)
 			m_killer = format_death_by_weapon(weapon_)
 		elseif killer_:is_car() or killer_:is_helicopter() then
 			m_killer, m_killer_str = format_death_by_tech(killer_)
