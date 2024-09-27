@@ -268,13 +268,6 @@ function actor_binder:on_item_take (obj)
 	amk_offline_alife.on_item_take(obj)
 	freeplay_stats:check_found_item(obj)
 
-	if obj:is_outfit() then
-		local actor_outfit = Actor:item_in_slot(6)
-		if actor_outfit and obj:id() ~= actor_outfit:id() then
-			Actor:transfer_item(actor_outfit, Actor)
-		end
-	end
-
 	level_tasks.proceed()
 
   --AMK UTILS--
@@ -436,9 +429,6 @@ function actor_binder:update(delta)
     if not has_alife_info("global_dialogs") then
       self.object:give_info_portion("global_dialogs")
     end
-
-		local actor_outfit = Actor:item_in_slot(6)
-		if actor_outfit then Actor:transfer_item(actor_outfit, Actor) end
 
     self.bCheckStart = false
   end
